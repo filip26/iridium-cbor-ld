@@ -1,5 +1,8 @@
 package com.apicatalog.cborld;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * A registry of well-know term values as defined by the specification.
  * 
@@ -8,9 +11,9 @@ package com.apicatalog.cborld;
  */
 public class DefaultDictionary implements Dictionary {
 
-    private static byte OFFSET = 0x10;
+    private static final byte OFFSET = 0x10;
     
-    private static String[] TERMS = new String[] {
+    private static final String[] TERMS = new String[] {
 	    "https://www.w3.org/ns/activitystreams",
 	    "https://www.w3.org/2018/credentials/v1",
 	    "https://www.w3.org/ns/did/v1",
@@ -30,33 +33,54 @@ public class DefaultDictionary implements Dictionary {
 	    "https://w3id.org/vc/status-list/v1",
     };
     
+    private static final Map<Integer, Integer> CODEC_INDEX = new HashMap<>();
+
+    static {
+	for (int i = 0; i < TERMS.length; i++) {
+	    CODEC_INDEX.put(TERMS[i].hashCode(), OFFSET + i);
+	}
+    }
+    
     @Override
-    public byte getCode(String term) {
+    public byte[] getCode(String term) {
+	Integer code = CODEC_INDEX.get(term.hashCode());
 	
-	int index = indexOf(term);
-	
-	if (index == -1) {
-	    //TODO
+	if (code != null) {
+	    return new byte[] { (byte)(int)code };
 	}
 
-	return (byte)(OFFSET + index);
+	return null;
     }
 
     @Override
-    public String getTerm(byte code) {
-	if (code < OFFSET) {
-	    throw new IllegalArgumentException("Invalid code [" + Integer.toHexString(code)  + "]. Codes of range 0x00-0x0f are reserved.");
+    public String getTerm(byte[] code) {
+	if (code.length != 1 || code[0] < OFFSET) {
+	    throw new IllegalArgumentException(
+		    		"Invalid code " + toHexString(code)  + "."
+		    		+ "Available range " 
+		    	        	+ toHexString(OFFSET) 
+		    	        	+ "-" 
+		    	        	+ toHexString((byte)(OFFSET + TERMS.length))
+		    	        	+ "."
+		    	        );
 	}
-
-	return TERMS[code - OFFSET];
+	return TERMS[code[0] - OFFSET];
     }
 
-    private static int indexOf(final String term) {
-	for (int i=0; i < TERMS.length; i++) {
-	    if (TERMS[i].equals(term)) {
-		return i;
+    private static final String toHexString(byte[] array) {
+	final StringBuilder builder = new StringBuilder(array.length * 5 - 1 + 2).append('[');
+
+	for (int i = 0; i < array.length; i++) {
+	    if (i > 0) {
+		builder.append(',');
 	    }
+	    builder.append(toHexString(array[i]));
 	}
-	return -1;
+
+	return builder.append(']').toString();
+    }
+
+    private static final String toHexString(byte value) {
+	return String.format("0x%02X", value);
     }
 }
