@@ -45,6 +45,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         
         <jakarta.json.version>2.0.1</jakarta.json.version> 
+        <titanium.version>1.3.1</titanium.version>
 
         <argLine>-Dfile.encoding=UTF-8</argLine>
 
@@ -65,7 +66,8 @@
 	        <artifactId>junit-jupiter</artifactId>
             <version>${junit.version}</version>
 	        <scope>test</scope>
-	    </dependency>   
+	    </dependency>
+      
     </dependencies>
     <build>        
         <plugins>
