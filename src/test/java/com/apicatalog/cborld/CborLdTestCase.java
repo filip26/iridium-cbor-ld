@@ -22,7 +22,7 @@ public class CborLdTestCase {
 
     public Set<String> type;
 
-    public Object result;
+    public URI result;
 
     public static CborLdTestCase of(JsonObject test, JsonObject manifest, DocumentLoader loader) {
 
@@ -46,18 +46,18 @@ public class CborLdTestCase {
             JsonValue resultValue = result.getOrDefault(Keywords.ID, result.getOrDefault(Keywords.VALUE, null));
 
             if (JsonUtils.isString(resultValue)) {
-                testCase.result = ((JsonString) resultValue).getString();
+                testCase.result = URI.create( ((JsonString) resultValue).getString());
 
             } else {
-                testCase.result = !JsonValue.ValueType.FALSE.equals(resultValue.getValueType());
+           //     testCase.result = !JsonValue.ValueType.FALSE.equals(resultValue.getValueType());
             }
         }
 
         if (test.containsKey("https://github.com/filip26/iron-verifiable-credentials/tests/vocab#options")) {
 
-            final JsonObject options = test
-                    .getJsonArray("https://github.com/filip26/iron-verifiable-credentials/tests/vocab#options")
-                    .getJsonObject(0);
+//            final JsonObject options = test
+//                    .getJsonArray("https://github.com/filip26/iron-verifiable-credentials/tests/vocab#options")
+//                    .getJsonObject(0);
 
         }
 

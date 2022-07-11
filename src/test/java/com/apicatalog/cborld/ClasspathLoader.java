@@ -38,6 +38,13 @@ public class ClasspathLoader implements DocumentLoader {
 
         if (url.toString().endsWith(".nq")) {
             return RdfDocument.of(is);
+            
+        } else if (url.toString().endsWith(".cborld")) {
+            try {
+        	return CborLdDocument.from(is);
+            } catch (IOException e) {
+        	throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
+            }
         }
 
         return JsonDocument.of(is);

@@ -24,7 +24,7 @@ public class JakartaJsonCursor implements JsonCursor {
     int index;
 
     public JakartaJsonCursor(JsonValue root, int maxDepth) {
-	this.path = new JsonString[maxDepth];
+	this.path = new JsonValue[maxDepth];
 	this.path[0] = root;
 	this.ids = new Object[maxDepth];
 	this.ids[0] = null;
@@ -53,8 +53,7 @@ public class JakartaJsonCursor implements JsonCursor {
 
     @Override
     public boolean isBoolean() {
-	//TODO
-	return false;
+	return ValueType.FALSE.equals(path[index].getValueType()) || ValueType.TRUE.equals(path[index].getValueType());
     }
 
     @Override
@@ -291,9 +290,7 @@ public class JakartaJsonCursor implements JsonCursor {
 	if (!isObject()) {
 	    throw new ClassCastException();
 	}
-
-	// TODO Auto-generated method stub
-	return null;
+	return path[index].asJsonObject().keySet();
     }
 
     @Override
@@ -301,49 +298,47 @@ public class JakartaJsonCursor implements JsonCursor {
 	if (!isObject()) {
 	    throw new ClassCastException();
 	}
-
-	// TODO Auto-generated method stub
-	return false;
+	return path[index].asJsonObject().containsKey(property);
     }
 
     @Override
     public boolean isNull(String property) {
 	if (!isObject()) {
 	    throw new ClassCastException();
-	}
-
-	// TODO Auto-generated method stub
-	return false;
+	}	
+	final JsonValue value = path[index].asJsonObject().get(property);
+	return value == null || ValueType.NULL.equals(value.getValueType());
     }
 
     @Override
-    public boolean isString(String propertt) {
+    public boolean isString(String property) {
+	if (!isObject()) {
+	    throw new ClassCastException();
+	}
+	final JsonValue value = path[index].asJsonObject().get(property);
+	return value != null && ValueType.STRING.equals(value.getValueType());
+    }
+
+    @Override
+    public boolean isBoolean(String property) {
+	if (!isObject()) {
+	    throw new ClassCastException();
+	}
+	final JsonValue value = path[index].asJsonObject().get(property);
+	return value != null && (
+		ValueType.TRUE.equals(value.getValueType())
+		|| ValueType.FALSE.equals(value.getValueType())
+		);
+    }
+
+    @Override
+    public boolean isNumber(String property) {
 	if (!isObject()) {
 	    throw new ClassCastException();
 	}
 
-	// TODO Auto-generated method stub
-	return false;
-    }
-
-    @Override
-    public boolean isBoolean(String propertt) {
-	if (!isObject()) {
-	    throw new ClassCastException();
-	}
-
-	// TODO Auto-generated method stub
-	return false;
-    }
-
-    @Override
-    public boolean isNumber(String propert) {
-	if (!isObject()) {
-	    throw new ClassCastException();
-	}
-
-	// TODO Auto-generated method stub
-	return false;
+	final JsonValue value = path[index].asJsonObject().get(property);
+	return value != null && ValueType.NUMBER.equals(value.getValueType());
     }
 
     @Override
@@ -351,9 +346,8 @@ public class JakartaJsonCursor implements JsonCursor {
 	if (!isObject()) {
 	    throw new ClassCastException();
 	}
-
-	// TODO Auto-generated method stub
-	return false;
+	final JsonValue value = path[index].asJsonObject().get(property);
+	return value != null && ValueType.ARRAY.equals(value.getValueType());
     }
 
     @Override
@@ -371,9 +365,8 @@ public class JakartaJsonCursor implements JsonCursor {
 	if (!isObject()) {
 	    throw new ClassCastException();
 	}
-
-	// TODO Auto-generated method stub
-	return false;
+	final JsonValue value = path[index].asJsonObject().get(property);
+	return value != null && ValueType.OBJECT.equals(value.getValueType());
     }
 
     @Override
@@ -387,7 +380,7 @@ public class JakartaJsonCursor implements JsonCursor {
     }
 
     @Override
-    public Boolean booleanValue(String propert) {
+    public Boolean booleanValue(String property) {
 	if (!isObject()) {
 	    throw new ClassCastException();
 	}

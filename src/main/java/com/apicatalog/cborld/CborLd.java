@@ -15,6 +15,10 @@ public final class CborLd {
     
     public static final byte[] encode(JsonObjectCursor document) {
 	
+	if (document == null) {
+	    throw new IllegalArgumentException("The 'document' parameter must not be null.");
+	}
+	
 	try {
 	    
 	    final Collection<String> contexts = getReferencedContexts(document, new HashSet<>());

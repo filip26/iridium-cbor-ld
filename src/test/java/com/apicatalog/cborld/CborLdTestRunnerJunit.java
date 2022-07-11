@@ -1,5 +1,6 @@
 package com.apicatalog.cborld;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -9,11 +10,17 @@ import java.io.StringWriter;
 import java.util.Collections;
 import java.util.Objects;
 
+import com.apicatalog.json.cursor.JsonObjectCursor;
+import com.apicatalog.json.cursor.jakarta.JakartaJsonCursor;
+import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.loader.DocumentLoader;
+import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
 import com.apicatalog.jsonld.loader.HttpLoader;
 import com.apicatalog.jsonld.loader.SchemeRouter;
 
 import jakarta.json.Json;
+import jakarta.json.JsonObject;
 import jakarta.json.JsonStructure;
 import jakarta.json.JsonValue;
 import jakarta.json.JsonWriter;
@@ -43,8 +50,25 @@ public class CborLdTestRunnerJunit {
         assertNotNull(testCase.type);
         assertNotNull(testCase.input);
 
-//        try {
+        try {
             if (testCase.type.contains(CborLdTestSuite.VOCAB + "EncoderTest")) {
+
+        	Document document = LOADER.loadDocument(testCase.input, new DocumentLoaderOptions());
+        	
+        	JsonObject object = document.getJsonContent().orElseThrow(IllegalStateException::new).asJsonObject();
+        	
+        	JsonObjectCursor cursor = new JakartaJsonCursor(object, 100);
+        	
+        	byte[] bytes = CborLd.encode(cursor);
+        	
+        	assertNotNull(bytes);
+        	
+        	Document expected = LOADER.loadDocument(testCase.result, new DocumentLoaderOptions());
+        	
+        	assertNotNull(expected);
+        	assertEquals(CborLdDocument.MEDIA_TYPE, expected.getContentType());
+        	
+        	assertArrayEquals(((CborLdDocument)expected).getByteArray(), bytes);
         	
             } else if (testCase.type.contains(CborLdTestSuite.VOCAB + "DecoderTest")) {
 
@@ -60,10 +84,10 @@ public class CborLdTestRunnerJunit {
                  return;
              }
 
-//        } catch (JsonLdError e) {
-//            e.printStackTrace();
-//            fail(e);
-//        }
+        } catch (JsonLdError e) {
+            e.printStackTrace();
+            fail(e);
+        }
     }
 
     final void assertException(final String code, Throwable e) {
