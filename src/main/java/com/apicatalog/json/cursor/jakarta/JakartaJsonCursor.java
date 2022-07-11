@@ -394,7 +394,7 @@ public class JakartaJsonCursor implements JsonCursor {
 	if (!isNumber(property)) {
 	    throw new IllegalArgumentException();
 	}
-	return ((JsonNumber)path[index]).intValueExact();
+	return ((JsonNumber)path[index].asJsonObject().get(property)).intValueExact();
     }
 
     @Override
@@ -402,7 +402,7 @@ public class JakartaJsonCursor implements JsonCursor {
 	if (!isNumber(property)) {
 	    throw new IllegalArgumentException();
 	}
-	return ((JsonNumber)path[index]).longValueExact();
+	return ((JsonNumber)path[index].asJsonObject().get(property)).longValueExact();
     }
 
     @Override
@@ -410,7 +410,7 @@ public class JakartaJsonCursor implements JsonCursor {
 	if (!isString(property)) {
 	    throw new IllegalArgumentException();
 	}
-	return ((JsonString)path[index]).getString();
+	return path[index].asJsonObject().getString(property, null);
     }
 
     @Override

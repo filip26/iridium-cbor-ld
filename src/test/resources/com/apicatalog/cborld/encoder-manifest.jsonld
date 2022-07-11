@@ -18,6 +18,16 @@
 			"name": "an empty plain JSON object",
 			"input": "encoder/0001-in.jsonld",
 			"expect": "encoder/0001-out.cborld"
-		}
+		},
+        {
+            "@id": "#t0002",
+            "@type": [
+                "PositiveEvaluationTest",
+                "EncoderTest"
+            ],
+            "name": "non empty plain JSON object",
+            "input": "encoder/0002-in.jsonld",
+            "expect": "encoder/0002-out.cborld"
+        }
 	]
 }
