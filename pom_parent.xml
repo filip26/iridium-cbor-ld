@@ -51,6 +51,8 @@
 
         <!--  test resources -->
         <junit.version>5.8.2</junit.version>
+        <titanium.version>1.3.1</titanium.version>
+        <jakarta.json.version>2.0.1</jakarta.json.version>        
     </properties>
     <dependencies>
         <dependency>
@@ -67,6 +69,20 @@
             <version>${junit.version}</version>
 	        <scope>test</scope>
 	    </dependency>
+
+        <dependency>
+            <groupId>com.apicatalog</groupId>
+            <artifactId>titanium-json-ld-jre8</artifactId>
+            <version>${titanium.version}</version>
+            <scope>test</scope>
+        </dependency>
+      
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>jakarta.json</artifactId>
+            <version>${jakarta.json.version}</version>
+            <scope>test</scope>
+        </dependency>
       
     </dependencies>
     <build>        

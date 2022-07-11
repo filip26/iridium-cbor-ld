@@ -1,0 +1,22 @@
+{
+	"@context": [
+		"context.jsonld",
+		{
+			"@base": "encoder-manifest"
+		}
+	],
+	"@id": "",
+	"@type": "mf:Manifest",
+	"name": "CBOR-LD Encoder Test Suite",
+	"sequence": [
+		{
+			"@id": "#t0001",
+			"@type": [
+				"PositiveEvaluationTest",
+				"EncoderTest"
+			],
+			"name": "TODO",
+			"input": "encoder/0001-in.jsonld"
+		}
+	]
+}

@@ -1,0 +1,15 @@
+{
+    "@context": [
+        "context.jsonld",
+        {
+            "@base": "manifest"
+        }
+    ],
+    "@id": "",
+    "@type": "mf:Manifest",
+    "name": "CBOR-LD Test Suite",
+    "sequence": [
+        "encoder-manifest.jsonld",
+        "decoder-manifest.jsonld"
+    ]
+}
