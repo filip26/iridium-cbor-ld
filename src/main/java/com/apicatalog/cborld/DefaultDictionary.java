@@ -56,31 +56,14 @@ public class DefaultDictionary implements Dictionary {
     public String getTerm(byte[] code) {
 	if (code.length != 1 || code[0] < OFFSET) {
 	    throw new IllegalArgumentException(
-		    		"Invalid code " + toHexString(code)  + "."
+		    		"Invalid code " + Hex.toString(code)  + "."
 		    		+ "Available range " 
-		    	        	+ toHexString(OFFSET) 
+		    	        	+ Hex.toString(OFFSET) 
 		    	        	+ "-" 
-		    	        	+ toHexString((byte)(OFFSET + TERMS.length))
+		    	        	+ Hex.toString((byte)(OFFSET + TERMS.length))
 		    	        	+ "."
 		    	        );
 	}
 	return TERMS[code[0] - OFFSET];
-    }
-
-    private static final String toHexString(byte[] array) {
-	final StringBuilder builder = new StringBuilder(array.length * 5 - 1 + 2).append('[');
-
-	for (int i = 0; i < array.length; i++) {
-	    if (i > 0) {
-		builder.append(',');
-	    }
-	    builder.append(toHexString(array[i]));
-	}
-
-	return builder.append(']').toString();
-    }
-
-    private static final String toHexString(byte value) {
-	return String.format("0x%02X", value);
     }
 }

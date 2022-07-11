@@ -1,5 +1,7 @@
 package com.apicatalog.cborld;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.net.URI;
 import java.util.Collection;
 import java.util.HashSet;
@@ -17,9 +19,13 @@ public final class CborLd {
 	    
 	    final Collection<String> contexts = getReferencedContexts(document, new HashSet<>());
 	    
+	    return compress(document, contexts);
 	    
+	} catch (IOException e) {
+	    e.printStackTrace();
 	    
 	} catch (IllegalArgumentException e) {
+	    e.printStackTrace();
 	    
 	    // non compressable context
 	}
@@ -31,6 +37,38 @@ public final class CborLd {
 	return null;
     }
     
+    
+    /**
+     * Compresses the given JSON-LD document into CBOR-LD byte array.
+     * 
+     * @see <a href="https://digitalbazaar.github.io/cbor-ld-spec/#compressed-cbor-ld-buffer-algorithm">Compressed CBOR-LD Buffer Algorithm</a>
+     * 
+     * @param document the document to compress
+     * @param contextUrls a set of URLs of <code>@context</code> referenced by the document 
+     * @return the compressed document as byte array
+     * 
+     * @throws IOException
+     */
+    static final byte[] compress(final JsonObjectCursor document, Collection<String> contextUrls) throws IOException {
+	
+	// 1.
+	final ByteArrayOutputStream result = new ByteArrayOutputStream();
+	
+	// 2.CBOR Tag - 0xD9, CBOR-LD - 0x50, Compressed - CBOR-LD compression algorithm version 1 - 0x01
+	result.write(new byte[] { (byte) 0xD9, 0x50, 0x01} );
+	
+	// 3.
+	
+	// 4.
+	
+	
+	// 5.
+	return result.toByteArray();
+    }
+    
+    static final Dictionary getTermMap(Collection<String> contextUrls) {
+	return null;
+    }
     
     static final Collection<String> getReferencedContexts(final JsonObjectCursor document, final Collection<String> result) throws IllegalArgumentException {
 
