@@ -15,8 +15,9 @@
 				"PositiveEvaluationTest",
 				"DecoderTest"
 			],
-			"name": "TODO",
-			"input": "decoder/0001-in.cborld"
+			"name": "an empty plain JSON object",
+			"input": "decoder/0001-in.cborld",
+            "expect": "decoder/0001-out.jsonld"
 		}
 	]
 }
