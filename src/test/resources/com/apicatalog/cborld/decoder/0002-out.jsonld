@@ -1,0 +1,4 @@
+{
+ "@context": "http://localhost:5000/encoder/0002-context.jsonld",
+ "singleprop": "value"
+}

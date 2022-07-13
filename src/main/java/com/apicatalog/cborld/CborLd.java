@@ -30,6 +30,7 @@ public final class CborLd {
 	    final Collection<String> contexts = getReferencedContexts(document, new HashSet<>());
 
 	    if (contexts.isEmpty()) { // is not JSON-LD document
+		//TODO log warning 
 		return toCbor(document);
 	    }
 

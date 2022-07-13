@@ -18,6 +18,16 @@
 			"name": "an empty plain JSON object",
 			"input": "decoder/0001-in.cborld",
             "expect": "decoder/0001-out.jsonld"
-		}
+		},
+        {
+            "@id": "#t0002",
+            "@type": [
+                "PositiveEvaluationTest",
+                "DecoderTest"
+            ],
+            "name": "one compress able property name",
+            "input": "decoder/0002-in.cborld",
+            "expect": "decoder/0002-out.jsonld"
+        }
 	]
 }
