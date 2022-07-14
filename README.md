@@ -24,7 +24,7 @@ All PR's welcome!
 Fork and clone the project repository.
 
 ```bash
-> cd iron-verfiable-credentials
+> cd iridium-cbor-ld
 > mvn clean package
 ```
 
