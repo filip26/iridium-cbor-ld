@@ -1,5 +1,5 @@
 # Iridium CBOR-LD
-A CBOR-based Serialization for Linked Data.
+An implementation of the [CBOR-LD 1.0 Draft](https://digitalbazaar.github.io/cbor-ld-spec/) in Java.
 
 ## Usage
 
