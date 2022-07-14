@@ -1,5 +1,32 @@
 # Iridium CBOR-LD
-A CBOR-based Serialization for Linked Data
+A CBOR-based Serialization for Linked Data.
+
+## Usage
+
+### Encoding
+
+```java
+  byte[] encoded = CborLd.encoder(document).encode();
+```
+
+### Decoding
+
+```java
+  document = CborLd.decoder(encoded).decode();
+```
+
+## Contributing
+
+All PR's welcome!
+
+### Building
+
+Fork and clone the project repository.
+
+```bash
+> cd iron-verfiable-credentials
+> mvn clean package
+```
 
 ## Resources
 
