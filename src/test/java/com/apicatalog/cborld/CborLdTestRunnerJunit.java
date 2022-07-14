@@ -3,6 +3,7 @@ package com.apicatalog.cborld;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.PrintWriter;
@@ -14,6 +15,7 @@ import com.apicatalog.json.cursor.JsonObjectCursor;
 import com.apicatalog.json.cursor.jakarta.JakartaJsonCursor;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.document.Document;
+import com.apicatalog.jsonld.json.JsonLdComparison;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
 import com.apicatalog.jsonld.loader.HttpLoader;
@@ -72,7 +74,19 @@ public class CborLdTestRunnerJunit {
         	
             } else if (testCase.type.contains(CborLdTestSuite.VOCAB + "DecoderTest")) {
 
-           
+        	Document document = LOADER.loadDocument(testCase.input, new DocumentLoaderOptions());
+
+        	assertNotNull(document);
+        	
+        	JsonValue result = CborLd.decode(((CborLdDocument)document).getByteArray());
+        	
+        	assertNotNull(result);
+        	
+        	Document expected = LOADER.loadDocument(testCase.result, new DocumentLoaderOptions());
+        	
+        	assertNotNull(expected);
+        	
+        	assertTrue(JsonLdComparison.equals(expected.getJsonContent().orElse(null), result));
 
             } else {
                 fail("Unknown test execution method: " + testCase.type);
@@ -84,6 +98,10 @@ public class CborLdTestRunnerJunit {
                  return;
              }
 
+        } catch (DecoderError e) {
+            e.printStackTrace();
+            //TODO
+             
         } catch (JsonLdError e) {
             e.printStackTrace();
             fail(e);
