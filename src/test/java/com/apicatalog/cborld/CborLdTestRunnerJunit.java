@@ -103,6 +103,15 @@ public class CborLdTestRunnerJunit {
                 return;
             }
 
+        } catch (EncoderError e) {
+            
+            if (testCase.type.stream().noneMatch(o -> o.endsWith("NegativeEvaluationTest"))) {
+                fail("Unexpected error code [" + e.getCode() + "].");
+                return;
+            }
+
+            assertEquals(testCase.result.toASCIIString(), e.getCode().name(), "Expected error code does not match");
+
         } catch (DecoderError e) {
             
             if (testCase.type.stream().noneMatch(o -> o.endsWith("NegativeEvaluationTest"))) {

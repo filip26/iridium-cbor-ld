@@ -1,22 +1,21 @@
 package com.apicatalog.cborld;
 
-public class DecoderError extends Throwable {
+public class EncoderError extends Throwable {
 
     private static final long serialVersionUID = -2025187747774695053L;
 
     public enum Code {
-	InvalidDocument,
-	UnknownCompression,
+	InvalidDocument,	// invalid JSON-LD document
     }
     
     protected final Code code;
     
-    public DecoderError(Code code, String message) {
+    public EncoderError(Code code, String message) {
 	super(message);
 	this.code = code;
     }
 
-    public DecoderError(Code code, Throwable cause) {
+    public EncoderError(Code code, Throwable cause) {
 	super(cause);
 	this.code = code;
     }

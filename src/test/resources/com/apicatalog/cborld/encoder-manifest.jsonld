@@ -12,22 +12,22 @@
 		{
 			"@id": "#t0001",
 			"@type": [
-				"PositiveEvaluationTest",
+				"NegativeEvaluationTest",
 				"EncoderTest"
 			],
-			"name": "an empty plain JSON object",
+			"name": "blank document",
 			"input": "encoder/0001-in.jsonld",
-			"expect": "encoder/0001-out.cborld"
+			"expectErrorCode": "InvalidDocument"
 		},
         {
             "@id": "#t0002",
             "@type": [
-                "PositiveEvaluationTest",
+                "NegativeEvaluationTest",
                 "EncoderTest"
             ],
-            "name": "non empty plain JSON object",
+            "name": "plain JSON object",
             "input": "encoder/0002-in.jsonld",
-            "expect": "encoder/0002-out.cborld"
+            "expectErrorCode": "InvalidDocument"
         }
 	]
 }
