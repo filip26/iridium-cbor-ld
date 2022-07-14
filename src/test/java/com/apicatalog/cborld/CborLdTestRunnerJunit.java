@@ -62,7 +62,12 @@ public class CborLdTestRunnerJunit {
         	JsonObjectCursor cursor = new JakartaJsonCursor(object, 100);
         	
         	byte[] bytes = CborLd.encode(cursor);
-        	
+
+                if (testCase.type.stream().noneMatch(o -> o.endsWith("PositiveEvaluationTest"))) {
+                    fail("Expected error code [" + testCase.result + "].");
+                    return;
+                }
+
         	assertNotNull(bytes);
         	
         	Document expected = LOADER.loadDocument(testCase.result, new DocumentLoaderOptions());
@@ -79,7 +84,12 @@ public class CborLdTestRunnerJunit {
         	assertNotNull(document);
         	
         	JsonValue result = CborLd.decode(((CborLdDocument)document).getByteArray());
-        	
+
+                if (testCase.type.stream().noneMatch(o -> o.endsWith("PositiveEvaluationTest"))) {
+                    fail("Expected error code [" + testCase.result + "].");
+                    return;
+                }
+
         	assertNotNull(result);
         	
         	Document expected = LOADER.loadDocument(testCase.result, new DocumentLoaderOptions());
@@ -93,14 +103,14 @@ public class CborLdTestRunnerJunit {
                 return;
             }
 
-             if (testCase.type.stream().noneMatch(o -> o.endsWith("PositiveEvaluationTest"))) {
-                 fail();
-                 return;
-             }
-
         } catch (DecoderError e) {
-            e.printStackTrace();
-            //TODO
+            
+            if (testCase.type.stream().noneMatch(o -> o.endsWith("NegativeEvaluationTest"))) {
+                fail("Unexpected error code [" + e.getCode() + "].");
+                return;
+            }
+
+            assertEquals(testCase.result.toASCIIString(), e.getCode().name(), "Expected error code does not match");
              
         } catch (JsonLdError e) {
             e.printStackTrace();

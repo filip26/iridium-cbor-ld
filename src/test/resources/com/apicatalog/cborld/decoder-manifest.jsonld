@@ -20,7 +20,7 @@
             "expectErrorCode": "InvalidDocument"
 		},
 		{
-			"@id": "#t0001",
+			"@id": "#t0002",
 			"@type": [
 				"NegativeEvaluationTest",
 				"DecoderTest"
@@ -50,14 +50,14 @@
 			"expectErrorCode": "UnknownCompression"
 		},
 		{
-			"@id": "#t00020",
+			"@id": "#t0005",
 			"@type": [
 				"PositiveEvaluationTest",
 				"DecoderTest"
 			],
 			"name": "one compress able property name",
-			"input": "decoder/0002-in.cborld",
-			"expect": "decoder/0002-out.jsonld"
+			"input": "decoder/0005-in.cborld",
+			"expect": "decoder/0005-out.jsonld"
 		}
 	]
 }
