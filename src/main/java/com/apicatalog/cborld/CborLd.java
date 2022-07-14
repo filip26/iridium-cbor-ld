@@ -6,6 +6,7 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.HashSet;
 
+import com.apicatalog.cborld.DecoderError.Code;
 import com.apicatalog.json.cursor.JsonArrayCursor;
 import com.apicatalog.json.cursor.JsonCursor;
 import com.apicatalog.json.cursor.JsonObjectCursor;
@@ -59,11 +60,11 @@ public final class CborLd {
 	}
 	
 	if (encodedDocument.length < 4) {
-	    throw new DecoderError("The encoded document must be at least 4 bytes but is [" + encodedDocument.length + "].");
+	    throw new DecoderError(Code.InvalidDocument, "The encoded document must be at least 4 bytes but is [" + encodedDocument.length + "].");
 	}
 	
 	if (encodedDocument[0] != CBOR_LD_BYTE_PREFIX[0]  || encodedDocument[1] != CBOR_LD_BYTE_PREFIX[1]) {
-	    throw new DecoderError("The document is not CBOR-LD document.");
+	    throw new DecoderError(Code.InvalidDocument, "The document is not CBOR-LD document.");
 	}
 	
 	if (encodedDocument[2] == COMPRESSED) {
@@ -74,7 +75,7 @@ public final class CborLd {
 	    return decodeUncompressed(encodedDocument);
 	}
 	
-	throw new DecoderError(("Unkknown CBOR-LD document compression, expected 0x00 - uncompressed or 0x01 - compressed, but found [" + Hex.toString(encodedDocument[2]) + "]."));
+	throw new DecoderError(Code.UnknownCompression, "Unkknown CBOR-LD document compression, expected 0x00 - uncompressed or 0x01 - compressed, but found [" + Hex.toString(encodedDocument[2]) + "].");
     }
 
     static final JsonValue decodeCompressed(byte[] encoded) {

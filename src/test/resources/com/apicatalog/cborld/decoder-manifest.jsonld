@@ -12,22 +12,52 @@
 		{
 			"@id": "#t0001",
 			"@type": [
+				"NegativeEvaluationTest",
+				"DecoderTest"
+			],
+			"name": "empty document",
+			"input": "decoder/0001-in.cborld",
+            "expectErrorCode": "InvalidDocument"
+		},
+		{
+			"@id": "#t0001",
+			"@type": [
+				"NegativeEvaluationTest",
+				"DecoderTest"
+			],
+			"name": "too short document, less than 4 bytes",
+			"input": "decoder/0002-in.cborld",
+	        "expectErrorCode": "InvalidDocument"
+		},
+		{
+			"@id": "#t0003",
+			"@type": [
+				"NegativeEvaluationTest",
+				"DecoderTest"
+			],
+			"name": "not CBOR-LD document",
+			"input": "decoder/0003-in.cborld",
+			"expectErrorCode": "InvalidDocument"
+		},
+		{
+			"@id": "#t0004",
+			"@type": [
+				"NegativeEvaluationTest",
+				"DecoderTest"
+			],
+			"name": "unknown compression flag",
+			"input": "decoder/0004-in.cborld",
+			"expectErrorCode": "UnknownCompression"
+		},
+		{
+			"@id": "#t00020",
+			"@type": [
 				"PositiveEvaluationTest",
 				"DecoderTest"
 			],
-			"name": "an empty plain JSON object",
-			"input": "decoder/0001-in.cborld",
-            "expect": "decoder/0001-out.jsonld"
-		},
-        {
-            "@id": "#t0002",
-            "@type": [
-                "PositiveEvaluationTest",
-                "DecoderTest"
-            ],
-            "name": "one compress able property name",
-            "input": "decoder/0002-in.cborld",
-            "expect": "decoder/0002-out.jsonld"
-        }
+			"name": "one compress able property name",
+			"input": "decoder/0002-in.cborld",
+			"expect": "decoder/0002-out.jsonld"
+		}
 	]
 }
