@@ -11,10 +11,17 @@ import co.nstant.in.cbor.model.DataItem;
 import co.nstant.in.cbor.model.Map;
 import jakarta.json.JsonValue;
 
-public final class Decoder {
+public class Decoder {
 
-
-    public static final JsonValue decode(byte[] encodedDocument) throws DecoderError {
+    protected final byte[] encoded;
+    protected final boolean compressed;
+    
+    protected Decoder(byte[] encoded, boolean compressed) {
+	this.encoded = encoded;
+	this.compressed = compressed;
+    }
+    
+    public static final Decoder create(byte[] encodedDocument) throws DecoderError {
 	
 	if (encodedDocument == null) {
 	    throw new IllegalArgumentException("The encoded document paramenter must not be null but byte arrayy.");
@@ -29,16 +36,23 @@ public final class Decoder {
 	}
 	
 	if (encodedDocument[2] == CborLd.COMPRESSED) {
-	    return decodeCompressed(encodedDocument);
+	    return new Decoder(encodedDocument, true);
 	} 
 	
 	if (encodedDocument[2] == CborLd.UNCOMPRESSED) {
-	    return decodeUncompressed(encodedDocument);
+	    return new Decoder(encodedDocument, false);
 	}
 	
 	throw new DecoderError(Code.UnknownCompression, "Unkknown CBOR-LD document compression, expected 0x00 - uncompressed or 0x01 - compressed, but found [" + Hex.toString(encodedDocument[2]) + "].");
     }
 
+    public JsonValue decode() throws DecoderError {
+	if (compressed) {
+	    return decodeCompressed(encoded);
+	}
+	return decodeUncompressed(encoded);
+    }
+    
     static final JsonValue decodeCompressed(byte[] encoded) throws DecoderError {
 	
 	try {

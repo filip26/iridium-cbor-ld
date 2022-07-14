@@ -17,14 +17,24 @@ import co.nstant.in.cbor.CborException;
 import co.nstant.in.cbor.builder.ArrayBuilder;
 import co.nstant.in.cbor.builder.MapBuilder;
 
-public final class Encoder {
+public class Encoder {
 
+    protected final JsonObjectCursor document;
+    
+    protected Encoder(JsonObjectCursor document) {
+	this.document = document;
+    }
 
-    public static final byte[] encode(JsonObjectCursor document) throws EncoderError {
+    public static final Encoder create(JsonObjectCursor document) throws EncoderError {
 
 	if (document == null) {
 	    throw new IllegalArgumentException("The 'document' parameter must not be null.");
 	}
+	
+	return new Encoder(document);
+    }
+    
+    public byte[] encode() throws EncoderError {
 
 	try {
 

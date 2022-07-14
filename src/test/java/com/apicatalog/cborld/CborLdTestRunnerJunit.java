@@ -61,7 +61,7 @@ public class CborLdTestRunnerJunit {
         	
         	JsonObjectCursor cursor = new JakartaJsonCursor(object, 100);
         	
-        	byte[] bytes = CborLd.encode(cursor);
+        	byte[] bytes = CborLd.encoder(cursor).encode();
 
                 if (testCase.type.stream().noneMatch(o -> o.endsWith("PositiveEvaluationTest"))) {
                     fail("Expected error code [" + testCase.result + "].");
@@ -83,7 +83,7 @@ public class CborLdTestRunnerJunit {
 
         	assertNotNull(document);
         	
-        	JsonValue result = CborLd.decode(((CborLdDocument)document).getByteArray());
+        	JsonValue result = CborLd.decoder(((CborLdDocument)document).getByteArray()).decode();
 
                 if (testCase.type.stream().noneMatch(o -> o.endsWith("PositiveEvaluationTest"))) {
                     fail("Expected error code [" + testCase.result + "].");
