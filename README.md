@@ -1,5 +1,5 @@
 # Iridium CBOR-LD
-A CBOR-based Serialization for Linked Data.
+An implementation of the [CBOR-LD 1.0 Draft](https://digitalbazaar.github.io/cbor-ld-spec/) in Java.
 
 ## Usage
 
@@ -24,7 +24,7 @@ All PR's welcome!
 Fork and clone the project repository.
 
 ```bash
-> cd iron-verfiable-credentials
+> cd iridium-cbor-ld
 > mvn clean package
 ```
 
