@@ -1,16 +1,15 @@
 package com.apicatalog.cborld.decoder;
 
 import java.io.ByteArrayInputStream;
-import java.util.Arrays;
+import java.math.BigInteger;
 import java.util.Collection;
 import java.util.List;
 
 import com.apicatalog.cborld.CborLd;
 import com.apicatalog.cborld.Hex;
 import com.apicatalog.cborld.decoder.DecoderError.Code;
-import com.apicatalog.cborld.dictionary.ContextDictionary;
-import com.apicatalog.cborld.dictionary.Dictionary;
-import com.apicatalog.cborld.dictionary.KeywordDictionary;
+import com.apicatalog.cborld.dictionary.CodecTermMap;
+import com.apicatalog.jsonld.loader.DocumentLoader;
 
 import co.nstant.in.cbor.CborDecoder;
 import co.nstant.in.cbor.CborException;
@@ -31,18 +30,17 @@ public class Decoder {
 
     protected final byte[] encoded;
     protected final boolean compressed;
+    protected final DocumentLoader loader;
     
-    protected final Dictionary dictionary;
-    protected final Dictionary keywords;
-
-    protected Decoder(byte[] encoded, boolean compressed) {
+    protected CodecTermMap index;
+    
+    protected Decoder(byte[] encoded, boolean compressed, final DocumentLoader loader) {
 	this.encoded = encoded;
 	this.compressed = compressed;
-	this.dictionary = new ContextDictionary();	//FIXME
-	this.keywords = new KeywordDictionary();	//FIXME
+	this.loader = loader;
     }
 
-    public static final Decoder create(byte[] encodedDocument) throws DecoderError {
+    public static final Decoder create(byte[] encodedDocument, DocumentLoader loader) throws DecoderError {
 
 	if (encodedDocument == null) {
 	    throw new IllegalArgumentException("The encoded document paramenter must not be null but byte arrayy.");
@@ -59,11 +57,11 @@ public class Decoder {
 	}
 
 	if (encodedDocument[2] == CborLd.COMPRESSED) {
-	    return new Decoder(encodedDocument, true);
+	    return new Decoder(encodedDocument, true, loader);
 	}
 
 	if (encodedDocument[2] == CborLd.UNCOMPRESSED) {
-	    return new Decoder(encodedDocument, false);
+	    return new Decoder(encodedDocument, false, loader);
 	}
 
 	throw new DecoderError(Code.UnknownCompression,
@@ -112,7 +110,7 @@ public class Decoder {
 	    
 	Collection<String> contextUrls = Context.get(data);
 	    
-	System.out.println(contextUrls);
+	this.index = CodecTermMap.from(contextUrls, loader);
 
 	return decodeData(data);
     }
@@ -185,22 +183,29 @@ public class Decoder {
 
 	switch (data.getMajorType()) {
 	case UNICODE_STRING:
-	    return decodeKey(((UnicodeString)data).getString().getBytes());
+	    return decodeKey(((UnicodeString)data).getString());
 	    
 	case UNSIGNED_INTEGER:
-	    return decodeKey(((UnsignedInteger)data).getValue().toByteArray());
+	    return decodeKey(((UnsignedInteger)data).getValue());
 	    
 	default:
     	    throw new DecoderError(Code.Unsupported, "A property name of type [" + data.getMajorType() +"] is not supported.");
 	}
     }
     
-    final String decodeKey(final byte[] code) {
-	String result = keywords.getTerm(code);
+    final String decodeKey(String key) {
 	//TODO
-	return result != null ? result : Arrays.toString(code);
+	return key;
     }
-    
+
+    final String decodeKey(BigInteger key) {
+
+	String result = index.getTerm(key.intValueExact());
+
+	//TODO
+	return result != null ? result : key.toString();
+    }
+
     final JsonString decodeString(final UnicodeString string) {
 
 	if (string == null) {

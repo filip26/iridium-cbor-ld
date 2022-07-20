@@ -7,10 +7,10 @@ public class KeywordDictionary implements Dictionary {
 
     public static final byte CONTEXT_CODE = 0;
     
-    private static final byte OFFSET = 0x64;	// 100 decimal
+    public static final byte CUSTOM_OFFSET = 0x64;	// 100 decimal
         
-    private static final Map<String, Integer> TERM_TO_CODE = new HashMap<>();
-    private static final Map<Integer, String> CODE_TO_TERM = new HashMap<>();
+    protected static final Map<String, Integer> TERM_TO_CODE = new HashMap<>();
+    protected static final Map<Integer, String> CODE_TO_TERM = new HashMap<>();
 
     static {
 	add("@context", (int)CONTEXT_CODE);

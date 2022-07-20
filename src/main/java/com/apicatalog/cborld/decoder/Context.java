@@ -61,6 +61,10 @@ public class Context {
 		    contextUrl = ((UnicodeString)value).getString();
 		    break;
 		    
+		case ARRAY:
+		    //TODO
+		    break;
+		    
 		default:
 		    break;
 		}

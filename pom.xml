@@ -28,7 +28,6 @@
       <groupId>com.apicatalog</groupId>
       <artifactId>titanium-json-ld-jre8</artifactId>
       <version>${titanium.version}</version>
-      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>
