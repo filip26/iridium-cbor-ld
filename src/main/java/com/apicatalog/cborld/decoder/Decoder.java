@@ -21,6 +21,7 @@ import co.nstant.in.cbor.model.UnsignedInteger;
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
+import jakarta.json.JsonNumber;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonString;
@@ -131,6 +132,9 @@ public class Decoder {
 	case UNICODE_STRING:
 	    return decodeString((UnicodeString) data);
 
+	case UNSIGNED_INTEGER:
+	    return decodeNumber(((UnsignedInteger)data).getValue());
+	    
 	default:
 	    throw new IllegalStateException("An unexpected data item type [" + data.getMajorType() + "].");
 	}
@@ -214,7 +218,16 @@ public class Decoder {
 	//TODO
 	return Json.createValue(string.getString());
     }
-    
+
+    final JsonNumber decodeNumber(final BigInteger number) {
+
+	if (number == null) {
+	    throw new IllegalArgumentException("The number parameter must not be null.");
+	}
+	//TODO
+	return Json.createValue(number);
+    }
+
     final JsonValue decodeUncompressed() throws DecoderError {
 	/// TODO
 	return null;
