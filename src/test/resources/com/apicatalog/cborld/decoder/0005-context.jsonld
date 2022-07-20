@@ -1,0 +1,5 @@
+{
+"@context": {
+  "singleprop": "https://example.com#singleprop"
+}
+}
