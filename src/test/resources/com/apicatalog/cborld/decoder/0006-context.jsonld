@@ -1,6 +1,6 @@
 {
 	"@context": {
 		"prop1": "https://example.com#prop1",
-        "prop2": "https://example.com#prop1"		
+        "prop2": "https://example.com#prop2"		
 	}
 }

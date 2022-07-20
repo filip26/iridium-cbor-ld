@@ -15,13 +15,14 @@ import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
+import jakarta.json.JsonString;
 import jakarta.json.JsonStructure;
 import jakarta.json.JsonValue;
 
 public class CodecTermMap {
 
     final Map<Integer, String> index;
-    
+
     int lastCustomIndex;
 
     protected CodecTermMap(Map<Integer, String> index, int lastCustomIndex) {
@@ -39,79 +40,82 @@ public class CodecTermMap {
 		Document document = loader.loadDocument(URI.create(contextUrl), new DocumentLoaderOptions());
 
 		if (document == null) {
-		    //TODO warning
+		    // TODO warning
 		    continue;
 		}
 		if (!document.getJsonContent().isPresent()) {
-		    //TODO warning
+		    // TODO warning
 		    continue;
 		}
-		
+
 		JsonStructure context = document.getJsonContent().get();
-		
+
 		if (JsonUtils.isNonEmptyArray(context)) {
 		    process(context.asJsonArray(), result);
-		    
+
 		} else if (JsonUtils.isNonEmptyObject(context)) {
 		    process(context.asJsonObject(), result);
-		    
+
 		} else {
-		    //TODO
+		    // TODO
 		}
-		
+
 	    }
 
 	} catch (JsonLdError e) {
 	    // TODO Auto-generated catch block
 	    e.printStackTrace();
 	}
-	
-	final CodecTermMap map = new CodecTermMap(new LinkedHashMap<>(KeywordDictionary.CODE_TO_TERM), KeywordDictionary.CUSTOM_OFFSET);
-	
+
+	final CodecTermMap map = new CodecTermMap(new LinkedHashMap<>(KeywordDictionary.CODE_TO_TERM),
+		KeywordDictionary.CUSTOM_OFFSET);
+
 	result.keySet().stream().sorted().forEach(map::add);
-		
+
 	return map;
     }
-    
+
     void add(String key) {
-	index.put(lastCustomIndex++, key);
+	index.put(lastCustomIndex, key);
+	lastCustomIndex += 2;
     }
-    
+
     final static void process(JsonObject object, Map<String, String> index) {
-	
+
 	for (final Map.Entry<String, JsonValue> entry : object.entrySet()) {
+
+	    if (!Keywords.contains(entry.getKey())) {
+		index.put(entry.getKey(), null); // TODO value
+	    }
 	    
 	    if (JsonUtils.isObject(entry.getValue())) {
 		process(entry.getValue().asJsonObject(), index);
 		continue;
 	    }
-	    
-	    if (!Keywords.contains(entry.getKey())) {
-		index.put(entry.getKey(), null);	//TODO value
-	    }
+
 	}
-	
+
     }
 
     final static void process(JsonArray array, Map<String, String> index) {
-	
+
 	for (final JsonValue jsonValue : array) {
 	    if (JsonUtils.isObject(jsonValue)) {
 		process(jsonValue.asJsonObject(), index);
-		
+
 	    } else if (JsonUtils.isString(jsonValue)) {
-		//TODO
+		// TODO
 	    }
 	}
-	
+
     }
 
     final static void process(final JsonValue value, final Map<String, String> index) {
 
 	if (JsonUtils.isObject(value)) {
-	    
+
 	}
-	
+
     }
 
     public String getTerm(int code) {
