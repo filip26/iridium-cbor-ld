@@ -1,0 +1,8 @@
+{
+	"@context": {
+		"prop": {
+		  "@id": "https://example.com/prop",   
+		  "@type": "@id"
+		}
+	}
+}

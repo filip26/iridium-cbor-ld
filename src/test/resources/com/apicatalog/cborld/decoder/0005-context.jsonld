@@ -1,5 +1,5 @@
 {
-"@context": {
-  "singleprop": "https://example.com#singleprop"
-}
+	"@context": {
+		"singleprop": "https://example.com#singleprop"
+	}
 }

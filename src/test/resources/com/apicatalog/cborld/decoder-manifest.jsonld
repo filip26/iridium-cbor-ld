@@ -17,7 +17,7 @@
 			],
 			"name": "empty document",
 			"input": "decoder/0001-in.cborld",
-            "expectErrorCode": "InvalidDocument"
+			"expectErrorCode": "InvalidDocument"
 		},
 		{
 			"@id": "#t0002",
@@ -27,7 +27,7 @@
 			],
 			"name": "too short document, less than 4 bytes",
 			"input": "decoder/0002-in.cborld",
-	        "expectErrorCode": "InvalidDocument"
+			"expectErrorCode": "InvalidDocument"
 		},
 		{
 			"@id": "#t0003",
@@ -58,6 +58,36 @@
 			"name": "one compress able property name",
 			"input": "decoder/0005-in.cborld",
 			"expect": "decoder/0005-out.jsonld"
-		}
+		},
+		{
+			"@id": "#t0006",
+			"@type": [
+				"PositiveEvaluationTest",
+				"DecoderTest"
+			],
+			"name": "two simple compress able property name",
+			"input": "decoder/0006-in.cborld",
+			"expect": "decoder/0006-out.jsonld"
+		},
+		{
+			"@id": "#t0007",
+			"@type": [
+				"PositiveEvaluationTest",
+				"DecoderTest"
+			],
+			"name": "compress able context with @id",
+			"input": "decoder/0007-in.cborld",
+			"expect": "decoder/0007-out.jsonld"
+		},
+        {
+            "@id": "#t0008",
+            "@type": [
+                "PositiveEvaluationTest",
+                "DecoderTest"
+            ],
+            "name": "compress able context with @type = @id",
+            "input": "decoder/0008-in.cborld",
+            "expect": "decoder/0008-out.jsonld"
+        }
 	]
 }
