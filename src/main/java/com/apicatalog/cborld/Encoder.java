@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import com.apicatalog.cborld.EncoderError.Code;
+import com.apicatalog.cborld.dictionary.Dictionary;
 import com.apicatalog.json.cursor.JsonArrayCursor;
 import com.apicatalog.json.cursor.JsonCursor;
 import com.apicatalog.json.cursor.JsonObjectCursor;

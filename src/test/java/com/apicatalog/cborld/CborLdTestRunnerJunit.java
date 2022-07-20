@@ -11,6 +11,7 @@ import java.io.StringWriter;
 import java.util.Collections;
 import java.util.Objects;
 
+import com.apicatalog.cborld.decoder.DecoderError;
 import com.apicatalog.json.cursor.JsonObjectCursor;
 import com.apicatalog.json.cursor.jakarta.JakartaJsonCursor;
 import com.apicatalog.jsonld.JsonLdError;
@@ -92,11 +93,17 @@ public class CborLdTestRunnerJunit {
 
         	assertNotNull(result);
         	
-        	Document expected = LOADER.loadDocument(testCase.result, new DocumentLoaderOptions());
+        	final JsonStructure expected = LOADER.loadDocument(testCase.result, new DocumentLoaderOptions()).getJsonContent().orElse(null);
         	
         	assertNotNull(expected);
         	
-        	assertTrue(JsonLdComparison.equals(expected.getJsonContent().orElse(null), result));
+        	final boolean match =JsonLdComparison.equals(expected, result); 
+        	
+        	if (!match) {
+        	    write(testCase, result, expected);
+        	}
+        	
+        	assertTrue(match, "The expected result does not match.");
 
             } else {
                 fail("Unknown test execution method: " + testCase.type);
@@ -115,7 +122,7 @@ public class CborLdTestRunnerJunit {
         } catch (DecoderError e) {
             
             if (testCase.type.stream().noneMatch(o -> o.endsWith("NegativeEvaluationTest"))) {
-                fail("Unexpected error code [" + e.getCode() + "].");
+                fail("Unexpected error code [" + e.getCode() + "]. " + e.getMessage());
                 return;
             }
 
@@ -147,7 +154,7 @@ public class CborLdTestRunnerJunit {
         return testCase.type.stream().anyMatch(o -> o.endsWith("NegativeEvaluationTest"));
     }
 
-    public static void write(final CborLdTestCase testCase, final JsonStructure result, final JsonStructure expected) {
+    public static void write(final CborLdTestCase testCase, final JsonValue result, final JsonStructure expected) {
         final StringWriter stringWriter = new StringWriter();
 
         try (final PrintWriter writer = new PrintWriter(stringWriter)) {

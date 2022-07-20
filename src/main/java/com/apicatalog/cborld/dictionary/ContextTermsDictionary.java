@@ -1,6 +1,8 @@
-package com.apicatalog.cborld;
+package com.apicatalog.cborld.dictionary;
 
 import java.util.Map;
+
+import com.apicatalog.cborld.Hex;
 
 public class ContextTermsDictionary implements Dictionary {
 

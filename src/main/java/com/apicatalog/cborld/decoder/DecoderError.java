@@ -1,4 +1,4 @@
-package com.apicatalog.cborld;
+package com.apicatalog.cborld.decoder;
 
 public class DecoderError extends Throwable {
 
@@ -7,6 +7,7 @@ public class DecoderError extends Throwable {
     public enum Code {
 	InvalidDocument,
 	UnknownCompression,
+	Unsupported,
     }
     
     protected final Code code;

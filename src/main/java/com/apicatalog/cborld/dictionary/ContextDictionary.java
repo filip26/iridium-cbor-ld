@@ -1,7 +1,9 @@
-package com.apicatalog.cborld;
+package com.apicatalog.cborld.dictionary;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import com.apicatalog.cborld.Hex;
 
 /**
  * A registry of well-know term values as defined by the specification.
@@ -9,7 +11,7 @@ import java.util.Map;
  * @see <a href="https://digitalbazaar.github.io/cbor-ld-spec/#term-codec-registry">Term Codeec Registry</a>
  *
  */
-public class DefaultDictionary implements Dictionary {
+public class ContextDictionary implements Dictionary {
 
     private static final byte OFFSET = 0x10;
     
