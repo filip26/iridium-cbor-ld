@@ -128,6 +128,16 @@
             "name": "scoped context test",
             "input": "decoder/0023-in.cborld",
             "expect": "decoder/0023-out.jsonld"
-        }        
+        },
+        {
+            "@id": "#t0024",
+            "@type": [
+                "PositiveEvaluationTest",
+                "DecoderTest"
+            ],
+            "name": "scoped context: @type redefinition",
+            "input": "decoder/0024-in.cborld",
+            "expect": "decoder/0024-out.jsonld"
+        }
 	]
 }
