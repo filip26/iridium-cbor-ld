@@ -1,4 +1,4 @@
-package com.apicatalog.cborld;
+package com.apicatalog.cborld.encoder;
 
 public class EncoderError extends Throwable {
 

@@ -241,13 +241,13 @@ public class Decoder {
 	}
 	
 	//TODO dirty hack - the input should be expanded but CBOR-LD ...
-	if ("type".equals(key)) {        	
+	if (Keywords.TYPE.equals(key) || "type".equals(key)) {        	
 	    String term = index.getTerm(number.intValueExact());
     	    if (term != null) {
     		return Json.createValue(term);
     	    }
 	}
-	
+
 	//TODO
 	return Json.createValue(number);
     }

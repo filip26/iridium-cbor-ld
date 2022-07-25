@@ -1,16 +1,17 @@
-package com.apicatalog.cborld;
+package com.apicatalog.cborld.encoder;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.net.URI;
 import java.util.Collection;
-import java.util.HashSet;
 
-import com.apicatalog.cborld.EncoderError.Code;
-import com.apicatalog.cborld.dictionary.Dictionary;
+import com.apicatalog.cborld.CborLd;
+import com.apicatalog.cborld.context.Context;
+import com.apicatalog.cborld.dictionary.CodecTermMap;
+import com.apicatalog.cborld.dictionary.ContextDictionary;
+import com.apicatalog.cborld.encoder.EncoderError.Code;
 import com.apicatalog.json.cursor.JsonArrayCursor;
-import com.apicatalog.json.cursor.JsonCursor;
 import com.apicatalog.json.cursor.JsonObjectCursor;
+import com.apicatalog.jsonld.loader.DocumentLoader;
 
 import co.nstant.in.cbor.CborBuilder;
 import co.nstant.in.cbor.CborEncoder;
@@ -21,25 +22,29 @@ import co.nstant.in.cbor.builder.MapBuilder;
 public class Encoder {
 
     protected final JsonObjectCursor document;
+    protected final DocumentLoader loader;
     
-    protected Encoder(JsonObjectCursor document) {
+    protected CodecTermMap index;
+    
+    protected Encoder(JsonObjectCursor document, DocumentLoader loader) {
 	this.document = document;
+	this.loader = loader;
     }
 
-    public static final Encoder create(JsonObjectCursor document) throws EncoderError {
+    public static final Encoder create(JsonObjectCursor document, DocumentLoader loader) throws EncoderError {
 
 	if (document == null) {
 	    throw new IllegalArgumentException("The 'document' parameter must not be null.");
 	}
 	
-	return new Encoder(document);
+	return new Encoder(document, loader);
     }
     
     public byte[] encode() throws EncoderError {
 
 	try {
 
-	    final Collection<String> contexts = getReferencedContexts(document, new HashSet<>());
+	    final Collection<String> contexts = new Context(new ContextDictionary()).get(document);	//FIXME dictionary
 
 	    if (contexts.isEmpty()) { // is not JSON-LD document
 		throw new EncoderError(Code.InvalidDocument, "Not a valid JSON-LD document in a compacted form.");
@@ -73,7 +78,7 @@ public class Encoder {
      * 
      * @throws IOException
      */
-    static final byte[] compress(final JsonObjectCursor document, Collection<String> contextUrls) throws IOException {
+    final byte[] compress(final JsonObjectCursor document, Collection<String> contextUrls) throws IOException {
 
 	// 1.
 	final ByteArrayOutputStream result = new ByteArrayOutputStream();
@@ -83,84 +88,12 @@ public class Encoder {
 	result.write(CborLd.CBOR_LD_BYTE_PREFIX);
 	result.write(CborLd.COMPRESSED);
 
-	// 3.
-
-	// 4.
-
-	// 5.
-	return result.toByteArray();
+	index = CodecTermMap.from(contextUrls, loader);
+	
+	return toCbor(document, result);	
     }
 
-    static final Dictionary getTermMap(Collection<String> contextUrls) {
-	return null;
-    }
-
-    static final Collection<String> getReferencedContexts(final JsonObjectCursor document,
-	    final Collection<String> result) throws IllegalArgumentException {
-
-	for (final String property : document.properies()) {
-
-	    if ("@context".equals(property)) {
-		processContextValue(document.value(property), result);
-		document.parent();
-
-	    } else if (document.isObject(property)) {
-		getReferencedContexts(document.object(property), result);
-		document.parent();
-	    }
-	}
-
-	return result;
-    }
-
-    static final void processContextValue(final JsonCursor value, final Collection<String> result) {
-
-	if (value.isString()) {
-	    final String uri = value.stringValue();
-
-	    if (isAbsoluteURI(uri)) {
-		result.add(uri);
-		return;
-	    }
-
-	} else if (value.isNonEmptyArray()) {
-
-	    for (int i = 0; i < value.asArray().size(); i++) {
-		processContextValue(value.value(i), result);
-		value.parent();
-	    }
-	    return;
-
-	} else if (value.isObject()) {
-
-	    if (value.asObject().size() == 1 && value.asObject().isString("@id")) {
-
-		final String id = value.asObject().stringValue("@id");
-
-		if (isAbsoluteURI(id)) {
-		    result.add(id);
-		    return;
-		}
-	    }
-	}
-
-	throw new IllegalArgumentException("Non serializable context detected.");
-    }
-
-    static final boolean isAbsoluteURI(String uri) {
-	try {
-
-	    return URI.create(uri).isAbsolute();
-
-	} catch (IllegalArgumentException e) {
-
-	}
-	return false;
-    }
-
-    static final byte[] toCbor(JsonObjectCursor object) {
-
-	final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    static final byte[] toCbor(JsonObjectCursor object, ByteArrayOutputStream baos) {
 
 	try {
 	    final CborBuilder builder = (CborBuilder) toCbor(object, new CborBuilder().addMap()).end();

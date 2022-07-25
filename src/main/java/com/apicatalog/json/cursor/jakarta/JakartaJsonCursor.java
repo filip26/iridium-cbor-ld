@@ -9,6 +9,7 @@ import com.apicatalog.json.cursor.JsonObjectCursor;
 import com.apicatalog.json.cursor.JsonValueCursor;
 
 import jakarta.json.JsonNumber;
+import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 import jakarta.json.JsonValue.ValueType;
 
@@ -82,26 +83,37 @@ public class JakartaJsonCursor implements JsonCursor {
 
     @Override
     public Boolean booleanValue() {
-	// TODO Auto-generated method stub
-	return null;
+	if (ValueType.TRUE.equals(path[index].getValueType())) {
+	    return Boolean.TRUE;
+	}
+	if (ValueType.FALSE.equals(path[index].getValueType())) {
+	    return Boolean.FALSE;
+	}
+	throw new ClassCastException();
     }
 
     @Override
     public Integer integerValue() {
-	// TODO Auto-generated method stub
-	return null;
+	if (!isNumber()) {
+	    throw new ClassCastException();
+	}
+	return ((JsonNumber)path[index]).intValueExact();
     }
 
     @Override
     public Long longValue() {
-	// TODO Auto-generated method stub
-	return null;
+	if (!isNumber()) {
+	    throw new ClassCastException();
+	}
+	return ((JsonNumber)path[index]).longValueExact();
     }
 
     @Override
     public String stringValue() {
-	// TODO Auto-generated method stub
-	return null;
+	if (!isString()) {
+	    throw new ClassCastException();
+	}
+	return ((JsonString)path[index]).getString();
     }
 
     @Override

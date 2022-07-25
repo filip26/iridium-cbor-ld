@@ -1,6 +1,5 @@
 package com.apicatalog.cborld;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -9,10 +8,13 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
+import com.apicatalog.cbor.CborComparison;
 import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.decoder.DecoderError;
+import com.apicatalog.cborld.encoder.EncoderError;
 import com.apicatalog.json.cursor.JsonObjectCursor;
 import com.apicatalog.json.cursor.jakarta.JakartaJsonCursor;
 import com.apicatalog.jsonld.JsonLdError;
@@ -23,6 +25,9 @@ import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
 import com.apicatalog.jsonld.loader.HttpLoader;
 import com.apicatalog.jsonld.loader.SchemeRouter;
 
+import co.nstant.in.cbor.CborDecoder;
+import co.nstant.in.cbor.CborException;
+import co.nstant.in.cbor.model.DataItem;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonStructure;
@@ -76,8 +81,15 @@ public class CborLdTestRunnerJunit {
         	
         	assertNotNull(expected);
         	assertEquals(CborLdDocument.MEDIA_TYPE, expected.getContentType());
+   	        	
+        	final boolean match = CborComparison.equals(((CborLdDocument)expected).getByteArray(), bytes); 
         	
-        	assertArrayEquals(((CborLdDocument)expected).getByteArray(), bytes);
+        	if (!match) {
+        	    write(testCase, bytes, ((CborLdDocument)expected).getByteArray());
+        	}
+        	
+        	assertTrue(match, "The expected result does not match.");
+
         	
             } else if (testCase.type.contains(CborLdTestSuite.VOCAB + "DecoderTest")) {
 
@@ -98,7 +110,7 @@ public class CborLdTestRunnerJunit {
         	
         	assertNotNull(expected);
         	
-        	final boolean match =JsonLdComparison.equals(expected, result); 
+        	final boolean match = JsonLdComparison.equals(expected, result); 
         	
         	if (!match) {
         	    write(testCase, result, expected);
@@ -150,7 +162,7 @@ public class CborLdTestRunnerJunit {
         final StringWriter stringWriter = new StringWriter();
 
         try (final PrintWriter writer = new PrintWriter(stringWriter)) {
-            writer.println("Test " + testCase.id + ": " + testCase.name);
+            writer.println("Test " + testCase.id.getFragment() + ": " + testCase.name);
 
             final JsonWriterFactory writerFactory = Json.createWriterFactory(Collections.singletonMap(JsonGenerator.PRETTY_PRINTING, true));
 
@@ -167,7 +179,40 @@ public class CborLdTestRunnerJunit {
 
         System.out.println(stringWriter.toString());
     }
+    
+    public static void write(final CborLdTestCase testCase, final byte[] result, final byte[] expected) {
+        final StringWriter stringWriter = new StringWriter();
 
+        try (final PrintWriter writer = new PrintWriter(stringWriter)) {
+            writer.println("Test " + testCase.id.getFragment() + ": " + testCase.name);
+            
+            writer.println("Expected");
+            
+	    List<DataItem> decodedExpected = CborDecoder.decode(expected);
+	    assertNotNull(decodedExpected);
+	    
+            if (decodedExpected != null) {
+                writer.print(decodedExpected.toString());
+                writer.println();
+            }
+            writer.println();
+            
+    	    writer.println("Actual");
+	    List<DataItem> decodedResult = CborDecoder.decode(result);
+	    assertNotNull(decodedResult);
+	    
+            if (decodedResult != null) {
+                writer.print(decodedResult.toString());
+                writer.println();
+            }
+	    	    
+	} catch (CborException e) {	 
+	    //fail(e);
+	}
+        
+        System.out.println(stringWriter.toString());
+    }
+    
     static final void write(final PrintWriter writer, final JsonWriterFactory writerFactory, final String name, final JsonValue result) {
 
         writer.println(name + ":");

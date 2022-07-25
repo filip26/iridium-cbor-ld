@@ -28,6 +28,16 @@
             "name": "plain JSON object",
             "input": "encoder/0002-in.jsonld",
             "expectErrorCode": "InvalidDocument"
+        },
+        {
+            "@id": "#t0020",
+            "@type": [
+                "PositiveEvaluationTest",
+                "EncoderTest"
+            ],
+            "name": "activity streams context",
+            "input": "encoder/0020-in.jsonld",
+            "expect": "encoder/0020-out.cborld"
         }
 	]
 }
