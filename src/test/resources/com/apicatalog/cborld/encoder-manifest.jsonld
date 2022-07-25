@@ -35,9 +35,19 @@
                 "PositiveEvaluationTest",
                 "EncoderTest"
             ],
-            "name": "activity streams context",
+            "name": "@type - activity streams context",
             "input": "encoder/0020-in.jsonld",
             "expect": "encoder/0020-out.cborld"
+        },
+        {
+            "@id": "#t0021",
+            "@type": [
+                "PositiveEvaluationTest",
+                "EncoderTest"
+            ],
+            "name": "@id - activity streams context",
+            "input": "encoder/0021-in.jsonld",
+            "expect": "encoder/0021-out.cborld"
         }
 	]
 }
