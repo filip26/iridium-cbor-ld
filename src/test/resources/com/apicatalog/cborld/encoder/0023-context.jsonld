@@ -1,10 +1,14 @@
 {
-	"@context": {
-		"as": "https://www.w3.org/ns/activitystreams#",
-		"a": "@type",
-		"Note": "as:Note",
-        "x": {
-          "b": "@type"
-        }
+  "@context": {
+	"@vocab": "https://www.w3.org/ns/activitystreams#",
+	"a": "@type",
+	"x": {
+		"@id": "id",
+		"@context": {
+			"@base": "https://www.w3.org/2018/credentials/v1#",
+			"a": "@id",
+			"b": "@type"
+		}
 	}
+  }
 }
