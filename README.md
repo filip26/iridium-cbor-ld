@@ -1,6 +1,7 @@
 # Iridium CBOR-LD
 An implementation of the [CBOR-LD 1.0 Draft](https://digitalbazaar.github.io/cbor-ld-spec/) in Java.
 
+[![Java 11 CI](https://github.com/filip26/iridium-cbor-ld/actions/workflows/java11-build.yml/badge.svg)](https://github.com/filip26/iridium-cbor-ld/actions/workflows/java11-build.yml)
 [![Android (Java 8) CI](https://github.com/filip26/iridium-cbor-ld/actions/workflows/java8-build.yml/badge.svg)](https://github.com/filip26/iridium-cbor-ld/actions/workflows/java8-build.yml)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
