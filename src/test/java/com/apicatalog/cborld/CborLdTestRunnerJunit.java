@@ -123,6 +123,9 @@ public class CborLdTestRunnerJunit {
                 return;
             }
 
+        } catch (CborException e) {
+            fail(e);
+            
         } catch (ContextError e) {
             assertException(e.getCode().name(), e);
 

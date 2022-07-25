@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.document.Document;
@@ -15,18 +16,23 @@ import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
-import jakarta.json.JsonString;
 import jakarta.json.JsonStructure;
 import jakarta.json.JsonValue;
 
 public class CodecTermMap {
 
     final Map<Integer, String> index;
+    final Map<String, Integer> reverse;
 
     int lastCustomIndex;
 
     protected CodecTermMap(Map<Integer, String> index, int lastCustomIndex) {
 	this.index = index;
+	this.reverse = index
+			.entrySet()
+		       	.stream()
+		       	.collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));	
+
 	this.lastCustomIndex = lastCustomIndex;
     }
 
@@ -77,6 +83,7 @@ public class CodecTermMap {
 
     void add(String key) {
 	index.put(lastCustomIndex, key);
+	reverse.put(key,  lastCustomIndex);
 	lastCustomIndex += 2;
     }
 
@@ -120,6 +127,10 @@ public class CodecTermMap {
 
     public String getTerm(int code) {
 	return index.get(code);
+    }
+    
+    public Integer getCode(String term) {
+	return reverse.get(term);
     }
 
 }
