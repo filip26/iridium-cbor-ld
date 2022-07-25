@@ -1,9 +1,12 @@
-package com.apicatalog.cborld.decoder;
+package com.apicatalog.cborld.context;
 
+import java.math.BigInteger;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 
-import com.apicatalog.cborld.decoder.DecoderError.Code;
+import com.apicatalog.cborld.Hex;
+import com.apicatalog.cborld.context.ContextError.Code;
+import com.apicatalog.cborld.dictionary.Dictionary;
 import com.apicatalog.cborld.dictionary.KeywordDictionary;
 
 import co.nstant.in.cbor.model.Array;
@@ -14,15 +17,17 @@ import co.nstant.in.cbor.model.UnsignedInteger;
 
 public class Context {
 
-
-    protected Context() {
+    private final Dictionary dictionary;
+    
+    public Context(final Dictionary dictionary) {
+	this.dictionary = dictionary;
     }
 
-    public static final Collection<String> get(DataItem data) throws DecoderError {
+    public final Collection<String> get(DataItem data) throws ContextError {
 	return get(data, new LinkedHashSet<>());
     }
 
-    static final Collection<String> get(DataItem data, Collection<String> contexts) throws DecoderError {
+    final Collection<String> get(DataItem data, Collection<String> contexts) throws ContextError {
 	
 	if (data == null) {
 	    throw new IllegalArgumentException("The data parameter must not be null.");
@@ -36,22 +41,25 @@ public class Context {
 	    return get(((Array) data).getDataItems(), contexts);
 	    
 	default:
+	    System.out.println("TODO: " + data.getMajorType());
 	    break;
 	}
 	
 	return contexts;
     }
 
-    final static Collection<String> get(final Map map, Collection<String> contexts) throws DecoderError {
+    final Collection<String> get(final Map map, Collection<String> contexts) throws ContextError {
 	
 	if (map == null) {
 	    throw new IllegalArgumentException("The map parameter must not be null.");
 	}
 	
+	
 	for (final DataItem key : map.getKeys()) {
 	    
 	    if (isContextKey(key)) {
-		
+	
+
 		final DataItem value = map.get(key);
 		
 		String contextUrl = null;
@@ -63,9 +71,23 @@ public class Context {
 		    
 		case ARRAY:
 		    //TODO
+		    System.out.println("TODO: " + value.getMajorType());
+		    break;
+		    
+		case UNSIGNED_INTEGER:
+		    
+		    final BigInteger unsigned = ((UnsignedInteger)value).getValue();
+		    
+		    contextUrl = dictionary.getTerm(unsigned.toByteArray());
+		    
+		    if (contextUrl == null) {
+			throw new ContextError(Code.UnknownContextCode, "The code [" + Hex.toString(unsigned.toByteArray()) + "]. Cannot get the context.");
+		    }
+
 		    break;
 		    
 		default:
+		    System.out.println("TODO: " + value.getMajorType());
 		    break;
 		}
 		
@@ -78,7 +100,7 @@ public class Context {
 	return contexts;
     }
 
-    final static Collection<String> get(final Collection<DataItem> items, Collection<String> contexts) throws DecoderError {
+    final Collection<String> get(final Collection<DataItem> items, Collection<String> contexts) throws ContextError {
 	
 	if (items == null) {
 	    throw new IllegalArgumentException("The items parameter must not be null.");
@@ -91,7 +113,7 @@ public class Context {
 	return contexts;
     }
     
-    final static boolean isContextKey(final DataItem data) throws DecoderError {
+    final static boolean isContextKey(final DataItem data) throws ContextError {
 	
 	if (data == null) {
 	    throw new IllegalArgumentException("The data parameter must not be null.");
@@ -109,7 +131,7 @@ public class Context {
 	    break;
 	    
 	default:
-    	    throw new DecoderError(Code.Unsupported, "A property name of type [" + data.getMajorType() +"] is not supported.");
+    	    throw new ContextError(Code.Unsupported, "A property name of type [" + data.getMajorType() +"] is not supported.");
 	}
 	
 	return code != null && code.length == 1 && KeywordDictionary.CONTEXT_CODE == code[0]; 

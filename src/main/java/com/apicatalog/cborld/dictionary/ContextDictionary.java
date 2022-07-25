@@ -68,4 +68,8 @@ public class ContextDictionary implements Dictionary {
 	}
 	return TERMS[code[0] - OFFSET];
     }
+    
+    public String getTerm(Integer code) {
+	return TERMS[code - OFFSET];
+    }
 }

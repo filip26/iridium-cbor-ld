@@ -11,6 +11,7 @@ import java.io.StringWriter;
 import java.util.Collections;
 import java.util.Objects;
 
+import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.decoder.DecoderError;
 import com.apicatalog.json.cursor.JsonObjectCursor;
 import com.apicatalog.json.cursor.jakarta.JakartaJsonCursor;
@@ -110,23 +111,14 @@ public class CborLdTestRunnerJunit {
                 return;
             }
 
+        } catch (ContextError e) {
+            assertException(e.getCode().name(), e);
+
         } catch (EncoderError e) {
+            assertException(e.getCode().name(), e);
             
-            if (testCase.type.stream().noneMatch(o -> o.endsWith("NegativeEvaluationTest"))) {
-                fail("Unexpected error code [" + e.getCode() + "].");
-                return;
-            }
-
-            assertEquals(testCase.result.toASCIIString(), e.getCode().name(), "Expected error code does not match");
-
         } catch (DecoderError e) {
-            
-            if (testCase.type.stream().noneMatch(o -> o.endsWith("NegativeEvaluationTest"))) {
-                fail("Unexpected error code [" + e.getCode() + "]. " + e.getMessage());
-                return;
-            }
-
-            assertEquals(testCase.result.toASCIIString(), e.getCode().name(), "Expected error code does not match");
+            assertException(e.getCode().name(), e);
              
         } catch (JsonLdError e) {
             e.printStackTrace();
@@ -138,16 +130,16 @@ public class CborLdTestRunnerJunit {
 
         if (!isNegative()) {
             e.printStackTrace();
-            fail(e);
+            fail("Unexpected error code [" + code + "]. " + e.getMessage());
             return;
         }
 
-        if (!Objects.equals(testCase.result, code)) {
-            e.printStackTrace();
-        }
-
         // compare expected exception
-        assertEquals(testCase.result, code);
+        if (!Objects.equals(testCase.result.toASCIIString(), code)) {
+            e.printStackTrace();
+            fail("Expected error code [" + testCase.result.toASCIIString() +"] does not match [" + code + "].");
+            return;
+        }
     }
 
     final boolean isNegative() {

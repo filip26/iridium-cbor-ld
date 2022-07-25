@@ -88,6 +88,16 @@
             "name": "compress able context with @type = @id",
             "input": "decoder/0008-in.cborld",
             "expect": "decoder/0008-out.jsonld"
+        },
+        {
+            "@id": "#t0020",
+            "@type": [
+                "PositiveEvaluationTest",
+                "DecoderTest"
+            ],
+            "name": "activity streams context",
+            "input": "decoder/0020-in.cborld",
+            "expect": "decoder/0020-out.jsonld"
         }
 	]
 }

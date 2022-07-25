@@ -7,8 +7,13 @@ import java.util.List;
 
 import com.apicatalog.cborld.CborLd;
 import com.apicatalog.cborld.Hex;
+import com.apicatalog.cborld.context.Context;
+import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.decoder.DecoderError.Code;
 import com.apicatalog.cborld.dictionary.CodecTermMap;
+import com.apicatalog.cborld.dictionary.ContextDictionary;
+import com.apicatalog.cborld.dictionary.Dictionary;
+import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 
 import co.nstant.in.cbor.CborDecoder;
@@ -21,7 +26,6 @@ import co.nstant.in.cbor.model.UnsignedInteger;
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
-import jakarta.json.JsonNumber;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonString;
@@ -34,11 +38,13 @@ public class Decoder {
     protected final DocumentLoader loader;
     
     protected CodecTermMap index;
+    protected Dictionary contexts;
     
     protected Decoder(byte[] encoded, boolean compressed, final DocumentLoader loader) {
 	this.encoded = encoded;
 	this.compressed = compressed;
 	this.loader = loader;
+	this.contexts = new ContextDictionary();	//FIXME
     }
 
     public static final Decoder create(byte[] encodedDocument, DocumentLoader loader) throws DecoderError {
@@ -70,15 +76,15 @@ public class Decoder {
 			+ Hex.toString(encodedDocument[2]) + "].");
     }
 
-    public JsonValue decode() throws DecoderError {
+    public JsonValue decode() throws DecoderError, ContextError {
 	if (compressed) {
 	    return decodeCompressed();
 	}
 	return decodeUncompressed();
     }
 
-    final JsonValue decodeCompressed() throws DecoderError {
-
+    final JsonValue decodeCompressed() throws DecoderError, ContextError {
+	
 	try {
 	    final ByteArrayInputStream bais = new ByteArrayInputStream(encoded);
 	    final List<DataItem> dataItems = new CborDecoder(bais).decode();
@@ -94,29 +100,29 @@ public class Decoder {
 		final JsonArrayBuilder builder = Json.createArrayBuilder();
 		
 		for (final DataItem item : dataItems) {
-		    builder.add(decodeCompressed(item));
+		    builder.add(decodeCompressed(item, null));
 		}
 
 		return builder.build();
 	    }
 	    
-	    return decodeCompressed(dataItems.iterator().next());
+	    return decodeCompressed(dataItems.iterator().next(), null);
 
 	} catch (final CborException e) {
 	    throw new DecoderError(Code.InvalidDocument, e);
 	}
     }
 
-    final JsonValue decodeCompressed(final DataItem data) throws DecoderError {
+    final JsonValue decodeCompressed(final DataItem data, final String key) throws DecoderError, ContextError {
 	    
-	Collection<String> contextUrls = Context.get(data);
+	Collection<String> contextUrls = (new Context(new ContextDictionary())).get(data);
 	    
 	this.index = CodecTermMap.from(contextUrls, loader);
 
-	return decodeData(data);
+	return decodeData(data, key);
     }
 
-    final JsonValue decodeData(final DataItem data) throws DecoderError {
+    final JsonValue decodeData(final DataItem data, final String key) throws DecoderError {
 	
 	if (data == null) {
 	    throw new IllegalArgumentException("The data parameter must not be null.");
@@ -127,13 +133,13 @@ public class Decoder {
 	    return decodeMap((Map) data);
 	
 	case ARRAY:
-	    return decodeArray(((Array) data).getDataItems());
+	    return decodeArray(((Array) data).getDataItems(), key);
 	    
 	case UNICODE_STRING:
-	    return decodeString((UnicodeString) data);
+	    return decodeString((UnicodeString) data, key);
 
 	case UNSIGNED_INTEGER:
-	    return decodeNumber(((UnsignedInteger)data).getValue());
+	    return decodeNumber(((UnsignedInteger)data).getValue(), key);
 	    
 	default:
 	    throw new IllegalStateException("An unexpected data item type [" + data.getMajorType() + "].");
@@ -154,13 +160,13 @@ public class Decoder {
 	
 	for (final DataItem key : map.getKeys()) {
 	    
-	    builder.add(decodeKey(key), decodeData(map.get(key)));
+	    builder.add(decodeKey(key), decodeData(map.get(key), decodeKey(key)));
 	}
 	
 	return builder.build();
     }
 
-    final JsonArray decodeArray(final Collection<DataItem> items) throws DecoderError {
+    final JsonArray decodeArray(final Collection<DataItem> items, String key) throws DecoderError {
 	
 	if (items == null) {
 	    throw new IllegalArgumentException("The items parameter must not be null.");
@@ -173,7 +179,7 @@ public class Decoder {
 	final JsonArrayBuilder builder = Json.createArrayBuilder();
 	
 	for (final DataItem item : items) {
-	    builder.add(decodeData(item));
+	    builder.add(decodeData(item, key));
 	}
 	
 	return builder.build();
@@ -210,7 +216,7 @@ public class Decoder {
 	return result != null ? result : key.toString();
     }
 
-    final JsonString decodeString(final UnicodeString string) {
+    final JsonString decodeString(final UnicodeString string, final String key) {
 
 	if (string == null) {
 	    throw new IllegalArgumentException("The string parameter must not be null.");
@@ -219,11 +225,29 @@ public class Decoder {
 	return Json.createValue(string.getString());
     }
 
-    final JsonNumber decodeNumber(final BigInteger number) {
+    final JsonValue decodeNumber(final BigInteger number, String key) {
 
 	if (number == null) {
 	    throw new IllegalArgumentException("The number parameter must not be null.");
 	}
+
+	if (Keywords.CONTEXT.equals(key)) {
+	    final String context  = contexts.getTerm(number.toByteArray());
+	    if (context != null) {
+		return Json.createValue(context);
+	    } else {
+		//TODO throw something
+	    }
+	}
+	
+	//TODO dirty hack - the input should be expanded but CBOR-LD ...
+	if ("type".equals(key)) {        	
+	    String term = index.getTerm(number.intValueExact());
+    	    if (term != null) {
+    		return Json.createValue(term);
+    	    }
+	}
+	
 	//TODO
 	return Json.createValue(number);
     }
