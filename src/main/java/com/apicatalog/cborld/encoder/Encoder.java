@@ -148,16 +148,14 @@ public class Encoder {
 		    }
 		}
 		
-		//TODO dirty hack - the input should be expanded but CBOR-LD ...
-		if (Keywords.TYPE.equals(property) || "type".equals(property)) {        	
+		if (index.isType(property)) {
 		    final Integer code = index.getCode(object.stringValue(property));
 		    
 	    	    if (code != null) {
 			flow = flow.put(key, new UnsignedInteger(code));
 			continue;
-	    	    }
+	    	    }		    
 		}
-
 		
 		flow = flow.put(key, new UnicodeString(object.stringValue(property)));
 		

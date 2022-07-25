@@ -1,7 +1,7 @@
 {
-  "@context": {
-    "as": "https://www.w3.org/ns/activitystreams#",
-    "a": "@type",
-    "Note": "as:Note"
-  }
+	"@context": {
+		"as": "https://www.w3.org/ns/activitystreams#",
+		"a": "@type",
+		"Note": "as:Note"
+	}
 }

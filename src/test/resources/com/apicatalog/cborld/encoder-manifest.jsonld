@@ -48,6 +48,16 @@
             "name": "@id - activity streams context",
             "input": "encoder/0021-in.jsonld",
             "expect": "encoder/0021-out.cborld"
-        }
+        },
+        {
+            "@id": "#t0022",
+            "@type": [
+                "PositiveEvaluationTest",
+                "EncoderTest"
+            ],
+            "name": "@type - custom context",
+            "input": "encoder/0022-in.jsonld",
+            "expect": "encoder/0022-out.cborld"
+        }        
 	]
 }
