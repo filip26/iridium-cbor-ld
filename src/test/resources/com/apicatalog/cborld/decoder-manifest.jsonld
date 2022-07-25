@@ -118,6 +118,16 @@
             "name": "@type - custom context",
             "input": "decoder/0022-in.cborld",
             "expect": "decoder/0022-out.jsonld"
+        },
+        {
+            "@id": "#t0023",
+            "@type": [
+                "PositiveEvaluationTest",
+                "DecoderTest"
+            ],
+            "name": "scoped context test",
+            "input": "decoder/0023-in.cborld",
+            "expect": "decoder/0023-out.jsonld"
         }        
 	]
 }
