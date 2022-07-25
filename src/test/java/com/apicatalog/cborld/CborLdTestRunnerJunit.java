@@ -42,7 +42,7 @@ public class CborLdTestRunnerJunit {
 
     public final static DocumentLoader LOADER =
             new UriBaseRewriter(
-                    CborLdTestSuite.BASE,
+                    CborLdTest.BASE,
                     "classpath:",
                     new SchemeRouter()
                     .set("http", HttpLoader.defaultInstance())
@@ -60,7 +60,7 @@ public class CborLdTestRunnerJunit {
         assertNotNull(testCase.input);
 
         try {
-            if (testCase.type.contains(CborLdTestSuite.VOCAB + "EncoderTest")) {
+            if (testCase.type.contains(CborLdTest.VOCAB + "EncoderTest")) {
 
         	Document document = LOADER.loadDocument(testCase.input, new DocumentLoaderOptions());
         	
@@ -91,7 +91,7 @@ public class CborLdTestRunnerJunit {
         	assertTrue(match, "The expected result does not match.");
 
         	
-            } else if (testCase.type.contains(CborLdTestSuite.VOCAB + "DecoderTest")) {
+            } else if (testCase.type.contains(CborLdTest.VOCAB + "DecoderTest")) {
 
         	Document document = LOADER.loadDocument(testCase.input, new DocumentLoaderOptions());
 

@@ -20,7 +20,7 @@ import jakarta.json.JsonValue;
 
 @DisplayName("CBOR-LD Test Suite")
 @TestMethodOrder(OrderAnnotation.class)
-class CborLdTestSuite {
+class CborLdTest {
 
     static final String BASE = "https://github.com/filip26/iridum-cbor-ld/";
     static final String VOCAB = "https://github.com/filip26/iridium-cbor-ld/tests/vocab#";
@@ -51,7 +51,7 @@ class CborLdTestSuite {
 
     static final Stream<CborLdTestCase> manifest(String name) throws JsonLdError, IOException {
 
-        try (final InputStream is = CborLdTestSuite.class.getResourceAsStream(name)) {
+        try (final InputStream is = CborLdTest.class.getResourceAsStream(name)) {
 
             final JsonObject manifest = JsonLd.expand(JsonDocument.of(is))
                         .base(BASE)
