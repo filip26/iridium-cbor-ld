@@ -1,5 +1,6 @@
 package com.apicatalog.cborld.dictionary;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -58,9 +59,7 @@ public class CodecTermMap {
 	    
 	    Map<Integer, ActiveContext> properyContexts = new HashMap<>();
 	        
-	    System.out.println(activeContext.getTerms());
-
-	    return add(activeContext,
+	    return add(activeContext, properyContexts,
 			new CodecTermMap(
 				new LinkedHashMap<>(KeywordDictionary.CODE_TO_TERM),
 				activeContext,
@@ -76,14 +75,32 @@ public class CodecTermMap {
 
     }
 
-    final static CodecTermMap add(final ActiveContext activeContext, final CodecTermMap map) throws JsonLdError {
-	System.out.println(activeContext.getTerms());
-	activeContext.getTerms().stream().sorted().forEach(map::add);
+    final static CodecTermMap add(final ActiveContext activeContext, Map<Integer, ActiveContext> propertyContexts, final CodecTermMap map) throws JsonLdError {
+
+	System.out.println(Arrays.toString(activeContext.getTerms().stream().sorted().toArray(String[]::new)) + "  " +  map.reverse.entrySet());
+	
 		
+	String[] sorted = activeContext.getTerms().stream().sorted().toArray(String[]::new);
+	
+	Arrays.stream(sorted).forEach(map::add);
+	
 	// scoped contexts
-	for (final TermDefinition def : activeContext.getTermsMapping().values()) {
+	for (final String key : sorted) {
+
+	    final TermDefinition def = activeContext.getTerm(key).orElseThrow(IllegalStateException::new);
 	    
 	    if (def.hasLocalContext()) {
+		
+		propertyContexts.put(def.hashCode(),
+			//new ActiveContext(activeContext.getOptions())
+			activeContext
+			.newContext()
+			.create(
+				def.getLocalContext(),
+	                        def.getBaseUrl()
+				));
+			
+		
 		add(
 		new ActiveContext(activeContext.getOptions())
 			.newContext()
@@ -91,6 +108,7 @@ public class CodecTermMap {
 				def.getLocalContext(),
 	                        def.getBaseUrl()
 				),
+			propertyContexts,
 			map
 			);
 	    }
@@ -117,7 +135,7 @@ public class CodecTermMap {
     }
 
     public TermDefinition getDefinition(String term) {
-	System.out.println("GET " + term + " -> " + context.getTerm(term).orElse(null));
+	System.out.println("GET R " + term + " -> " + context.getTerm(term).orElse(null));
 	return context.getTerm(term).orElse(null);
     }
     
@@ -129,6 +147,7 @@ public class CodecTermMap {
 	
 	ActiveContext activeContext = properyContexts.get(parent.hashCode());
 	if (activeContext != null) {
+	    System.out.println("GET S " + term + " -> " + activeContext.getTerm(term).orElse(null));
 	    return activeContext.getTerm(term).orElse(null);
 	}
 	return null;

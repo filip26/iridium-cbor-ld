@@ -4,7 +4,6 @@
         "y": {
             "@id": "idy",
             "@context": {
-                "a": "@type",
                 "b": "@id",
                 "c": "longitude"
             }

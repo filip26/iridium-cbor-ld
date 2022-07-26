@@ -168,13 +168,23 @@ public class Encoder {
 				continue;
 		    	    }		    
 	    
+		    } else if (Keywords.ID.equals(_def.getUriMapping())) {
+			    final Integer code = index.getCode(object.stringValue(property));
+			    
+		    	    if (code != null) {
+				flow = flow.put(key, new UnsignedInteger(code));
+				continue;
+		    	    }		    
+	    
 		    }
+
 		}
 		
 		flow = flow.put(key, new UnicodeString(object.stringValue(property)));
 		
 	    } else if (object.isNumber(property)) {
 		//TODO
+		flow = flow.put(key, new UnsignedInteger(object.integerValue(property)));
 	    }
 	}
 	return flow;
@@ -201,6 +211,7 @@ public class Encoder {
 		flow = flow.add(object.stringValue(i));
 		
 	    } else if (object.isNumber(i)) {
+//		flow = flow.add(object.)
 		//TODO
 	    }
 	}
