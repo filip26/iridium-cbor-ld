@@ -44,11 +44,13 @@ public class CborLdTestRunnerJunit {
             new UriBaseRewriter(
                     CborLdTest.BASE,
                     "classpath:",
-                    new SchemeRouter()
-                    .set("http", HttpLoader.defaultInstance())
-                    .set("https", HttpLoader.defaultInstance())
-                    .set("classpath", new ClasspathLoader())
-                );
+                    new UriBaseRewriter("https://raw.githubusercontent.com/filip26/iridium-cbor-ld/main/src/test/resources/com/apicatalog/cborld/", 
+                	    "classpath:", 
+                	    new SchemeRouter()
+                	    	.set("http", HttpLoader.defaultInstance())
+            	    		.set("https", HttpLoader.defaultInstance())
+            	    		.set("classpath", new ClasspathLoader())
+                	    ));
 
     public CborLdTestRunnerJunit(CborLdTestCase testCase) {
         this.testCase = testCase;
@@ -68,7 +70,7 @@ public class CborLdTestRunnerJunit {
         	
         	JsonObjectCursor cursor = new JakartaJsonCursor(object, 100);
         	
-        	byte[] bytes = CborLd.encoder(cursor).encode();
+        	byte[] bytes = CborLd.encoder(cursor, LOADER).encode();
 
                 if (testCase.type.stream().noneMatch(o -> o.endsWith("PositiveEvaluationTest"))) {
                     fail("Expected error code [" + testCase.result + "].");
@@ -97,7 +99,7 @@ public class CborLdTestRunnerJunit {
 
         	assertNotNull(document);
         	
-        	JsonValue result = CborLd.decoder(((CborLdDocument)document).getByteArray()).decode();
+        	JsonValue result = CborLd.decoder(((CborLdDocument)document).getByteArray(), LOADER).decode();
 
                 if (testCase.type.stream().noneMatch(o -> o.endsWith("PositiveEvaluationTest"))) {
                     fail("Expected error code [" + testCase.result + "].");

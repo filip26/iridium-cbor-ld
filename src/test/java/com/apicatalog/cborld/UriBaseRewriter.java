@@ -45,6 +45,7 @@ public final class UriBaseRewriter implements DocumentLoader {
             final String remoteRelativePath = remoteDocument.getDocumentUrl().toString().substring(targetBase.length());
             remoteDocument.setDocumentUrl(URI.create(sourceBase + remoteRelativePath));
         }
+
         return remoteDocument;
     }
 }
