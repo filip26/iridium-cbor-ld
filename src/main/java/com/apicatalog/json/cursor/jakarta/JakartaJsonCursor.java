@@ -9,6 +9,7 @@ import com.apicatalog.json.cursor.JsonObjectCursor;
 import com.apicatalog.json.cursor.JsonValueCursor;
 
 import jakarta.json.JsonNumber;
+import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 import jakarta.json.JsonValue.ValueType;
@@ -261,36 +262,36 @@ public class JakartaJsonCursor implements JsonCursor {
     }
 
     @Override
-    public JsonArrayCursor array(int index) {
-	if (!isArray(index)) {
+    public JsonArrayCursor array(int _index) {
+	if (!isArray(_index)) {
 	    throw new IllegalArgumentException();
 	}
 
-	path[index + 1] = path[index].asJsonArray().get(index);  
+	path[index + 1] = path[index].asJsonArray().get(_index);  
 	index++;
 
 	return this;
     }
 
     @Override
-    public JsonObjectCursor object(int index) {
-	if (!isObject(index)) {
+    public JsonObjectCursor object(int _index) {
+	if (!isObject(_index)) {
 	    throw new IllegalArgumentException();
 	}
 
-	path[index + 1] = path[index].asJsonArray().get(index);  
+	path[index + 1] = path[index].asJsonArray().get(_index);  
 	index++;
 
 	return this;
     }
 
     @Override
-    public JsonCursor value(int index) {
+    public JsonCursor value(int _index) {
 	if (!isArray()) {
 	    throw new IllegalArgumentException();
 	}
 
-	path[index + 1] = path[index].asJsonArray().get(index);  
+	path[index + 1] = path[index].asJsonArray().get(_index);  
 	index++;
 
 	return this;
@@ -471,5 +472,24 @@ public class JakartaJsonCursor implements JsonCursor {
     public JsonCursor reset() {
 	index = 0;
 	return this;
-    }    
+    }
+    
+    //TODO hack remove
+   @Override
+   public JsonObject asJsonObject() {
+       return path[index].asJsonObject();
+   }
+   
+   @Override
+   public String toString() {
+       return new StringBuilder()
+	       .append(JakartaJsonCursor.class.getSimpleName())
+	       .append('[')
+	       .append("index=")
+	       .append(index)
+	       .append(", value=")
+	       .append(path[index])
+	       .append(']')
+	       .toString();
+   }
 }

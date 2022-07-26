@@ -2,6 +2,8 @@ package com.apicatalog.json.cursor;
 
 import java.util.Collection;
 
+import jakarta.json.JsonObject;
+
 public interface JsonObjectCursor extends JsonValueCursor {
 
     Collection<String> properies();
@@ -41,4 +43,7 @@ public interface JsonObjectCursor extends JsonValueCursor {
     JsonObjectCursor object(String property);
 
     JsonCursor value(String property);
+    
+    //TODO hack, remove
+    JsonObject asJsonObject();
 }

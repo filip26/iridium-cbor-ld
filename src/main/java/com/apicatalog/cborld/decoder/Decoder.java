@@ -13,6 +13,7 @@ import com.apicatalog.cborld.decoder.DecoderError.Code;
 import com.apicatalog.cborld.dictionary.CodecTermMap;
 import com.apicatalog.cborld.dictionary.ContextDictionary;
 import com.apicatalog.cborld.dictionary.Dictionary;
+import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 
@@ -100,29 +101,29 @@ public class Decoder {
 		final JsonArrayBuilder builder = Json.createArrayBuilder();
 		
 		for (final DataItem item : dataItems) {
-		    builder.add(decodeCompressed(item, null));
+		    builder.add(decodeCompressed(item));
 		}
 
 		return builder.build();
 	    }
 	    
-	    return decodeCompressed(dataItems.iterator().next(), null);
+	    return decodeCompressed(dataItems.iterator().next());
 
 	} catch (final CborException e) {
 	    throw new DecoderError(Code.InvalidDocument, e);
 	}
     }
 
-    final JsonValue decodeCompressed(final DataItem data, final String key) throws DecoderError, ContextError {
+    final JsonValue decodeCompressed(final DataItem data) throws DecoderError, ContextError {
 	    
 	Collection<String> contextUrls = (new Context(new ContextDictionary())).get(data);
 	    
 	this.index = CodecTermMap.from(contextUrls, loader);
 
-	return decodeData(data, key);
+	return decodeData(data, null, null);
     }
 
-    final JsonValue decodeData(final DataItem data, final String key) throws DecoderError {
+    final JsonValue decodeData(final DataItem data, final String key, TermDefinition def) throws DecoderError {
 	
 	if (data == null) {
 	    throw new IllegalArgumentException("The data parameter must not be null.");
@@ -130,23 +131,23 @@ public class Decoder {
 
 	switch (data.getMajorType()) {
 	case MAP:
-	    return decodeMap((Map) data);
+	    return decodeMap((Map) data, def);
 	
 	case ARRAY:
-	    return decodeArray(((Array) data).getDataItems(), key);
+	    return decodeArray(((Array) data).getDataItems(), key, def);
 	    
 	case UNICODE_STRING:
 	    return decodeString((UnicodeString) data, key);
 
 	case UNSIGNED_INTEGER:
-	    return decodeNumber(((UnsignedInteger)data).getValue(), key);
+	    return decodeNumber(((UnsignedInteger)data).getValue(), key, def);
 	    
 	default:
 	    throw new IllegalStateException("An unexpected data item type [" + data.getMajorType() + "].");
 	}
     }
 
-    final JsonObject decodeMap(final Map map) throws DecoderError {
+    final JsonObject decodeMap(final Map map, TermDefinition def) throws DecoderError {
 	
 	if (map == null) {
 	    throw new IllegalArgumentException("The map parameter must not be null.");
@@ -160,13 +161,13 @@ public class Decoder {
 	
 	for (final DataItem key : map.getKeys()) {
 	    
-	    builder.add(decodeKey(key), decodeData(map.get(key), decodeKey(key)));
+	    builder.add(decodeKey(key), decodeData(map.get(key), decodeKey(key), index.getDefinition(def, decodeKey(key))));
 	}
 	
 	return builder.build();
     }
 
-    final JsonArray decodeArray(final Collection<DataItem> items, String key) throws DecoderError {
+    final JsonArray decodeArray(final Collection<DataItem> items, String key, TermDefinition def) throws DecoderError {
 	
 	if (items == null) {
 	    throw new IllegalArgumentException("The items parameter must not be null.");
@@ -179,7 +180,7 @@ public class Decoder {
 	final JsonArrayBuilder builder = Json.createArrayBuilder();
 	
 	for (final DataItem item : items) {
-	    builder.add(decodeData(item, key));
+	    builder.add(decodeData(item, key, def));
 	}
 	
 	return builder.build();
@@ -225,12 +226,13 @@ public class Decoder {
 	return Json.createValue(string.getString());
     }
 
-    final JsonValue decodeNumber(final BigInteger number, String key) {
+    final JsonValue decodeNumber(final BigInteger number, String key, TermDefinition def) {
 
 	if (number == null) {
 	    throw new IllegalArgumentException("The number parameter must not be null.");
 	}
 
+	
 	if (Keywords.CONTEXT.equals(key)) {
 	    final String context  = contexts.getTerm(number.toByteArray());
 	    if (context != null) {
@@ -239,14 +241,15 @@ public class Decoder {
 		//TODO throw something
 	    }
 	}
-	
-	if (index.isType(key)) {
-	    String term = index.getTerm(number.intValueExact());
-    	    if (term != null) {
-    		return Json.createValue(term);
-    	    }	    
-	}	
-
+	if (def != null) {
+	    if (Keywords.TYPE.equals(def.getUriMapping())) {
+    	    	String term = index.getTerm(number.intValueExact());
+        	    if (term != null) {
+        		return Json.createValue(term);
+        	    }	    
+	    }
+	}
+    
 	//TODO
 	return Json.createValue(number);
     }

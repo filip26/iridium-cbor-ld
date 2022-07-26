@@ -1,0 +1,7 @@
+{
+	"@context": {
+		"a": "@type",
+		"b": "@id",
+		"c": "longitude"
+	}
+}

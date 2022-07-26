@@ -7,12 +7,14 @@ import java.util.Collection;
 
 import com.apicatalog.cborld.CborLd;
 import com.apicatalog.cborld.context.Context;
+import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.dictionary.CodecTermMap;
 import com.apicatalog.cborld.dictionary.ContextDictionary;
 import com.apicatalog.cborld.dictionary.Dictionary;
 import com.apicatalog.cborld.encoder.EncoderError.Code;
 import com.apicatalog.json.cursor.JsonArrayCursor;
 import com.apicatalog.json.cursor.JsonObjectCursor;
+import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 
@@ -49,25 +51,25 @@ public class Encoder {
 	return new Encoder(document, loader);
     }
     
-    public byte[] encode() throws EncoderError {
+    public byte[] encode() throws EncoderError, ContextError {
 
 	try {
-
+	    
 	    final Collection<String> contexts = new Context(new ContextDictionary()).get(document);	//FIXME dictionary
 
 	    if (contexts.isEmpty()) { // is not JSON-LD document
 		throw new EncoderError(Code.InvalidDocument, "Not a valid JSON-LD document in a compacted form.");
 	    }
-
+	    
 	    return compress(document, contexts);
 
 	} catch (IOException e) {
 	    e.printStackTrace();
 
+	    // non compressable context
 	} catch (IllegalArgumentException e) {
 	    e.printStackTrace();
 
-	    // non compressable context
 	}
 
 	return null;
@@ -86,8 +88,9 @@ public class Encoder {
      * @return the compressed document as byte array
      * 
      * @throws IOException
+     * @throws ContextError 
      */
-    final byte[] compress(final JsonObjectCursor document, Collection<String> contextUrls) throws IOException {
+    final byte[] compress(final JsonObjectCursor document, Collection<String> contextUrls) throws IOException, ContextError {
 
 	// 1.
 	final ByteArrayOutputStream result = new ByteArrayOutputStream();
@@ -105,7 +108,7 @@ public class Encoder {
     final byte[] toCbor(JsonObjectCursor object, ByteArrayOutputStream baos) {
 
 	try {
-	    final CborBuilder builder = (CborBuilder) toCbor(object, new CborBuilder().addMap()).end();
+	    final CborBuilder builder = (CborBuilder) toCbor(object, new CborBuilder().addMap(), null).end();
 
 	    new CborEncoder(baos).encode(builder.build());
 
@@ -116,7 +119,7 @@ public class Encoder {
 	return baos.toByteArray();
     }
 
-    final MapBuilder<?> toCbor(final JsonObjectCursor object, final MapBuilder<?> builder) {
+    final MapBuilder<?> toCbor(final JsonObjectCursor object, final MapBuilder<?> builder, TermDefinition def) {
 	
 	MapBuilder<?> flow = builder;
 
@@ -129,10 +132,16 @@ public class Encoder {
 		    			: new UnicodeString(property);
 
 	    if (object.isObject(property)) {
-		flow = (MapBuilder<?>) toCbor(object.object(property), flow.putMap(key)).end();
+		flow = (MapBuilder<?>) toCbor(object.object(property), flow.putMap(key),
+			index.getDefinition(def, property)
+			).end();
+		object.parent();
 
 	    } else if (object.isArray(property)) {		
-		flow = (MapBuilder<?>) toCbor(object.array(property), flow.putArray(key)).end();
+		flow = (MapBuilder<?>) toCbor(object.array(property), flow.putArray(key), 
+			index.getDefinition(def, property)
+			).end();
+		object.parent();
 
 	    } else if (object.isBoolean(property)) {
 		flow = flow.put(key, object.booleanValue(property) ? SimpleValue.TRUE : SimpleValue.FALSE);
@@ -148,13 +157,18 @@ public class Encoder {
 		    }
 		}
 		
-		if (index.isType(property)) {
-		    final Integer code = index.getCode(object.stringValue(property));
-		    
-	    	    if (code != null) {
-			flow = flow.put(key, new UnsignedInteger(code));
-			continue;
-	    	    }		    
+		TermDefinition _def = index.getDefinition(def, property);
+//		System.out.println(property + " -> " + def + ", " + index.getTerms());
+		if (_def != null) {
+		    if (Keywords.TYPE.equals(_def.getUriMapping())) {
+			    final Integer code = index.getCode(object.stringValue(property));
+			    
+		    	    if (code != null) {
+				flow = flow.put(key, new UnsignedInteger(code));
+				continue;
+		    	    }		    
+	    
+		    }
 		}
 		
 		flow = flow.put(key, new UnicodeString(object.stringValue(property)));
@@ -166,17 +180,19 @@ public class Encoder {
 	return flow;
     }
 
-    final ArrayBuilder<?> toCbor(final JsonArrayCursor object, final ArrayBuilder<?> builder) {
-	
+    final ArrayBuilder<?> toCbor(final JsonArrayCursor object, final ArrayBuilder<?> builder, TermDefinition def) {
+
 	ArrayBuilder<?> flow = builder;
 
 	for (int i = 0; i < object.size(); i++) {
 
 	    if (object.isObject(i)) {
-		flow = (ArrayBuilder<?>) toCbor(object.object(i), flow.startMap()).end();
+		flow = (ArrayBuilder<?>) toCbor(object.object(i), flow.startMap(), def).end();
+		object.parent();
 
 	    } else if (object.isArray(i)) {		
-		flow = (ArrayBuilder<?>) toCbor(object.array(i), flow.startArray()).end();
+		flow = (ArrayBuilder<?>) toCbor(object.array(i), flow.startArray(), def).end();
+		object.parent();
 
 	    } else if (object.isBoolean(i)) {
 		flow = flow.add(object.booleanValue(i));

@@ -1,146 +1,111 @@
 package com.apicatalog.cborld.dictionary;
 
-import java.net.URI;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.apicatalog.cborld.context.ContextError;
+import com.apicatalog.cborld.context.ContextError.Code;
 import com.apicatalog.jsonld.JsonLdError;
-import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.json.JsonUtils;
+import com.apicatalog.jsonld.JsonLdOptions;
+import com.apicatalog.jsonld.context.ActiveContext;
+import com.apicatalog.jsonld.context.ActiveContextBuilder;
+import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.DocumentLoader;
-import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
 
-import jakarta.json.JsonArray;
-import jakarta.json.JsonObject;
-import jakarta.json.JsonString;
-import jakarta.json.JsonStructure;
-import jakarta.json.JsonValue;
+import jakarta.json.Json;
+import jakarta.json.JsonArrayBuilder;
 
 public class CodecTermMap {
 
     final Map<Integer, String> index;
     final Map<String, Integer> reverse;
     
-    final Collection<String> types;
+    final ActiveContext context;
+    final Map<Integer, ActiveContext> properyContexts;
 
     int lastCustomIndex;
 
-    protected CodecTermMap(Map<Integer, String> index, Collection<String> types, int lastCustomIndex) {
+    protected CodecTermMap(Map<Integer, String> index, ActiveContext context, Map<Integer, ActiveContext> properyContexts, int lastCustomIndex) {
 	this.index = index;
 	this.reverse = index
 			.entrySet()
 		       	.stream()
 		       	.collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));	
 
-	this.types = types;
+	this.context = context;
+	this.properyContexts = properyContexts;
 	
 	this.lastCustomIndex = lastCustomIndex;
     }
 
-    public static CodecTermMap from(Collection<String> contextUrls, DocumentLoader loader) {
+    public static CodecTermMap from(Collection<String> contextUrls, DocumentLoader loader) throws ContextError {
 
-	Map<String, String> result = new HashMap<>();
-	Set<String> types = new HashSet<>();
+	try {	
+	    final JsonLdOptions options = new JsonLdOptions();
+	    options.setDocumentLoader(loader);
+	    
+	    ActiveContext activeContext = new ActiveContext(options);
+	    
+	    JsonArrayBuilder bb = Json.createArrayBuilder();
+	    contextUrls.forEach(bb::add);
+//	    System.out.println(activeContext);
+//	    System.out.println(" >>> " + bb.build() + ", " + bb.build());
+	    activeContext = ActiveContextBuilder.with(activeContext).create(bb.build(), null);
+	    
+	    Map<Integer, ActiveContext> properyContexts = new HashMap<>();
+	        
+	    System.out.println(activeContext.getTerms());
 
-	try {
-	    for (final String contextUrl : contextUrls) {
-
-		Document document = loader.loadDocument(URI.create(contextUrl), new DocumentLoaderOptions());
-
-		if (document == null) {
-		    // TODO warning
-		    continue;
-		}
-		if (!document.getJsonContent().isPresent()) {
-		    // TODO warning
-		    continue;
-		}
-
-		JsonStructure context = document.getJsonContent().get();
-
-		if (JsonUtils.isNonEmptyArray(context)) {
-		    process(context.asJsonArray(), result, types);
-
-		} else if (JsonUtils.isNonEmptyObject(context)) {
-		    process(context.asJsonObject(), result, types);
-
-		} else {
-		    // TODO
-		}
-
-	    }
+	    return add(activeContext,
+			new CodecTermMap(
+				new LinkedHashMap<>(KeywordDictionary.CODE_TO_TERM),
+				activeContext,
+				properyContexts,
+				KeywordDictionary.CUSTOM_OFFSET
+			));
 
 	} catch (JsonLdError e) {
 	    // TODO Auto-generated catch block
 	    e.printStackTrace();
+	    throw new ContextError(Code.InvalidContext, e);
 	}
 
-	final CodecTermMap map = 
-		new CodecTermMap(
-			new LinkedHashMap<>(KeywordDictionary.CODE_TO_TERM),
-			types,
-			KeywordDictionary.CUSTOM_OFFSET
-		);
-
-	result.keySet().stream().sorted().forEach(map::add);
-
-	return map;
     }
 
-    void add(String key) {
-	index.put(lastCustomIndex, key);
-	reverse.put(key,  lastCustomIndex);
-	lastCustomIndex += 2;
-    }
-
-    final static void process(JsonObject object, Map<String, String> index, Set<String> types) {
-
-	for (final Map.Entry<String, JsonValue> entry : object.entrySet()) {
-
-	    if (!Keywords.contains(entry.getKey())) {
-		index.put(entry.getKey(), null); // TODO value
+    final static CodecTermMap add(final ActiveContext activeContext, final CodecTermMap map) throws JsonLdError {
+	System.out.println(activeContext.getTerms());
+	activeContext.getTerms().stream().sorted().forEach(map::add);
 		
-		if (JsonUtils.isString(entry.getValue())
-			&& Keywords.TYPE.equals(((JsonString)entry.getValue()).getString())) {
-		    types.add(entry.getKey());
-		}
-
-	    }
+	// scoped contexts
+	for (final TermDefinition def : activeContext.getTermsMapping().values()) {
 	    
-	    if (JsonUtils.isObject(entry.getValue())) {
-		process(entry.getValue().asJsonObject(), index, types);
-		continue;
-	    }
-
-	}
-
-    }
-
-    final static void process(JsonArray array, Map<String, String> index, Set<String> types) {
-
-	for (final JsonValue jsonValue : array) {
-	    if (JsonUtils.isObject(jsonValue)) {
-		process(jsonValue.asJsonObject(), index, types);
-
-	    } else if (JsonUtils.isString(jsonValue)) {
-		// TODO
+	    if (def.hasLocalContext()) {
+		add(
+		new ActiveContext(activeContext.getOptions())
+			.newContext()
+			.create(
+				def.getLocalContext(),
+	                        def.getBaseUrl()
+				),
+			map
+			);
 	    }
 	}
+	
 
+	return map;    
     }
-
-    final static void process(final JsonValue value, final Map<String, String> index, Set<String> types) {
-
-	if (JsonUtils.isObject(value)) {
-
+    
+    void add(String key) {
+	if (!reverse.containsKey(key)) {
+        	index.put(lastCustomIndex, key);
+        	reverse.put(key,  lastCustomIndex);
+        	lastCustomIndex += 2;
 	}
-
     }
 
     public String getTerm(int code) {
@@ -151,7 +116,40 @@ public class CodecTermMap {
 	return reverse.get(term);
     }
 
-    public boolean isType(String term) {
-	return types.contains(term);
+    public TermDefinition getDefinition(String term) {
+	System.out.println("GET " + term + " -> " + context.getTerm(term).orElse(null));
+	return context.getTerm(term).orElse(null);
     }
+    
+    public TermDefinition getDefinition(TermDefinition parent, String term) {
+	
+	if (parent == null) {
+	    return getDefinition(term);
+	}
+	
+	ActiveContext activeContext = properyContexts.get(parent.hashCode());
+	if (activeContext != null) {
+	    return activeContext.getTerm(term).orElse(null);
+	}
+	return null;
+    }
+
+    //FIXME remove
+    public Collection<String> getTerms() {
+	return context.getTerms();
+    }
+    
+//    public boolean isType(String term) {
+//	
+//	
+////	TermDefinition def = context.getTerm(term).orElseThrow(IllegalStateException::new);
+////
+////	ActiveContext propertyContext = properyContexts.get(def.hashCode());
+////
+////	if (propertyContext != null) {
+////	    def = 
+////	}
+//	
+//	return context.getTerm(term).map(t -> Keywords.TYPE.equals(t.getUriMapping())).orElse(false);
+//    }
 }
