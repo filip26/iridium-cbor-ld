@@ -78,6 +78,16 @@
             "name": "scoped context: @type redefinition",
             "input": "encoder/0024-in.jsonld",
             "expect": "encoder/0024-out.cborld"
-        }
+        },
+        {
+            "@id": "#t0025",
+            "@type": [
+                "PositiveEvaluationTest",
+                "EncoderTest"
+            ],
+            "name": "two scoped context: same props",
+            "input": "encoder/0025-in.jsonld",
+            "expect": "encoder/0025-out.cborld"
+        }        
 	]
 }
