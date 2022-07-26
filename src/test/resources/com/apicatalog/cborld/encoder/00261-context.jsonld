@@ -1,0 +1,13 @@
+{
+	"@context": {
+		"@vocab": "https://www.w3.org/ns/activitystreams#",
+		"y": {
+			"@id": "idy",
+			"@context": {
+				"a": "@type",
+				"b": "@id",
+				"c": "longitude"
+			}
+		}
+	}
+}

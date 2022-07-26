@@ -1,0 +1,13 @@
+{
+	"@context": {
+		"@vocab": "https://www.w3.org/ns/activitystreams#",
+		"x": {
+			"@id": "idx",
+			"@context": {
+				"a": "@id",
+				"b": "@type",
+				"d": "latitude"
+			}
+		}
+	}
+}

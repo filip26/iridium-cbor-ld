@@ -19,75 +19,85 @@
 			"input": "encoder/0001-in.jsonld",
 			"expectErrorCode": "InvalidDocument"
 		},
-        {
-            "@id": "#t0002",
-            "@type": [
-                "NegativeEvaluationTest",
-                "EncoderTest"
-            ],
-            "name": "plain JSON object",
-            "input": "encoder/0002-in.jsonld",
-            "expectErrorCode": "InvalidDocument"
-        },
-        {
-            "@id": "#t0020",
-            "@type": [
-                "PositiveEvaluationTest",
-                "EncoderTest"
-            ],
-            "name": "@type - activity streams context",
-            "input": "encoder/0020-in.jsonld",
-            "expect": "encoder/0020-out.cborld"
-        },
-        {
-            "@id": "#t0021",
-            "@type": [
-                "PositiveEvaluationTest",
-                "EncoderTest"
-            ],
-            "name": "@id - activity streams context",
-            "input": "encoder/0021-in.jsonld",
-            "expect": "encoder/0021-out.cborld"
-        },
-        {
-            "@id": "#t0022",
-            "@type": [
-                "PositiveEvaluationTest",
-                "EncoderTest"
-            ],
-            "name": "@type - custom context",
-            "input": "encoder/0022-in.jsonld",
-            "expect": "encoder/0022-out.cborld"
-        },
-        {
-            "@id": "#t0023",
-            "@type": [
-                "PositiveEvaluationTest",
-                "EncoderTest"
-            ],
-            "name": "scoped context",
-            "input": "encoder/0023-in.jsonld",
-            "expect": "encoder/0023-out.cborld"
-        },
-        {
-            "@id": "#t0024",
-            "@type": [
-                "PositiveEvaluationTest",
-                "EncoderTest"
-            ],
-            "name": "scoped context: @type redefinition",
-            "input": "encoder/0024-in.jsonld",
-            "expect": "encoder/0024-out.cborld"
-        },
-        {
-            "@id": "#t0025",
-            "@type": [
-                "PositiveEvaluationTest",
-                "EncoderTest"
-            ],
-            "name": "two scoped context: same props",
-            "input": "encoder/0025-in.jsonld",
-            "expect": "encoder/0025-out.cborld"
-        }        
+		{
+			"@id": "#t0002",
+			"@type": [
+				"NegativeEvaluationTest",
+				"EncoderTest"
+			],
+			"name": "plain JSON object",
+			"input": "encoder/0002-in.jsonld",
+			"expectErrorCode": "InvalidDocument"
+		},
+		{
+			"@id": "#t0020",
+			"@type": [
+				"PositiveEvaluationTest",
+				"EncoderTest"
+			],
+			"name": "@type - activity streams context",
+			"input": "encoder/0020-in.jsonld",
+			"expect": "encoder/0020-out.cborld"
+		},
+		{
+			"@id": "#t0021",
+			"@type": [
+				"PositiveEvaluationTest",
+				"EncoderTest"
+			],
+			"name": "@id - activity streams context",
+			"input": "encoder/0021-in.jsonld",
+			"expect": "encoder/0021-out.cborld"
+		},
+		{
+			"@id": "#t0022",
+			"@type": [
+				"PositiveEvaluationTest",
+				"EncoderTest"
+			],
+			"name": "@type - custom context",
+			"input": "encoder/0022-in.jsonld",
+			"expect": "encoder/0022-out.cborld"
+		},
+		{
+			"@id": "#t0023",
+			"@type": [
+				"PositiveEvaluationTest",
+				"EncoderTest"
+			],
+			"name": "scoped context",
+			"input": "encoder/0023-in.jsonld",
+			"expect": "encoder/0023-out.cborld"
+		},
+		{
+			"@id": "#t0024",
+			"@type": [
+				"PositiveEvaluationTest",
+				"EncoderTest"
+			],
+			"name": "scoped context: @type redefinition",
+			"input": "encoder/0024-in.jsonld",
+			"expect": "encoder/0024-out.cborld"
+		},
+		{
+			"@id": "#t0025",
+			"@type": [
+				"PositiveEvaluationTest",
+				"EncoderTest"
+			],
+			"name": "two scoped context: same props",
+			"input": "encoder/0025-in.jsonld",
+			"expect": "encoder/0025-out.cborld"
+		},
+		{
+			"@id": "#t0026",
+			"@type": [
+				"PositiveEvaluationTest",
+				"EncoderTest"
+			],
+			"name": "an array of scoped contexts",
+			"input": "encoder/0026-in.jsonld",
+			"expect": "encoder/0026-out.cborld"
+		}
 	]
 }
