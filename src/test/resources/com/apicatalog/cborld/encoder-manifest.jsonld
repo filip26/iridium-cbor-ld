@@ -29,6 +29,16 @@
 			"input": "encoder/0002-in.jsonld",
 			"expectErrorCode": "InvalidDocument"
 		},
+        {
+            "@id": "#t0003",
+            "@type": [
+                "NegativeEvaluationTest",
+                "EncoderTest"
+            ],
+            "name": "single plural term",
+            "input": "encoder/0003-in.jsonld",
+            "expect": "encoder/0003-out.cborld"
+        },		
 		{
 			"@id": "#t0020",
 			"@type": [
