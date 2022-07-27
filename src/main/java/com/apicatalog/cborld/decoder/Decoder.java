@@ -13,8 +13,11 @@ import com.apicatalog.cborld.dictionary.ContextDictionary;
 import com.apicatalog.cborld.dictionary.Dictionary;
 import com.apicatalog.hex.Hex;
 import com.apicatalog.jsonld.context.TermDefinition;
+import com.apicatalog.jsonld.http.DefaultHttpClient;
+import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.DocumentLoader;
+import com.apicatalog.jsonld.loader.HttpLoader;
 
 import co.nstant.in.cbor.CborDecoder;
 import co.nstant.in.cbor.CborException;
@@ -35,19 +38,19 @@ public class Decoder {
 
     protected final byte[] encoded;
     protected final boolean compressed;
-    protected final DocumentLoader loader;
+    protected DocumentLoader loader;
 
     protected CodeTermMap index;
     protected Dictionary contexts;
 
-    protected Decoder(byte[] encoded, boolean compressed, final DocumentLoader loader) {
+    protected Decoder(byte[] encoded, boolean compressed) {
         this.encoded = encoded;
         this.compressed = compressed;
-        this.loader = loader;
+        this.loader = null;
         this.contexts = new ContextDictionary();    //FIXME
     }
 
-    public static final Decoder create(byte[] encodedDocument, DocumentLoader loader) throws DecoderError {
+    public static final Decoder create(byte[] encodedDocument) throws DecoderError {
     
         if (encodedDocument == null) {
             throw new IllegalArgumentException("The encoded document paramenter must not be null but byte arrayy.");
@@ -64,19 +67,30 @@ public class Decoder {
         }
     
         if (encodedDocument[2] == CborLd.COMPRESSED) {
-            return new Decoder(encodedDocument, true, loader);
+            return new Decoder(encodedDocument, true);
         }
     
         if (encodedDocument[2] == CborLd.UNCOMPRESSED) {
-            return new Decoder(encodedDocument, false, loader);
+            return new Decoder(encodedDocument, false);
         }
     
         throw new DecoderError(Code.UnknownCompression,
             "Unkknown CBOR-LD document compression, expected 0x00 - uncompressed or 0x01 - compressed, but found ["
                 + Hex.toString(encodedDocument[2]) + "].");
     }
+    
+    public Decoder loader(DocumentLoader loader) {
+        this.loader = loader;
+        return this;
+    }
 
     public JsonValue decode() throws DecoderError, ContextError {
+
+        if (loader == null) {
+            loader = new HttpLoader(DefaultHttpClient.defaultInstance());
+            ((HttpLoader)loader).setFallbackContentType(MediaType.JSON);
+        }
+        
         if (compressed) {
             return decodeCompressed();
         }
@@ -84,7 +98,7 @@ public class Decoder {
     }
 
     final JsonValue decodeCompressed() throws DecoderError, ContextError {
-    
+            
         try {
             final ByteArrayInputStream bais = new ByteArrayInputStream(encoded);
             final List<DataItem> dataItems = new CborDecoder(bais).decode();

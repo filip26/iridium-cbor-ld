@@ -14,7 +14,10 @@ import com.apicatalog.json.cursor.JsonArrayCursor;
 import com.apicatalog.json.cursor.JsonObjectCursor;
 import com.apicatalog.json.cursor.JsonValueCursor;
 import com.apicatalog.jsonld.context.TermDefinition;
+import com.apicatalog.jsonld.http.DefaultHttpClient;
+import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.loader.DocumentLoader;
+import com.apicatalog.jsonld.loader.HttpLoader;
 
 import co.nstant.in.cbor.CborBuilder;
 import co.nstant.in.cbor.CborEncoder;
@@ -29,29 +32,29 @@ import co.nstant.in.cbor.model.UnsignedInteger;
 public class Encoder {
 
     protected final JsonObjectCursor document;
-    protected final DocumentLoader loader;
 
     protected CodeTermMap index;
 
     // options
     protected Collection<ValueEncoder> valueEncoders;
     protected boolean compactArrays;
+    protected DocumentLoader loader;
 
-    protected Encoder(JsonObjectCursor document, DocumentLoader loader) {
+    protected Encoder(JsonObjectCursor document) {
         this.document = document;
-        this.loader = loader;
     
         // default options
         this.valueEncoders = DefaultEncoderConfig.VALUE_ENCODERS;
         this.compactArrays = DefaultEncoderConfig.COMPACT_ARRAYS;
+        this.loader = null;
     }
 
-    public static final Encoder create(JsonObjectCursor document, DocumentLoader loader) throws EncoderError {
+    public static final Encoder create(JsonObjectCursor document) throws EncoderError {
         if (document == null) {
             throw new IllegalArgumentException("The 'document' parameter must not be null.");
         }
     
-        return new Encoder(document, loader);
+        return new Encoder(document);
     }
 
     /**
@@ -73,9 +76,19 @@ public class Encoder {
         valueEncoders = config.getValueEncoders();
         return this;
     }
+    
+    public Encoder loader(DocumentLoader loader) {
+        this.loader = loader;
+        return this;
+    }
 
     public byte[] encode() throws EncoderError, ContextError {
     
+        if (loader == null) {
+            loader = new HttpLoader(DefaultHttpClient.defaultInstance());
+            ((HttpLoader)loader).setFallbackContentType(MediaType.JSON);
+        }
+        
         try {
     
             final Collection<String> contexts = EncoderContext.get(document);
