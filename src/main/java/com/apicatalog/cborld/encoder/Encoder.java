@@ -3,18 +3,14 @@ package com.apicatalog.cborld.encoder;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.Collection;
 
 import com.apicatalog.cborld.CborLd;
 import com.apicatalog.cborld.context.Context;
 import com.apicatalog.cborld.context.ContextError;
-import com.apicatalog.cborld.dictionary.CodecTermMap;
+import com.apicatalog.cborld.dictionary.CodeTermMap;
 import com.apicatalog.cborld.dictionary.ContextDictionary;
 import com.apicatalog.cborld.encoder.EncoderError.Code;
-import com.apicatalog.cborld.encoder.value.ContextValueEncoder;
-import com.apicatalog.cborld.encoder.value.IdValueEncoder;
-import com.apicatalog.cborld.encoder.value.TypeValueEncoder;
 import com.apicatalog.cborld.encoder.value.ValueEncoder;
 import com.apicatalog.json.cursor.JsonArrayCursor;
 import com.apicatalog.json.cursor.JsonObjectCursor;
@@ -37,25 +33,19 @@ public class Encoder {
     protected final JsonObjectCursor document;
     protected final DocumentLoader loader;
     
-    protected CodecTermMap index;
-    
-    protected final Collection<ValueEncoder> valueEncoders;
-    
+    protected CodeTermMap index;
+
     // options
+    protected Collection<ValueEncoder> valueEncoders;    
     protected boolean compactArrays;
     
     protected Encoder(JsonObjectCursor document, DocumentLoader loader) {
 	this.document = document;
 	this.loader = loader;
 	
-	this.valueEncoders = new ArrayList<>();	//FIXME
-	
-	valueEncoders.add(new ContextValueEncoder());
-	valueEncoders.add(new IdValueEncoder());
-	valueEncoders.add(new TypeValueEncoder());
-	
 	// default options
-	this.compactArrays = true;
+	this.valueEncoders = DefaultEncoderConfig.VALUE_ENCODERS;
+	this.compactArrays = DefaultEncoderConfig.COMPACT_ARRAYS;
     }
 
     public static final Encoder create(JsonObjectCursor document, DocumentLoader loader) throws EncoderError {
@@ -81,6 +71,12 @@ public class Encoder {
 	return this;
     }
     
+    public Encoder config(EncoderConfigration config) {
+	compactArrays = config.isCompactArrays();
+	valueEncoders = config.getValueEncoders();
+	return this;
+    }
+
     public byte[] encode() throws EncoderError, ContextError {
 
 	try {
@@ -130,7 +126,7 @@ public class Encoder {
 	result.write(CborLd.CBOR_LD_BYTE_PREFIX);
 	result.write(CborLd.COMPRESSED);
 
-	index = CodecTermMap.from(contextUrls, loader);
+	index = CodeTermMap.from(contextUrls, loader);
 	
 	return toCbor(document, result);	
     }

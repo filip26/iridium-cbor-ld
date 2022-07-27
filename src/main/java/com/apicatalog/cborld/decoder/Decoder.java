@@ -10,7 +10,7 @@ import com.apicatalog.cborld.Hex;
 import com.apicatalog.cborld.context.Context;
 import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.decoder.DecoderError.Code;
-import com.apicatalog.cborld.dictionary.CodecTermMap;
+import com.apicatalog.cborld.dictionary.CodeTermMap;
 import com.apicatalog.cborld.dictionary.ContextDictionary;
 import com.apicatalog.cborld.dictionary.Dictionary;
 import com.apicatalog.jsonld.context.TermDefinition;
@@ -38,7 +38,7 @@ public class Decoder {
     protected final boolean compressed;
     protected final DocumentLoader loader;
     
-    protected CodecTermMap index;
+    protected CodeTermMap index;
     protected Dictionary contexts;
     
     protected Decoder(byte[] encoded, boolean compressed, final DocumentLoader loader) {
@@ -118,7 +118,7 @@ public class Decoder {
 	    
 	Collection<String> contextUrls = (new Context(new ContextDictionary())).get(data);
 	    
-	this.index = CodecTermMap.from(contextUrls, loader);
+	this.index = CodeTermMap.from(contextUrls, loader);
 
 	return decodeData(data, null, null);
     }

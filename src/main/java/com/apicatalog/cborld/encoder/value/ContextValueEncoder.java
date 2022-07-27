@@ -2,8 +2,6 @@ package com.apicatalog.cborld.encoder.value;
 
 import java.math.BigInteger;
 
-import com.apicatalog.cborld.dictionary.CodecTermMap;
-import com.apicatalog.cborld.dictionary.ContextDictionary;
 import com.apicatalog.cborld.dictionary.Dictionary;
 import com.apicatalog.json.cursor.JsonValueCursor;
 import com.apicatalog.jsonld.context.TermDefinition;
@@ -16,8 +14,8 @@ public class ContextValueEncoder implements ValueEncoder {
 
     protected Dictionary contexts;
 
-    public ContextValueEncoder() {
-	this.contexts = new ContextDictionary();	//FIXME
+    public ContextValueEncoder(Dictionary dictionary) {
+	this.contexts = dictionary;
     }
 
     @Override

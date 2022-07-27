@@ -20,7 +20,7 @@ import com.apicatalog.jsonld.loader.DocumentLoader;
 import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
 
-public class CodecTermMap implements Dictionary {
+public class CodeTermMap implements Dictionary {
 
     final Map<Integer, String> index;
     final Map<String, Integer> reverse;
@@ -30,7 +30,7 @@ public class CodecTermMap implements Dictionary {
 
     int lastCustomIndex;
 
-    protected CodecTermMap(Map<Integer, String> index, ActiveContext context, Map<Integer, ActiveContext> properyContexts, int lastCustomIndex) {
+    protected CodeTermMap(Map<Integer, String> index, ActiveContext context, Map<Integer, ActiveContext> properyContexts, int lastCustomIndex) {
 	this.index = index;
 	this.reverse = index
 			.entrySet()
@@ -43,7 +43,7 @@ public class CodecTermMap implements Dictionary {
 	this.lastCustomIndex = lastCustomIndex;
     }
 
-    public static CodecTermMap from(Collection<String> contextUrls, DocumentLoader loader) throws ContextError {
+    public static CodeTermMap from(Collection<String> contextUrls, DocumentLoader loader) throws ContextError {
 
 	try {	
 	    final JsonLdOptions options = new JsonLdOptions();
@@ -60,7 +60,7 @@ public class CodecTermMap implements Dictionary {
 	    Map<Integer, ActiveContext> properyContexts = new HashMap<>();
 	        
 	    return add(activeContext, properyContexts,
-			new CodecTermMap(
+			new CodeTermMap(
 				new LinkedHashMap<>(KeywordDictionary.CODE_TO_TERM),
 				activeContext,
 				properyContexts,
@@ -75,7 +75,7 @@ public class CodecTermMap implements Dictionary {
 
     }
 
-    final static CodecTermMap add(final ActiveContext activeContext, Map<Integer, ActiveContext> propertyContexts, final CodecTermMap map) throws JsonLdError {
+    final static CodeTermMap add(final ActiveContext activeContext, Map<Integer, ActiveContext> propertyContexts, final CodeTermMap map) throws JsonLdError {
 
 	String[] sorted = activeContext.getTerms().stream().sorted().toArray(String[]::new);
 	
