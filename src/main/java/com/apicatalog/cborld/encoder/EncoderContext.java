@@ -3,8 +3,8 @@ package com.apicatalog.cborld.encoder;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 
-import com.apicatalog.json.cursor.JsonCursor;
 import com.apicatalog.json.cursor.JsonObjectCursor;
+import com.apicatalog.json.cursor.JsonValueCursor;
 import com.apicatalog.jsonld.uri.UriUtils;
 
 public class EncoderContext {
@@ -29,7 +29,7 @@ public class EncoderContext {
 	return contexts;	
     }
     
-    static final void processContextValue(final JsonCursor value, final Collection<String> result) {
+    static final void processContextValue(final JsonValueCursor value, final Collection<String> result) {
 
 	if (value.isString()) {
 	    final String uri = value.stringValue();
@@ -42,7 +42,7 @@ public class EncoderContext {
 	} else if (value.isNonEmptyArray()) {
 
 	    for (int i = 0; i < value.asArray().size(); i++) {
-		processContextValue(value.value(i), result);
+		processContextValue(value.asArray().value(i), result);
 		value.parent();
 	    }
 	    return;

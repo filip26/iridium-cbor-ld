@@ -28,9 +28,8 @@ public interface JsonArrayCursor extends JsonValueCursor {
     Long longValue(int index);
 
     String stringValue(int index);
-    
+
     JsonArrayCursor array(int index);
     JsonObjectCursor object(int index);
-
-    JsonCursor value(int index);
+    JsonValueCursor value(int index);
 }

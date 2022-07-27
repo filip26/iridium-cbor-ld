@@ -42,8 +42,5 @@ public interface JsonObjectCursor extends JsonValueCursor {
 
     JsonObjectCursor object(String property);
 
-    JsonCursor value(String property);
-    
-    //TODO hack, remove
-    JsonObject asJsonObject();
+    JsonValueCursor value(String property);
 }

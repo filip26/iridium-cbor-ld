@@ -9,7 +9,6 @@ import com.apicatalog.json.cursor.JsonObjectCursor;
 import com.apicatalog.json.cursor.JsonValueCursor;
 
 import jakarta.json.JsonNumber;
-import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 import jakarta.json.JsonValue.ValueType;
@@ -146,9 +145,8 @@ public class JakartaJsonCursor implements JsonCursor {
 	if (!isArray()) {
 	    throw new ClassCastException();
 	}
-
-	// TODO Auto-generated method stub
-	return false;
+	
+	return ValueType.NULL.equals(path[index].asJsonArray().get(index).getValueType());
     }
 
     @Override
@@ -157,8 +155,7 @@ public class JakartaJsonCursor implements JsonCursor {
 	    throw new ClassCastException();
 	}
 
-	// TODO Auto-generated method stub
-	return false;
+	return ValueType.STRING.equals(path[index].asJsonArray().get(index).getValueType());
     }
 
     @Override
@@ -166,9 +163,8 @@ public class JakartaJsonCursor implements JsonCursor {
 	if (!isArray()) {
 	    throw new ClassCastException();
 	}
-
-	// TODO Auto-generated method stub
-	return false;
+	return ValueType.TRUE.equals(path[index].asJsonArray().get(index).getValueType())
+		|| ValueType.FALSE.equals(path[index].asJsonArray().get(index).getValueType());
     }
 
     @Override
@@ -176,9 +172,7 @@ public class JakartaJsonCursor implements JsonCursor {
 	if (!isArray()) {
 	    throw new ClassCastException();
 	}
-
-	// TODO Auto-generated method stub
-	return false;
+	return ValueType.NUMBER.equals(path[index].asJsonArray().get(index).getValueType());
     }
 
     @Override
@@ -186,9 +180,7 @@ public class JakartaJsonCursor implements JsonCursor {
 	if (!isArray()) {
 	    throw new ClassCastException();
 	}
-
-	// TODO Auto-generated method stub
-	return false;
+	return ValueType.ARRAY.equals(path[index].asJsonArray().get(index).getValueType());
     }
 
     @Override
@@ -196,9 +188,8 @@ public class JakartaJsonCursor implements JsonCursor {
 	if (!isArray()) {
 	    throw new ClassCastException();
 	}
-
-	// TODO Auto-generated method stub
-	return false;
+	return ValueType.ARRAY.equals(path[index].asJsonArray().get(index).getValueType())
+		&& !path[index].asJsonArray().getJsonArray(index).isEmpty();
     }
 
     @Override
@@ -206,9 +197,7 @@ public class JakartaJsonCursor implements JsonCursor {
 	if (!isArray()) {
 	    throw new ClassCastException();
 	}
-
-	// TODO Auto-generated method stub
-	return false;
+	return ValueType.OBJECT.equals(path[index].asJsonArray().get(index).getValueType());
     }
 
     @Override
@@ -216,9 +205,8 @@ public class JakartaJsonCursor implements JsonCursor {
 	if (!isArray()) {
 	    throw new ClassCastException();
 	}
-
-	// TODO Auto-generated method stub
-	return false;
+	return ValueType.OBJECT.equals(path[index].asJsonArray().get(index).getValueType())
+		&& !path[index].asJsonArray().getJsonObject(index).isEmpty();
     }
 
     @Override
@@ -226,39 +214,39 @@ public class JakartaJsonCursor implements JsonCursor {
 	if (!isArray()) {
 	    throw new ClassCastException();
 	}
+	
+	if (ValueType.TRUE.equals(path[index].asJsonArray().get(index).getValueType())) {
+	    return Boolean.TRUE;
+	}
+	if (ValueType.FALSE.equals(path[index].asJsonArray().get(index).getValueType())) {
+	    return Boolean.FALSE;
+	}
 
-	// TODO Auto-generated method stub
-	return null;
+	throw new ClassCastException();
     }
 
     @Override
     public Integer integerValue(int index) {
-	if (!isArray()) {
+	if (!isNumber(index)) {
 	    throw new ClassCastException();
 	}
-
-	// TODO Auto-generated method stub
-	return null;
+	return path[index].asJsonArray().getJsonNumber(index).intValueExact();
     }
 
     @Override
     public Long longValue(int index) {
-	if (!isArray()) {
+	if (!isNumber(index)) {
 	    throw new ClassCastException();
 	}
-
-	// TODO Auto-generated method stub
-	return null;
+	return path[index].asJsonArray().getJsonNumber(index).longValueExact();
     }
 
     @Override
     public String stringValue(int index) {
-	if (!isArray()) {
+	if (!isString(index)) {
 	    throw new ClassCastException();
 	}
-
-	// TODO Auto-generated method stub
-	return null;
+	return path[index].asJsonArray().getJsonString(index).getString();
     }
 
     @Override
@@ -367,9 +355,11 @@ public class JakartaJsonCursor implements JsonCursor {
 	if (!isObject()) {
 	    throw new ClassCastException();
 	}
-
-	// TODO Auto-generated method stub
-	return false;
+	
+	final JsonValue value = path[index].asJsonObject().get(property);
+	return value != null 
+		&& ValueType.ARRAY.equals(value.getValueType())
+		&& !value.asJsonArray().isEmpty();
     }
 
     @Override
@@ -387,8 +377,10 @@ public class JakartaJsonCursor implements JsonCursor {
 	    throw new ClassCastException();
 	}
 
-	// TODO Auto-generated method stub
-	return false;
+	final JsonValue value = path[index].asJsonObject().get(property);
+	return value != null 
+		&& ValueType.OBJECT.equals(value.getValueType())
+		&& !value.asJsonObject().isEmpty();
     }
 
     @Override
@@ -396,9 +388,18 @@ public class JakartaJsonCursor implements JsonCursor {
 	if (!isObject()) {
 	    throw new ClassCastException();
 	}
+	
+	final JsonValue value = path[index].asJsonObject().get(property);
+	
+	if (ValueType.TRUE.equals(value.getValueType())) {
+	    return Boolean.TRUE;
+	}
+	
+	if (ValueType.FALSE.equals(value.getValueType())) {
+	    return Boolean.FALSE;
+	}
 
-	// TODO Auto-generated method stub
-	return null;
+	throw new ClassCastException();
     }
 
     @Override
@@ -474,14 +475,8 @@ public class JakartaJsonCursor implements JsonCursor {
 	return this;
     }
     
-    //TODO hack remove
-   @Override
-   public JsonObject asJsonObject() {
-       return path[index].asJsonObject();
-   }
-   
-   @Override
-   public String toString() {
+    @Override
+    public String toString() {
        return new StringBuilder()
 	       .append(JakartaJsonCursor.class.getSimpleName())
 	       .append('[')
@@ -491,5 +486,5 @@ public class JakartaJsonCursor implements JsonCursor {
 	       .append(path[index])
 	       .append(']')
 	       .toString();
-   }
+    }
 }
