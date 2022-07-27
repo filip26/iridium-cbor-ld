@@ -47,10 +47,7 @@
             ],
             "name": "one item array term value",
             "input": "encoder/0004-in.jsonld",
-            "expect": "encoder/0004-out.cborld",
-            "option": {
-                "compactArrays": false
-            }
+            "expect": "encoder/0004-out.cborld"
         },
         {
             "@id": "#t0005",
@@ -61,7 +58,20 @@
             "name": "two items array term value",
             "input": "encoder/0005-in.jsonld",
             "expect": "encoder/0005-out.cborld"
-        },      
+        },  
+        {
+            "@id": "#t0006",
+            "@type": [
+                "PositiveEvaluationTest",
+                "EncoderTest"
+            ],
+            "name": "compactArrays: false - one item array term value",
+            "input": "encoder/0006-in.jsonld",
+            "expect": "encoder/0006-out.cborld",
+            "option": {
+                "compactArrays": false
+            }
+        },    
 		{
 			"@id": "#t0020",
 			"@type": [
