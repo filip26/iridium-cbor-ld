@@ -7,7 +7,6 @@ import java.util.List;
 
 import com.apicatalog.cborld.CborLd;
 import com.apicatalog.cborld.Hex;
-import com.apicatalog.cborld.context.Context;
 import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.decoder.DecoderError.Code;
 import com.apicatalog.cborld.dictionary.CodeTermMap;
@@ -116,7 +115,7 @@ public class Decoder {
 
     final JsonValue decodeCompressed(final DataItem data) throws DecoderError, ContextError {
 	    
-	Collection<String> contextUrls = (new Context(new ContextDictionary())).get(data);
+	Collection<String> contextUrls = (new DecoderContext(new ContextDictionary())).get(data);
 	    
 	this.index = CodeTermMap.from(contextUrls, loader);
 

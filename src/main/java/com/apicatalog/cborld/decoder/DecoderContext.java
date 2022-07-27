@@ -1,16 +1,14 @@
-package com.apicatalog.cborld.context;
+package com.apicatalog.cborld.decoder;
 
 import java.math.BigInteger;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 
 import com.apicatalog.cborld.Hex;
+import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.context.ContextError.Code;
 import com.apicatalog.cborld.dictionary.Dictionary;
 import com.apicatalog.cborld.dictionary.KeywordDictionary;
-import com.apicatalog.json.cursor.JsonCursor;
-import com.apicatalog.json.cursor.JsonObjectCursor;
-import com.apicatalog.jsonld.uri.UriUtils;
 
 import co.nstant.in.cbor.model.Array;
 import co.nstant.in.cbor.model.DataItem;
@@ -18,11 +16,11 @@ import co.nstant.in.cbor.model.Map;
 import co.nstant.in.cbor.model.UnicodeString;
 import co.nstant.in.cbor.model.UnsignedInteger;
 
-public class Context {
+public class DecoderContext {
 
     private final Dictionary dictionary;
     
-    public Context(final Dictionary dictionary) {
+    public DecoderContext(final Dictionary dictionary) {
 	this.dictionary = dictionary;
     }
 
@@ -30,60 +28,6 @@ public class Context {
 	return get(data, new LinkedHashSet<>());
     }
     
-    public final Collection<String> get(final JsonObjectCursor document) {
-	return get(document, new LinkedHashSet<>());
-    }
-    
-    static final Collection<String> get(final JsonObjectCursor document, Collection<String> contexts) {
-	for (final String property : document.properies()) {
-
-	    if ("@context".equals(property)) {
-		processContextValue(document.value(property), contexts);
-		document.parent();
-
-	    } else if (document.isObject(property)) {
-		get(document.object(property), contexts);
-		document.parent();
-	    }
-	}
-
-	return contexts;	
-    }
-    
-    static final void processContextValue(final JsonCursor value, final Collection<String> result) {
-
-	if (value.isString()) {
-	    final String uri = value.stringValue();
-
-	    if (UriUtils.isAbsoluteUri(uri, true)) {
-		result.add(uri);
-		return;
-	    }
-
-	} else if (value.isNonEmptyArray()) {
-
-	    for (int i = 0; i < value.asArray().size(); i++) {
-		processContextValue(value.value(i), result);
-		value.parent();
-	    }
-	    return;
-
-	} else if (value.isObject()) {
-
-	    if (value.asObject().size() == 1 && value.asObject().isString("@id")) {
-
-		final String id = value.asObject().stringValue("@id");
-
-		if (UriUtils.isAbsoluteUri(id, true)) {
-		    result.add(id);
-		    return;
-		}
-	    }
-	}
-
-	throw new IllegalArgumentException("Non serializable context detected.");
-    }
-
     final Collection<String> get(DataItem data, Collection<String> contexts) throws ContextError {
 	
 	if (data == null) {

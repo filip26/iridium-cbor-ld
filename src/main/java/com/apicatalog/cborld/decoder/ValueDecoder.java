@@ -7,6 +7,6 @@ import jakarta.json.JsonValue;
 
 public interface ValueDecoder {
 
-    JsonValue decode(Dictionary dictionary, DataItem value );
+    JsonValue decode(Dictionary dictionary, DataItem value ) throws DecoderError;
     
 }

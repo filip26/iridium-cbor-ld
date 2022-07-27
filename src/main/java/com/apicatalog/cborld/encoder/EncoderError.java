@@ -5,7 +5,7 @@ public class EncoderError extends Throwable {
     private static final long serialVersionUID = -2025187747774695053L;
 
     public enum Code {
-	InvalidDocument,	// invalid JSON-LD document
+	InvalidDocument, Internal,	// invalid JSON-LD document
     }
     
     protected final Code code;

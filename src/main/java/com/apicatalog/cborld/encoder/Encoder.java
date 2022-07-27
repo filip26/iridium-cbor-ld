@@ -6,10 +6,8 @@ import java.math.BigInteger;
 import java.util.Collection;
 
 import com.apicatalog.cborld.CborLd;
-import com.apicatalog.cborld.context.Context;
 import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.dictionary.CodeTermMap;
-import com.apicatalog.cborld.dictionary.ContextDictionary;
 import com.apicatalog.cborld.encoder.EncoderError.Code;
 import com.apicatalog.cborld.encoder.value.ValueEncoder;
 import com.apicatalog.json.cursor.JsonArrayCursor;
@@ -81,7 +79,7 @@ public class Encoder {
 
 	try {
 	    
-	    final Collection<String> contexts = new Context(new ContextDictionary()).get(document);	//FIXME dictionary
+	    final Collection<String> contexts = EncoderContext.get(document);
 
 	    if (contexts.isEmpty()) { // is not JSON-LD document
 		throw new EncoderError(Code.InvalidDocument, "Not a valid JSON-LD document in a compacted form.");
@@ -89,13 +87,9 @@ public class Encoder {
 	    
 	    return compress(document, contexts);
 
-	} catch (IOException e) {
-	    e.printStackTrace();
-
-	    // non compressable context
+	// non compressable context
 	} catch (IllegalArgumentException e) {
-	    e.printStackTrace();
-
+	    System.out.println("TODO: non-compressable");
 	}
 
 	return null;
@@ -115,23 +109,29 @@ public class Encoder {
      * 
      * @throws IOException
      * @throws ContextError 
+     * @throws EncoderError 
      */
-    final byte[] compress(final JsonObjectCursor document, Collection<String> contextUrls) throws IOException, ContextError {
+    final byte[] compress(final JsonObjectCursor document, Collection<String> contextUrls) throws ContextError, EncoderError {
 
 	// 1.
 	final ByteArrayOutputStream result = new ByteArrayOutputStream();
 
-	// 2.CBOR Tag - 0xD9, CBOR-LD - 0x05, Compressed - CBOR-LD compression algorithm
-	// version 1 - 0x01
-	result.write(CborLd.CBOR_LD_BYTE_PREFIX);
-	result.write(CborLd.COMPRESSED);
+	try {
+	    // 2.CBOR Tag - 0xD9, CBOR-LD - 0x05, Compressed - CBOR-LD compression algorithm
+	    // version 1 - 0x01
+	    result.write(CborLd.CBOR_LD_BYTE_PREFIX);
+	    result.write(CborLd.COMPRESSED);
 
-	index = CodeTermMap.from(contextUrls, loader);
+	    index = CodeTermMap.from(contextUrls, loader);
 	
-	return toCbor(document, result);	
+	    return toCbor(document, result);
+	    
+	} catch (IOException e) {
+	    throw new EncoderError(Code.Internal, e);
+	}
     }
 
-    final byte[] toCbor(JsonObjectCursor object, ByteArrayOutputStream baos) {
+    final byte[] toCbor(JsonObjectCursor object, ByteArrayOutputStream baos) throws EncoderError {
 
 	try {
 	    final CborBuilder builder = (CborBuilder) toCbor(object, new CborBuilder().addMap(), null).end();
@@ -145,7 +145,7 @@ public class Encoder {
 	return baos.toByteArray();
     }
 
-    final MapBuilder<?> toCbor(final JsonObjectCursor object, final MapBuilder<?> builder, TermDefinition def) {
+    final MapBuilder<?> toCbor(final JsonObjectCursor object, final MapBuilder<?> builder, TermDefinition def) throws EncoderError {
 	
 	MapBuilder<?> flow = builder;
 
@@ -212,7 +212,7 @@ public class Encoder {
 	return flow;
     }
     
-    final DataItem toCbor(final JsonValueCursor value, final String term, final TermDefinition def) {
+    final DataItem toCbor(final JsonValueCursor value, final String term, final TermDefinition def) throws EncoderError {
 	
 	if (value.isBoolean()) {
 	    return value.booleanValue() ? SimpleValue.TRUE : SimpleValue.FALSE;
@@ -238,7 +238,7 @@ public class Encoder {
 	throw new IllegalStateException("TODO " + value);
     }
 
-    final ArrayBuilder<?> toCbor(final JsonArrayCursor object, final ArrayBuilder<?> builder, TermDefinition def) {
+    final ArrayBuilder<?> toCbor(final JsonArrayCursor object, final ArrayBuilder<?> builder, TermDefinition def) throws EncoderError {
 
 	ArrayBuilder<?> flow = builder;
 
