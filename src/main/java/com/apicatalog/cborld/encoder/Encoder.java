@@ -13,6 +13,7 @@ import com.apicatalog.cborld.dictionary.ContextDictionary;
 import com.apicatalog.cborld.dictionary.Dictionary;
 import com.apicatalog.cborld.encoder.EncoderError.Code;
 import com.apicatalog.json.cursor.JsonArrayCursor;
+import com.apicatalog.json.cursor.JsonCursor;
 import com.apicatalog.json.cursor.JsonObjectCursor;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.lang.Keywords;
@@ -36,10 +37,16 @@ public class Encoder {
     protected CodecTermMap index;
     protected Dictionary contexts;
     
+    // options
+    protected boolean compactArrays;
+    
     protected Encoder(JsonObjectCursor document, DocumentLoader loader) {
 	this.document = document;
 	this.loader = loader;
-	this.contexts = new ContextDictionary();	//FIXME	
+	this.contexts = new ContextDictionary();	//FIXME
+	
+	// default options
+	this.compactArrays = true;
     }
 
     public static final Encoder create(JsonObjectCursor document, DocumentLoader loader) throws EncoderError {
@@ -49,6 +56,20 @@ public class Encoder {
 	}
 	
 	return new Encoder(document, loader);
+    }
+    
+    /**
+     * If set to true, the encoder replaces arrays with
+     * just one element with that element during encoding saving one byte.
+     * Enabled by default.
+     * 
+     * @param enable <code>true</code> to enable arrays compaction
+     * @return {@link Encoder} instance
+     * 
+     */
+    public Encoder compactArray(boolean enable) {
+	compactArrays = enable;
+	return this;
     }
     
     public byte[] encode() throws EncoderError, ContextError {
@@ -126,68 +147,94 @@ public class Encoder {
 	for (final String property : object.properies()) {
 
 	    final Integer encodedProperty = index.getCode(property);
+
+	    if (object.isArray(property)) {	
+
+		final DataItem key = encodedProperty != null 
+	    			? new UnsignedInteger(encodedProperty + 1)
+	    			: new UnicodeString(property);
+
+		object.array(property);
+		
+		if (compactArrays && object.asArray().size() == 1) {
+
+		    final DataItem value = toCbor(object.asArray().value(0), index.getDefinition(def, property));
+		    
+		    flow = flow.put(key, value);
+		    object.parent();
+			    
+		} else {
+		    flow = (MapBuilder<?>) toCbor(object.asArray(), flow.putArray(key), 
+    			index.getDefinition(def, property)
+    			).end();
+		}
+		object.parent();
+		continue;
+	    }
 	    
 	    final DataItem key = encodedProperty != null 
-		    			? new UnsignedInteger(encodedProperty)
-		    			: new UnicodeString(property);
+			? new UnsignedInteger(encodedProperty)
+			: new UnicodeString(property);
 
 	    if (object.isObject(property)) {
+
 		flow = (MapBuilder<?>) toCbor(object.object(property), flow.putMap(key),
 			index.getDefinition(def, property)
 			).end();
+		
 		object.parent();
-
-	    } else if (object.isArray(property)) {		
-		flow = (MapBuilder<?>) toCbor(object.array(property), flow.putArray(key), 
-			index.getDefinition(def, property)
-			).end();
-		object.parent();
-
-	    } else if (object.isBoolean(property)) {
-		flow = flow.put(key, object.booleanValue(property) ? SimpleValue.TRUE : SimpleValue.FALSE);
-		
-	    } else if (object.isString(property)) {
-
-		if (Keywords.CONTEXT.equals(property)) {
-		    
-		    final byte[] code = contexts.getCode(object.stringValue(property));
-		    if (code != null) {
-			flow = flow.put(key, new UnsignedInteger(new BigInteger(code)));
-			continue;
-		    }
-		}
-		
-		TermDefinition _def = index.getDefinition(def, property);
-//		System.out.println(property + " -> " + def + ", " + index.getTerms());
-		if (_def != null) {
-		    if (Keywords.TYPE.equals(_def.getUriMapping())) {
-			    final Integer code = index.getCode(object.stringValue(property));
-			    
-		    	    if (code != null) {
-				flow = flow.put(key, new UnsignedInteger(code));
-				continue;
-		    	    }		    
+		continue;
+	    } 
 	    
-		    } else if (Keywords.ID.equals(_def.getUriMapping())) {
-			    final Integer code = index.getCode(object.stringValue(property));
-			    
-		    	    if (code != null) {
-				flow = flow.put(key, new UnsignedInteger(code));
-				continue;
-		    	    }		    
+	    final DataItem value = toCbor(object.value(property), index.getDefinition(def, property));
 	    
-		    }
-
-		}
-		
-		flow = flow.put(key, new UnicodeString(object.stringValue(property)));
-		
-	    } else if (object.isNumber(property)) {
-		//TODO
-		flow = flow.put(key, new UnsignedInteger(object.integerValue(property)));
-	    }
+	    flow = flow.put(key, value);
+	    
+	    object.parent();
 	}
 	return flow;
+    }
+    
+    final DataItem toCbor(final JsonCursor value, final TermDefinition def) {
+	
+	if (value.isBoolean()) {
+	    return value.booleanValue() ? SimpleValue.TRUE : SimpleValue.FALSE;
+	}
+			
+	if (value.isString()) {
+	    if (def != null) {	    
+        	    if (Keywords.CONTEXT.equals(def.getUriMapping())) {	    
+        		final byte[] code = contexts.getCode(value.stringValue());
+        		
+        		if (code != null) {
+        		    return new UnsignedInteger(new BigInteger(code));
+        		}
+        		
+        	    } else if (Keywords.TYPE.equals(def.getUriMapping())) {
+        		final Integer code = index.getCode(value.stringValue());
+        				    
+        		if (code != null) {
+        		    return new UnsignedInteger(code);
+        		}		    
+        		    
+        	    } else if (Keywords.ID.equals(def.getUriMapping())) {
+        		final Integer code = index.getCode(value.stringValue());
+        				    
+        		if (code != null) {
+        		    return new UnsignedInteger(code);
+        		}		    
+        		    
+        	    }
+	    }
+	    return new UnicodeString(value.stringValue());
+	}
+	
+	if (value.isNumber()) {
+	    //TODO
+	    return new UnsignedInteger(value.integerValue());
+	}
+	
+	throw new IllegalStateException("TODO");
     }
 
     final ArrayBuilder<?> toCbor(final JsonArrayCursor object, final ArrayBuilder<?> builder, TermDefinition def) {

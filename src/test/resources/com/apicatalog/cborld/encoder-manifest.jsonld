@@ -47,7 +47,10 @@
             ],
             "name": "one item array term value",
             "input": "encoder/0004-in.jsonld",
-            "expect": "encoder/0004-out.cborld"
+            "expect": "encoder/0004-out.cborld",
+            "option": {
+                "compactArrays": false
+            }
         },
         {
             "@id": "#t0005",
