@@ -24,148 +24,126 @@ public class CodeTermMap implements Dictionary {
 
     final Map<Integer, String> index;
     final Map<String, Integer> reverse;
-    
+
     final ActiveContext context;
     final Map<Integer, ActiveContext> properyContexts;
 
     int lastCustomIndex;
 
     protected CodeTermMap(Map<Integer, String> index, ActiveContext context, Map<Integer, ActiveContext> properyContexts, int lastCustomIndex) {
-	this.index = index;
-	this.reverse = index
-			.entrySet()
-		       	.stream()
-		       	.collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));	
-
-	this.context = context;
-	this.properyContexts = properyContexts;
-	
-	this.lastCustomIndex = lastCustomIndex;
+        this.index = index;
+        this.reverse = index
+                .entrySet()
+                       .stream()
+                       .collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
+    
+        this.context = context;
+        this.properyContexts = properyContexts;
+    
+        this.lastCustomIndex = lastCustomIndex;
     }
 
     public static CodeTermMap from(Collection<String> contextUrls, DocumentLoader loader) throws ContextError {
-
-	try {	
-	    final JsonLdOptions options = new JsonLdOptions();
-	    options.setDocumentLoader(loader);
-	    
-	    ActiveContext activeContext = new ActiveContext(options);
-	    
-	    JsonArrayBuilder bb = Json.createArrayBuilder();
-	    contextUrls.forEach(bb::add);
-//	    System.out.println(activeContext);
-//	    System.out.println(" >>> " + bb.build() + ", " + bb.build());
-	    activeContext = ActiveContextBuilder.with(activeContext).create(bb.build(), null);
-	    
-	    Map<Integer, ActiveContext> properyContexts = new HashMap<>();
-	        
-	    return add(activeContext, properyContexts,
-			new CodeTermMap(
-				new LinkedHashMap<>(KeywordDictionary.CODE_TO_TERM),
-				activeContext,
-				properyContexts,
-				KeywordDictionary.CUSTOM_OFFSET
-			));
-
-	} catch (JsonLdError e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	    throw new ContextError(Code.InvalidContext, e);
-	}
-
+    
+        try {
+            final JsonLdOptions options = new JsonLdOptions();
+            options.setDocumentLoader(loader);
+    
+            ActiveContext activeContext = new ActiveContext(options);
+    
+            JsonArrayBuilder bb = Json.createArrayBuilder();
+            contextUrls.forEach(bb::add);
+    //        System.out.println(activeContext);
+    //        System.out.println(" >>> " + bb.build() + ", " + bb.build());
+            activeContext = ActiveContextBuilder.with(activeContext).create(bb.build(), null);
+    
+            Map<Integer, ActiveContext> properyContexts = new HashMap<>();
+    
+            return add(activeContext, properyContexts,
+                new CodeTermMap(
+                    new LinkedHashMap<>(KeywordDictionary.CODE_TO_TERM),
+                    activeContext,
+                    properyContexts,
+                    KeywordDictionary.CUSTOM_OFFSET
+                ));
+    
+        } catch (JsonLdError e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            throw new ContextError(Code.InvalidContext, e);
+        }
     }
 
     final static CodeTermMap add(final ActiveContext activeContext, Map<Integer, ActiveContext> propertyContexts, final CodeTermMap map) throws JsonLdError {
-
-	String[] sorted = activeContext.getTerms().stream().sorted().toArray(String[]::new);
-	
-	Arrays.stream(sorted).forEach(map::add);
-	
-	// scoped contexts
-	for (final String key : sorted) {
-
-	    final TermDefinition def = activeContext.getTerm(key).orElseThrow(IllegalStateException::new);
-	    
-	    if (def.hasLocalContext()) {
-		
-		propertyContexts.put(def.hashCode(),
-			//new ActiveContext(activeContext.getOptions())
-			activeContext
-			.newContext()
-			.create(
-				def.getLocalContext(),
-	                        def.getBaseUrl()
-				));
-			
-		
-		add(
-		new ActiveContext(activeContext.getOptions())
-			.newContext()
-			.create(
-				def.getLocalContext(),
-	                        def.getBaseUrl()
-				),
-			propertyContexts,
-			map
-			);
-	    }
-	}
-	
-
-	return map;    
-    }
     
+        String[] sorted = activeContext.getTerms().stream().sorted().toArray(String[]::new);
+    
+        Arrays.stream(sorted).forEach(map::add);
+    
+        // scoped contexts
+        for (final String key : sorted) {
+    
+            final TermDefinition def = activeContext.getTerm(key).orElseThrow(IllegalStateException::new);
+    
+            if (def.hasLocalContext()) {
+    
+            propertyContexts.put(def.hashCode(),
+                //new ActiveContext(activeContext.getOptions())
+                activeContext
+                .newContext()
+                .create(
+                    def.getLocalContext(),
+                                def.getBaseUrl()
+                    ));
+    
+    
+            add(
+            new ActiveContext(activeContext.getOptions())
+                .newContext()
+                .create(
+                    def.getLocalContext(),
+                                def.getBaseUrl()
+                    ),
+                propertyContexts,
+                map
+                );
+            }
+        }
+        return map;
+    }
+
     void add(String key) {
-	if (!reverse.containsKey(key)) {
-        	index.put(lastCustomIndex, key);
-        	reverse.put(key,  lastCustomIndex);
-        	lastCustomIndex += 2;
-	}
+        if (!reverse.containsKey(key)) {
+                index.put(lastCustomIndex, key);
+                reverse.put(key,  lastCustomIndex);
+                lastCustomIndex += 2;
+        }
     }
 
     @Override
     public String getValue(BigInteger code) {
-	return index.get(code.intValueExact());
+        return index.get(code.intValueExact());
     }
 
     @Override
     public BigInteger getCode(String term) {
-	return reverse.containsKey(term) ? BigInteger.valueOf(reverse.get(term)) : null;
+        return reverse.containsKey(term) ? BigInteger.valueOf(reverse.get(term)) : null;
     }
 
     public TermDefinition getDefinition(String term) {
-	return context.getTerm(term).orElse(null);
-    }
-    
-    public TermDefinition getDefinition(TermDefinition parent, String term) {
-	
-	if (parent == null) {
-	    return getDefinition(term);
-	}
-	
-	ActiveContext activeContext = properyContexts.get(parent.hashCode());
-	if (activeContext != null) {
-	    return activeContext.getTerm(term).orElse(null);
-	}
-	return null;
+        return context.getTerm(term).orElse(null);
     }
 
-    //FIXME remove
-    public Collection<String> getTerms() {
-	return context.getTerms();
-    }
+    public TermDefinition getDefinition(TermDefinition parent, String term) {
     
-//    public boolean isType(String term) {
-//	
-//	
-////	TermDefinition def = context.getTerm(term).orElseThrow(IllegalStateException::new);
-////
-////	ActiveContext propertyContext = properyContexts.get(def.hashCode());
-////
-////	if (propertyContext != null) {
-////	    def = 
-////	}
-//	
-//	return context.getTerm(term).map(t -> Keywords.TYPE.equals(t.getUriMapping())).orElse(false);
-//    }
+        if (parent == null) {
+            return getDefinition(term);
+        }
+    
+        ActiveContext activeContext = properyContexts.get(parent.hashCode());
+        if (activeContext != null) {
+            return activeContext.getTerm(term).orElse(null);
+        }
+        return null;
+    }
 }

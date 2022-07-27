@@ -11,21 +11,21 @@ public interface JsonValueCursor {
     boolean isString();
     boolean isBoolean();
     boolean isNumber();
-    
+
     default boolean isPrimitive() {
-	return isString() || isBoolean() || isNumber();
+        return isString() || isBoolean() || isNumber();
     }
-    
+
     boolean isArray();
     boolean isNonEmptyArray();
 
     boolean isObject();
     boolean isNonEmptyObject();
-    
+
     default boolean isStructure() {
-	return isArray() || isObject();
+        return isArray() || isObject();
     }
-    
+
     Boolean booleanValue();
 
     Integer integerValue();
@@ -35,6 +35,6 @@ public interface JsonValueCursor {
 
     JsonObjectCursor asObject();
     JsonArrayCursor asArray();
-    
+
     int size();
 }

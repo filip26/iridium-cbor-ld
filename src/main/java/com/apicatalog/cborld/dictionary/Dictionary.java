@@ -3,8 +3,8 @@ package com.apicatalog.cborld.dictionary;
 import java.math.BigInteger;
 
 /**
- * 
- * 
+ *
+ *
  *
  */
 public interface Dictionary {

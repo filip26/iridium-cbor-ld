@@ -2,32 +2,30 @@ package com.apicatalog.json.cursor;
 
 import java.util.Collection;
 
-import jakarta.json.JsonObject;
-
 public interface JsonObjectCursor extends JsonValueCursor {
 
     Collection<String> properies();
 
     boolean has(String property);
-    
+
     boolean isNull(String property);
-    
+
     boolean isString(String propertt);
     boolean isBoolean(String propertt);
     boolean isNumber(String propert);
-    
+
     default boolean isPrimitive(String propert) {
-	return isString(propert) || isBoolean(propert) || isNumber(propert);
+        return isString(propert) || isBoolean(propert) || isNumber(propert);
     }
 
     boolean isArray(String property);
     boolean isNonEmptyArray(String property);
-    
+
     boolean isObject(String property);
     boolean isNonEmptyObject(String property);
 
     default boolean isStructure(String propert) {
-	return isArray(propert) || isObject(propert);
+        return isArray(propert) || isObject(propert);
     }
 
     Boolean booleanValue(String propert);

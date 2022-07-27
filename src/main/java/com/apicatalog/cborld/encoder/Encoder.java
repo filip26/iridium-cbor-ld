@@ -30,237 +30,236 @@ public class Encoder {
 
     protected final JsonObjectCursor document;
     protected final DocumentLoader loader;
-    
+
     protected CodeTermMap index;
 
     // options
-    protected Collection<ValueEncoder> valueEncoders;    
+    protected Collection<ValueEncoder> valueEncoders;
     protected boolean compactArrays;
-    
+
     protected Encoder(JsonObjectCursor document, DocumentLoader loader) {
-	this.document = document;
-	this.loader = loader;
-	
-	// default options
-	this.valueEncoders = DefaultEncoderConfig.VALUE_ENCODERS;
-	this.compactArrays = DefaultEncoderConfig.COMPACT_ARRAYS;
+        this.document = document;
+        this.loader = loader;
+    
+        // default options
+        this.valueEncoders = DefaultEncoderConfig.VALUE_ENCODERS;
+        this.compactArrays = DefaultEncoderConfig.COMPACT_ARRAYS;
     }
 
     public static final Encoder create(JsonObjectCursor document, DocumentLoader loader) throws EncoderError {
-
-	if (document == null) {
-	    throw new IllegalArgumentException("The 'document' parameter must not be null.");
-	}
-	
-	return new Encoder(document, loader);
-    }
+        if (document == null) {
+            throw new IllegalArgumentException("The 'document' parameter must not be null.");
+        }
     
+        return new Encoder(document, loader);
+    }
+
     /**
      * If set to true, the encoder replaces arrays with
      * just one element with that element during encoding saving one byte.
      * Enabled by default.
-     * 
+     *
      * @param enable <code>true</code> to enable arrays compaction
      * @return {@link Encoder} instance
-     * 
+     *
      */
     public Encoder compactArray(boolean enable) {
-	compactArrays = enable;
-	return this;
+        compactArrays = enable;
+        return this;
     }
-    
+
     public Encoder config(EncoderConfigration config) {
-	compactArrays = config.isCompactArrays();
-	valueEncoders = config.getValueEncoders();
-	return this;
+        compactArrays = config.isCompactArrays();
+        valueEncoders = config.getValueEncoders();
+        return this;
     }
 
     public byte[] encode() throws EncoderError, ContextError {
-
-	try {
-	    
-	    final Collection<String> contexts = EncoderContext.get(document);
-
-	    if (contexts.isEmpty()) { // is not JSON-LD document
-		throw new EncoderError(Code.InvalidDocument, "Not a valid JSON-LD document in a compacted form.");
-	    }
-	    
-	    return compress(document, contexts);
-
-	// non compressable context
-	} catch (IllegalArgumentException e) {
-	    System.out.println("TODO: non-compressable");
-	}
-
-	return null;
-    }
     
+        try {
+    
+            final Collection<String> contexts = EncoderContext.get(document);
+    
+            if (contexts.isEmpty()) { // is not JSON-LD document
+            throw new EncoderError(Code.InvalidDocument, "Not a valid JSON-LD document in a compacted form.");
+            }
+    
+            return compress(document, contexts);
+    
+        // non compressable context
+        } catch (IllegalArgumentException e) {
+            System.out.println("TODO: non-compressable");
+        }
+    
+        return null;
+    }
+
     /**
      * Compresses the given JSON-LD document into CBOR-LD byte array.
-     * 
+     *
      * @see <a href=
      *      "https://digitalbazaar.github.io/cbor-ld-spec/#compressed-cbor-ld-buffer-algorithm">Compressed
      *      CBOR-LD Buffer Algorithm</a>
-     * 
+     *
      * @param document    the document to compress
      * @param contextUrls a set of URLs of <code>@context</code> referenced by the
      *                    document
      * @return the compressed document as byte array
-     * 
+     *
      * @throws IOException
-     * @throws ContextError 
-     * @throws EncoderError 
+     * @throws ContextError
+     * @throws EncoderError
      */
     final byte[] compress(final JsonObjectCursor document, Collection<String> contextUrls) throws ContextError, EncoderError {
-
-	// 1.
-	final ByteArrayOutputStream result = new ByteArrayOutputStream();
-
-	try {
-	    // 2.CBOR Tag - 0xD9, CBOR-LD - 0x05, Compressed - CBOR-LD compression algorithm
-	    // version 1 - 0x01
-	    result.write(CborLd.CBOR_LD_BYTE_PREFIX);
-	    result.write(CborLd.COMPRESSED);
-
-	    index = CodeTermMap.from(contextUrls, loader);
-	
-	    return toCbor(document, result);
-	    
-	} catch (IOException e) {
-	    throw new EncoderError(Code.Internal, e);
-	}
+    
+        // 1.
+        final ByteArrayOutputStream result = new ByteArrayOutputStream();
+    
+        try {
+            // 2.CBOR Tag - 0xD9, CBOR-LD - 0x05, Compressed - CBOR-LD compression algorithm
+            // version 1 - 0x01
+            result.write(CborLd.CBOR_LD_BYTE_PREFIX);
+            result.write(CborLd.COMPRESSED);
+    
+            index = CodeTermMap.from(contextUrls, loader);
+    
+            return toCbor(document, result);
+    
+        } catch (IOException e) {
+            throw new EncoderError(Code.Internal, e);
+        }
     }
 
     final byte[] toCbor(JsonObjectCursor object, ByteArrayOutputStream baos) throws EncoderError {
-
-	try {
-	    final CborBuilder builder = (CborBuilder) toCbor(object, new CborBuilder().addMap(), null).end();
-
-	    new CborEncoder(baos).encode(builder.build());
-
-	} catch (CborException e) {
-	    e.printStackTrace();
-	}
-
-	return baos.toByteArray();
+    
+        try {
+            final CborBuilder builder = (CborBuilder) toCbor(object, new CborBuilder().addMap(), null).end();
+    
+            new CborEncoder(baos).encode(builder.build());
+    
+        } catch (CborException e) {
+            e.printStackTrace();
+        }
+    
+        return baos.toByteArray();
     }
 
     final MapBuilder<?> toCbor(final JsonObjectCursor object, final MapBuilder<?> builder, TermDefinition def) throws EncoderError {
-	
-	MapBuilder<?> flow = builder;
-
-	for (final String property : object.properies()) {
-
-	    final BigInteger encodedProperty = index.getCode(property);
-
-	    if (object.isArray(property)) {	
-
-		final DataItem key = encodedProperty != null 
-	    			? new UnsignedInteger(encodedProperty.add(BigInteger.ONE))
-	    			: new UnicodeString(property);
-
-		object.array(property);
-		
-		if (compactArrays && object.asArray().size() == 1) {
-
-		    object.asArray().value(0);
-		    
-		    if (object.isObject()) {
-			flow = (MapBuilder<?>) toCbor(object.asObject(), flow.putMap(key), null).end();
-			
-		    } else if (object.isArray()) {
-			flow = (MapBuilder<?>) toCbor(object.asArray(), flow.putArray(key), null).end();
-			
-		    } else {
-			final DataItem value = toCbor(object, property, index.getDefinition(def, property));
-			    
-			flow = flow.put(key, value);
-		    }
-
-		    object.parent();
-			    
-		} else {
-		    flow = (MapBuilder<?>) toCbor(object.asArray(), flow.putArray(key), 
-    			index.getDefinition(def, property)
-    			).end();
-		}
-		
-		object.parent();
-		continue;
-	    }
-
-	    final DataItem key = encodedProperty != null 
-			? new UnsignedInteger(encodedProperty)
-			: new UnicodeString(property);
-
-	    if (object.isObject(property)) {
-
-		flow = (MapBuilder<?>) toCbor(object.object(property), flow.putMap(key),
-			index.getDefinition(def, property)
-			).end();
-		
-		object.parent();
-		continue;
-	    } 
-	    
-	    final DataItem value = toCbor(object.value(property), property, index.getDefinition(def, property));
-	    
-	    flow = flow.put(key, value);
-	    
-	    object.parent();
-	}
-	return flow;
-    }
     
+        MapBuilder<?> flow = builder;
+    
+        for (final String property : object.properies()) {
+    
+            final BigInteger encodedProperty = index.getCode(property);
+    
+            if (object.isArray(property)) {
+    
+                final DataItem key = encodedProperty != null
+                            ? new UnsignedInteger(encodedProperty.add(BigInteger.ONE))
+                            : new UnicodeString(property);
+        
+                object.array(property);
+        
+                if (compactArrays && object.asArray().size() == 1) {
+        
+                    object.asArray().value(0);
+        
+                    if (object.isObject()) {
+                    flow = (MapBuilder<?>) toCbor(object.asObject(), flow.putMap(key), null).end();
+        
+                    } else if (object.isArray()) {
+                    flow = (MapBuilder<?>) toCbor(object.asArray(), flow.putArray(key), null).end();
+        
+                    } else {
+                    final DataItem value = toCbor(object, property, index.getDefinition(def, property));
+        
+                    flow = flow.put(key, value);
+                    }
+        
+                    object.parent();
+        
+                } else {
+                    flow = (MapBuilder<?>) toCbor(object.asArray(), flow.putArray(key),
+                        index.getDefinition(def, property)
+                        ).end();
+                }
+        
+                object.parent();
+                continue;
+            }
+    
+            final DataItem key = encodedProperty != null
+                ? new UnsignedInteger(encodedProperty)
+                : new UnicodeString(property);
+    
+            if (object.isObject(property)) {
+    
+                flow = (MapBuilder<?>) toCbor(object.object(property), flow.putMap(key),
+                    index.getDefinition(def, property)
+                    ).end();
+        
+                object.parent();
+                continue;
+            }
+    
+            final DataItem value = toCbor(object.value(property), property, index.getDefinition(def, property));
+    
+            flow = flow.put(key, value);
+    
+            object.parent();
+        }
+        return flow;
+    }
+
     final DataItem toCbor(final JsonValueCursor value, final String term, final TermDefinition def) throws EncoderError {
-	
-	if (value.isBoolean()) {
-	    return value.booleanValue() ? SimpleValue.TRUE : SimpleValue.FALSE;
-	}
-			
-	if (value.isString()) {
-	    
-	    //TODO better
-	    for (final ValueEncoder valueEncoder : valueEncoders) {
-		DataItem dataItem = valueEncoder.encode(index, value, term, def);
-		if (dataItem != null) {
-		    return dataItem;
-		}
-	    }
-	    return new UnicodeString(value.stringValue());
-	}
-	
-	if (value.isNumber()) {
-	    //TODO
-	    return new UnsignedInteger(value.integerValue());
-	}
-	
-	throw new IllegalStateException("TODO " + value);
+    
+        if (value.isBoolean()) {
+            return value.booleanValue() ? SimpleValue.TRUE : SimpleValue.FALSE;
+        }
+    
+        if (value.isString()) {
+    
+            //TODO better
+            for (final ValueEncoder valueEncoder : valueEncoders) {
+            DataItem dataItem = valueEncoder.encode(index, value, term, def);
+            if (dataItem != null) {
+                return dataItem;
+            }
+            }
+            return new UnicodeString(value.stringValue());
+        }
+    
+        if (value.isNumber()) {
+            //TODO
+            return new UnsignedInteger(value.integerValue());
+        }
+    
+        throw new IllegalStateException("TODO " + value);
     }
 
     final ArrayBuilder<?> toCbor(final JsonArrayCursor object, final ArrayBuilder<?> builder, TermDefinition def) throws EncoderError {
-
-	ArrayBuilder<?> flow = builder;
-
-	for (int i = 0; i < object.size(); i++) {
-
-	    if (object.isObject(i)) {
-		flow = (ArrayBuilder<?>) toCbor(object.object(i), flow.startMap(), def).end();
-		object.parent();
-		continue;
-	    } 
-	    
-	    if (object.isArray(i)) {		
-		flow = (ArrayBuilder<?>) toCbor(object.array(i), flow.startArray(), def).end();
-		object.parent();
-		continue;
-	    }
-	    
-	    DataItem value = toCbor(object.value(i), (String)null, def);
-	    object.parent();
-		
-	    flow = flow.add(value);		
-	}
-	return flow;
+    
+        ArrayBuilder<?> flow = builder;
+    
+        for (int i = 0; i < object.size(); i++) {
+    
+            if (object.isObject(i)) {
+            flow = (ArrayBuilder<?>) toCbor(object.object(i), flow.startMap(), def).end();
+            object.parent();
+            continue;
+            }
+    
+            if (object.isArray(i)) {
+            flow = (ArrayBuilder<?>) toCbor(object.array(i), flow.startArray(), def).end();
+            object.parent();
+            continue;
+            }
+    
+            DataItem value = toCbor(object.value(i), (String)null, def);
+            object.parent();
+    
+            flow = flow.add(value);
+        }
+        return flow;
     }
 }

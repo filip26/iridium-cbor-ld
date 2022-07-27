@@ -10,24 +10,24 @@ import com.apicatalog.cborld.encoder.value.TypeValueEncoder;
 import com.apicatalog.cborld.encoder.value.ValueEncoder;
 
 public class DefaultEncoderConfig implements EncoderConfigration {
-    
+
     public static final Collection<ValueEncoder> VALUE_ENCODERS = new ArrayList<>();
-    
-    static {	
-	VALUE_ENCODERS.add(new ContextValueEncoder(new ContextDictionary()));
-	VALUE_ENCODERS.add(new IdValueEncoder());
-	VALUE_ENCODERS.add(new TypeValueEncoder());
+
+    static {
+        VALUE_ENCODERS.add(new ContextValueEncoder(new ContextDictionary()));
+        VALUE_ENCODERS.add(new IdValueEncoder());
+        VALUE_ENCODERS.add(new TypeValueEncoder());
     }
-    
+
     public static final boolean COMPACT_ARRAYS = true;
 
     @Override
     public boolean isCompactArrays() {
-	return COMPACT_ARRAYS;
+        return COMPACT_ARRAYS;
     }
 
     @Override
     public Collection<ValueEncoder> getValueEncoders() {
-	return VALUE_ENCODERS;
+        return VALUE_ENCODERS;
     }
 }

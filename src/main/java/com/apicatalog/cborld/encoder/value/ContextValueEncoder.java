@@ -12,22 +12,22 @@ import co.nstant.in.cbor.model.UnsignedInteger;
 
 public class ContextValueEncoder implements ValueEncoder {
 
-    protected Dictionary contexts;
+    protected final Dictionary contexts;
 
-    public ContextValueEncoder(Dictionary dictionary) {
-	this.contexts = dictionary;
+    public ContextValueEncoder(final Dictionary dictionary) {
+        this.contexts = dictionary;
     }
 
     @Override
-    public DataItem encode(Dictionary dictionary, JsonValueCursor value, String term, TermDefinition def) {
-	if (Keywords.CONTEXT.equals(term)) {
-	    
-	    final BigInteger code = contexts.getCode(value.stringValue());
-		
-	    if (code != null) {
-		return new UnsignedInteger(code);
-	    }
-	}
-	return null;
-    }    
+    public DataItem encode(final Dictionary dictionary, final JsonValueCursor value, final String term, final TermDefinition def) {
+        if (Keywords.CONTEXT.equals(term)) {
+    
+            final BigInteger code = contexts.getCode(value.stringValue());
+    
+            if (code != null) {
+                return new UnsignedInteger(code);
+            }
+        }
+        return null;
+    }
 }

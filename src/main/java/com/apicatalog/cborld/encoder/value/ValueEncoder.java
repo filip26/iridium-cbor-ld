@@ -10,5 +10,5 @@ import co.nstant.in.cbor.model.DataItem;
 public interface ValueEncoder {
 
     DataItem encode(Dictionary dictionary, JsonValueCursor value, String term, TermDefinition def) throws EncoderError;
-    
+
 }
