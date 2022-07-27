@@ -98,6 +98,16 @@
 			"name": "an array of scoped contexts",
 			"input": "encoder/0026-in.jsonld",
 			"expect": "encoder/0026-out.cborld"
-		}
+		},
+        {
+            "@id": "#t0052",
+            "@type": [
+                "PositiveEvaluationTest",
+                "EncoderTest"
+            ],
+            "name": "verifiable credentials",
+            "input": "encoder/0052-in.jsonld",
+            "expect": "encoder/0052-out.cborld"
+        }
 	]
 }
