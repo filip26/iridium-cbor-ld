@@ -2,7 +2,7 @@ package com.apicatalog.cborld.encoder;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Collection;
 
 import com.apicatalog.cborld.CborLd;
@@ -10,13 +10,15 @@ import com.apicatalog.cborld.context.Context;
 import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.dictionary.CodecTermMap;
 import com.apicatalog.cborld.dictionary.ContextDictionary;
-import com.apicatalog.cborld.dictionary.Dictionary;
 import com.apicatalog.cborld.encoder.EncoderError.Code;
+import com.apicatalog.cborld.encoder.value.ContextValueEncoder;
+import com.apicatalog.cborld.encoder.value.IdValueEncoder;
+import com.apicatalog.cborld.encoder.value.TypeValueEncoder;
+import com.apicatalog.cborld.encoder.value.ValueEncoder;
 import com.apicatalog.json.cursor.JsonArrayCursor;
 import com.apicatalog.json.cursor.JsonObjectCursor;
 import com.apicatalog.json.cursor.JsonValueCursor;
 import com.apicatalog.jsonld.context.TermDefinition;
-import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 
 import co.nstant.in.cbor.CborBuilder;
@@ -35,7 +37,8 @@ public class Encoder {
     protected final DocumentLoader loader;
     
     protected CodecTermMap index;
-    protected Dictionary contexts;
+    
+    protected final Collection<ValueEncoder> valueEncoders;
     
     // options
     protected boolean compactArrays;
@@ -43,7 +46,12 @@ public class Encoder {
     protected Encoder(JsonObjectCursor document, DocumentLoader loader) {
 	this.document = document;
 	this.loader = loader;
-	this.contexts = new ContextDictionary();	//FIXME
+	
+	this.valueEncoders = new ArrayList<>();	//FIXME
+	
+	valueEncoders.add(new ContextValueEncoder());
+	valueEncoders.add(new IdValueEncoder());
+	valueEncoders.add(new TypeValueEncoder());
 	
 	// default options
 	this.compactArrays = true;
@@ -158,7 +166,7 @@ public class Encoder {
 		
 		if (compactArrays && object.asArray().size() == 1) {
 
-		    final DataItem value = toCbor(object.asArray().value(0), index.getDefinition(def, property));
+		    final DataItem value = toCbor(object.asArray().value(0), property, index.getDefinition(def, property));
 		    
 		    flow = flow.put(key, value);
 		    object.parent();
@@ -186,7 +194,7 @@ public class Encoder {
 		continue;
 	    } 
 	    
-	    final DataItem value = toCbor(object.value(property), index.getDefinition(def, property));
+	    final DataItem value = toCbor(object.value(property), property, index.getDefinition(def, property));
 	    
 	    flow = flow.put(key, value);
 	    
@@ -195,36 +203,20 @@ public class Encoder {
 	return flow;
     }
     
-    final DataItem toCbor(final JsonValueCursor value, final TermDefinition def) {
+    final DataItem toCbor(final JsonValueCursor value, final String term, final TermDefinition def) {
 	
 	if (value.isBoolean()) {
 	    return value.booleanValue() ? SimpleValue.TRUE : SimpleValue.FALSE;
 	}
 			
 	if (value.isString()) {
-	    if (def != null) {	    
-        	    if (Keywords.CONTEXT.equals(def.getUriMapping())) {	    
-        		final byte[] code = contexts.getCode(value.stringValue());
-        		
-        		if (code != null) {
-        		    return new UnsignedInteger(new BigInteger(code));
-        		}
-        		
-        	    } else if (Keywords.TYPE.equals(def.getUriMapping())) {
-        		final Integer code = index.getCode(value.stringValue());
-        				    
-        		if (code != null) {
-        		    return new UnsignedInteger(code);
-        		}		    
-        		    
-        	    } else if (Keywords.ID.equals(def.getUriMapping())) {
-        		final Integer code = index.getCode(value.stringValue());
-        				    
-        		if (code != null) {
-        		    return new UnsignedInteger(code);
-        		}		    
-        		    
-        	    }
+	    
+	    //TODO better
+	    for (final ValueEncoder valueEncoder : valueEncoders) {
+		DataItem dataItem = valueEncoder.encode(index, value, term, def);
+		if (dataItem != null) {
+		    return dataItem;
+		}
 	    }
 	    return new UnicodeString(value.stringValue());
 	}
@@ -255,7 +247,7 @@ public class Encoder {
 		continue;
 	    }
 	    
-	    DataItem value = toCbor(object.value(i), def);
+	    DataItem value = toCbor(object.value(i), (String)null, def);
 	    object.parent();
 		
 	    flow = flow.add(value);		

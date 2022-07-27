@@ -14,7 +14,6 @@ import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.ActiveContextBuilder;
 import com.apicatalog.jsonld.context.TermDefinition;
-import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 
 import jakarta.json.Json;
@@ -77,9 +76,6 @@ public class CodecTermMap {
 
     final static CodecTermMap add(final ActiveContext activeContext, Map<Integer, ActiveContext> propertyContexts, final CodecTermMap map) throws JsonLdError {
 
-	System.out.println(Arrays.toString(activeContext.getTerms().stream().sorted().toArray(String[]::new)) + "  " +  map.reverse.entrySet());
-	
-		
 	String[] sorted = activeContext.getTerms().stream().sorted().toArray(String[]::new);
 	
 	Arrays.stream(sorted).forEach(map::add);
@@ -135,7 +131,6 @@ public class CodecTermMap {
     }
 
     public TermDefinition getDefinition(String term) {
-	System.out.println("GET R " + term + " -> " + context.getTerm(term).orElse(null));
 	return context.getTerm(term).orElse(null);
     }
     
@@ -147,7 +142,6 @@ public class CodecTermMap {
 	
 	ActiveContext activeContext = properyContexts.get(parent.hashCode());
 	if (activeContext != null) {
-	    System.out.println("GET S " + term + " -> " + activeContext.getTerm(term).orElse(null));
 	    return activeContext.getTerm(term).orElse(null);
 	}
 	return null;
