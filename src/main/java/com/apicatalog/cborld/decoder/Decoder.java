@@ -140,7 +140,7 @@ public class Decoder {
 	    return decodeString((UnicodeString) data, key);
 
 	case UNSIGNED_INTEGER:
-	    return decodeNumber(((UnsignedInteger)data).getValue(), key, def);
+	    return decodeInteger(((UnsignedInteger)data).getValue(), key, def);
 	    
 	default:
 	    throw new IllegalStateException("An unexpected data item type [" + data.getMajorType() + "].");
@@ -211,7 +211,7 @@ public class Decoder {
 
     final String decodeKey(BigInteger key) {
 
-	String result = index.getTerm(key.intValueExact());
+	String result = index.getValue(key);
 
 	//TODO
 	return result != null ? result : key.toString();
@@ -226,7 +226,7 @@ public class Decoder {
 	return Json.createValue(string.getString());
     }
 
-    final JsonValue decodeNumber(final BigInteger number, String key, TermDefinition def) {
+    final JsonValue decodeInteger(final BigInteger number, String key, TermDefinition def) {
 
 	if (number == null) {
 	    throw new IllegalArgumentException("The number parameter must not be null.");
@@ -234,7 +234,7 @@ public class Decoder {
 
 	
 	if (Keywords.CONTEXT.equals(key)) {
-	    final String context  = contexts.getTerm(number.toByteArray());
+	    final String context  = contexts.getValue(number);
 	    if (context != null) {
 		return Json.createValue(context);
 	    } else {
@@ -243,7 +243,7 @@ public class Decoder {
 	}
 	if (def != null) {
 	    if (Keywords.TYPE.equals(def.getUriMapping())) {
-    	    	String term = index.getTerm(number.intValueExact());
+    	    	String term = index.getValue(number);
         	    if (term != null) {
         		return Json.createValue(term);
         	    }	    

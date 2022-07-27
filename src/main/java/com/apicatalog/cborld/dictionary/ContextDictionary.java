@@ -1,5 +1,6 @@
 package com.apicatalog.cborld.dictionary;
 
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,21 +45,24 @@ public class ContextDictionary implements Dictionary {
     }
     
     @Override
-    public byte[] getCode(String term) {
+    public BigInteger getCode(String term) {
 	Integer code = CODEC_INDEX.get(term.hashCode());
-	
+
 	if (code != null) {
-	    return new byte[] { (byte)(int)code };
+	    return BigInteger.valueOf(code);
 	}
 
 	return null;
     }
 
     @Override
-    public String getTerm(byte[] code) {
-	if (code.length != 1 || code[0] < OFFSET) {
+    public String getValue(BigInteger code) {
+	
+	final int value = code.intValueExact();
+	
+	if (value < OFFSET) {
 	    throw new IllegalArgumentException(
-		    		"Invalid code " + Hex.toString(code)  + "."
+		    		"Invalid code " + Hex.toString(code.toByteArray())  + "."
 		    		+ "Available range " 
 		    	        	+ Hex.toString(OFFSET) 
 		    	        	+ "-" 
@@ -66,7 +70,7 @@ public class ContextDictionary implements Dictionary {
 		    	        	+ "."
 		    	        );
 	}
-	return TERMS[code[0] - OFFSET];
+	return TERMS[value - OFFSET];
     }
     
     public String getTerm(Integer code) {

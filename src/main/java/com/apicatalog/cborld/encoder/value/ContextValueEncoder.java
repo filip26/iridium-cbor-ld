@@ -21,13 +21,13 @@ public class ContextValueEncoder implements ValueEncoder {
     }
 
     @Override
-    public DataItem encode(CodecTermMap dictionary, JsonValueCursor value, String term, TermDefinition def) {
+    public DataItem encode(Dictionary dictionary, JsonValueCursor value, String term, TermDefinition def) {
 	if (Keywords.CONTEXT.equals(term)) {
 	    
-	    final byte[] code = contexts.getCode(value.stringValue());
+	    final BigInteger code = contexts.getCode(value.stringValue());
 		
 	    if (code != null) {
-		return new UnsignedInteger(new BigInteger(code));
+		return new UnsignedInteger(code);
 	    }
 	}
 	return null;

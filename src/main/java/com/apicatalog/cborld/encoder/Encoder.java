@@ -2,6 +2,7 @@ package com.apicatalog.cborld.encoder;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -154,12 +155,12 @@ public class Encoder {
 
 	for (final String property : object.properies()) {
 
-	    final Integer encodedProperty = index.getCode(property);
+	    final BigInteger encodedProperty = index.getCode(property);
 
 	    if (object.isArray(property)) {	
 
 		final DataItem key = encodedProperty != null 
-	    			? new UnsignedInteger(encodedProperty + 1)
+	    			? new UnsignedInteger(encodedProperty.add(BigInteger.ONE))
 	    			: new UnicodeString(property);
 
 		object.array(property);
@@ -191,7 +192,7 @@ public class Encoder {
 		object.parent();
 		continue;
 	    }
-	    
+
 	    final DataItem key = encodedProperty != null 
 			? new UnsignedInteger(encodedProperty)
 			: new UnicodeString(property);

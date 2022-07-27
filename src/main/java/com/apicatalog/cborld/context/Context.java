@@ -135,7 +135,7 @@ public class Context {
 		    
 		    final BigInteger unsigned = ((UnsignedInteger)value).getValue();
 		    
-		    contextUrl = dictionary.getTerm(unsigned.toByteArray());
+		    contextUrl = dictionary.getValue(unsigned);
 		    
 		    if (contextUrl == null) {
 			throw new ContextError(Code.UnknownContextCode, "The code [" + Hex.toString(unsigned.toByteArray()) + "]. Cannot get the context.");

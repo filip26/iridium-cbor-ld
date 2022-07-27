@@ -1,5 +1,7 @@
 package com.apicatalog.cborld.dictionary;
 
+import java.math.BigInteger;
+
 /**
  * 
  * 
@@ -7,8 +9,8 @@ package com.apicatalog.cborld.dictionary;
  */
 public interface Dictionary {
 
-    byte[] getCode(String term);
+    BigInteger getCode(String value);
 
-    String getTerm(byte[] value);
+    String getValue(BigInteger code);
 
 }

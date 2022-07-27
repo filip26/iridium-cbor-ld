@@ -1,5 +1,6 @@
 package com.apicatalog.cborld.dictionary;
 
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,18 +36,15 @@ public class KeywordDictionary implements Dictionary {
     }
     
     @Override
-    public byte[] getCode(String term) {
-	Integer code = TERM_TO_CODE.get(term);
-	
-	if (code != null) {
-	    return new byte[] { (byte)(int)code };
-	}
-
-	return null;
+    public BigInteger getCode(String term) {
+	return TERM_TO_CODE.containsKey(term)
+		? BigInteger.valueOf(TERM_TO_CODE.get(term))
+		: null
+		;
     }
 
     @Override
-    public String getTerm(byte[] code) {
-	return CODE_TO_TERM.get((int)code[0]);
+    public String getValue(BigInteger code) {
+	return CODE_TO_TERM.get(code.intValueExact());
     }
 }

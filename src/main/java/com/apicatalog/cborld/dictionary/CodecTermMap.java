@@ -1,5 +1,6 @@
 package com.apicatalog.cborld.dictionary;
 
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -19,7 +20,7 @@ import com.apicatalog.jsonld.loader.DocumentLoader;
 import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
 
-public class CodecTermMap {
+public class CodecTermMap implements Dictionary {
 
     final Map<Integer, String> index;
     final Map<String, Integer> reverse;
@@ -122,12 +123,14 @@ public class CodecTermMap {
 	}
     }
 
-    public String getTerm(int code) {
-	return index.get(code);
+    @Override
+    public String getValue(BigInteger code) {
+	return index.get(code.intValueExact());
     }
-    
-    public Integer getCode(String term) {
-	return reverse.get(term);
+
+    @Override
+    public BigInteger getCode(String term) {
+	return reverse.containsKey(term) ? BigInteger.valueOf(reverse.get(term)) : null;
     }
 
     public TermDefinition getDefinition(String term) {
