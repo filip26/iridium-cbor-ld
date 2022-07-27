@@ -166,9 +166,20 @@ public class Encoder {
 		
 		if (compactArrays && object.asArray().size() == 1) {
 
-		    final DataItem value = toCbor(object.asArray().value(0), property, index.getDefinition(def, property));
+		    object.asArray().value(0);
 		    
-		    flow = flow.put(key, value);
+		    if (object.isObject()) {
+			flow = (MapBuilder<?>) toCbor(object.asObject(), flow.putMap(key), null).end();
+			
+		    } else if (object.isArray()) {
+			flow = (MapBuilder<?>) toCbor(object.asArray(), flow.putArray(key), null).end();
+			
+		    } else {
+			final DataItem value = toCbor(object, property, index.getDefinition(def, property));
+			    
+			flow = flow.put(key, value);
+		    }
+
 		    object.parent();
 			    
 		} else {
@@ -176,6 +187,7 @@ public class Encoder {
     			index.getDefinition(def, property)
     			).end();
 		}
+		
 		object.parent();
 		continue;
 	    }
