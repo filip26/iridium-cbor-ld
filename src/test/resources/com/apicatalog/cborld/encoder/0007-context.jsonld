@@ -1,5 +1,8 @@
 {
 	"@context": {
-		"a": "https://example.com/a"
+		"a": {
+			"@id": "https://example.com/a",
+			"@container": "@list"
+		}
 	}
 }

@@ -1,4 +1,4 @@
 {
     "@context": "https://raw.githubusercontent.com/filip26/iridium-cbor-ld/main/src/test/resources/com/apicatalog/cborld/encoder/0007-context.jsonld",
-	"a": [ ["something" ]]
+	"a": [ ["something" ], "a"]
 }
