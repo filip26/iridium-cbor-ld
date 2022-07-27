@@ -1,4 +1,4 @@
-package com.apicatalog.cborld;
+package com.apicatalog.hex;
 
 public class Hex {
 

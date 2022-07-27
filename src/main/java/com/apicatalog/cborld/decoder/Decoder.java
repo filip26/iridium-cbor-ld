@@ -6,12 +6,12 @@ import java.util.Collection;
 import java.util.List;
 
 import com.apicatalog.cborld.CborLd;
-import com.apicatalog.cborld.Hex;
 import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.decoder.DecoderError.Code;
 import com.apicatalog.cborld.dictionary.CodeTermMap;
 import com.apicatalog.cborld.dictionary.ContextDictionary;
 import com.apicatalog.cborld.dictionary.Dictionary;
+import com.apicatalog.hex.Hex;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.DocumentLoader;

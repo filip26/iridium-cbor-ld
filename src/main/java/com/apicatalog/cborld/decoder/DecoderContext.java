@@ -4,11 +4,11 @@ import java.math.BigInteger;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 
-import com.apicatalog.cborld.Hex;
 import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.context.ContextError.Code;
 import com.apicatalog.cborld.dictionary.Dictionary;
 import com.apicatalog.cborld.dictionary.KeywordDictionary;
+import com.apicatalog.hex.Hex;
 
 import co.nstant.in.cbor.model.Array;
 import co.nstant.in.cbor.model.DataItem;
