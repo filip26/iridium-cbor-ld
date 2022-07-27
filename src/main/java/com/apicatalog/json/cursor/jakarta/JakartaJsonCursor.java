@@ -141,84 +141,84 @@ public class JakartaJsonCursor implements JsonCursor {
     }
 
     @Override
-    public boolean isNull(int index) {
+    public boolean isNull(int i) {
         if (!isArray()) {
             throw new ClassCastException();
         }
     
-        return ValueType.NULL.equals(path[index].asJsonArray().get(index).getValueType());
+        return ValueType.NULL.equals(path[index].asJsonArray().get(i).getValueType());
     }
 
     @Override
-    public boolean isString(int index) {
+    public boolean isString(int i) {
         if (!isArray()) {
             throw new ClassCastException();
         }
     
-        return ValueType.STRING.equals(path[index].asJsonArray().get(index).getValueType());
+        return ValueType.STRING.equals(path[index].asJsonArray().get(i).getValueType());
     }
 
     @Override
-    public boolean isBoolean(int index) {
+    public boolean isBoolean(int i) {
         if (!isArray()) {
             throw new ClassCastException();
         }
-        return ValueType.TRUE.equals(path[index].asJsonArray().get(index).getValueType())
-            || ValueType.FALSE.equals(path[index].asJsonArray().get(index).getValueType());
+        return ValueType.TRUE.equals(path[index].asJsonArray().get(i).getValueType())
+            || ValueType.FALSE.equals(path[index].asJsonArray().get(i).getValueType());
     }
 
     @Override
-    public boolean isNumber(int index) {
+    public boolean isNumber(int i) {
         if (!isArray()) {
             throw new ClassCastException();
         }
-        return ValueType.NUMBER.equals(path[index].asJsonArray().get(index).getValueType());
+        return ValueType.NUMBER.equals(path[index].asJsonArray().get(i).getValueType());
     }
 
     @Override
-    public boolean isArray(int index) {
+    public boolean isArray(int i) {
         if (!isArray()) {
             throw new ClassCastException();
         }
-        return ValueType.ARRAY.equals(path[index].asJsonArray().get(index).getValueType());
+        return ValueType.ARRAY.equals(path[index].asJsonArray().get(i).getValueType());
     }
 
     @Override
-    public boolean isNonEmptyArray(int index) {
+    public boolean isNonEmptyArray(int i) {
         if (!isArray()) {
             throw new ClassCastException();
         }
-        return ValueType.ARRAY.equals(path[index].asJsonArray().get(index).getValueType())
-            && !path[index].asJsonArray().getJsonArray(index).isEmpty();
+        return ValueType.ARRAY.equals(path[index].asJsonArray().get(i).getValueType())
+            && !path[index].asJsonArray().getJsonArray(i).isEmpty();
     }
 
     @Override
-    public boolean isObject(int index) {
+    public boolean isObject(int i) {
         if (!isArray()) {
             throw new ClassCastException();
         }
-        return ValueType.OBJECT.equals(path[index].asJsonArray().get(index).getValueType());
+        return ValueType.OBJECT.equals(path[index].asJsonArray().get(i).getValueType());
     }
 
     @Override
-    public boolean isNonEmptyObject(int index) {
+    public boolean isNonEmptyObject(int i) {
         if (!isArray()) {
             throw new ClassCastException();
         }
-        return ValueType.OBJECT.equals(path[index].asJsonArray().get(index).getValueType())
-            && !path[index].asJsonArray().getJsonObject(index).isEmpty();
+        return ValueType.OBJECT.equals(path[index].asJsonArray().get(i).getValueType())
+            && !path[index].asJsonArray().getJsonObject(i).isEmpty();
     }
 
     @Override
-    public Boolean booleanValue(int index) {
+    public Boolean booleanValue(int i) {
         if (!isArray()) {
             throw new ClassCastException();
         }
     
-        if (ValueType.TRUE.equals(path[index].asJsonArray().get(index).getValueType())) {
+        if (ValueType.TRUE.equals(path[index].asJsonArray().get(i).getValueType())) {
             return Boolean.TRUE;
         }
-        if (ValueType.FALSE.equals(path[index].asJsonArray().get(index).getValueType())) {
+        if (ValueType.FALSE.equals(path[index].asJsonArray().get(i).getValueType())) {
             return Boolean.FALSE;
         }
     
@@ -226,60 +226,60 @@ public class JakartaJsonCursor implements JsonCursor {
     }
 
     @Override
-    public Integer integerValue(int index) {
-        if (!isNumber(index)) {
+    public Integer integerValue(int i) {
+        if (!isNumber(i)) {
             throw new ClassCastException();
         }
-        return path[index].asJsonArray().getJsonNumber(index).intValueExact();
+        return path[index].asJsonArray().getJsonNumber(i).intValueExact();
     }
 
     @Override
-    public Long longValue(int index) {
-        if (!isNumber(index)) {
+    public Long longValue(int i) {
+        if (!isNumber(i)) {
             throw new ClassCastException();
         }
-        return path[index].asJsonArray().getJsonNumber(index).longValueExact();
+        return path[index].asJsonArray().getJsonNumber(i).longValueExact();
     }
 
     @Override
-    public String stringValue(int index) {
-        if (!isString(index)) {
+    public String stringValue(int i) {
+        if (!isString(i)) {
             throw new ClassCastException();
         }
-        return path[index].asJsonArray().getJsonString(index).getString();
+        return path[index].asJsonArray().getJsonString(i).getString();
     }
 
     @Override
-    public JsonArrayCursor array(int _index) {
-        if (!isArray(_index)) {
+    public JsonArrayCursor array(int i) {
+        if (!isArray(i)) {
             throw new IllegalArgumentException();
         }
     
-        path[index + 1] = path[index].asJsonArray().get(_index);
+        path[index + 1] = path[index].asJsonArray().get(i);
         index++;
     
         return this;
     }
 
     @Override
-    public JsonObjectCursor object(int _index) {
-        if (!isObject(_index)) {
+    public JsonObjectCursor object(int i) {
+        if (!isObject(i)) {
             throw new IllegalArgumentException();
         }
     
-        path[index + 1] = path[index].asJsonArray().get(_index);
+        path[index + 1] = path[index].asJsonArray().get(i);
         index++;
     
         return this;
     }
 
     @Override
-    public JsonCursor value(int _index) {
+    public JsonCursor value(int i) {
         if (!isArray()) {
             throw new IllegalArgumentException();
         }
     
-        path[index + 1] = path[index].asJsonArray().get(_index);
+        path[index + 1] = path[index].asJsonArray().get(i);
         index++;
     
         return this;
