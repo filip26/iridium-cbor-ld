@@ -32,13 +32,33 @@
         {
             "@id": "#t0003",
             "@type": [
-                "NegativeEvaluationTest",
+                "PositiveEvaluationTest",
                 "EncoderTest"
             ],
-            "name": "single plural term",
+            "name": "simple term value",
             "input": "encoder/0003-in.jsonld",
             "expect": "encoder/0003-out.cborld"
-        },		
+        },
+        {
+            "@id": "#t0004",
+            "@type": [
+                "PositiveEvaluationTest",
+                "EncoderTest"
+            ],
+            "name": "one item array term value",
+            "input": "encoder/0004-in.jsonld",
+            "expect": "encoder/0004-out.cborld"
+        },
+        {
+            "@id": "#t0005",
+            "@type": [
+                "PositiveEvaluationTest",
+                "EncoderTest"
+            ],
+            "name": "two items array term value",
+            "input": "encoder/0005-in.jsonld",
+            "expect": "encoder/0005-out.cborld"
+        },      
 		{
 			"@id": "#t0020",
 			"@type": [
