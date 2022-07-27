@@ -13,8 +13,8 @@ import com.apicatalog.cborld.dictionary.ContextDictionary;
 import com.apicatalog.cborld.dictionary.Dictionary;
 import com.apicatalog.cborld.encoder.EncoderError.Code;
 import com.apicatalog.json.cursor.JsonArrayCursor;
-import com.apicatalog.json.cursor.JsonCursor;
 import com.apicatalog.json.cursor.JsonObjectCursor;
+import com.apicatalog.json.cursor.JsonValueCursor;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.DocumentLoader;
@@ -195,7 +195,7 @@ public class Encoder {
 	return flow;
     }
     
-    final DataItem toCbor(final JsonCursor value, final TermDefinition def) {
+    final DataItem toCbor(final JsonValueCursor value, final TermDefinition def) {
 	
 	if (value.isBoolean()) {
 	    return value.booleanValue() ? SimpleValue.TRUE : SimpleValue.FALSE;
@@ -234,7 +234,7 @@ public class Encoder {
 	    return new UnsignedInteger(value.integerValue());
 	}
 	
-	throw new IllegalStateException("TODO");
+	throw new IllegalStateException("TODO " + value);
     }
 
     final ArrayBuilder<?> toCbor(final JsonArrayCursor object, final ArrayBuilder<?> builder, TermDefinition def) {
@@ -246,21 +246,19 @@ public class Encoder {
 	    if (object.isObject(i)) {
 		flow = (ArrayBuilder<?>) toCbor(object.object(i), flow.startMap(), def).end();
 		object.parent();
-
-	    } else if (object.isArray(i)) {		
+		continue;
+	    } 
+	    
+	    if (object.isArray(i)) {		
 		flow = (ArrayBuilder<?>) toCbor(object.array(i), flow.startArray(), def).end();
 		object.parent();
-
-	    } else if (object.isBoolean(i)) {
-		flow = flow.add(object.booleanValue(i));
-		
-	    } else if (object.isString(i)) {
-		flow = flow.add(object.stringValue(i));
-		
-	    } else if (object.isNumber(i)) {
-//		flow = flow.add(object.)
-		//TODO
+		continue;
 	    }
+	    
+	    DataItem value = toCbor(object.value(i), def);
+	    object.parent();
+		
+	    flow = flow.add(value);		
 	}
 	return flow;
     }
