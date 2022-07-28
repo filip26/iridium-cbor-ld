@@ -71,7 +71,7 @@
             "option": {
                 "compactArrays": false
             }
-        },    
+        },
         {
             "@id": "#t0007",
             "@type": [
@@ -81,6 +81,16 @@
             "name": "@list container term value",
             "input": "encoder/0007-in.jsonld",
             "expect": "encoder/0007-out.cborld"
+        },
+        {
+            "@id": "#t0008",
+            "@type": [
+                "PositiveEvaluationTest",
+                "EncoderTest"
+            ],
+            "name": "xsd:dateTime @type",
+            "input": "encoder/0008-in.jsonld",
+            "expect": "encoder/0008-out.cborld"
         },
 		{
 			"@id": "#t0020",
