@@ -1,9 +1,15 @@
 package com.apicatalog.cbor;
 
+import java.io.IOException;
 import java.io.Writer;
 import java.util.List;
 
+import com.apicatalog.hex.Hex;
+
+import co.nstant.in.cbor.model.Array;
+import co.nstant.in.cbor.model.ByteString;
 import co.nstant.in.cbor.model.DataItem;
+import co.nstant.in.cbor.model.Map;
 
 public class CborWriter {
 
@@ -13,8 +19,65 @@ public class CborWriter {
         this.writer = writer;
     }
     
-    public void write(List<DataItem> value) {
+    public void write(List<DataItem> value) throws IOException {
         
+        writer.write('[');
+        
+        boolean first = true;
+
+        for (final DataItem item : value) {
+            if (!first) {
+                writer.write(", ");
+            }
+            write(item);
+            first = false;
+        }
+        
+        writer.write(']');        
     }
     
+    public void write(DataItem value) throws IOException {
+        
+        switch (value.getMajorType()) {
+        case ARRAY:
+            write(((Array)value).getDataItems());
+            break;
+            
+        case MAP:
+            write((Map)value);
+            break;
+            
+        case BYTE_STRING:
+            write((ByteString)value);
+            break;
+            
+        default:
+            writer.write(value.toString());
+        }
+    }
+    
+    protected void write(Map value) throws IOException {
+        
+        writer.write('{');
+        
+        boolean first = true;
+        
+        for (final DataItem key : value.getKeys()) {
+            if (!first) {
+                writer.write(',');
+            }
+            writer.write(' ');
+            writer.write(key.toString());
+            writer.write(':');
+            writer.write(' ');
+            write(value.get(key));
+            first = false;
+        }
+        writer.write(' ');
+        writer.write('}');
+    }
+
+    protected void write(ByteString value) throws IOException {
+        writer.write(Hex.toString(value.getBytes()));
+    }
 }

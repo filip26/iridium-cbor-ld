@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Collections;
@@ -200,7 +201,6 @@ public class CborLdTestRunnerJunit {
             assertNotNull(decodedExpected);
 
             if (decodedExpected != null) {
-            
                 cborWriter.write(decodedExpected);
                 writer.println();
             }
@@ -216,9 +216,12 @@ public class CborLdTestRunnerJunit {
                 writer.println();
             }
 
-    } catch (CborException e) {
-        //fail(e);
-    }
+        } catch (IOException e) {
+            fail(e);
+            
+        } catch (CborException e) {
+            fail(e);
+        }
 
         System.out.println(stringWriter.toString());
     }

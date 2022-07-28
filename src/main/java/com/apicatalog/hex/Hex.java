@@ -7,13 +7,21 @@ public class Hex {
     }
 
     public static final String toString(byte[] array) {
+        return toString(array, 5);
+    }
+    
+    public static final String toString(byte[] array, int max) {
         final StringBuilder builder = new StringBuilder(array.length * 5 - 1 + 2).append('[');
     
-        for (int i = 0; i < array.length; i++) {
+        for (int i = 0; i < Math.min(max, array.length); i++) {
             if (i > 0) {
                 builder.append(',');
             }
             builder.append(toString(array[i]));
+        }
+        
+        if (max < array.length) {
+            builder.append(", ... " + (array.length) + " bytes");
         }
     
         return builder.append(']').toString();
