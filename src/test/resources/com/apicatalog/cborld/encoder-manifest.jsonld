@@ -112,6 +112,16 @@
             "input": "encoder/0010-in.jsonld",
             "expect": "encoder/0010-out.cborld"
         },
+        {
+            "@id": "#t0011",
+            "@type": [
+                "PositiveEvaluationTest",
+                "EncoderTest"
+            ],
+            "name": "@vocab term value",
+            "input": "encoder/0011-in.jsonld",
+            "expect": "encoder/0011-out.cborld"
+        },
 		{
 			"@id": "#t0020",
 			"@type": [

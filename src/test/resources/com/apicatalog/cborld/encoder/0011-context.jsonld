@@ -1,0 +1,12 @@
+{
+	"@context": {
+		"@vocab": "https://w3id.org/security#",
+		"assertionMethod": {
+			"@type": "@id",
+			"@container": "@set"
+		},
+		"proofPurpose": {
+			"@type": "@vocab"
+		}
+	}
+}

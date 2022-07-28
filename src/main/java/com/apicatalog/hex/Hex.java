@@ -7,7 +7,7 @@ public class Hex {
     }
 
     public static final String toString(byte[] array) {
-        return toString(array, 5);
+        return toString(array, 4);
     }
     
     public static final String toString(byte[] array, int max) {
