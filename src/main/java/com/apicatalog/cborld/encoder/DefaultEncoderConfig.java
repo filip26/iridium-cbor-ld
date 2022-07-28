@@ -9,6 +9,7 @@ import com.apicatalog.cborld.encoder.value.IdValueEncoder;
 import com.apicatalog.cborld.encoder.value.TypeValueEncoder;
 import com.apicatalog.cborld.encoder.value.ValueEncoder;
 import com.apicatalog.cborld.encoder.value.XsdDateTimeValueEncoder;
+import com.apicatalog.cborld.encoder.value.XsdDateValueEncoder;
 
 public class DefaultEncoderConfig implements EncoderConfigration {
 
@@ -19,6 +20,7 @@ public class DefaultEncoderConfig implements EncoderConfigration {
         VALUE_ENCODERS.add(new IdValueEncoder());
         VALUE_ENCODERS.add(new TypeValueEncoder());
         VALUE_ENCODERS.add(new XsdDateTimeValueEncoder());
+        VALUE_ENCODERS.add(new XsdDateValueEncoder());
     }
 
     public static final boolean COMPACT_ARRAYS = true;
