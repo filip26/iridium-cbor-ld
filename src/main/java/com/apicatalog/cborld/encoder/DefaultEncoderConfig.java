@@ -6,6 +6,7 @@ import java.util.Collection;
 import com.apicatalog.cborld.dictionary.ContextDictionary;
 import com.apicatalog.cborld.encoder.value.ContextValueEncoder;
 import com.apicatalog.cborld.encoder.value.IdValueEncoder;
+import com.apicatalog.cborld.encoder.value.MultibaseValueEncoder;
 import com.apicatalog.cborld.encoder.value.StringValueEncoder;
 import com.apicatalog.cborld.encoder.value.TypeValueEncoder;
 import com.apicatalog.cborld.encoder.value.UuidValueEncoder;
@@ -18,11 +19,17 @@ public class DefaultEncoderConfig implements EncoderConfigration {
     public static final Collection<ValueEncoder> VALUE_ENCODERS = new ArrayList<>();
 
     static {
+        // term driven
         VALUE_ENCODERS.add(new ContextValueEncoder(new ContextDictionary()));
         VALUE_ENCODERS.add(new IdValueEncoder());
         VALUE_ENCODERS.add(new TypeValueEncoder());
+        
+        // type driven
         VALUE_ENCODERS.add(new XsdDateTimeValueEncoder());
         VALUE_ENCODERS.add(new XsdDateValueEncoder());
+        VALUE_ENCODERS.add(new MultibaseValueEncoder());
+        
+        // value driven
         VALUE_ENCODERS.add(new UuidValueEncoder());
         VALUE_ENCODERS.add(new StringValueEncoder());
     }

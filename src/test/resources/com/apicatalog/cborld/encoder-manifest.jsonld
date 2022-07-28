@@ -122,6 +122,16 @@
             "input": "encoder/0011-in.jsonld",
             "expect": "encoder/0011-out.cborld"
         },
+        {
+            "@id": "#t0012",
+            "@type": [
+                "PositiveEvaluationTest",
+                "EncoderTest"
+            ],
+            "name": "multibase term value",
+            "input": "encoder/0012-in.jsonld",
+            "expect": "encoder/0012-out.cborld"
+        },
 		{
 			"@id": "#t0020",
 			"@type": [
