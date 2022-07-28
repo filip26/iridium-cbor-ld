@@ -12,6 +12,10 @@ import com.apicatalog.cborld.dictionary.CodeTermMap;
 import com.apicatalog.cborld.dictionary.ContextDictionary;
 import com.apicatalog.cborld.dictionary.Dictionary;
 import com.apicatalog.hex.Hex;
+import com.apicatalog.json.cursor.JsonArrayEditor;
+import com.apicatalog.json.cursor.JsonObjectEditor;
+import com.apicatalog.json.cursor.JsonValueCursor;
+import com.apicatalog.json.cursor.JsonValueEditor;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.http.DefaultHttpClient;
 import com.apicatalog.jsonld.http.media.MediaType;
@@ -84,7 +88,7 @@ public class Decoder {
         return this;
     }
 
-    public JsonValue decode() throws DecoderError, ContextError {
+    public JsonValueCursor decode() throws DecoderError, ContextError {
 
         if (loader == null) {
             loader = new HttpLoader(DefaultHttpClient.defaultInstance());
@@ -97,7 +101,7 @@ public class Decoder {
         return decodeUncompressed();
     }
 
-    final JsonValue decodeCompressed() throws DecoderError, ContextError {
+    final JsonValueCursor decodeCompressed() throws DecoderError, ContextError {
             
         try {
             final ByteArrayInputStream bais = new ByteArrayInputStream(encoded);
@@ -105,19 +109,19 @@ public class Decoder {
     
             // nothing do de-compress
             if (dataItems.isEmpty()) {
-            return null;
+                return null;
             }
     
             // decode as an array of objects
             if (dataItems.size() > 1) {
     
-            final JsonArrayBuilder builder = Json.createArrayBuilder();
-    
-            for (final DataItem item : dataItems) {
-                builder.add(decodeCompressed(item));
-            }
-    
-            return builder.build();
+                final JsonArrayBuilder builder = Json.createArrayBuilder();
+        
+                for (final DataItem item : dataItems) {
+                    builder.add(decodeCompressed(item));
+                }
+        
+                return builder.build();
             }
     
             return decodeCompressed(dataItems.iterator().next());
@@ -127,16 +131,16 @@ public class Decoder {
         }
     }
 
-    final JsonValue decodeCompressed(final DataItem data) throws DecoderError, ContextError {
+    final JsonValueEditor decodeCompressed(final JsonValueEditor editor, final DataItem data) throws DecoderError, ContextError {
     
         Collection<String> contextUrls = (new DecoderContext(new ContextDictionary())).get(data);
     
         this.index = CodeTermMap.from(contextUrls, loader);
     
-        return decodeData(data, null, null);
+        return decodeData(editor, data, null, null);
     }
 
-    final JsonValue decodeData(final DataItem data, final String key, TermDefinition def) throws DecoderError {
+    final JsonValueEditor decodeData(final JsonValueEditor editor, final DataItem data, final String key, TermDefinition def) throws DecoderError {
     
         if (data == null) {
             throw new IllegalArgumentException("The data parameter must not be null.");
@@ -144,59 +148,68 @@ public class Decoder {
     
         switch (data.getMajorType()) {
         case MAP:
-            return decodeMap((Map) data, def);
+            return decodeMap(editor.newObject(), (Map) data, def).done();
     
         case ARRAY:
-            return decodeArray(((Array) data).getDataItems(), key, def);
+            return decodeArray(editor.newArray(), ((Array) data).getDataItems(), key, def).done();
     
         case UNICODE_STRING:
-            return decodeString((UnicodeString) data, key);
+            return decodeString(editor, (UnicodeString) data, key);
     
         case UNSIGNED_INTEGER:
-            return decodeInteger(((UnsignedInteger)data).getValue(), key, def);
+            return decodeInteger(editor, ((UnsignedInteger)data).getValue(), key, def);
     
         default:
             throw new IllegalStateException("An unexpected data item type [" + data.getMajorType() + "].");
         }
     }
 
-    final JsonObject decodeMap(final Map map, TermDefinition def) throws DecoderError {
+    final JsonObjectEditor decodeMap(final JsonObjectEditor editor, final Map map, TermDefinition def) throws DecoderError {
     
         if (map == null) {
             throw new IllegalArgumentException("The map parameter must not be null.");
         }
     
         if (map.getKeys().isEmpty()) {
-            return JsonValue.EMPTY_JSON_OBJECT;
+            return editor;
+            //return JsonValue.EMPTY_JSON_OBJECT;
         }
     
-        final JsonObjectBuilder builder = Json.createObjectBuilder();
+        //final JsonObjectBuilder builder = Json.createObjectBuilder();
     
         for (final DataItem key : map.getKeys()) {
     
-            builder.add(decodeKey(key), decodeData(map.get(key), decodeKey(key), index.getDefinition(def, decodeKey(key))));
+            decodeData(
+                    editor.edit(decodeKey(key)), 
+                    map.get(key), decodeKey(key), index.getDefinition(def, decodeKey(key)))
+                .done();
+                        
+            //builder.add(decodeKey(key), decodeData(map.get(key), decodeKey(key), index.getDefinition(def, decodeKey(key))));
         }
     
-        return builder.build();
+        return editor;
     }
 
-    final JsonArray decodeArray(final Collection<DataItem> items, String key, TermDefinition def) throws DecoderError {
+    final JsonArrayEditor decodeArray(final JsonArrayEditor editor, final Collection<DataItem> items, String key, TermDefinition def) throws DecoderError {
     
         if (items == null) {
             throw new IllegalArgumentException("The items parameter must not be null.");
         }
     
         if (items.isEmpty()) {
-            return JsonValue.EMPTY_JSON_ARRAY;
+            return editor;
+            //return JsonValue.EMPTY_JSON_ARRAY;
         }
     
-        final JsonArrayBuilder builder = Json.createArrayBuilder();
+        //final JsonArrayBuilder builder = Json.createArrayBuilder();
     
         for (final DataItem item : items) {
-            builder.add(decodeData(item, key, def));
+            decodeData(editor.add(), item, key, def).done();
+          //  builder.add(decodeData(item, key, def));
         }
     
-        return builder.build();
+        return editor;
+        //return builder.build();
     }
 
     final String decodeKey(final DataItem data) throws DecoderError {
@@ -230,44 +243,48 @@ public class Decoder {
         return result != null ? result : key.toString();
     }
 
-    final JsonString decodeString(final UnicodeString string, final String key) {
+    final JsonValueEditor decodeString(final JsonValueEditor editor, final UnicodeString string, final String key) {
     
         if (string == null) {
             throw new IllegalArgumentException("The string parameter must not be null.");
         }
         //TODO
-        return Json.createValue(string.getString());
+        return editor.set(string.getString());
+        //return Json.createValue(string.getString());
     }
 
-    final JsonValue decodeInteger(final BigInteger number, String key, TermDefinition def) {
+    final JsonValueEditor decodeInteger(final JsonValueEditor editor, final BigInteger number, String key, TermDefinition def) {
     
         if (number == null) {
             throw new IllegalArgumentException("The number parameter must not be null.");
         }
     
-    
         if (Keywords.CONTEXT.equals(key)) {
             final String context  = contexts.getValue(number);
+            
             if (context != null) {
-            return Json.createValue(context);
+                return editor.set(context);
+                //return Json.createValue(context);
             } else {
             //TODO throw something
             }
         }
         if (def != null) {
             if (Keywords.TYPE.equals(def.getUriMapping())) {
-                    String term = index.getValue(number);
-                    if (term != null) {
-                    return Json.createValue(term);
-                    }
+                final String term = index.getValue(number);
+                if (term != null) {
+                    return editor.set(term);
+                    //return Json.createValue(term);
+                }
             }
         }
     
         //TODO
-        return Json.createValue(number);
+        return editor.set(number);
+        //return Json.createValue(number);
     }
 
-    final JsonValue decodeUncompressed() throws DecoderError {
+    final JsonValueCursor decodeUncompressed() throws DecoderError {
         /// TODO
         return null;
     }
