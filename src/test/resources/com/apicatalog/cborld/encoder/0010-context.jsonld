@@ -1,0 +1,8 @@
+{
+	"@context": {
+		"@vocab": "https://schema.org",
+		"identifier": {
+			"@type": "@id"
+		}
+	}
+}
