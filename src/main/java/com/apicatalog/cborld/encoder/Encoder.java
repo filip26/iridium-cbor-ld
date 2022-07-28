@@ -178,21 +178,26 @@ public class Encoder {
                     object.asArray().value(0);
         
                     if (object.isObject()) {
-                    flow = (MapBuilder<?>) toCbor(object.asObject(), flow.putMap(key), null).end();
+                        flow = (MapBuilder<?>) toCbor(object.asObject(), flow.putMap(key), index.getDefinition(def, property)).end();
         
                     } else if (object.isArray()) {
-                    flow = (MapBuilder<?>) toCbor(object.asArray(), flow.putArray(key), null).end();
+                        flow = (MapBuilder<?>) toCbor(
+                                                    object.asArray(), 
+                                                    flow.putArray(key),
+                                                    property,
+                                                    index.getDefinition(def, property)).end();
         
                     } else {
-                    final DataItem value = toCbor(object, property, index.getDefinition(def, property));
+                        final DataItem value = toCbor(object, property, index.getDefinition(def, property));
         
-                    flow = flow.put(key, value);
+                        flow = flow.put(key, value);
                     }
         
                     object.parent();
         
                 } else {
                     flow = (MapBuilder<?>) toCbor(object.asArray(), flow.putArray(key),
+                        property,
                         index.getDefinition(def, property)
                         ).end();
                 }
@@ -250,25 +255,25 @@ public class Encoder {
         throw new IllegalStateException("TODO " + value);
     }
 
-    final ArrayBuilder<?> toCbor(final JsonArrayCursor object, final ArrayBuilder<?> builder, TermDefinition def) throws EncoderError {
+    final ArrayBuilder<?> toCbor(final JsonArrayCursor object, final ArrayBuilder<?> builder, String property, TermDefinition def) throws EncoderError {
     
         ArrayBuilder<?> flow = builder;
     
         for (int i = 0; i < object.size(); i++) {
     
             if (object.isObject(i)) {
-            flow = (ArrayBuilder<?>) toCbor(object.object(i), flow.startMap(), def).end();
-            object.parent();
-            continue;
+                flow = (ArrayBuilder<?>) toCbor(object.object(i), flow.startMap(), def).end();
+                object.parent();
+                continue;
             }
     
             if (object.isArray(i)) {
-            flow = (ArrayBuilder<?>) toCbor(object.array(i), flow.startArray(), def).end();
-            object.parent();
-            continue;
+                flow = (ArrayBuilder<?>) toCbor(object.array(i), flow.startArray(), property, def).end();
+                object.parent();
+                continue;
             }
     
-            DataItem value = toCbor(object.value(i), (String)null, def);
+            DataItem value = toCbor(object.value(i), property, def);
             object.parent();
     
             flow = flow.add(value);
