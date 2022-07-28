@@ -1,11 +1,9 @@
 package com.apicatalog.cborld.encoder.value;
 
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.Locale;
 
 import com.apicatalog.cborld.dictionary.Dictionary;
 import com.apicatalog.json.cursor.JsonValueCursor;

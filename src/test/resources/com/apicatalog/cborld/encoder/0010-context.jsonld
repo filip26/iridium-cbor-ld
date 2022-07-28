@@ -1,6 +1,6 @@
 {
 	"@context": {
-		"@vocab": "https://schema.org",
+		"@vocab": "https://schema.org/",
 		"identifier": {
 			"@type": "@id"
 		}

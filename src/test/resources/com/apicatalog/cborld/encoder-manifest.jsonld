@@ -102,6 +102,16 @@
             "input": "encoder/0009-in.jsonld",
             "expect": "encoder/0009-out.cborld"
         },
+        {
+            "@id": "#t0010",
+            "@type": [
+                "PositiveEvaluationTest",
+                "EncoderTest"
+            ],
+            "name": "UUID term value",
+            "input": "encoder/0010-in.jsonld",
+            "expect": "encoder/0010-out.cborld"
+        },
 		{
 			"@id": "#t0020",
 			"@type": [

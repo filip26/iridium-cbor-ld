@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Objects;
 
 import com.apicatalog.cbor.CborComparison;
+import com.apicatalog.cbor.CborWriter;
 import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.decoder.DecoderError;
 import com.apicatalog.cborld.encoder.EncoderError;
@@ -64,61 +65,61 @@ public class CborLdTestRunnerJunit {
         try {
             if (testCase.type.contains(CborLdTest.VOCAB + "EncoderTest")) {
 
-            Document document = LOADER.loadDocument(testCase.input, new DocumentLoaderOptions());
-
-            JsonObject object = document.getJsonContent().orElseThrow(IllegalStateException::new).asJsonObject();
-
-            JsonObjectCursor cursor = new JakartaJsonCursor(object, 100);
-
-            byte[] bytes = CborLd.encoder(cursor).loader(LOADER).encode();
-
+                Document document = LOADER.loadDocument(testCase.input, new DocumentLoaderOptions());
+    
+                JsonObject object = document.getJsonContent().orElseThrow(IllegalStateException::new).asJsonObject();
+    
+                JsonObjectCursor cursor = new JakartaJsonCursor(object, 100);
+    
+                byte[] bytes = CborLd.encoder(cursor).loader(LOADER).encode();
+    
                 if (testCase.type.stream().noneMatch(o -> o.endsWith("PositiveEvaluationTest"))) {
                     fail("Expected error code [" + testCase.result + "].");
                     return;
                 }
-
-            assertNotNull(bytes);
-
-            Document expected = LOADER.loadDocument(testCase.result, new DocumentLoaderOptions());
-
-            assertNotNull(expected);
-            assertEquals(CborLdDocument.MEDIA_TYPE, expected.getContentType());
-
-            final boolean match = CborComparison.equals(((CborLdDocument)expected).getByteArray(), bytes);
-
-            if (!match) {
-                write(testCase, bytes, ((CborLdDocument)expected).getByteArray());
-            }
-
-            assertTrue(match, "The expected result does not match.");
+    
+                assertNotNull(bytes);
+    
+                Document expected = LOADER.loadDocument(testCase.result, new DocumentLoaderOptions());
+    
+                assertNotNull(expected);
+                assertEquals(CborLdDocument.MEDIA_TYPE, expected.getContentType());
+    
+                final boolean match = CborComparison.equals(((CborLdDocument)expected).getByteArray(), bytes);
+    
+                if (!match) {
+                    write(testCase, bytes, ((CborLdDocument)expected).getByteArray());
+                }
+    
+                assertTrue(match, "The expected result does not match.");
 
 
             } else if (testCase.type.contains(CborLdTest.VOCAB + "DecoderTest")) {
 
-            Document document = LOADER.loadDocument(testCase.input, new DocumentLoaderOptions());
-
-            assertNotNull(document);
-
-            JsonValue result = CborLd.decoder(((CborLdDocument)document).getByteArray()).loader(LOADER).decode();
-
+                Document document = LOADER.loadDocument(testCase.input, new DocumentLoaderOptions());
+    
+                assertNotNull(document);
+    
+                JsonValue result = CborLd.decoder(((CborLdDocument)document).getByteArray()).loader(LOADER).decode();
+    
                 if (testCase.type.stream().noneMatch(o -> o.endsWith("PositiveEvaluationTest"))) {
                     fail("Expected error code [" + testCase.result + "].");
                     return;
                 }
-
-            assertNotNull(result);
-
-            final JsonStructure expected = LOADER.loadDocument(testCase.result, new DocumentLoaderOptions()).getJsonContent().orElse(null);
-
-            assertNotNull(expected);
-
-            final boolean match = JsonLdComparison.equals(expected, result);
-
-            if (!match) {
-                write(testCase, result, expected);
-            }
-
-            assertTrue(match, "The expected result does not match.");
+    
+                assertNotNull(result);
+    
+                final JsonStructure expected = LOADER.loadDocument(testCase.result, new DocumentLoaderOptions()).getJsonContent().orElse(null);
+    
+                assertNotNull(expected);
+    
+                final boolean match = JsonLdComparison.equals(expected, result);
+    
+                if (!match) {
+                    write(testCase, result, expected);
+                }
+    
+                assertTrue(match, "The expected result does not match.");
 
             } else {
                 fail("Unknown test execution method: " + testCase.type);
@@ -193,21 +194,25 @@ public class CborLdTestRunnerJunit {
 
             writer.println("Expected");
 
-        List<DataItem> decodedExpected = CborDecoder.decode(expected);
-        assertNotNull(decodedExpected);
+            CborWriter cborWriter = new CborWriter(writer);
+            
+            List<DataItem> decodedExpected = CborDecoder.decode(expected);
+            assertNotNull(decodedExpected);
 
             if (decodedExpected != null) {
-                writer.print(decodedExpected.toString());
+            
+                cborWriter.write(decodedExpected);
                 writer.println();
             }
             writer.println();
 
             writer.println("Actual");
-        List<DataItem> decodedResult = CborDecoder.decode(result);
-        assertNotNull(decodedResult);
+            
+            List<DataItem> decodedResult = CborDecoder.decode(result);
+            assertNotNull(decodedResult);
 
             if (decodedResult != null) {
-                writer.print(decodedResult.toString());
+                cborWriter.write(decodedResult);
                 writer.println();
             }
 
