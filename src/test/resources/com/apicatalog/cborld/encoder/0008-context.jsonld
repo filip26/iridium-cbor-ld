@@ -3,7 +3,7 @@
 	    "@vocab": "https://schema.org",
 		"xsd": "http://www.w3.org/2001/XMLSchema#",
 		"datetime": {
-			"@type": "xsd:date"
+			"@type": "xsd:dateTitme"
 		}
 	}
 }
