@@ -92,6 +92,16 @@
             "input": "encoder/0008-in.jsonld",
             "expect": "encoder/0008-out.cborld"
         },
+        {
+            "@id": "#t0009",
+            "@type": [
+                "PositiveEvaluationTest",
+                "EncoderTest"
+            ],
+            "name": "xsd:date @type",
+            "input": "encoder/0009-in.jsonld",
+            "expect": "encoder/0009-out.cborld"
+        },
 		{
 			"@id": "#t0020",
 			"@type": [
