@@ -1,0 +1,8 @@
+{
+	"@context": {
+		"@vocab": "https://w3id.org/security#",
+		"value": {
+			"@type": "multibase"
+		}
+	}
+}
