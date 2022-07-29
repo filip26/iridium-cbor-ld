@@ -151,7 +151,7 @@ public class Encoder {
             new CborEncoder(baos).encode(builder.build());
     
         } catch (CborException e) {
-            e.printStackTrace();
+            throw new EncoderError(Code.InvalidDocument, e);
         }
     
         return baos.toByteArray();

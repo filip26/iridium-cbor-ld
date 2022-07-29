@@ -5,6 +5,7 @@ import java.util.Collection;
 
 import com.apicatalog.cborld.dictionary.ContextDictionary;
 import com.apicatalog.cborld.encoder.value.ContextValueEncoder;
+import com.apicatalog.cborld.encoder.value.DidKeyValueEncoder;
 import com.apicatalog.cborld.encoder.value.IdValueEncoder;
 import com.apicatalog.cborld.encoder.value.MultibaseValueEncoder;
 import com.apicatalog.cborld.encoder.value.StringValueEncoder;
@@ -30,8 +31,9 @@ public class DefaultEncoderConfig implements EncoderConfigration {
         VALUE_ENCODERS.add(new MultibaseValueEncoder());
         
         // value driven
-        VALUE_ENCODERS.add(new UuidValueEncoder());
         VALUE_ENCODERS.add(new StringValueEncoder());
+        VALUE_ENCODERS.add(new UuidValueEncoder());
+        VALUE_ENCODERS.add(new DidKeyValueEncoder());
     }
 
     public static final boolean COMPACT_ARRAYS = true;

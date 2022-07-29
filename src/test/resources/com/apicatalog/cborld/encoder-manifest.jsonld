@@ -132,6 +132,16 @@
             "input": "encoder/0012-in.jsonld",
             "expect": "encoder/0012-out.cborld"
         },
+        {
+            "@id": "#t0013",
+            "@type": [
+                "PositiveEvaluationTest",
+                "EncoderTest"
+            ],
+            "name": "did:key term value",
+            "input": "encoder/0013-in.jsonld",
+            "expect": "encoder/0013-out.cborld"
+        },
 		{
 			"@id": "#t0020",
 			"@type": [
