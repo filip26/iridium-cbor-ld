@@ -1,0 +1,19 @@
+{
+	"@context": {
+		"@vocab": "https://example.com/",
+		"xsd": "http://www.w3.org/2001/XMLSchema#",
+		"Timeline": {
+			"@context": {
+				"x": {
+				    "@id": "https://example.com/xxxx",
+					"@context": {
+						"instant": {
+							"@id": "https://example.com/instant",
+							"@type": "xsd:dateTime"
+						}
+					}
+				}
+			}
+		}
+	}
+}
