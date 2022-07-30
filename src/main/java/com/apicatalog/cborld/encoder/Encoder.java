@@ -139,12 +139,12 @@ public class Encoder {
             // version 1 - 0x01
             baos.write(CborLd.CBOR_LD_BYTE_PREFIX);
             baos.write(CborLd.COMPRESSED);
-    
-            index = CodeTermMap.from(contextUrls, loader);
-                
-            final TypeMapping typeMapping = Context.getTypeMapping(document, loader);
+                    
+            final Context context = Context.from(document, loader);
             
-            final CborBuilder builder = (CborBuilder) encode(document, new CborBuilder().addMap(), typeMapping).end();
+            index = CodeTermMap.from(contextUrls, context.getAppliedTypeScopedContexts(), loader);
+            
+            final CborBuilder builder = (CborBuilder) encode(document, new CborBuilder().addMap(), context.getTypeMapping()).end();
             
             new CborEncoder(baos).encode(builder.build());
 

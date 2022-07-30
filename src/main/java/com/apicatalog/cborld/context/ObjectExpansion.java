@@ -16,6 +16,7 @@
 package com.apicatalog.cborld.context;
 
 import java.net.URI;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -39,18 +40,21 @@ final class ObjectExpansion {
     private JsonObject element;
     private String activeProperty;
     private URI baseUrl;
+    private Collection<String> appliedTypeScopedContexts;
+    
 
     // optional
     private boolean ordered;
     private boolean fromMap;
 
     private ObjectExpansion(final ActiveContext activeContext, final JsonValue propertyContext, final JsonObject element,
-            final String activeProperty, final URI baseUrl) {
+            final String activeProperty, final URI baseUrl, Collection<String> appliedTypeScopedContexts) {
         this.activeContext = activeContext;
         this.propertyContext = propertyContext;
         this.element = element;
         this.activeProperty = activeProperty;
         this.baseUrl = baseUrl;
+        this.appliedTypeScopedContexts = appliedTypeScopedContexts;
 
         // default values
         this.ordered = false;
@@ -58,8 +62,8 @@ final class ObjectExpansion {
     }
 
     public static final ObjectExpansion with(final ActiveContext activeContext, final JsonValue propertyContext,
-            final JsonObject element, final String activeProperty, final URI baseUrl) {
-        return new ObjectExpansion(activeContext, propertyContext, element, activeProperty, baseUrl);
+            final JsonObject element, final String activeProperty, final URI baseUrl, Collection<String> appliedTypeScopedContexts) {
+        return new ObjectExpansion(activeContext, propertyContext, element, activeProperty, baseUrl, appliedTypeScopedContexts);
     }
 
     public ObjectExpansion ordered(boolean value) {
@@ -88,7 +92,7 @@ final class ObjectExpansion {
         final JsonMapBuilder result = JsonMapBuilder.create();
 
         ObjectExpansion1314
-                    .with(activeContext, element, activeProperty, baseUrl)
+                    .with(activeContext, element, activeProperty, baseUrl, appliedTypeScopedContexts)
                     .result(result)
                     .ordered(ordered)
                     .expand();
@@ -99,7 +103,6 @@ final class ObjectExpansion {
     private void initPropertyContext() throws JsonLdError {
         // 8.
         if (propertyContext != null) {
-
             activeContext = activeContext
                                 .newContext()
                                 .overrideProtected(true)
@@ -192,6 +195,8 @@ final class ObjectExpansion {
                 Optional<JsonValue> localContext = typeContext.getTerm(term).map(TermDefinition::getLocalContext);
 
                 if (localContext.isPresent()) {
+                    
+                    appliedTypeScopedContexts.add(term);
 
                     Optional<TermDefinition> valueDefinition = activeContext.getTerm(term);
 
@@ -209,39 +214,5 @@ final class ObjectExpansion {
         }
 
         return typeKey;
-    }
-
-    private String findInputType(final String typeKey) throws JsonLdError {
-
-        // Initialize input type to expansion of the last value of the first entry in
-        // element
-        // expanding to @type (if any), ordering entries lexicographically by key. Both
-        // the key and
-        // value of the matched entry are IRI expanded.
-        if (typeKey != null) {
-
-            final JsonValue type = element.get(typeKey);
-
-            if (JsonUtils.isArray(type)) {
-
-                final String lastValue = type.asJsonArray()
-                                .stream()
-                                .filter(JsonUtils::isString)
-                                .map(JsonString.class::cast)
-                                .map(JsonString::getString)
-                                .sorted()
-                                .reduce((first, second) -> second)
-                                .orElse(null);
-
-                if (lastValue != null) {
-                    return activeContext.uriExpansion().vocab(true).expand(lastValue);
-                }
-
-            } else if (JsonUtils.isString(type)) {
-                return activeContext.uriExpansion().vocab(true).expand(((JsonString) type).getString());
-            }
-        }
-
-        return null;
     }
 }

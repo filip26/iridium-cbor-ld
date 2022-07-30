@@ -16,6 +16,7 @@
 package com.apicatalog.cborld.context;
 
 import java.net.URI;
+import java.util.Collection;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
@@ -31,25 +32,27 @@ final class Expansion {
     private JsonValue element;
     private String activeProperty;
     private URI baseUrl;
+    private Collection<String> appliedTypeScopedContexts;
 
     // optional
     private boolean ordered;
     private boolean fromMap;
 
     private Expansion(final ActiveContext activeContext, final JsonValue element, final String activeProperty,
-            final URI baseUrl) {
+            final URI baseUrl, Collection<String> appliedTypeScopedContexts) {
         this.activeContext = activeContext;
         this.element = element;
         this.activeProperty = activeProperty;
         this.baseUrl = baseUrl;
+        this.appliedTypeScopedContexts = appliedTypeScopedContexts;
 
         // default values
         this.ordered = false;
         this.fromMap = false;
     }
 
-    public static final Expansion with(final ActiveContext activeContext, final JsonValue element, final String activeProperty, final URI baseUrl) {
-        return new Expansion(activeContext, element, activeProperty, baseUrl);
+    public static final Expansion with(final ActiveContext activeContext, final JsonValue element, final String activeProperty, final URI baseUrl, Collection<String> appliedTypeScopedContexts) {
+        return new Expansion(activeContext, element, activeProperty, baseUrl, appliedTypeScopedContexts);
     }
 
     public Expansion ordered(boolean value) {
@@ -73,7 +76,7 @@ final class Expansion {
         if (JsonUtils.isArray(element)) {
 
             return ArrayExpansion
-                        .with(activeContext, element.asJsonArray(), activeProperty, baseUrl)
+                        .with(activeContext, element.asJsonArray(), activeProperty, baseUrl, appliedTypeScopedContexts)
                         .ordered(ordered)
                         .fromMap(fromMap)
                         .expand();
@@ -96,7 +99,7 @@ final class Expansion {
 
         // 6. Otherwise element is a map
         return ObjectExpansion
-                    .with(activeContext, propertyContext, element.asJsonObject(), activeProperty, baseUrl)
+                    .with(activeContext, propertyContext, element.asJsonObject(), activeProperty, baseUrl, appliedTypeScopedContexts)
                     .ordered(ordered)
                     .fromMap(fromMap)
                     .expand();

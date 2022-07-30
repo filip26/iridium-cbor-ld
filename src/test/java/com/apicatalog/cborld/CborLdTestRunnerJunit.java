@@ -71,8 +71,11 @@ public class CborLdTestRunnerJunit {
                 JsonObject object = document.getJsonContent().orElseThrow(IllegalStateException::new).asJsonObject();
     
                 JsonObjectCursor cursor = new JakartaJsonCursor(object, 100);
-    
-                byte[] bytes = CborLd.encoder(cursor).loader(LOADER).encode();
+
+                byte[] bytes = CborLd.encoder(cursor)
+                                    .loader(LOADER)
+                                    .compactArray(testCase.compactArrays)
+                                    .encode();
     
                 if (testCase.type.stream().noneMatch(o -> o.endsWith("PositiveEvaluationTest"))) {
                     fail("Expected error code [" + testCase.result + "].");

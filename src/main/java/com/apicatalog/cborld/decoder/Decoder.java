@@ -131,7 +131,7 @@ public class Decoder {
     
         Collection<String> contextUrls = (new DecoderContext(new ContextDictionary())).get(data);
     
-        this.index = CodeTermMap.from(contextUrls, loader);
+        this.index = CodeTermMap.from(contextUrls, null, loader);   //FIXME
     
         return decodeData(data, null, null);
     }
@@ -174,7 +174,7 @@ public class Decoder {
     
         for (final DataItem key : map.getKeys()) {
     
-            builder.add(decodeKey(key), decodeData(map.get(key), decodeKey(key), index.getDefinition(def, decodeKey(key))));
+            builder.add(decodeKey(key), decodeData(map.get(key), decodeKey(key), null));   //FIXME
         }
     
         return builder.build();

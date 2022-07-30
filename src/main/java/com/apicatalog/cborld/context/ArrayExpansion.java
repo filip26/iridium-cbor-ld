@@ -16,6 +16,7 @@
 package com.apicatalog.cborld.context;
 
 import java.net.URI;
+import java.util.Collection;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
@@ -33,17 +34,19 @@ final class ArrayExpansion {
     private JsonArray element;
     private String activeProperty;
     private URI baseUrl;
+    private final Collection<String> appliedTypeScopedContexts;
 
     // optional
     private boolean ordered;
     private boolean fromMap;
 
     private ArrayExpansion(final ActiveContext activeContext, final JsonArray element, final String activeProperty,
-            final URI baseUrl) {
+            final URI baseUrl, Collection<String> appliedTypeScopedContexts) {
         this.activeContext = activeContext;
         this.element = element;
         this.activeProperty = activeProperty;
         this.baseUrl = baseUrl;
+        this.appliedTypeScopedContexts = appliedTypeScopedContexts;
 
         // default values
         this.ordered = false;
@@ -51,8 +54,8 @@ final class ArrayExpansion {
     }
 
     public static final ArrayExpansion with(final ActiveContext activeContext, final JsonArray element,
-            final String activeProperty, final URI baseUrl) {
-        return new ArrayExpansion(activeContext, element, activeProperty, baseUrl);
+            final String activeProperty, final URI baseUrl, Collection<String> appliedTypeScopedContexts) {
+        return new ArrayExpansion(activeContext, element, activeProperty, baseUrl, appliedTypeScopedContexts);
     }
 
     public ArrayExpansion ordered(boolean value) {
@@ -76,7 +79,7 @@ final class ArrayExpansion {
             // 5.2.1
             JsonValue expanded =
                             Expansion
-                                .with(activeContext, item, activeProperty, baseUrl)
+                                .with(activeContext, item, activeProperty, baseUrl, appliedTypeScopedContexts)
                                 .ordered(ordered)
                                 .fromMap(fromMap)
                                 .compute();

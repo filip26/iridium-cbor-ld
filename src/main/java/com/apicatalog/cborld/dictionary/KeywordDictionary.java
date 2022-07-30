@@ -28,6 +28,22 @@ public class KeywordDictionary implements Dictionary {
         add("@list", 20);
         add("@nest", 22);
         add("@reverse", 24);
+        
+        // TODO: remove these? these only appear in frames and contexts
+        add("@base", 26);
+        add("@container", 28);
+        add("@default", 30);
+        add("@embed", 32);
+        add("@explicit", 34);
+        add("@none", 36);
+        add("@omitDefault", 38);
+        add("@prefix", 40);
+        add("@preserve", 42);
+        add("@protected", 44);
+        add("@requireAll", 46);
+        add("@set", 48);
+        add("@version", 50);
+        add("@vocab", 52);
     }
 
     static final void add(String term, Integer code) {

@@ -243,14 +243,17 @@
             "expect": "encoder/0052-out.cborld"
         },
         {
-            "@id": "#t0042",
+            "@id": "#t0053",
             "@type": [
                 "PositiveEvaluationTest",
                 "EncoderTest"
             ],
             "name": "verifiable credentials",
             "input": "encoder/0053-in.jsonld",
-            "expect": "encoder/0053-out.cborld"
+            "expect": "encoder/0053-out.cborld",
+            "option": {
+                "compactArrays": false
+            }            
         }        
 	]
 }

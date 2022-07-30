@@ -43,6 +43,8 @@ final class ObjectExpansion1314 {
     private final JsonObject element;
     private final String activeProperty;
     private final URI baseUrl;
+    
+    private final Collection<String> appliedTypeScopedContexts;
 
     private JsonMapBuilder result;
 
@@ -50,19 +52,20 @@ final class ObjectExpansion1314 {
     private boolean ordered;
 
     private ObjectExpansion1314(final ActiveContext activeContext, final JsonObject element,
-            final String activeProperty, final URI baseUrl) {
+            final String activeProperty, final URI baseUrl, Collection<String> appliedTypeScopedContexts) {
         this.activeContext = activeContext;
         this.element = element;
         this.activeProperty = activeProperty;
         this.baseUrl = baseUrl;
+        this.appliedTypeScopedContexts = appliedTypeScopedContexts;
 
         // default values
         this.ordered = false;
     }
 
     public static final ObjectExpansion1314 with(final ActiveContext activeContext, final JsonObject element,
-            final String activeProperty, final URI baseUrl) {
-        return new ObjectExpansion1314(activeContext, element, activeProperty, baseUrl);
+            final String activeProperty, final URI baseUrl, Collection<String> appliedTypeScopedContexts) {
+        return new ObjectExpansion1314(activeContext, element, activeProperty, baseUrl, appliedTypeScopedContexts);
     }
 
     public ObjectExpansion1314 ordered(boolean value) {
@@ -136,7 +139,7 @@ final class ObjectExpansion1314 {
                     }
 
                     expandedType = Expansion
-                                        .with(activeContext, value, null, baseUrl)
+                                        .with(activeContext, value, null, baseUrl, appliedTypeScopedContexts)
                                         .ordered(ordered)
                                         .compute();
                 }
@@ -198,7 +201,7 @@ final class ObjectExpansion1314 {
             } else {
 
                 expandedType = Expansion
-                                    .with(activeContext, value, key, baseUrl)
+                                    .with(activeContext, value, key, baseUrl, appliedTypeScopedContexts)
                                     .ordered(ordered)
                                     .compute();
             }

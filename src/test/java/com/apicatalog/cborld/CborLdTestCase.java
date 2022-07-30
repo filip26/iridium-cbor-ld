@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.apicatalog.cborld.encoder.DefaultEncoderConfig;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.DocumentLoader;
@@ -23,6 +24,8 @@ public class CborLdTestCase {
     public Set<String> type;
 
     public URI result;
+    
+    public boolean compactArrays = DefaultEncoderConfig.COMPACT_ARRAYS;
 
     public static CborLdTestCase of(JsonObject test, JsonObject manifest, DocumentLoader loader) {
 
@@ -53,11 +56,12 @@ public class CborLdTestCase {
             }
         }
 
-        if (test.containsKey("https://github.com/filip26/iron-verifiable-credentials/tests/vocab#options")) {
+        if (test.containsKey("https://github.com/filip26/iridium-cbor-ld/tests/vocab#option")) {
 
-//            final JsonObject options = test
-//                    .getJsonArray("https://github.com/filip26/iron-verifiable-credentials/tests/vocab#options")
-//                    .getJsonObject(0);
+            final JsonObject options = test
+                    .getJsonArray("https://github.com/filip26/iridium-cbor-ld/tests/vocab#option")
+                    .getJsonObject(0);
+            testCase.compactArrays = options.getJsonArray("https://github.com/filip26/iridium-cbor-ld/tests/vocab#compactArrays").getJsonObject(0).getBoolean("@value", DefaultEncoderConfig.COMPACT_ARRAYS);
 
         }
 
