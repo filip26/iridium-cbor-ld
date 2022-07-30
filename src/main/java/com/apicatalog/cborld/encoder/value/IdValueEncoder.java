@@ -1,10 +1,10 @@
 package com.apicatalog.cborld.encoder.value;
 
 import java.math.BigInteger;
+import java.util.Collection;
 
 import com.apicatalog.cborld.dictionary.Dictionary;
 import com.apicatalog.json.cursor.JsonValueCursor;
-import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.lang.Keywords;
 
 import co.nstant.in.cbor.model.DataItem;
@@ -13,9 +13,9 @@ import co.nstant.in.cbor.model.UnsignedInteger;
 public class IdValueEncoder implements ValueEncoder {
 
     @Override
-    public DataItem encode(Dictionary dictionary, JsonValueCursor value, String term, TermDefinition def) {
+    public DataItem encode(Dictionary dictionary, JsonValueCursor value, String term, Collection<String> types) {
 
-        if (def != null && Keywords.ID.equals(def.getUriMapping())) {
+        if (types != null && types.contains(Keywords.ID)) {
     
             final BigInteger code = dictionary.getCode(value.stringValue());
     

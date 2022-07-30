@@ -142,6 +142,26 @@
             "input": "encoder/0013-in.jsonld",
             "expect": "encoder/0013-out.cborld"
         },
+        {
+            "@id": "#t0014",
+            "@type": [
+                "PositiveEvaluationTest",
+                "EncoderTest"
+            ],
+            "name": "@type selector",
+            "input": "encoder/0014-in.jsonld",
+            "expect": "encoder/0014-out.cborld"
+        },        
+        {
+            "@id": "#t0015",
+            "@type": [
+                "PositiveEvaluationTest",
+                "EncoderTest"
+            ],
+            "name": "double scoped context",
+            "input": "encoder/0015-in.jsonld",
+            "expect": "encoder/0015-out.cborld"
+        },
 		{
 			"@id": "#t0020",
 			"@type": [
@@ -221,6 +241,16 @@
             "name": "verifiable credentials",
             "input": "encoder/0052-in.jsonld",
             "expect": "encoder/0052-out.cborld"
-        }
+        },
+        {
+            "@id": "#t0042",
+            "@type": [
+                "PositiveEvaluationTest",
+                "EncoderTest"
+            ],
+            "name": "verifiable credentials",
+            "input": "encoder/0053-in.jsonld",
+            "expect": "encoder/0053-out.cborld"
+        }        
 	]
 }

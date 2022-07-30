@@ -3,7 +3,6 @@ package com.apicatalog.cborld.dictionary;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -26,11 +25,10 @@ public class CodeTermMap implements Dictionary {
     final Map<String, Integer> reverse;
 
     final ActiveContext context;
-    final Map<Integer, ActiveContext> properyContexts;
 
     int lastCustomIndex;
 
-    protected CodeTermMap(Map<Integer, String> index, ActiveContext context, Map<Integer, ActiveContext> properyContexts, int lastCustomIndex) {
+    protected CodeTermMap(Map<Integer, String> index, ActiveContext context, int lastCustomIndex) {
         this.index = index;
         this.reverse = index
                 .entrySet()
@@ -38,7 +36,6 @@ public class CodeTermMap implements Dictionary {
                        .collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
     
         this.context = context;
-        this.properyContexts = properyContexts;
     
         this.lastCustomIndex = lastCustomIndex;
     }
@@ -56,14 +53,11 @@ public class CodeTermMap implements Dictionary {
     //        System.out.println(activeContext);
     //        System.out.println(" >>> " + bb.build() + ", " + bb.build());
             activeContext = ActiveContextBuilder.with(activeContext).create(bb.build(), null);
-    
-            Map<Integer, ActiveContext> properyContexts = new HashMap<>();
-    
-            return add(activeContext, properyContexts,
+        
+            return add(activeContext,
                 new CodeTermMap(
                     new LinkedHashMap<>(KeywordDictionary.CODE_TO_TERM),
                     activeContext,
-                    properyContexts,
                     KeywordDictionary.CUSTOM_OFFSET
                 ));
     
@@ -74,7 +68,7 @@ public class CodeTermMap implements Dictionary {
         }
     }
 
-    final static CodeTermMap add(final ActiveContext activeContext, Map<Integer, ActiveContext> propertyContexts, final CodeTermMap map) throws JsonLdError {
+    final static CodeTermMap add(final ActiveContext activeContext, final CodeTermMap map) throws JsonLdError {
     
         String[] sorted = activeContext.getTerms().stream().sorted().toArray(String[]::new);
     
@@ -84,29 +78,17 @@ public class CodeTermMap implements Dictionary {
         for (final String key : sorted) {
     
             final TermDefinition def = activeContext.getTerm(key).orElseThrow(IllegalStateException::new);
-    
+
             if (def.hasLocalContext()) {
     
-            propertyContexts.put(def.hashCode(),
-                //new ActiveContext(activeContext.getOptions())
-                activeContext
-                .newContext()
-                .create(
-                    def.getLocalContext(),
+                add(new ActiveContext(activeContext.getOptions())
+                            .newContext()
+                            .create(
+                                def.getLocalContext(),
                                 def.getBaseUrl()
-                    ));
-    
-    
-            add(
-            new ActiveContext(activeContext.getOptions())
-                .newContext()
-                .create(
-                    def.getLocalContext(),
-                                def.getBaseUrl()
-                    ),
-                propertyContexts,
-                map
-                );
+                        ),
+                    map
+                    );
             }
         }
         return map;
@@ -135,15 +117,71 @@ public class CodeTermMap implements Dictionary {
     }
 
     public TermDefinition getDefinition(TermDefinition parent, String term) {
-    
+//    System.out.println(">>>> GET DEF " + term + " of " + parent + ", by type " + types  );
+    context.getTerms().forEach(System.out::println);
         if (parent == null) {
             return getDefinition(term);
         }
     
-        ActiveContext activeContext = properyContexts.get(parent.hashCode());
-        if (activeContext != null) {
-            return activeContext.getTerm(term).orElse(null);
-        }
         return null;
     }
+
+    public ActiveContext getContext() {
+        return context;
+    }
+    
+//    private String processTypeScoped(final ActiveContext typeContext) throws JsonLdError {
+//
+//        String typeKey = null;
+//
+//        // 11.
+//        for (final String key : Utils.index(element.keySet(), true)) {
+//
+//            final String expandedKey =
+//                        activeContext
+//                            .uriExpansion()
+//                            .vocab(true)
+//                            .expand(key);
+//
+//            if (!Keywords.TYPE.equals(expandedKey)) {
+//                continue;
+//
+//            } else if (typeKey == null) {
+//                typeKey = key;
+//            }
+//
+//            // 11.2
+//            final List<String> terms = JsonUtils
+//                                            .toStream(element.get(key))
+//                                            .filter(JsonUtils::isString)
+//                                            .map(JsonString.class::cast)
+//                                            .map(JsonString::getString)
+//                                            .sorted()
+//                                            .collect(Collectors.toList());
+//
+//            for (final String term : terms) {
+//
+//                Optional<JsonValue> localContext = typeContext.getTerm(term).map(TermDefinition::getLocalContext);
+//
+//                if (localContext.isPresent()) {
+//
+//                    Optional<TermDefinition> valueDefinition = activeContext.getTerm(term);
+//
+//                    activeContext =
+//                            activeContext
+//                                .newContext()
+//                                .propagate(false)
+//                                .create(localContext.get(),
+//                                        valueDefinition
+//                                                .map(TermDefinition::getBaseUrl)
+//                                                .orElse(null)
+//                                        );
+//                }
+//            }
+//        }
+//
+//        return typeKey;
+//    }
+
+    
 }

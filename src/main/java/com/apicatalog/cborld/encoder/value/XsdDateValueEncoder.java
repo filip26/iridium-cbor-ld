@@ -4,10 +4,10 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.Collection;
 
 import com.apicatalog.cborld.dictionary.Dictionary;
 import com.apicatalog.json.cursor.JsonValueCursor;
-import com.apicatalog.jsonld.context.TermDefinition;
 
 import co.nstant.in.cbor.model.DataItem;
 import co.nstant.in.cbor.model.UnsignedInteger;
@@ -15,10 +15,9 @@ import co.nstant.in.cbor.model.UnsignedInteger;
 public class XsdDateValueEncoder implements ValueEncoder {
 
     @Override
-    public DataItem encode(Dictionary dictionary, JsonValueCursor value, String term, TermDefinition def) {
+    public DataItem encode(Dictionary dictionary, JsonValueCursor value, String term, Collection<String> types) {
 
-        if (def != null 
-                && "http://www.w3.org/2001/XMLSchema#date".equals(def.getTypeMapping())
+        if (types != null && types.contains("http://www.w3.org/2001/XMLSchema#date")
                 && value.isString()
                 ) {
             

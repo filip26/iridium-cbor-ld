@@ -11,7 +11,7 @@ import com.apicatalog.jsonld.uri.UriUtils;
 public class EncoderContext {
 
     public final static Collection<String> get(final JsonObjectCursor document) {
-    return get(document, new LinkedHashSet<>());
+        return get(document, new LinkedHashSet<>());
     }
 
     static final Collection<String> get(final JsonObjectCursor document, Collection<String> contexts) {

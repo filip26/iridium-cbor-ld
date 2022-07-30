@@ -1,0 +1,12 @@
+{
+	"@context": "https://www.w3.org/2018/credentials/v1",
+	"type": "VerifiablePresentation",
+	"verifiableCredential": {
+		"@context": [
+			"https://www.w3.org/2018/credentials/v1"
+		],
+		"type": ["VerifiableCredential"],
+		"issuanceDate": "2021-03-24T20:03:03Z",
+		"expirationDate": "2021-06-24T20:03:03Z"
+	}
+}

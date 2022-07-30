@@ -6,14 +6,20 @@ import java.math.BigInteger;
 import java.util.Collection;
 
 import com.apicatalog.cborld.CborLd;
+import com.apicatalog.cborld.context.Context;
 import com.apicatalog.cborld.context.ContextError;
+import com.apicatalog.cborld.context.TypeMapping;
 import com.apicatalog.cborld.dictionary.CodeTermMap;
 import com.apicatalog.cborld.encoder.EncoderError.Code;
 import com.apicatalog.cborld.encoder.value.ValueEncoder;
 import com.apicatalog.json.cursor.JsonArrayCursor;
 import com.apicatalog.json.cursor.JsonObjectCursor;
 import com.apicatalog.json.cursor.JsonValueCursor;
-import com.apicatalog.jsonld.context.TermDefinition;
+import com.apicatalog.json.cursor.jakarta.JakartaJsonCursor;
+import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdOptions;
+import com.apicatalog.jsonld.context.ActiveContext;
+import com.apicatalog.jsonld.expansion.Expansion;
 import com.apicatalog.jsonld.http.DefaultHttpClient;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.loader.DocumentLoader;
@@ -39,7 +45,7 @@ public class Encoder {
     protected Collection<ValueEncoder> valueEncoders;
     protected boolean compactArrays;
     protected DocumentLoader loader;
-
+    
     protected Encoder(JsonObjectCursor document) {
         this.document = document;
     
@@ -126,47 +132,42 @@ public class Encoder {
     final byte[] compress(final JsonObjectCursor document, Collection<String> contextUrls) throws ContextError, EncoderError {
     
         // 1.
-        final ByteArrayOutputStream result = new ByteArrayOutputStream();
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
     
         try {
             // 2.CBOR Tag - 0xD9, CBOR-LD - 0x05, Compressed - CBOR-LD compression algorithm
             // version 1 - 0x01
-            result.write(CborLd.CBOR_LD_BYTE_PREFIX);
-            result.write(CborLd.COMPRESSED);
+            baos.write(CborLd.CBOR_LD_BYTE_PREFIX);
+            baos.write(CborLd.COMPRESSED);
     
             index = CodeTermMap.from(contextUrls, loader);
-    
-            return toCbor(document, result);
-    
-        } catch (IOException e) {
+                
+            final TypeMapping typeMapping = Context.getTypeMapping(document, loader);
+            
+            final CborBuilder builder = (CborBuilder) encode(document, new CborBuilder().addMap(), typeMapping).end();
+            
+            new CborEncoder(baos).encode(builder.build());
+
+            return baos.toByteArray();
+
+        } catch (CborException e) {
+            throw new EncoderError(Code.InvalidDocument, e);
+
+        } catch (IOException | JsonLdError e) {
             throw new EncoderError(Code.Internal, e);
         }
     }
 
-    final byte[] toCbor(JsonObjectCursor object, ByteArrayOutputStream baos) throws EncoderError {
-    
-        try {
-            final CborBuilder builder = (CborBuilder) toCbor(object, new CborBuilder().addMap(), null).end();
-    
-            new CborEncoder(baos).encode(builder.build());
-    
-        } catch (CborException e) {
-            throw new EncoderError(Code.InvalidDocument, e);
-        }
-    
-        return baos.toByteArray();
-    }
+    final MapBuilder<?> encode(final JsonObjectCursor object, final MapBuilder<?> builder, TypeMapping typeMapping) throws EncoderError, JsonLdError {
 
-    final MapBuilder<?> toCbor(final JsonObjectCursor object, final MapBuilder<?> builder, TermDefinition def) throws EncoderError {
-    
         MapBuilder<?> flow = builder;
     
         for (final String property : object.properies()) {
     
             final BigInteger encodedProperty = index.getCode(property);
-    
+                
             if (object.isArray(property)) {
-    
+                    
                 final DataItem key = encodedProperty != null
                             ? new UnsignedInteger(encodedProperty.add(BigInteger.ONE))
                             : new UnicodeString(property);
@@ -178,17 +179,19 @@ public class Encoder {
                     object.asArray().value(0);
         
                     if (object.isObject()) {
-                        flow = (MapBuilder<?>) toCbor(object.asObject(), flow.putMap(key), index.getDefinition(def, property)).end();
+                        final TypeMapping propertyTypeMapping = typeMapping.getMapping(property);
+                        flow = (MapBuilder<?>) encode(object.asObject(), flow.putMap(key), propertyTypeMapping).end();
         
                     } else if (object.isArray()) {
-                        flow = (MapBuilder<?>) toCbor(
+                        flow = (MapBuilder<?>) encode(
                                                     object.asArray(), 
                                                     flow.putArray(key),
                                                     property,
-                                                    index.getDefinition(def, property)).end();
+                                                    typeMapping
+                                                    ).end();
         
                     } else {
-                        final DataItem value = toCbor(object, property, index.getDefinition(def, property));
+                        final DataItem value = encode(object, property, typeMapping);
         
                         flow = flow.put(key, value);
                     }
@@ -196,9 +199,9 @@ public class Encoder {
                     object.parent();
         
                 } else {
-                    flow = (MapBuilder<?>) toCbor(object.asArray(), flow.putArray(key),
+                    flow = (MapBuilder<?>) encode(object.asArray(), flow.putArray(key),
                         property,
-                        index.getDefinition(def, property)
+                        typeMapping
                         ).end();
                 }
         
@@ -211,16 +214,16 @@ public class Encoder {
                 : new UnicodeString(property);
     
             if (object.isObject(property)) {
-    
-                flow = (MapBuilder<?>) toCbor(object.object(property), flow.putMap(key),
-                    index.getDefinition(def, property)
+                final TypeMapping propertyTypeMapping = typeMapping.getMapping(property);
+                flow = (MapBuilder<?>) encode(object.object(property), flow.putMap(key),
+                    propertyTypeMapping
                     ).end();
         
                 object.parent();
                 continue;
             }
     
-            final DataItem value = toCbor(object.value(property), property, index.getDefinition(def, property));
+            final DataItem value = encode(object.value(property), property, typeMapping);
     
             flow = flow.put(key, value);
     
@@ -229,7 +232,7 @@ public class Encoder {
         return flow;
     }
 
-    final DataItem toCbor(final JsonValueCursor value, final String term, final TermDefinition def) throws EncoderError {
+    final DataItem encode(final JsonValueCursor value, final String term, TypeMapping typeMapping) throws EncoderError {
     
         if (value.isBoolean()) {
             return value.booleanValue() ? SimpleValue.TRUE : SimpleValue.FALSE;
@@ -237,12 +240,13 @@ public class Encoder {
     
         if (value.isString()) {
     
-            //TODO better
+            final Collection<String> types = typeMapping.getType(term);
+            
             for (final ValueEncoder valueEncoder : valueEncoders) {
-            DataItem dataItem = valueEncoder.encode(index, value, term, def);
-            if (dataItem != null) {
-                return dataItem;
-            }
+                final DataItem dataItem = valueEncoder.encode(index, value, term, types);
+                if (dataItem != null) {
+                    return dataItem;
+                }
             }
             return new UnicodeString(value.stringValue());
         }
@@ -255,25 +259,25 @@ public class Encoder {
         throw new IllegalStateException("TODO " + value);
     }
 
-    final ArrayBuilder<?> toCbor(final JsonArrayCursor object, final ArrayBuilder<?> builder, String property, TermDefinition def) throws EncoderError {
+    final ArrayBuilder<?> encode(final JsonArrayCursor object, final ArrayBuilder<?> builder, String property, TypeMapping typeMapping) throws EncoderError, JsonLdError {
     
         ArrayBuilder<?> flow = builder;
     
         for (int i = 0; i < object.size(); i++) {
     
             if (object.isObject(i)) {
-                flow = (ArrayBuilder<?>) toCbor(object.object(i), flow.startMap(), def).end();
+                flow = (ArrayBuilder<?>) encode(object.object(i), flow.startMap(), typeMapping).end();
                 object.parent();
                 continue;
             }
     
             if (object.isArray(i)) {
-                flow = (ArrayBuilder<?>) toCbor(object.array(i), flow.startArray(), property, def).end();
+                flow = (ArrayBuilder<?>) encode(object.array(i), flow.startArray(), property, typeMapping).end();
                 object.parent();
                 continue;
             }
     
-            DataItem value = toCbor(object.value(i), property, def);
+            DataItem value = encode(object.value(i), property, typeMapping);
             object.parent();
     
             flow = flow.add(value);

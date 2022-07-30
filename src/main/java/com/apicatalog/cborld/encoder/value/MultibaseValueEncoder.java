@@ -1,8 +1,9 @@
 package com.apicatalog.cborld.encoder.value;
 
+import java.util.Collection;
+
 import com.apicatalog.cborld.dictionary.Dictionary;
 import com.apicatalog.json.cursor.JsonValueCursor;
-import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.multibase.Multibase;
 
 import co.nstant.in.cbor.model.ByteString;
@@ -13,9 +14,9 @@ public class MultibaseValueEncoder implements ValueEncoder {
     static final String TYPE = "https://w3id.org/security#multibase";
     
     @Override
-    public DataItem encode(Dictionary dictionary, JsonValueCursor value, String term, TermDefinition def) {
+    public DataItem encode(Dictionary dictionary, JsonValueCursor value, String term, Collection<String> types) {
 
-        if (value.isString() && def != null && TYPE.equals(def.getTypeMapping())) {
+        if (value.isString() && types != null && types.contains(TYPE)) {
 
             byte[] bytes = Multibase.decode(value.stringValue());
             if (bytes != null) {
