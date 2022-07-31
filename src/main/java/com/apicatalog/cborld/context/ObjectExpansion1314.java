@@ -44,7 +44,7 @@ final class ObjectExpansion1314 {
     private final String activeProperty;
     private final URI baseUrl;
     
-    private final Collection<String> appliedTypeScopedContexts;
+    private final Collection<Collection<String>> appliedContexts;
 
     private JsonMapBuilder result;
 
@@ -52,20 +52,20 @@ final class ObjectExpansion1314 {
     private boolean ordered;
 
     private ObjectExpansion1314(final ActiveContext activeContext, final JsonObject element,
-            final String activeProperty, final URI baseUrl, Collection<String> appliedTypeScopedContexts) {
+            final String activeProperty, final URI baseUrl, Collection<Collection<String>> appliedContexts) {
         this.activeContext = activeContext;
         this.element = element;
         this.activeProperty = activeProperty;
         this.baseUrl = baseUrl;
-        this.appliedTypeScopedContexts = appliedTypeScopedContexts;
+        this.appliedContexts = appliedContexts;
 
         // default values
         this.ordered = false;
     }
 
     public static final ObjectExpansion1314 with(final ActiveContext activeContext, final JsonObject element,
-            final String activeProperty, final URI baseUrl, Collection<String> appliedTypeScopedContexts) {
-        return new ObjectExpansion1314(activeContext, element, activeProperty, baseUrl, appliedTypeScopedContexts);
+            final String activeProperty, final URI baseUrl, Collection<Collection<String>> appliedContexts) {
+        return new ObjectExpansion1314(activeContext, element, activeProperty, baseUrl, appliedContexts);
     }
 
     public ObjectExpansion1314 ordered(boolean value) {
@@ -89,12 +89,11 @@ final class ObjectExpansion1314 {
             }
 
             // 13.2.
-            String expandedProperty =
-                        activeContext
-                            .uriExpansion()
-                            .documentRelative(false)
-                            .vocab(true)
-                            .expand(key);
+            String expandedProperty = UriExpansion
+                                        .with(activeContext, appliedContexts)
+                                        .documentRelative(false)
+                                        .vocab(true)
+                                        .expand(key);
 
             // 13.3.
             if (expandedProperty == null || (!expandedProperty.contains(":") && !Keywords.contains(expandedProperty))) {
@@ -139,7 +138,7 @@ final class ObjectExpansion1314 {
                     }
 
                     expandedType = Expansion
-                                        .with(activeContext, value, null, baseUrl, appliedTypeScopedContexts)
+                                        .with(activeContext, value, null, baseUrl, appliedContexts)
                                         .ordered(ordered)
                                         .compute();
                 }
@@ -201,7 +200,7 @@ final class ObjectExpansion1314 {
             } else {
 
                 expandedType = Expansion
-                                    .with(activeContext, value, key, baseUrl, appliedTypeScopedContexts)
+                                    .with(activeContext, value, key, baseUrl, appliedContexts)
                                     .ordered(ordered)
                                     .compute();
             }

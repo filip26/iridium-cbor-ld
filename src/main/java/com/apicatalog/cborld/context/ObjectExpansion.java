@@ -40,7 +40,7 @@ final class ObjectExpansion {
     private JsonObject element;
     private String activeProperty;
     private URI baseUrl;
-    private Collection<String> appliedTypeScopedContexts;
+    private Collection<Collection<String>> appliedContexts;
     
 
     // optional
@@ -48,13 +48,13 @@ final class ObjectExpansion {
     private boolean fromMap;
 
     private ObjectExpansion(final ActiveContext activeContext, final JsonValue propertyContext, final JsonObject element,
-            final String activeProperty, final URI baseUrl, Collection<String> appliedTypeScopedContexts) {
+            final String activeProperty, final URI baseUrl, Collection<Collection<String>> appliedContexts) {
         this.activeContext = activeContext;
         this.propertyContext = propertyContext;
         this.element = element;
         this.activeProperty = activeProperty;
         this.baseUrl = baseUrl;
-        this.appliedTypeScopedContexts = appliedTypeScopedContexts;
+        this.appliedContexts = appliedContexts;
 
         // default values
         this.ordered = false;
@@ -62,8 +62,8 @@ final class ObjectExpansion {
     }
 
     public static final ObjectExpansion with(final ActiveContext activeContext, final JsonValue propertyContext,
-            final JsonObject element, final String activeProperty, final URI baseUrl, Collection<String> appliedTypeScopedContexts) {
-        return new ObjectExpansion(activeContext, propertyContext, element, activeProperty, baseUrl, appliedTypeScopedContexts);
+            final JsonObject element, final String activeProperty, final URI baseUrl, Collection<Collection<String>> appliedContexts) {
+        return new ObjectExpansion(activeContext, propertyContext, element, activeProperty, baseUrl, appliedContexts);
     }
 
     public ObjectExpansion ordered(boolean value) {
@@ -87,12 +87,12 @@ final class ObjectExpansion {
         // 10.
         final ActiveContext typeContext = activeContext;
 
-        final String typeKey = processTypeScoped(typeContext);
+        processTypeScoped(typeContext);
 
         final JsonMapBuilder result = JsonMapBuilder.create();
 
         ObjectExpansion1314
-                    .with(activeContext, element, activeProperty, baseUrl, appliedTypeScopedContexts)
+                    .with(activeContext, element, activeProperty, baseUrl, appliedContexts)
                     .result(result)
                     .ordered(ordered)
                     .expand();
@@ -133,11 +133,10 @@ final class ObjectExpansion {
 
             for (final String key : Utils.index(element.keySet(), true)) {
 
-                final String expandedKey =
-                            activeContext
-                                .uriExpansion()
-                                .vocab(true)
-                                .expand(key);
+                final String expandedKey = UriExpansion
+                                                .with(activeContext, appliedContexts)
+                                                .vocab(true)
+                                                .expand(key);
 
                 if (Keywords.VALUE.equals(expandedKey) || (Keywords.ID.equals(expandedKey) && (element.size() == 1))) {
                     revert = false;
@@ -154,10 +153,17 @@ final class ObjectExpansion {
     private void initLocalContext() throws JsonLdError {
         // 9.
         if (element.containsKey(Keywords.CONTEXT)) {
+            
+            for (final JsonValue context : JsonUtils.toJsonArray(element.get(Keywords.CONTEXT))) {
+                final ActiveContext ac = new ActiveContext(activeContext.getBaseUri(), activeContext.getBaseUrl(), activeContext.getOptions())
+                                        .newContext()
+                                        .create(context, baseUrl);
+                appliedContexts.add(ac.getTerms());
+            }
 
             activeContext = activeContext
-                                .newContext()
-                                .create(element.get(Keywords.CONTEXT), baseUrl);
+                    .newContext()
+                    .create(element.get(Keywords.CONTEXT), baseUrl);
         }
     }
 
@@ -168,11 +174,10 @@ final class ObjectExpansion {
         // 11.
         for (final String key : Utils.index(element.keySet(), true)) {
 
-            final String expandedKey =
-                        activeContext
-                            .uriExpansion()
-                            .vocab(true)
-                            .expand(key);
+            final String expandedKey = UriExpansion
+                                            .with(activeContext, appliedContexts)
+                                            .vocab(true)
+                                            .expand(key);
 
             if (!Keywords.TYPE.equals(expandedKey)) {
                 continue;
@@ -196,7 +201,11 @@ final class ObjectExpansion {
 
                 if (localContext.isPresent()) {
                     
-                    appliedTypeScopedContexts.add(term);
+                    final JsonValue lc = localContext.get();
+                    
+                    if (JsonUtils.isObject(lc)) {
+                        appliedContexts.add(lc.asJsonObject().keySet());
+                    }
 
                     Optional<TermDefinition> valueDefinition = activeContext.getTerm(term);
 
@@ -204,7 +213,7 @@ final class ObjectExpansion {
                             activeContext
                                 .newContext()
                                 .propagate(false)
-                                .create(localContext.get(),
+                                .create(lc,
                                         valueDefinition
                                                 .map(TermDefinition::getBaseUrl)
                                                 .orElse(null)

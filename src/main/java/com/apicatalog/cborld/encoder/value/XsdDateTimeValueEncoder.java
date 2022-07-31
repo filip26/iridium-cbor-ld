@@ -13,9 +13,7 @@ public class XsdDateTimeValueEncoder implements ValueEncoder {
 
     @Override
     public DataItem encode(Dictionary dictionary, JsonValueCursor value, String term, Collection<String> types) {
-//System.out.println("--- " + term);
-//System.out.println(value);
-//System.out.println(def);
+
         if (types != null && types.contains("http://www.w3.org/2001/XMLSchema#dateTime")
                 && value.isString()
                 ) {

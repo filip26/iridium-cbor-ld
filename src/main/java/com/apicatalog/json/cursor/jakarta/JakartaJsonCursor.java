@@ -489,7 +489,7 @@ public class JakartaJsonCursor implements JsonCursor {
            .toString();
     }
 
-    public JsonObject getJsonObjecT() {
+    public JsonObject getJsonObject() {
         return (JsonObject) path[index];
     }
 }

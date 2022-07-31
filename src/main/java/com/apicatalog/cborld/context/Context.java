@@ -13,11 +13,11 @@ import com.apicatalog.jsonld.loader.DocumentLoader;
 public class Context {
 
     private final TypeMapping typeMapping;
-    private final Collection<String> appliedTypeScopedContexts;
+    private final Collection<Collection<String>> appliedContextKeys;
     
-    protected Context(TypeMapping typeMapping, Collection<String> appliedTypeScopedContexts) {
+    protected Context(TypeMapping typeMapping, Collection<Collection<String>> appliedContextKeys) {
         this.typeMapping = typeMapping;
-        this.appliedTypeScopedContexts = appliedTypeScopedContexts;
+        this.appliedContextKeys = appliedContextKeys;
     }
     
     public static Context from(JsonObjectCursor document, DocumentLoader loader) throws JsonLdError {
@@ -28,13 +28,13 @@ public class Context {
         
         final ActiveContext activeContext = new ActiveContext(null, null, options);
 
-        Collection<String> appliedTypeScopedContexts = new LinkedHashSet<>();
+        Collection<Collection<String>> appliedContextKeys = new LinkedHashSet<>();
         
         final TypeMapping typeMapping = Expansion
-                    .with(activeContext, ((JakartaJsonCursor)document).getJsonObjecT(), null, null, appliedTypeScopedContexts)
+                    .with(activeContext, ((JakartaJsonCursor)document).getJsonObject(), null, null, appliedContextKeys)
                     .typeMapping();
         
-        return new Context(typeMapping, appliedTypeScopedContexts);
+        return new Context(typeMapping, appliedContextKeys);
 
     }
     
@@ -42,7 +42,7 @@ public class Context {
         return typeMapping;
     }
     
-    public Collection<String> getAppliedTypeScopedContexts() {
-        return appliedTypeScopedContexts;
+    public Collection<Collection<String>> getContextKeySets() {
+        return appliedContextKeys;
     }
 }

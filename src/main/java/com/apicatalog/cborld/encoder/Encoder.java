@@ -12,14 +12,11 @@ import com.apicatalog.cborld.context.TypeMapping;
 import com.apicatalog.cborld.dictionary.CodeTermMap;
 import com.apicatalog.cborld.encoder.EncoderError.Code;
 import com.apicatalog.cborld.encoder.value.ValueEncoder;
+import com.apicatalog.cborld.loader.StaticContextLoader;
 import com.apicatalog.json.cursor.JsonArrayCursor;
 import com.apicatalog.json.cursor.JsonObjectCursor;
 import com.apicatalog.json.cursor.JsonValueCursor;
-import com.apicatalog.json.cursor.jakarta.JakartaJsonCursor;
 import com.apicatalog.jsonld.JsonLdError;
-import com.apicatalog.jsonld.JsonLdOptions;
-import com.apicatalog.jsonld.context.ActiveContext;
-import com.apicatalog.jsonld.expansion.Expansion;
 import com.apicatalog.jsonld.http.DefaultHttpClient;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.loader.DocumentLoader;
@@ -95,6 +92,8 @@ public class Encoder {
             ((HttpLoader)loader).setFallbackContentType(MediaType.JSON);
         }
         
+        loader = new StaticContextLoader(loader);
+        
         try {
     
             final Collection<String> contexts = EncoderContext.get(document);
@@ -142,7 +141,7 @@ public class Encoder {
                     
             final Context context = Context.from(document, loader);
             
-            index = CodeTermMap.from(contextUrls, context.getAppliedTypeScopedContexts(), loader);
+            index = CodeTermMap.from(contextUrls, context.getContextKeySets(), loader);
             
             final CborBuilder builder = (CborBuilder) encode(document, new CborBuilder().addMap(), context.getTypeMapping()).end();
             

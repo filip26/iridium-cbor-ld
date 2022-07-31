@@ -15,6 +15,8 @@
  */
 package com.apicatalog.cborld.context;
 
+import java.util.Collection;
+
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
@@ -29,18 +31,21 @@ final class ScalarExpansion {
     private JsonValue propertyContext;
     private JsonValue element;
     private String activeProperty;
+    
+    private final Collection<Collection<String>> appliedContexts;
 
     private ScalarExpansion(final ActiveContext activeContext, final JsonValue propertyContext,
-            final JsonValue element, final String activeProperty) {
+            final JsonValue element, final String activeProperty, Collection<Collection<String>> appliedContexts) {
         this.activeContext = activeContext;
         this.propertyContext = propertyContext;
         this.element = element;
         this.activeProperty = activeProperty;
+        this.appliedContexts = appliedContexts;
     }
 
     public static final ScalarExpansion with(final ActiveContext activeContext, final JsonValue propertyContext,
-            final JsonValue element, final String activeProperty) {
-        return new ScalarExpansion(activeContext, propertyContext, element, activeProperty);
+            final JsonValue element, final String activeProperty, Collection<Collection<String>> appliedContexts) {
+        return new ScalarExpansion(activeContext, propertyContext, element, activeProperty, appliedContexts);
     }
 
     public JsonValue expand() throws JsonLdError {
@@ -68,6 +73,6 @@ final class ScalarExpansion {
                                 );
         }
 
-        return ValueExpasion.with(activeContext).expand(element, activeProperty);
+        return ValueExpasion.with(activeContext, appliedContexts).expand(element, activeProperty);
     }
 }

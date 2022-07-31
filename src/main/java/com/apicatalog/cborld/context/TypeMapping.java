@@ -28,8 +28,13 @@ public class TypeMapping {
                             .asJsonObject()
                             .entrySet()
                             .stream()
-                            .filter(e -> Keywords.TYPE.equals(e.getValue()))
-                            .map(Map.Entry::getKey)
+                            .filter(e -> Keywords.TYPE.equals(e.getKey()))
+                            .map(Map.Entry::getValue)
+                            .filter(JsonUtils::isString)
+                            .map(JsonString.class::cast)
+                            .map(JsonString::getString)
+//                            .filter(e -> JsonUtils.isString(e.getValue()) && Keywords.TYPE.equals(((JsonString) e.getValue()).getString()))
+//                            .map(Map.Entry::getKey)
                             .collect(Collectors.toSet());
             }
             if (JsonUtils.isString(value)) {
@@ -56,6 +61,10 @@ public class TypeMapping {
             }
         }
         return null;
+    }
+    
+    public JsonValue getMapping() {
+        return mapping;
     }
     
 }

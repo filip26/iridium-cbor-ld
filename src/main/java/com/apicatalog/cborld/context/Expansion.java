@@ -32,27 +32,27 @@ final class Expansion {
     private JsonValue element;
     private String activeProperty;
     private URI baseUrl;
-    private Collection<String> appliedTypeScopedContexts;
+    private Collection<Collection<String>> appliedContexts;
 
     // optional
     private boolean ordered;
     private boolean fromMap;
 
     private Expansion(final ActiveContext activeContext, final JsonValue element, final String activeProperty,
-            final URI baseUrl, Collection<String> appliedTypeScopedContexts) {
+            final URI baseUrl, Collection<Collection<String>> appliedContexts) {
         this.activeContext = activeContext;
         this.element = element;
         this.activeProperty = activeProperty;
         this.baseUrl = baseUrl;
-        this.appliedTypeScopedContexts = appliedTypeScopedContexts;
+        this.appliedContexts = appliedContexts;
 
         // default values
         this.ordered = false;
         this.fromMap = false;
     }
 
-    public static final Expansion with(final ActiveContext activeContext, final JsonValue element, final String activeProperty, final URI baseUrl, Collection<String> appliedTypeScopedContexts) {
-        return new Expansion(activeContext, element, activeProperty, baseUrl, appliedTypeScopedContexts);
+    public static final Expansion with(final ActiveContext activeContext, final JsonValue element, final String activeProperty, final URI baseUrl, Collection<Collection<String>> appliedContexts) {
+        return new Expansion(activeContext, element, activeProperty, baseUrl, appliedContexts);
     }
 
     public Expansion ordered(boolean value) {
@@ -76,7 +76,7 @@ final class Expansion {
         if (JsonUtils.isArray(element)) {
 
             return ArrayExpansion
-                        .with(activeContext, element.asJsonArray(), activeProperty, baseUrl, appliedTypeScopedContexts)
+                        .with(activeContext, element.asJsonArray(), activeProperty, baseUrl, appliedContexts)
                         .ordered(ordered)
                         .fromMap(fromMap)
                         .expand();
@@ -89,17 +89,23 @@ final class Expansion {
                                             .map(TermDefinition::getLocalContext)
                                             .orElse(null);
 
+        if (JsonUtils.isNotNull(propertyContext)) {
+            if (JsonUtils.isObject(propertyContext)) {
+                appliedContexts.add(propertyContext.asJsonObject().keySet());
+            }
+        }
+        
         // 4. If element is a scalar
         if (JsonUtils.isScalar(element)) {
 
             return ScalarExpansion
-                        .with(activeContext, propertyContext, element, activeProperty)
+                        .with(activeContext, propertyContext, element, activeProperty, appliedContexts)
                         .expand();
         }
 
         // 6. Otherwise element is a map
         return ObjectExpansion
-                    .with(activeContext, propertyContext, element.asJsonObject(), activeProperty, baseUrl, appliedTypeScopedContexts)
+                    .with(activeContext, propertyContext, element.asJsonObject(), activeProperty, baseUrl, appliedContexts)
                     .ordered(ordered)
                     .fromMap(fromMap)
                     .expand();
