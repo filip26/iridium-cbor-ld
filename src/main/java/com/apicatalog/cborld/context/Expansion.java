@@ -17,6 +17,7 @@ package com.apicatalog.cborld.context;
 
 import java.net.URI;
 import java.util.Collection;
+import java.util.function.Consumer;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
@@ -32,14 +33,15 @@ final class Expansion {
     private JsonValue element;
     private String activeProperty;
     private URI baseUrl;
-    private Collection<Collection<String>> appliedContexts;
+    
+    private Consumer<Collection<String>> appliedContexts;
 
     // optional
     private boolean ordered;
     private boolean fromMap;
 
     private Expansion(final ActiveContext activeContext, final JsonValue element, final String activeProperty,
-            final URI baseUrl, Collection<Collection<String>> appliedContexts) {
+            final URI baseUrl, Consumer<Collection<String>> appliedContexts) {
         this.activeContext = activeContext;
         this.element = element;
         this.activeProperty = activeProperty;
@@ -51,7 +53,7 @@ final class Expansion {
         this.fromMap = false;
     }
 
-    public static final Expansion with(final ActiveContext activeContext, final JsonValue element, final String activeProperty, final URI baseUrl, Collection<Collection<String>> appliedContexts) {
+    public static final Expansion with(final ActiveContext activeContext, final JsonValue element, final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts) {
         return new Expansion(activeContext, element, activeProperty, baseUrl, appliedContexts);
     }
 
@@ -91,7 +93,7 @@ final class Expansion {
 
         if (JsonUtils.isNotNull(propertyContext)) {
             if (JsonUtils.isObject(propertyContext)) {
-                appliedContexts.add(propertyContext.asJsonObject().keySet());
+                appliedContexts.accept(propertyContext.asJsonObject().keySet());
             }
         }
         

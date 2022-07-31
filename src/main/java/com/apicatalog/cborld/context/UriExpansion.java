@@ -18,6 +18,7 @@ package com.apicatalog.cborld.context;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -50,9 +51,9 @@ public final class UriExpansion {
     private JsonObject localContext;
     private Map<String, Boolean> defined;
     
-    private final Collection<Collection<String>> appliedContexts;
+    private final Consumer<Collection<String>> appliedContexts;
 
-    private UriExpansion(final ActiveContext activeContext, Collection<Collection<String>> appliedContexts) {
+    private UriExpansion(final ActiveContext activeContext, Consumer<Collection<String>> appliedContexts) {
         this.activeContext = activeContext;
 
         // default values
@@ -64,7 +65,7 @@ public final class UriExpansion {
         this.appliedContexts = appliedContexts;
     }
 
-    public static final UriExpansion with(final ActiveContext activeContext, Collection<Collection<String>> appliedContexts) {
+    public static final UriExpansion with(final ActiveContext activeContext, Consumer<Collection<String>> appliedContexts) {
         return new UriExpansion(activeContext, appliedContexts);
     }
 
@@ -155,7 +156,7 @@ public final class UriExpansion {
 
                 if (!defined.containsKey(entryValueString) || Boolean.FALSE.equals(defined.get(entryValueString))) {
                     
-                    appliedContexts.add(localContext.keySet());
+                    appliedContexts.accept(localContext.keySet());
 
                     activeContext.newTerm(localContext, defined).create(value);
                 }
@@ -168,7 +169,7 @@ public final class UriExpansion {
         // 6.3.
         if (localContext != null && localContext.containsKey(prefix) && !Boolean.TRUE.equals(defined.get(prefix))) {
             
-            appliedContexts.add(localContext.keySet());
+            appliedContexts.accept(localContext.keySet());
 
             activeContext.newTerm(localContext, defined).create(prefix);
         }

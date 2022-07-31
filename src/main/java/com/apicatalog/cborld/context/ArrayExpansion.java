@@ -17,6 +17,7 @@ package com.apicatalog.cborld.context;
 
 import java.net.URI;
 import java.util.Collection;
+import java.util.function.Consumer;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
@@ -34,14 +35,14 @@ final class ArrayExpansion {
     private JsonArray element;
     private String activeProperty;
     private URI baseUrl;
-    private final Collection<Collection<String>> appliedContexts;
+    private final Consumer<Collection<String>> appliedContexts;
 
     // optional
     private boolean ordered;
     private boolean fromMap;
 
     private ArrayExpansion(final ActiveContext activeContext, final JsonArray element, final String activeProperty,
-            final URI baseUrl, Collection<Collection<String>> appliedContexts) {
+            final URI baseUrl, Consumer<Collection<String>> appliedContexts) {
         this.activeContext = activeContext;
         this.element = element;
         this.activeProperty = activeProperty;
@@ -54,7 +55,7 @@ final class ArrayExpansion {
     }
 
     public static final ArrayExpansion with(final ActiveContext activeContext, final JsonArray element,
-            final String activeProperty, final URI baseUrl, Collection<Collection<String>> appliedContexts) {
+            final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts) {
         return new ArrayExpansion(activeContext, element, activeProperty, baseUrl, appliedContexts);
     }
 

@@ -17,6 +17,7 @@ package com.apicatalog.cborld.context;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
@@ -39,14 +40,14 @@ final class ValueExpasion {
     // runtime
     private Optional<TermDefinition> definition;
     
-    private final Collection<Collection<String>> appliedContexts;
+    private final Consumer<Collection<String>> appliedContexts;
 
-    private ValueExpasion(final ActiveContext activeContext, Collection<Collection<String>> appliedContexts) {
+    private ValueExpasion(final ActiveContext activeContext, Consumer<Collection<String>> appliedContexts) {
         this.activeContext = activeContext;
         this.appliedContexts = appliedContexts;
     }
 
-    public static final ValueExpasion with(final ActiveContext activeContext, Collection<Collection<String>> appliedContexts) {
+    public static final ValueExpasion with(final ActiveContext activeContext, Consumer<Collection<String>> appliedContexts) {
         return new ValueExpasion(activeContext, appliedContexts);
     }
 

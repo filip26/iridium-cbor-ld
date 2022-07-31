@@ -29,10 +29,14 @@ public class Context {
         final ActiveContext activeContext = new ActiveContext(null, null, options);
 
         Collection<Collection<String>> appliedContextKeys = new LinkedHashSet<>();
-        
-        final TypeMapping typeMapping = Expansion
-                    .with(activeContext, ((JakartaJsonCursor)document).getJsonObject(), null, null, appliedContextKeys)
-                    .typeMapping();
+
+        final TypeMapping typeMapping = Expansion.with(
+                                            activeContext,
+                                            ((JakartaJsonCursor)document).getJsonObject(), 
+                                            null, null, 
+                                            appliedContextKeys::add
+                                            )
+                                        .typeMapping();
 
         return new Context(typeMapping, appliedContextKeys);
 

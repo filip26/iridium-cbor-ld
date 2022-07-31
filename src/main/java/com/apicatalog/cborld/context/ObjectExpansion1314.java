@@ -19,6 +19,7 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
@@ -44,7 +45,7 @@ final class ObjectExpansion1314 {
     private final String activeProperty;
     private final URI baseUrl;
     
-    private final Collection<Collection<String>> appliedContexts;
+    private final Consumer<Collection<String>> appliedContexts;
 
     private JsonMapBuilder result;
 
@@ -52,7 +53,7 @@ final class ObjectExpansion1314 {
     private boolean ordered;
 
     private ObjectExpansion1314(final ActiveContext activeContext, final JsonObject element,
-            final String activeProperty, final URI baseUrl, Collection<Collection<String>> appliedContexts) {
+            final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts) {
         this.activeContext = activeContext;
         this.element = element;
         this.activeProperty = activeProperty;
@@ -64,7 +65,7 @@ final class ObjectExpansion1314 {
     }
 
     public static final ObjectExpansion1314 with(final ActiveContext activeContext, final JsonObject element,
-            final String activeProperty, final URI baseUrl, Collection<Collection<String>> appliedContexts) {
+            final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts) {
         return new ObjectExpansion1314(activeContext, element, activeProperty, baseUrl, appliedContexts);
     }
 

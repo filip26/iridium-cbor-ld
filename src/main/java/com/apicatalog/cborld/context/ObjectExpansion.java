@@ -19,6 +19,7 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import com.apicatalog.jsonld.JsonLdError;
@@ -40,7 +41,7 @@ final class ObjectExpansion {
     private JsonObject element;
     private String activeProperty;
     private URI baseUrl;
-    private Collection<Collection<String>> appliedContexts;
+    private Consumer<Collection<String>> appliedContexts;
     
 
     // optional
@@ -48,7 +49,7 @@ final class ObjectExpansion {
     private boolean fromMap;
 
     private ObjectExpansion(final ActiveContext activeContext, final JsonValue propertyContext, final JsonObject element,
-            final String activeProperty, final URI baseUrl, Collection<Collection<String>> appliedContexts) {
+            final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts) {
         this.activeContext = activeContext;
         this.propertyContext = propertyContext;
         this.element = element;
@@ -62,7 +63,7 @@ final class ObjectExpansion {
     }
 
     public static final ObjectExpansion with(final ActiveContext activeContext, final JsonValue propertyContext,
-            final JsonObject element, final String activeProperty, final URI baseUrl, Collection<Collection<String>> appliedContexts) {
+            final JsonObject element, final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts) {
         return new ObjectExpansion(activeContext, propertyContext, element, activeProperty, baseUrl, appliedContexts);
     }
 
@@ -158,7 +159,7 @@ final class ObjectExpansion {
                 final ActiveContext ac = new ActiveContext(activeContext.getBaseUri(), activeContext.getBaseUrl(), activeContext.getOptions())
                                         .newContext()
                                         .create(context, baseUrl);
-                appliedContexts.add(ac.getTerms());
+                appliedContexts.accept(ac.getTerms());
             }
 
             activeContext = activeContext
@@ -204,7 +205,7 @@ final class ObjectExpansion {
                     final JsonValue lc = localContext.get();
                     
                     if (JsonUtils.isObject(lc)) {
-                        appliedContexts.add(lc.asJsonObject().keySet());
+                        appliedContexts.accept(lc.asJsonObject().keySet());
                     }
 
                     Optional<TermDefinition> valueDefinition = activeContext.getTerm(term);
