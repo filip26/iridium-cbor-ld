@@ -4,7 +4,7 @@ import java.math.BigInteger;
 import java.util.Collection;
 
 import com.apicatalog.cborld.dictionary.Dictionary;
-import com.apicatalog.json.cursor.JsonValueCursor;
+import com.apicatalog.cursor.ValueCursor;
 import com.apicatalog.jsonld.lang.Keywords;
 
 import co.nstant.in.cbor.model.DataItem;
@@ -19,7 +19,7 @@ public class ContextValueEncoder implements ValueEncoder {
     }
 
     @Override
-    public DataItem encode(final Dictionary dictionary, final JsonValueCursor value, final String term, Collection<String> types) {
+    public DataItem encode(final Dictionary dictionary, final ValueCursor value, final String term, Collection<String> types) {
         if (Keywords.CONTEXT.equals(term)) {
     
             final BigInteger code = contexts.getCode(value.stringValue());

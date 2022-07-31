@@ -22,6 +22,9 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import com.apicatalog.cursor.MapCursor;
+import com.apicatalog.cursor.ValueCursor;
+import com.apicatalog.cursor.jakarta.JakartaMapCursor;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
@@ -38,7 +41,7 @@ final class ObjectExpansion {
     // mandatory
     private ActiveContext activeContext;
     private JsonValue propertyContext;
-    private JsonObject element;
+    private MapCursor element;
     private String activeProperty;
     private URI baseUrl;
     private Consumer<Collection<String>> appliedContexts;
@@ -48,7 +51,7 @@ final class ObjectExpansion {
     private boolean ordered;
     private boolean fromMap;
 
-    private ObjectExpansion(final ActiveContext activeContext, final JsonValue propertyContext, final JsonObject element,
+    private ObjectExpansion(final ActiveContext activeContext, final JsonValue propertyContext, final MapCursor element,
             final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts) {
         this.activeContext = activeContext;
         this.propertyContext = propertyContext;
@@ -63,7 +66,7 @@ final class ObjectExpansion {
     }
 
     public static final ObjectExpansion with(final ActiveContext activeContext, final JsonValue propertyContext,
-            final JsonObject element, final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts) {
+            final MapCursor element, final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts) {
         return new ObjectExpansion(activeContext, propertyContext, element, activeProperty, baseUrl, appliedContexts);
     }
 
@@ -132,7 +135,7 @@ final class ObjectExpansion {
 
             boolean revert = true;
 
-            for (final String key : Utils.index(element.keySet(), true)) {
+            for (final String key : Utils.index(element.keys(), true)) {
 
                 final String expandedKey = UriExpansion
                                                 .with(activeContext, appliedContexts)
@@ -153,9 +156,12 @@ final class ObjectExpansion {
 
     private void initLocalContext() throws JsonLdError {
         // 9.
-        if (element.containsKey(Keywords.CONTEXT)) {
+        if (element.has(Keywords.CONTEXT)) {
             
-            for (final JsonValue context : JsonUtils.toJsonArray(element.get(Keywords.CONTEXT))) {
+            final JsonObject object = ((JakartaMapCursor)element.asObject()).getJsonObject();
+            
+            for (final JsonValue context : JsonUtils.toJsonArray(object.get(Keywords.CONTEXT))) {
+                
                 final ActiveContext ac = new ActiveContext(activeContext.getBaseUri(), activeContext.getBaseUrl(), activeContext.getOptions())
                                         .newContext()
                                         .create(context, baseUrl);
@@ -164,7 +170,7 @@ final class ObjectExpansion {
 
             activeContext = activeContext
                     .newContext()
-                    .create(element.get(Keywords.CONTEXT), baseUrl);
+                    .create(object.get(Keywords.CONTEXT), baseUrl);
         }
     }
 
@@ -173,7 +179,7 @@ final class ObjectExpansion {
         String typeKey = null;
 
         // 11.
-        for (final String key : Utils.index(element.keySet(), true)) {
+        for (final String key : Utils.index(element.keys(), true)) {
 
             final String expandedKey = UriExpansion
                                             .with(activeContext, appliedContexts)
@@ -187,14 +193,20 @@ final class ObjectExpansion {
                 typeKey = key;
             }
 
+            JsonObject object = ((JakartaMapCursor)element).getJsonObject();
+            
             // 11.2
-            final List<String> terms = JsonUtils
-                                            .toStream(element.get(key))
+            final List<String> terms = JsonUtils.toStream(object.get(key))
                                             .filter(JsonUtils::isString)
                                             .map(JsonString.class::cast)
                                             .map(JsonString::getString)
                                             .sorted()
                                             .collect(Collectors.toList());
+//            final List<String> terms = element.stream(key)
+//                    .filter(ValueCursor::isString)
+//                    .map(ValueCursor::stringValue)
+//                    .sorted()
+//                    .collect(Collectors.toList());
 
             for (final String term : terms) {
 

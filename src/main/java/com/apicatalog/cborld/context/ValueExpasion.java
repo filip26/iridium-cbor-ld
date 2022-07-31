@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+import com.apicatalog.cursor.ValueCursor;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
@@ -27,9 +28,7 @@ import com.apicatalog.jsonld.lang.DirectionType;
 import com.apicatalog.jsonld.lang.Keywords;
 
 import jakarta.json.Json;
-import jakarta.json.JsonNumber;
 import jakarta.json.JsonObjectBuilder;
-import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 
 final class ValueExpasion {
@@ -51,7 +50,7 @@ final class ValueExpasion {
         return new ValueExpasion(activeContext, appliedContexts);
     }
 
-    public JsonValue expand(final JsonValue value, final String activeProperty) throws JsonLdError {
+    public JsonValue expand(final ValueCursor value, final String activeProperty) throws JsonLdError {
         
         definition = activeContext.getTerm(activeProperty);
 
@@ -64,12 +63,8 @@ final class ValueExpasion {
 
                 String idValue = null;
 
-                if (JsonUtils.isString(value)) {
-                    idValue = ((JsonString) value).getString();
-
-                // custom extension allowing to process numeric ids
-                } else if (activeContext.getOptions().isNumericId() && JsonUtils.isNumber(value)) {
-                    idValue = ((JsonNumber) value).toString();
+                if (value.isString()) {
+                    idValue = value.stringValue();
                 }
 
                 if (idValue != null) {
@@ -84,13 +79,13 @@ final class ValueExpasion {
                 }
 
             // 2.
-            } else if (Keywords.VOCAB.equals(typeMapping.get()) && JsonUtils.isString(value)) {
+            } else if (Keywords.VOCAB.equals(typeMapping.get()) && value.isString()) {
 
                 String expandedValue = UriExpansion
                                             .with(activeContext, appliedContexts)
                                             .documentRelative(true)
                                             .vocab(true)
-                                            .expand(((JsonString) value).getString());
+                                            .expand(value.stringValue());
 
                 return Json.createObjectBuilder().add(Keywords.ID, expandedValue)
                         .add(Keywords.TYPE,  Keywords.VOCAB).build();
@@ -98,7 +93,7 @@ final class ValueExpasion {
         }
 
         // 3.
-        final JsonObjectBuilder result = Json.createObjectBuilder().add(Keywords.VALUE, value);
+        final JsonObjectBuilder result = Json.createObjectBuilder()/*.add(Keywords.VALUE, value)*/;
 
         // 4.
         if (typeMapping
@@ -107,9 +102,8 @@ final class ValueExpasion {
 
             result.add(Keywords.TYPE, typeMapping.get());
             return result.build();
-            
-            // 5.
-        } else if (JsonUtils.isString(value)) {
+
+        } else if (value.isString()) {
             buildStringValue(result);
             return result.build();
         }

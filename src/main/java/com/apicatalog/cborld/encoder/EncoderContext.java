@@ -3,19 +3,19 @@ package com.apicatalog.cborld.encoder;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 
-import com.apicatalog.json.cursor.JsonObjectCursor;
-import com.apicatalog.json.cursor.JsonValueCursor;
+import com.apicatalog.cursor.ValueCursor;
+import com.apicatalog.cursor.MapCursor;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.uri.UriUtils;
 
 public class EncoderContext {
 
-    public final static Collection<String> get(final JsonObjectCursor document) {
+    public final static Collection<String> get(final MapCursor document) {
         return get(document, new LinkedHashSet<>());
     }
 
-    static final Collection<String> get(final JsonObjectCursor document, Collection<String> contexts) {
-        for (final String property : document.properies()) {
+    static final Collection<String> get(final MapCursor document, Collection<String> contexts) {
+        for (final String property : document.keys()) {
     
             if (Keywords.CONTEXT.equals(property)) {
                 processContextValue(document.value(property), contexts);
@@ -30,7 +30,7 @@ public class EncoderContext {
         return contexts;
     }
 
-    static final void processContextValue(final JsonValueCursor value, final Collection<String> result) {
+    static final void processContextValue(final ValueCursor value, final Collection<String> result) {
     
         if (value.isString()) {
             final String uri = value.stringValue();

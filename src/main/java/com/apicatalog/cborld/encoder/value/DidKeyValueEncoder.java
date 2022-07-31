@@ -4,10 +4,10 @@ import java.net.URI;
 import java.util.Collection;
 
 import com.apicatalog.cborld.dictionary.Dictionary;
+import com.apicatalog.cursor.ValueCursor;
 import com.apicatalog.did.Did;
 import com.apicatalog.did.DidUrl;
 import com.apicatalog.did.key.DidKey;
-import com.apicatalog.json.cursor.JsonValueCursor;
 import com.apicatalog.jsonld.StringUtils;
 
 import co.nstant.in.cbor.model.Array;
@@ -21,7 +21,7 @@ public class DidKeyValueEncoder implements ValueEncoder {
     final static int CODE = 1025;
     
     @Override
-    public DataItem encode(Dictionary dictionary, JsonValueCursor value, String term, Collection<String> types) {
+    public DataItem encode(Dictionary dictionary, ValueCursor value, String term, Collection<String> types) {
 
         if (value.isString() && value.stringValue().toLowerCase().startsWith(PREFIX)) {
 

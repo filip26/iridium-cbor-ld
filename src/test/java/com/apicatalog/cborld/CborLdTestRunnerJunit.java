@@ -17,8 +17,8 @@ import com.apicatalog.cbor.CborWriter;
 import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.decoder.DecoderError;
 import com.apicatalog.cborld.encoder.EncoderError;
-import com.apicatalog.json.cursor.JsonObjectCursor;
-import com.apicatalog.json.cursor.jakarta.JakartaJsonCursor;
+import com.apicatalog.cursor.MapCursor;
+import com.apicatalog.cursor.jakarta.JakartaJsonCursor;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.json.JsonLdComparison;
@@ -70,7 +70,7 @@ public class CborLdTestRunnerJunit {
     
                 JsonObject object = document.getJsonContent().orElseThrow(IllegalStateException::new).asJsonObject();
     
-                JsonObjectCursor cursor = new JakartaJsonCursor(object, 100);
+                MapCursor cursor = new JakartaJsonCursor(object, 1000).mapCursor();
 
                 byte[] bytes = CborLd.encoder(cursor)
                                     .loader(LOADER)

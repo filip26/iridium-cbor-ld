@@ -4,7 +4,7 @@ import java.math.BigInteger;
 import java.util.Collection;
 
 import com.apicatalog.cborld.dictionary.Dictionary;
-import com.apicatalog.json.cursor.JsonValueCursor;
+import com.apicatalog.cursor.ValueCursor;
 
 import co.nstant.in.cbor.model.DataItem;
 import co.nstant.in.cbor.model.UnsignedInteger;
@@ -12,7 +12,7 @@ import co.nstant.in.cbor.model.UnsignedInteger;
 public class StringValueEncoder implements ValueEncoder {
 
     @Override
-    public DataItem encode(Dictionary dictionary, JsonValueCursor value, String term, Collection<String> types) {
+    public DataItem encode(Dictionary dictionary, ValueCursor value, String term, Collection<String> types) {
 
         if (value.isString()) {
             

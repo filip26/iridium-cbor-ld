@@ -1,6 +1,8 @@
-package com.apicatalog.json.cursor;
+package com.apicatalog.cursor;
 
-public interface JsonArrayCursor extends JsonValueCursor {
+import java.util.stream.Stream;
+
+public interface ArrayCursor extends StructureCursor, Iterable<ValueCursor> {
 
     boolean isNull(int index);
 
@@ -29,7 +31,9 @@ public interface JsonArrayCursor extends JsonValueCursor {
 
     String stringValue(int index);
 
-    JsonArrayCursor array(int index);
-    JsonObjectCursor object(int index);
-    JsonValueCursor value(int index);
+    ArrayCursor array(int index);
+    MapCursor object(int index);
+    ValueCursor value(int index);
+
+    Stream<ValueCursor> stream();
 }

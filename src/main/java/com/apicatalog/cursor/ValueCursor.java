@@ -1,10 +1,10 @@
-package com.apicatalog.json.cursor;
+package com.apicatalog.cursor;
 
 import java.util.Optional;
 
-public interface JsonValueCursor {
+public interface ValueCursor {
 
-    Optional<JsonValueCursor> parent();
+    Optional<ValueCursor> parent();
 
     boolean isNull();
 
@@ -12,7 +12,7 @@ public interface JsonValueCursor {
     boolean isBoolean();
     boolean isNumber();
 
-    default boolean isPrimitive() {
+    default boolean isScalar() {
         return isString() || isBoolean() || isNumber();
     }
 
@@ -33,8 +33,6 @@ public interface JsonValueCursor {
 
     String stringValue();
 
-    JsonObjectCursor asObject();
-    JsonArrayCursor asArray();
-
-    int size();
+    MapCursor asObject();
+    ArrayCursor asArray();
 }

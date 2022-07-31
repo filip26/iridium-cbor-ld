@@ -14,9 +14,9 @@ import com.apicatalog.cborld.dictionary.CodeTermMap;
 import com.apicatalog.cborld.encoder.EncoderError.Code;
 import com.apicatalog.cborld.encoder.value.ValueEncoder;
 import com.apicatalog.cborld.loader.StaticContextLoader;
-import com.apicatalog.json.cursor.JsonArrayCursor;
-import com.apicatalog.json.cursor.JsonObjectCursor;
-import com.apicatalog.json.cursor.JsonValueCursor;
+import com.apicatalog.cursor.ArrayCursor;
+import com.apicatalog.cursor.ValueCursor;
+import com.apicatalog.cursor.MapCursor;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.http.DefaultHttpClient;
 import com.apicatalog.jsonld.http.media.MediaType;
@@ -35,7 +35,7 @@ import co.nstant.in.cbor.model.UnsignedInteger;
 
 public class Encoder {
 
-    protected final JsonObjectCursor document;
+    protected final MapCursor document;
 
     protected CodeTermMap index;
 
@@ -44,7 +44,7 @@ public class Encoder {
     protected boolean compactArrays;
     protected DocumentLoader loader;
     
-    protected Encoder(JsonObjectCursor document) {
+    protected Encoder(MapCursor document) {
         this.document = document;
     
         // default options
@@ -53,7 +53,7 @@ public class Encoder {
         this.loader = null;
     }
 
-    public static final Encoder create(JsonObjectCursor document) throws EncoderError {
+    public static final Encoder create(MapCursor document) throws EncoderError {
         if (document == null) {
             throw new IllegalArgumentException("The 'document' parameter must not be null.");
         }
@@ -129,7 +129,7 @@ public class Encoder {
      * @throws ContextError
      * @throws EncoderError
      */
-    final byte[] compress(final JsonObjectCursor document, Collection<String> contextUrls) throws ContextError, EncoderError {
+    final byte[] compress(final MapCursor document, Collection<String> contextUrls) throws ContextError, EncoderError {
     
         // 1.
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -158,11 +158,11 @@ public class Encoder {
         }
     }
 
-    final MapBuilder<?> encode(final JsonObjectCursor object, final MapBuilder<?> builder, TypeMapping typeMapping) throws EncoderError, JsonLdError {
+    final MapBuilder<?> encode(final MapCursor object, final MapBuilder<?> builder, TypeMapping typeMapping) throws EncoderError, JsonLdError {
 
         MapBuilder<?> flow = builder;
     
-        for (final String property : object.properies()) {
+        for (final String property : object.keys()) {
     
             final BigInteger encodedProperty = index.getCode(property);
                 
@@ -232,20 +232,21 @@ public class Encoder {
         return flow;
     }
 
-    final DataItem encode(final JsonValueCursor value, final String term, TypeMapping typeMapping) throws EncoderError {
+    final DataItem encode(final ValueCursor value, final String term, TypeMapping typeMapping) throws EncoderError {
     
         if (value.isBoolean()) {
             return value.booleanValue() ? SimpleValue.TRUE : SimpleValue.FALSE;
         }
-    
+
         if (value.isString()) {
-    
-            final Collection<String> types = typeMapping.getType(term);
-            
-            for (final ValueEncoder valueEncoder : valueEncoders) {
-                final DataItem dataItem = valueEncoder.encode(index, value, term, types);
-                if (dataItem != null) {
-                    return dataItem;
+            if (typeMapping != null) { 
+                final Collection<String> types = typeMapping.getType(term);
+                
+                for (final ValueEncoder valueEncoder : valueEncoders) {
+                    final DataItem dataItem = valueEncoder.encode(index, value, term, types);
+                    if (dataItem != null) {
+                        return dataItem;
+                    }
                 }
             }
             return new UnicodeString(value.stringValue());
@@ -259,7 +260,7 @@ public class Encoder {
         throw new IllegalStateException("TODO " + value);
     }
 
-    final ArrayBuilder<?> encode(final JsonArrayCursor object, final ArrayBuilder<?> builder, String property, TypeMapping typeMapping) throws EncoderError, JsonLdError {
+    final ArrayBuilder<?> encode(final ArrayCursor object, final ArrayBuilder<?> builder, String property, TypeMapping typeMapping) throws EncoderError, JsonLdError {
     
         ArrayBuilder<?> flow = builder;
     

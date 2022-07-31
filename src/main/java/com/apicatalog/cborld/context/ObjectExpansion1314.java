@@ -21,6 +21,9 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+import com.apicatalog.cursor.MapCursor;
+import com.apicatalog.cursor.ValueCursor;
+import com.apicatalog.cursor.jakarta.JakartaValueCursor;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdVersion;
@@ -33,7 +36,6 @@ import com.apicatalog.jsonld.lang.Utils;
 import com.apicatalog.jsonld.lang.ValueObject;
 
 import jakarta.json.Json;
-import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
 
 final class ObjectExpansion1314 {
@@ -41,7 +43,7 @@ final class ObjectExpansion1314 {
     // mandatory
     private ActiveContext activeContext;
 
-    private final JsonObject element;
+    private final MapCursor element;
     private final String activeProperty;
     private final URI baseUrl;
     
@@ -52,7 +54,7 @@ final class ObjectExpansion1314 {
     // optional
     private boolean ordered;
 
-    private ObjectExpansion1314(final ActiveContext activeContext, final JsonObject element,
+    private ObjectExpansion1314(final ActiveContext activeContext, final MapCursor element,
             final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts) {
         this.activeContext = activeContext;
         this.element = element;
@@ -64,7 +66,7 @@ final class ObjectExpansion1314 {
         this.ordered = false;
     }
 
-    public static final ObjectExpansion1314 with(final ActiveContext activeContext, final JsonObject element,
+    public static final ObjectExpansion1314 with(final ActiveContext activeContext, final MapCursor element,
             final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts) {
         return new ObjectExpansion1314(activeContext, element, activeProperty, baseUrl, appliedContexts);
     }
@@ -82,7 +84,7 @@ final class ObjectExpansion1314 {
     public void expand() throws JsonLdError {
 
         // 13.
-        for (final String key : Utils.index(element.keySet(), ordered)) {
+        for (final String key : Utils.index(element.keys(), ordered)) {
 
             // 13.1.
             if (Keywords.CONTEXT.equals(key)) {
@@ -101,12 +103,12 @@ final class ObjectExpansion1314 {
                 continue;
             }
 
-            JsonValue value = element.get(key);
+            final ValueCursor value = element.clone().value(key);
 
             // 13.4. If expanded property is a keyword:
             if (Keywords.contains(expandedProperty)) {
 
-                JsonValue expandedType = value;
+                JsonValue expandedType = ((JakartaValueCursor)value).getJsonValue();
 
                 // 13.4.1
                 if (Keywords.REVERSE.equals(activeProperty)) {
@@ -189,12 +191,12 @@ final class ObjectExpansion1314 {
                 expandedType = Json.createValue(Keywords.JSON);
 
             // 13.7.
-            } else if (containerMapping.contains(Keywords.LANGUAGE) && JsonUtils.isObject(value)) {
+            } else if (containerMapping.contains(Keywords.LANGUAGE) && value.isObject()) {
 
 
             // 13.8.
             } else if ((containerMapping.contains(Keywords.INDEX) || containerMapping.contains(Keywords.TYPE)
-                    || containerMapping.contains(Keywords.ID)) && JsonUtils.isObject(value)) {
+                    || containerMapping.contains(Keywords.ID)) && value.isObject()) {
 
 
             // 13.9.

@@ -3,8 +3,8 @@ package com.apicatalog.cborld.context;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 
-import com.apicatalog.json.cursor.JsonObjectCursor;
-import com.apicatalog.json.cursor.jakarta.JakartaJsonCursor;
+import com.apicatalog.cursor.MapCursor;
+import com.apicatalog.cursor.jakarta.JakartaJsonCursor;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.context.ActiveContext;
@@ -20,7 +20,7 @@ public class Context {
         this.appliedContextKeys = appliedContextKeys;
     }
     
-    public static Context from(JsonObjectCursor document, DocumentLoader loader) throws JsonLdError {
+    public static Context from(MapCursor document, DocumentLoader loader) throws JsonLdError {
 
         final JsonLdOptions options = new JsonLdOptions();
         options.setOrdered(true);
@@ -32,7 +32,7 @@ public class Context {
 
         final TypeMapping typeMapping = Expansion.with(
                                             activeContext,
-                                            ((JakartaJsonCursor)document).getJsonObject(), 
+                                            document, 
                                             null, null, 
                                             appliedContextKeys::add
                                             )
