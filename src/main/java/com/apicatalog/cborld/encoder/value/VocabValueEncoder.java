@@ -5,16 +5,17 @@ import java.util.Collection;
 
 import com.apicatalog.cborld.dictionary.Dictionary;
 import com.apicatalog.json.cursor.JsonValueCursor;
+import com.apicatalog.jsonld.lang.Keywords;
 
 import co.nstant.in.cbor.model.DataItem;
 import co.nstant.in.cbor.model.UnsignedInteger;
 
-public class StringValueEncoder implements ValueEncoder {
+public class VocabValueEncoder implements ValueEncoder {
 
     @Override
     public DataItem encode(Dictionary dictionary, JsonValueCursor value, String term, Collection<String> types) {
 
-        if (value.isString()) {
+        if (value.isString() && types != null && types.contains(Keywords.VOCAB)) {
             
             BigInteger code = dictionary.getCode(value.stringValue());
             

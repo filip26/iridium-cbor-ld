@@ -33,7 +33,7 @@ public class Context {
         final TypeMapping typeMapping = Expansion
                     .with(activeContext, ((JakartaJsonCursor)document).getJsonObject(), null, null, appliedContextKeys)
                     .typeMapping();
-        
+
         return new Context(typeMapping, appliedContextKeys);
 
     }

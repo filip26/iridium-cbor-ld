@@ -6,6 +6,7 @@ import java.math.BigInteger;
 import java.util.Collection;
 
 import com.apicatalog.cborld.CborLd;
+import com.apicatalog.cborld.config.DefaultEncoderConfig;
 import com.apicatalog.cborld.context.Context;
 import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.context.TypeMapping;

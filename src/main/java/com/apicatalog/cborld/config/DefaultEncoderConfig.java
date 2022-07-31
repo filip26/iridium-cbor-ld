@@ -1,12 +1,12 @@
-package com.apicatalog.cborld.encoder;
+package com.apicatalog.cborld.config;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
 import com.apicatalog.cborld.dictionary.ContextDictionary;
+import com.apicatalog.cborld.encoder.EncoderConfigration;
 import com.apicatalog.cborld.encoder.value.ContextValueEncoder;
 import com.apicatalog.cborld.encoder.value.DidKeyValueEncoder;
-import com.apicatalog.cborld.encoder.value.IdValueEncoder;
 import com.apicatalog.cborld.encoder.value.MultibaseValueEncoder;
 import com.apicatalog.cborld.encoder.value.StringValueEncoder;
 import com.apicatalog.cborld.encoder.value.TypeValueEncoder;
@@ -22,7 +22,7 @@ public class DefaultEncoderConfig implements EncoderConfigration {
     static {
         // term driven
         VALUE_ENCODERS.add(new ContextValueEncoder(new ContextDictionary()));
-        VALUE_ENCODERS.add(new IdValueEncoder());
+//        VALUE_ENCODERS.add(new IdValueEncoder());
         VALUE_ENCODERS.add(new TypeValueEncoder());
         
         // type driven

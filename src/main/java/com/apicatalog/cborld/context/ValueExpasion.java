@@ -92,7 +92,7 @@ final class ValueExpasion {
                                             .expand(((JsonString) value).getString());
 
                 return Json.createObjectBuilder().add(Keywords.ID, expandedValue)
-                        .add(Keywords.TYPE,  Keywords.ID).build();
+                        .add(Keywords.TYPE,  Keywords.VOCAB).build();
             }
         }
 
@@ -105,14 +105,15 @@ final class ValueExpasion {
                     .isPresent()) {
 
             result.add(Keywords.TYPE, typeMapping.get());
-
+            return result.build();
+            
             // 5.
         } else if (JsonUtils.isString(value)) {
             buildStringValue(result);
+            return result.build();
         }
 
-        // 6.
-        return result.build();
+        return null;
     }
     
     private void buildStringValue(final JsonObjectBuilder result) {

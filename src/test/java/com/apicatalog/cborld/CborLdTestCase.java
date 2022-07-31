@@ -4,7 +4,7 @@ import java.net.URI;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.apicatalog.cborld.encoder.DefaultEncoderConfig;
+import com.apicatalog.cborld.config.DefaultEncoderConfig;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.DocumentLoader;
