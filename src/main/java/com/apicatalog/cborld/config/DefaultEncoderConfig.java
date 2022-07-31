@@ -15,7 +15,7 @@ import com.apicatalog.cborld.encoder.value.ValueEncoder;
 import com.apicatalog.cborld.encoder.value.XsdDateTimeValueEncoder;
 import com.apicatalog.cborld.encoder.value.XsdDateValueEncoder;
 
-public class DefaultEncoderConfig implements EncoderConfigration {
+public final class DefaultEncoderConfig implements EncoderConfigration {
 
     public static final Collection<ValueEncoder> VALUE_ENCODERS = new ArrayList<>();
 
@@ -47,4 +47,10 @@ public class DefaultEncoderConfig implements EncoderConfigration {
     public Collection<ValueEncoder> getValueEncoders() {
         return VALUE_ENCODERS;
     }
+    
+    @Override
+    public DictionaryAlgorithm getDictonaryAlgorithm() {
+        return DictionaryAlgorithm.ContextBag;
+    }
+
 }

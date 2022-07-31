@@ -15,7 +15,7 @@ import com.apicatalog.cborld.encoder.value.VocabValueEncoder;
 import com.apicatalog.cborld.encoder.value.XsdDateTimeValueEncoder;
 import com.apicatalog.cborld.encoder.value.XsdDateValueEncoder;
 
-public class DbEncoderConfig implements EncoderConfigration {
+public final class DbEncoderConfig implements EncoderConfigration {
 
     public static final Collection<ValueEncoder> VALUE_ENCODERS = new ArrayList<>();
 
@@ -46,5 +46,10 @@ public class DbEncoderConfig implements EncoderConfigration {
     @Override
     public Collection<ValueEncoder> getValueEncoders() {
         return VALUE_ENCODERS;
+    }
+
+    @Override
+    public DictionaryAlgorithm getDictonaryAlgorithm() {
+        return DictionaryAlgorithm.OnlyAppliedContextInProcessingOrder;
     }
 }
