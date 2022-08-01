@@ -156,9 +156,9 @@ final class ObjectExpansion {
 
     private void initLocalContext() throws JsonLdError {
         // 9.
-        if (element.has(Keywords.CONTEXT)) {
+        if (element.contains(Keywords.CONTEXT)) {
             
-            final JsonObject object = ((JakartaMapCursor)element.asObject()).getJsonObject();
+            final JsonObject object = ((JakartaMapCursor)element.asMap()).getJsonObject();
             
             for (final JsonValue context : JsonUtils.toJsonArray(object.get(Keywords.CONTEXT))) {
                 

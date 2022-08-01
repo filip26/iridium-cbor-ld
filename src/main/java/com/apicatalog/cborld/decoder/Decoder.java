@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.apicatalog.cborld.CborLd;
 import com.apicatalog.cborld.config.DefaultEncoderConfig;
+import com.apicatalog.cborld.context.Context;
 import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.decoder.DecoderError.Code;
 import com.apicatalog.cborld.dictionary.CodeTermMap;
@@ -102,6 +103,7 @@ public class Decoder {
         loader = new StaticContextLoader(loader);
         
         if (compressed) {
+            
             return decodeCompressed();
         }
         return decodeUncompressed();
@@ -117,20 +119,26 @@ public class Decoder {
             if (dataItems.isEmpty()) {
                 return null;
             }
-    
+            
             // decode as an array of objects
             if (dataItems.size() > 1) {
     
                 final JsonArrayBuilder builder = Json.createArrayBuilder();
         
                 for (final DataItem item : dataItems) {
-                    builder.add(decodeCompressed(item));
+                    
+                    //final Context context = Context.from(item, loader);
+                    
+
+                    
+                    //builder.add(decodeCompressed(item));
                 }
         
                 return builder.build();
             }
     
-            return decodeCompressed(dataItems.iterator().next());
+            //return decodeCompressed(dataItems.iterator().next());
+            return null;    //FIXME
     
         } catch (final CborException e) {
             throw new DecoderError(Code.InvalidDocument, e);

@@ -9,32 +9,42 @@ public interface ValueCursor {
     boolean isNull();
 
     boolean isString();
+    String stringValue();
+    
     boolean isBoolean();
-    boolean isNumber();
+    Boolean booleanValue();
 
-    default boolean isScalar() {
+    boolean isNumber();
+    Integer integerValue();
+    Long longValue();
+
+    default boolean isPrimitive() {
         return isString() || isBoolean() || isNumber();
     }
 
     boolean isArray();
-    boolean isNonEmptyArray();
-
-    boolean isObject();
-    boolean isNonEmptyObject();
-
-    default boolean isStructure() {
-        return isArray() || isObject();
+    default boolean isNonEmptyArray() {
+        return isArray() && !asArray().isEmpty();
     }
-
-    Boolean booleanValue();
-
-    Integer integerValue();
-    Long longValue();
-
-    String stringValue();
-
-    MapCursor asObject();
+    
     ArrayCursor asArray();
 
-    ValueCursor clone();
+    boolean isMap();
+    default boolean isNonEmptyMap() {
+        return isMap() && !asMap().isEmpty();
+    }
+    
+    MapCursor asMap();
+
+    default boolean isStructure() {
+        return isArray() || isMap();
+    }
+    
+//    ValueCursor clone();
+    
+    boolean isArrayItem();
+    ArrayItemCursor asArrayItem();
+    
+    boolean isMapEntry();
+    MapEntryCursor asMapEntry();
 }

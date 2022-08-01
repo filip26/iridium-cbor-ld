@@ -1,84 +1,106 @@
 package com.apicatalog.cursor;
 
 import java.util.Collection;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
-public interface MapCursor extends StructureCursor {
+public interface MapCursor extends StructureCursor, Iterable<MapEntryCursor> {
 
-    public interface Key {
-     
-        boolean isInteger();
-        boolean isString();
-        
-        String stringValue();
-        int intValue();
-    }
-    
     Collection<String> keys();
 
-    boolean has(String key);
-    boolean has(int key);
+    MapEntryCursor entry(String key);
     
-    default boolean has(Key key) {
-        return key.isString() ? has(key.stringValue()) : has(key.intValue());
+    default MapEntryCursor entry() {
+        if (isEmpty()) {
+            throw new IndexOutOfBoundsException();
+        }
+        return entry(keys().iterator().next());
+    }
+    
+    default boolean is(String key, Predicate<ValueCursor> predicate) {
+
+        MapEntryCursor entry = entry(key); 
+        
+        boolean result = predicate.test(entry);
+        
+        entry.parent();
+        
+        return result;
+    }
+    
+    default <T> T value(String key, Function<ValueCursor, T> getter) {
+        MapEntryCursor entry = entry(key); 
+        
+        T result = getter.apply(entry); 
+        
+        entry.parent();
+        
+        return result;        
     }
 
-    boolean isNull(String key);
-    boolean isNull(int key);
-    
-    boolean isString(String key);
-    boolean isString(int key);
-    
-    boolean isBoolean(String key);
-    boolean isBoolean(int key);
-    
-    boolean isNumber(String key);
-    boolean isNumber(int key);
+    boolean contains(String key);
 
-    default boolean isPrimitive(String key) {
+    default boolean isNull(String key) {
+        return is(key, ValueCursor::isNull);
+    }
+
+    default boolean isString(String key) {
+        return is(key, ValueCursor::isString);
+    }
+
+    default boolean isBoolean(String key) {
+        return is(key, ValueCursor::isBoolean);
+    }
+    
+    default boolean isNumber(String key) {
+        return is(key, ValueCursor::isNumber);
+    }
+
+    default boolean isScalar(String key) {
         return isString(key) || isBoolean(key) || isNumber(key);
     }
 
-    default boolean isPrimitive(int key) {
-        return isString(key) || isBoolean(key) || isNumber(key);
+    default boolean isArray(String key) {
+        return is(key, ValueCursor::isArray);
+    }
+    
+    default boolean isNonEmptyArray(String key) {
+        return is(key, ValueCursor::isNonEmptyArray);
     }
 
-    boolean isArray(String key);
-    boolean isArray(int key);
-    
-    boolean isNonEmptyArray(String key);
-    boolean isNonEmptyArray(int key);
+    default boolean isMap(String key) {
+        return is(key, ValueCursor::isMap);
+    }
 
-    boolean isObject(String key);
-    boolean isObject(int key);
-    
-    boolean isNonEmptyObject(String key);
-    boolean isNonEmptyObject(int key);
+    default boolean isNonEmptyMap(String key) {
+        return is(key, ValueCursor::isNonEmptyMap);
+    }
 
     default boolean isStructure(String key) {
-        return isArray(key) || isObject(key);
+        return isArray(key) || isMap(key);
     }
     
-    default boolean isStructure(int key) {
-        return isArray(key) || isObject(key);
+    default Boolean booleanValue(String key) {
+        return value(key, ValueCursor::booleanValue);
     }
 
-    Boolean booleanValue(String key);
-    Boolean booleanValue(int key);
+    default Integer integerValue(String key) {
+        return value(key, ValueCursor::integerValue);
+    }
 
-    Integer integerValue(String key);
-    Integer integerValue(int key);
+    default Long longValue(String key) {
+        return value(key, ValueCursor::longValue);
+    }
 
-    Long longValue(String key);
-    Long longValue(int key);
+    default String stringValue(String key) {
+        return value(key, ValueCursor::stringValue);
+    }
 
-    String stringValue(String key);
-    String stringValue(int key);
-
-    ArrayCursor array(String key);
-
-    MapCursor object(String key);
-
-    ValueCursor value(String key);
-
-    MapCursor clone();
+//    ArrayCursor array(String key);
+//
+//    MapCursor object(String key);
+//
+//    ValueCursor value(String key);
+//
+//    MapCursor clone();
 }

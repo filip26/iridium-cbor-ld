@@ -103,6 +103,8 @@ final class ArrayExpansion {
             }
         }
 
+        element.parent();
+
         // 5.3
         return result.build();
     }

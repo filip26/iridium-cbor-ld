@@ -100,7 +100,7 @@ final class Expansion {
         }
         
         // 4. If element is a scalar
-        if (element.isScalar()) {
+        if (element.isPrimitive()) {
 
             return ScalarExpansion
                         .with(activeContext, propertyContext, element, activeProperty, appliedContexts)
@@ -109,7 +109,7 @@ final class Expansion {
 
         // 6. Otherwise element is a map
         return ObjectExpansion
-                    .with(activeContext, propertyContext, element.asObject(), activeProperty, baseUrl, appliedContexts)
+                    .with(activeContext, propertyContext, element.asMap(), activeProperty, baseUrl, appliedContexts)
                     .ordered(ordered)
                     .fromMap(fromMap)
                     .expand();

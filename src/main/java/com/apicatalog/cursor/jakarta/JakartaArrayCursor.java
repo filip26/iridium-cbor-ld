@@ -1,19 +1,15 @@
 package com.apicatalog.cursor.jakarta;
 
+import java.util.Collections;
 import java.util.Iterator;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import com.apicatalog.cursor.ArrayCursor;
-import com.apicatalog.cursor.MapCursor;
-import com.apicatalog.cursor.ValueCursor;
-
-import jakarta.json.JsonValue.ValueType;
+import com.apicatalog.cursor.ArrayItemCursor;
 
 public class JakartaArrayCursor extends JakartaValueCursor implements ArrayCursor {
     
     public JakartaArrayCursor(final JakartaJsonCursor cursor) {
-        super(cursor);
+        super(cursor, cursor::jsonValue);
     }
 
     @Override
@@ -21,158 +17,33 @@ public class JakartaArrayCursor extends JakartaValueCursor implements ArrayCurso
         if (!isArray()) {
             throw new ClassCastException();
         }
-        return cursor.value().asJsonArray().size();
+        return cursor.jsonValue().asJsonArray().size();
     }
 
     @Override
-    public boolean isNull(int i) {
+    public ArrayItemCursor item(int index) {
         if (!isArray()) {
             throw new ClassCastException();
         }
-    
-        return ValueType.NULL.equals(cursor.value().asJsonArray().get(i).getValueType());
+        return cursor.item(index);
     }
 
     @Override
-    public boolean isString(int i) {
-        if (!isArray()) {
-            throw new ClassCastException();
-        }
-    
-        return ValueType.STRING.equals(cursor.value().asJsonArray().get(i).getValueType());
-    }
-
-    @Override
-    public boolean isBoolean(int i) {
-        if (!isArray()) {
-            throw new ClassCastException();
-        }
-        return ValueType.TRUE.equals(cursor.value().asJsonArray().get(i).getValueType())
-            || ValueType.FALSE.equals(cursor.value().asJsonArray().get(i).getValueType());
-    }
-
-    @Override
-    public boolean isNumber(int i) {
-        if (!isArray()) {
-            throw new ClassCastException();
-        }
-        return ValueType.NUMBER.equals(cursor.value().asJsonArray().get(i).getValueType());
-    }
-
-    @Override
-    public boolean isArray(int i) {
-        if (!isArray()) {
-            throw new ClassCastException();
-        }
-        return ValueType.ARRAY.equals(cursor.value().asJsonArray().get(i).getValueType());
-    }
-
-    @Override
-    public boolean isNonEmptyArray(int i) {
-        if (!isArray()) {
-            throw new ClassCastException();
-        }
-        return ValueType.ARRAY.equals(cursor.value().asJsonArray().get(i).getValueType())
-            && !cursor.value().asJsonArray().getJsonArray(i).isEmpty();
-    }
-
-    @Override
-    public boolean isObject(int i) {
-        if (!isArray()) {
-            throw new ClassCastException();
-        }
-        return ValueType.OBJECT.equals(cursor.value().asJsonArray().get(i).getValueType());
-    }
-
-    @Override
-    public boolean isNonEmptyObject(int i) {
-        if (!isArray()) {
-            throw new ClassCastException();
-        }
-        return ValueType.OBJECT.equals(cursor.value().asJsonArray().get(i).getValueType())
-            && !cursor.value().asJsonArray().getJsonObject(i).isEmpty();
-    }
-
-    @Override
-    public Boolean booleanValue(int i) {
-        if (!isArray()) {
-            throw new ClassCastException();
-        }
-    
-        if (ValueType.TRUE.equals(cursor.value().asJsonArray().get(i).getValueType())) {
-            return Boolean.TRUE;
-        }
-        if (ValueType.FALSE.equals(cursor.value().asJsonArray().get(i).getValueType())) {
-            return Boolean.FALSE;
-        }
-    
-        throw new ClassCastException();
-    }
-
-    @Override
-    public Integer integerValue(int i) {
-        if (!isNumber(i)) {
-            throw new ClassCastException();
-        }
-        return cursor.value().asJsonArray().getJsonNumber(i).intValueExact();
-    }
-
-    @Override
-    public Long longValue(int i) {
-        if (!isNumber(i)) {
-            throw new ClassCastException();
-        }
-        return cursor.value().asJsonArray().getJsonNumber(i).longValueExact();
-    }
-
-    @Override
-    public String stringValue(int i) {
-        if (!isString(i)) {
-            throw new ClassCastException();
-        }
-        return cursor.value().asJsonArray().getJsonString(i).getString();
-    }
-
-    @Override
-    public ArrayCursor array(int i) {
-        if (!isArray(i)) {
-            throw new IllegalArgumentException();
-        }    
-        return cursor.next(cursor.value().asJsonArray().get(i).asJsonArray());
-    }
-
-    @Override
-    public MapCursor object(int i) {
-        if (!isObject(i)) {
-            throw new IllegalArgumentException();
-        }
-        return cursor.next(cursor.value().asJsonArray().get(i).asJsonObject());
-    }
-
-    @Override
-    public ValueCursor value(int i) {
-        if (!isArray()) {
-            throw new ClassCastException();
-        }    
-        return cursor.next(cursor.value().asJsonArray().get(i));
-    }
-
-    @Override
-    public ArrayCursor clone() {
-        return cursor.clone().arrayCursor();
-    }
-
-    @Override
-    public Iterator<ValueCursor> iterator() {
+    public Iterator<ArrayItemCursor> iterator() {
         if (!isArray()) {
             throw new ClassCastException();
         }
         
-        final ArrayCursor clone = this;
+        if (isEmpty()) {
+            return Collections.emptyIterator();
+        }
+        
         final int size = size();
-        
-        return new Iterator<ValueCursor>() {
 
+        return new Iterator<>() {
+            
+            final ArrayItemCursor item = cursor.item(0);
+                        
             int index = 0;
 
             @Override
@@ -181,9 +52,39 @@ public class JakartaArrayCursor extends JakartaValueCursor implements ArrayCurso
             }
 
             @Override
-            public ValueCursor next() {
-                return clone.value(index++).clone();
+            public ArrayItemCursor next() {
+                return item.arrayIndex(index++);
             }
         };
-    }    
+    }
+    
+    @Override
+    public ArrayCursor asArray() {
+        return this;
+    }
+
+//    @Override
+//    public ArrayCursor array(int i) {
+//        if (!isArray(i)) {
+//            throw new IllegalArgumentException();
+//        }    
+//        return cursor.next(cursor.structure().asJsonArray().get(i).asJsonArray());
+//    }
+//
+//    @Override
+//    public MapCursor object(int i) {
+//        if (!isObject(i)) {
+//            throw new IllegalArgumentException();
+//        }
+//        return cursor.next(cursor.structure().asJsonArray().get(i).asJsonObject());
+//    }
+//
+//    @Override
+//    public ValueCursor value(int i) {
+//        if (!isArray()) {
+//            throw new ClassCastException();
+//        }    
+//        return cursor.value(cursor.structure().asJsonArray().get(i));
+//    }
+
 }

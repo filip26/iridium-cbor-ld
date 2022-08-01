@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 
 import com.apicatalog.cursor.MapCursor;
-import com.apicatalog.cursor.jakarta.JakartaJsonCursor;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.context.ActiveContext;
@@ -23,7 +22,7 @@ public class Context {
     public static Context from(MapCursor document, DocumentLoader loader) throws JsonLdError {
 
         final JsonLdOptions options = new JsonLdOptions();
-        options.setOrdered(true);
+        options.setOrdered(false);
         options.setDocumentLoader(loader);
         
         final ActiveContext activeContext = new ActiveContext(null, null, options);

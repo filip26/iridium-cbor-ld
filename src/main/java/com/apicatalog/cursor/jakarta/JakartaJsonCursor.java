@@ -1,9 +1,14 @@
 package com.apicatalog.cursor.jakarta;
 
+import java.util.ArrayDeque;
+import java.util.Collection;
+import java.util.Deque;
+
 import com.apicatalog.cursor.ArrayCursor;
+import com.apicatalog.cursor.ArrayItemCursor;
 import com.apicatalog.cursor.Cursor;
 import com.apicatalog.cursor.MapCursor;
-import com.apicatalog.cursor.ValueCursor;
+import com.apicatalog.cursor.MapEntryCursor;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
@@ -11,69 +16,90 @@ import jakarta.json.JsonValue;
 
 public class JakartaJsonCursor implements Cursor {
 
-    //TODO use dynamic lazy index
-    final JsonValue[] path;    
-    int index;
+    final Deque<JsonValue> path;
+    final Deque<Object> indices;
     
-    MapCursor.Key[] indices;
+    final ArrayItemCursor arrayItemCursor;
+    final MapEntryCursor mapEntryCursor;
     
-//    final
-
-//    final int[] marks;
-    
-//    Function<JakartaJsonCursor, ValueCursor> valueCursor;
-//    Function<JakartaJsonCursor, MapCursor> mapCursor;
-//    Function<JakartaJsonCursor, ArrayCursor> arrayCursor;
-
-    final ValueCursor valueCursor;  //TODO always + 1
     final MapCursor mapCursor;
     final ArrayCursor arrayCursor;
 
-    public JakartaJsonCursor(JsonValue root, int maxDepth) {
-        this.path = new JsonValue[maxDepth];
-        this.path[0] = root;
-        this.index = 0;
-//        this.marks = new int[20];   //TODO
+    protected JakartaJsonCursor(JsonValue root) {
+        
+        this.path = new ArrayDeque<>();
+        this.path.add(root);
+        
+        this.indices = new ArrayDeque<>();
+        
 
-        this.valueCursor = new JakartaValueCursor(this);
+        this.arrayItemCursor = new JakartaArrayItemCursor(this, this::jsonValue);
+        this.mapEntryCursor = new JakartaMapEntryCursor(this, this::jsonValue);
+        
         this.arrayCursor = new JakartaArrayCursor(this);
         this.mapCursor = new JakartaMapCursor(this);
     }
+    
+    public static ArrayCursor from(JsonArray array) {
+        return new JakartaJsonCursor(array).arrayCursor();
+    }
 
-    public JsonValue value() {
-        if (index >= path.length) {
+    public static MapCursor from(JsonObject map) {
+        return new JakartaJsonCursor(map).mapCursor();
+    }
+
+    JsonValue jsonValue() {
+        if (path.isEmpty()) {
             throw new IndexOutOfBoundsException();
         }
-        return path[index];
+        return path.peek();
     }
-    
-    public boolean prev() {
-        if (index == 0) {
+
+    boolean prev() {
+        if (path.size() == 1) {
             return false;
         }
-        index--;
+        path.pop();
+        indices.pop();
         return true;        
     }
     
-    public MapCursor next(JsonObject value) {
-        path[++index] = value;
-        return mapCursor;
+    // horizontal
+    MapEntryCursor entry(String mapKey) {
+        indices.push(mapKey);;
+        path.push(path.peek().asJsonObject().get(mapKey));
+        return mapEntryCursor;
     }
 
-    public ArrayCursor next(JsonArray value) {
-        path[++index] = value;
-        return arrayCursor;
+    // horizontal
+    ArrayItemCursor item(int arrayIndex) {
+        indices.push(arrayIndex);
+        path.push(path.peek().asJsonArray().get(arrayIndex));
+        return arrayItemCursor;
     }
 
-    public ValueCursor next(JsonValue value) {
-        path[++index] = value;
-        return valueCursor;
+    // vertical
+    MapEntryCursor mapKey(String mapKey) {
+        indices.pop();
+        indices.push(mapKey);
+
+        path.pop();
+        path.push(path.peek().asJsonObject().get(mapKey));
+
+        return mapEntryCursor;
     }
-    
-    public ValueCursor cursor() {
-        return valueCursor;
+
+    // vertical
+    ArrayItemCursor arrayIndex(int arrayIndex) {
+        indices.pop();
+        indices.push(arrayIndex);
+
+        path.pop();
+        path.push(path.peek().asJsonArray().get(arrayIndex));
+
+        return arrayItemCursor;
     }
-    
+
     public MapCursor mapCursor() {
         return mapCursor;
     }
@@ -82,33 +108,48 @@ public class JakartaJsonCursor implements Cursor {
         return arrayCursor;
     }
     
-    @Override
-    public JakartaJsonCursor clone() {
-        return new JakartaJsonCursor(value(), path.length);
+    public MapEntryCursor mapEntryCursor() {
+        return mapEntryCursor;
     }
+    
+    public ArrayItemCursor arrayItemCursor() {
+        return arrayItemCursor;
+    }
+    
+    Object index() {
+        return indices.peek();
+    }
+    
+//    @Override
+//    public JakartaJsonCursor clone() {
+//        return new JakartaJsonCursor(jsonValue(), path.length);
+//    }
     
     @Override
     public String toString() {
        return new StringBuilder()
            .append(JakartaJsonCursor.class.getSimpleName())
            .append('[')
-           .append("index=")
-           .append(index)
-           .append(", value=")
-           .append(path[index])
+           .append("depth=")
+           .append(path.size())
+           .append(", indices=")
+           .append(indices)           
+           .append(", path=")
+           .append(path)
            .append(']')
            .toString();
     }
 
-    @Override
-    public void mark() {
-        // TODO Auto-generated method stub
-        
+    public boolean isArrayItem() {
+        return !indices.isEmpty() && (indices.peek() instanceof Integer);
+    }
+    
+    public boolean isMapEntry() {
+        return !indices.isEmpty() && (indices.peek() instanceof String);
     }
 
-    @Override
-    public void reset() {
-        // TODO Auto-generated method stub
-        
+    public Collection<String> mapKeys() {
+        return null;    //TODO
+        //return path.;
     }
 }

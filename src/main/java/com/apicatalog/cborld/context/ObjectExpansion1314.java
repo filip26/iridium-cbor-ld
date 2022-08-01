@@ -22,6 +22,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import com.apicatalog.cursor.MapCursor;
+import com.apicatalog.cursor.MapEntryCursor;
 import com.apicatalog.cursor.ValueCursor;
 import com.apicatalog.cursor.jakarta.JakartaValueCursor;
 import com.apicatalog.jsonld.JsonLdError;
@@ -83,8 +84,15 @@ final class ObjectExpansion1314 {
 
     public void expand() throws JsonLdError {
 
+        if (element.isEmpty()) {
+            return;
+        }
+        
+        final Collection<String> keys = element.keys();
+        final MapEntryCursor entry = element.entry();
+        
         // 13.
-        for (final String key : Utils.index(element.keys(), ordered)) {
+        for (final String key : Utils.index(keys, ordered)) {
 
             // 13.1.
             if (Keywords.CONTEXT.equals(key)) {
@@ -103,7 +111,7 @@ final class ObjectExpansion1314 {
                 continue;
             }
 
-            final ValueCursor value = element.clone().value(key);
+            final ValueCursor value = entry.mapKey(key);
 
             // 13.4. If expanded property is a keyword:
             if (Keywords.contains(expandedProperty)) {
@@ -191,12 +199,12 @@ final class ObjectExpansion1314 {
                 expandedType = Json.createValue(Keywords.JSON);
 
             // 13.7.
-            } else if (containerMapping.contains(Keywords.LANGUAGE) && value.isObject()) {
+            } else if (containerMapping.contains(Keywords.LANGUAGE) && value.isMap()) {
 
 
             // 13.8.
             } else if ((containerMapping.contains(Keywords.INDEX) || containerMapping.contains(Keywords.TYPE)
-                    || containerMapping.contains(Keywords.ID)) && value.isObject()) {
+                    || containerMapping.contains(Keywords.ID)) && value.isMap()) {
 
 
             // 13.9.
@@ -236,6 +244,6 @@ final class ObjectExpansion1314 {
                 result.add(key, expandedType);
             }
         }
-
+        entry.parent();
     }
 }

@@ -70,7 +70,7 @@ public class CborLdTestRunnerJunit {
     
                 JsonObject object = document.getJsonContent().orElseThrow(IllegalStateException::new).asJsonObject();
     
-                MapCursor cursor = new JakartaJsonCursor(object, 1000).mapCursor();
+                MapCursor cursor = JakartaJsonCursor.from(object);
 
                 byte[] bytes = CborLd.encoder(cursor)
                                     .loader(LOADER)

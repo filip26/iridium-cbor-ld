@@ -15,8 +15,10 @@ import com.apicatalog.cborld.encoder.EncoderError.Code;
 import com.apicatalog.cborld.encoder.value.ValueEncoder;
 import com.apicatalog.cborld.loader.StaticContextLoader;
 import com.apicatalog.cursor.ArrayCursor;
+import com.apicatalog.cursor.ArrayItemCursor;
 import com.apicatalog.cursor.ValueCursor;
 import com.apicatalog.cursor.MapCursor;
+import com.apicatalog.cursor.MapEntryCursor;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.http.DefaultHttpClient;
 import com.apicatalog.jsonld.http.media.MediaType;
@@ -100,9 +102,9 @@ public class Encoder {
             final Collection<String> contexts = EncoderContext.get(document);
     
             if (contexts.isEmpty()) { // is not JSON-LD document
-            throw new EncoderError(Code.InvalidDocument, "Not a valid JSON-LD document in a compacted form.");
+                throw new EncoderError(Code.InvalidDocument, "Not a valid JSON-LD document in a compacted form.");
             }
-    
+
             return compress(document, contexts);
     
         // non compressable context
@@ -141,7 +143,7 @@ public class Encoder {
             baos.write(CborLd.COMPRESSED);
                     
             final Context context = Context.from(document, loader);
-            
+      
             index = CodeTermMap.from(contextUrls, context.getContextKeySets(), loader);
             
             final CborBuilder builder = (CborBuilder) encode(document, new CborBuilder().addMap(), context.getTypeMapping()).end();
@@ -162,25 +164,25 @@ public class Encoder {
 
         MapBuilder<?> flow = builder;
     
-        for (final String property : object.keys()) {
+        for (final MapEntryCursor entry  : object) {
+            
+            final String property = entry.mapKey();
     
             final BigInteger encodedProperty = index.getCode(property);
                 
-            if (object.isArray(property)) {
+            if (entry.isArray()) {
                     
                 final DataItem key = encodedProperty != null
                             ? new UnsignedInteger(encodedProperty.add(BigInteger.ONE))
                             : new UnicodeString(property);
-        
-                object.array(property);
-        
+                
                 if (compactArrays && object.asArray().size() == 1) {
         
-                    object.asArray().value(0);
+                    object.asArray().item(0);
         
-                    if (object.isObject()) {
+                    if (object.isMap()) {
                         final TypeMapping propertyTypeMapping = typeMapping.getMapping(property);
-                        flow = (MapBuilder<?>) encode(object.asObject(), flow.putMap(key), propertyTypeMapping).end();
+                        flow = (MapBuilder<?>) encode(object.asMap(), flow.putMap(key), propertyTypeMapping).end();
         
                     } else if (object.isArray()) {
                         flow = (MapBuilder<?>) encode(
@@ -204,8 +206,6 @@ public class Encoder {
                         typeMapping
                         ).end();
                 }
-        
-                object.parent();
                 continue;
             }
     
@@ -213,22 +213,21 @@ public class Encoder {
                 ? new UnsignedInteger(encodedProperty)
                 : new UnicodeString(property);
     
-            if (object.isObject(property)) {
+            if (entry.isMap()) {
                 final TypeMapping propertyTypeMapping = typeMapping.getMapping(property);
-                flow = (MapBuilder<?>) encode(object.object(property), flow.putMap(key),
+                flow = (MapBuilder<?>) encode(entry.asMap(), flow.putMap(key),
                     propertyTypeMapping
                     ).end();
-        
-                object.parent();
                 continue;
             }
     
-            final DataItem value = encode(object.value(property), property, typeMapping);
+            final DataItem value = encode(entry, property, typeMapping);
     
             flow = flow.put(key, value);
-    
-            object.parent();
         }
+
+        object.parent();
+        
         return flow;
     }
 
@@ -264,25 +263,25 @@ public class Encoder {
     
         ArrayBuilder<?> flow = builder;
     
-        for (int i = 0; i < object.size(); i++) {
+        for (final ArrayItemCursor item : object) {
     
-            if (object.isObject(i)) {
-                flow = (ArrayBuilder<?>) encode(object.object(i), flow.startMap(), typeMapping).end();
-                object.parent();
+            if (item.isMap()) {
+                flow = (ArrayBuilder<?>) encode(item.asMap(), flow.startMap(), typeMapping).end();
                 continue;
             }
     
-            if (object.isArray(i)) {
-                flow = (ArrayBuilder<?>) encode(object.array(i), flow.startArray(), property, typeMapping).end();
-                object.parent();
+            if (item.isArray()) {
+                flow = (ArrayBuilder<?>) encode(item.asArray(), flow.startArray(), property, typeMapping).end();
                 continue;
             }
-    
-            DataItem value = encode(object.value(i), property, typeMapping);
-            object.parent();
+
+            final DataItem value = encode(item, property, typeMapping);
     
             flow = flow.add(value);
         }
+        
+        object.parent();
+        
         return flow;
     }
 }
