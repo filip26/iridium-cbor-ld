@@ -2,6 +2,7 @@ package com.apicatalog.cursor.jakarta;
 
 import java.util.Iterator;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import com.apicatalog.cursor.ArrayCursor;
 import com.apicatalog.cursor.MapCursor;
@@ -157,7 +158,7 @@ public class JakartaArrayCursor extends JakartaValueCursor implements ArrayCurso
     }
 
     @Override
-    protected ArrayCursor clone() {
+    public ArrayCursor clone() {
         return cursor.clone().arrayCursor();
     }
 
@@ -167,7 +168,7 @@ public class JakartaArrayCursor extends JakartaValueCursor implements ArrayCurso
             throw new ClassCastException();
         }
         
-        final ArrayCursor clone = this.clone();
+        final ArrayCursor clone = this;
         final int size = size();
         
         return new Iterator<ValueCursor>() {
@@ -181,14 +182,8 @@ public class JakartaArrayCursor extends JakartaValueCursor implements ArrayCurso
 
             @Override
             public ValueCursor next() {
-                return clone.value(index++);
+                return clone.value(index++).clone();
             }
         };
-    }
-    
-    @Override
-    public Stream<ValueCursor> stream() {
-        return Stream.of(this);
-    }
-    
+    }    
 }

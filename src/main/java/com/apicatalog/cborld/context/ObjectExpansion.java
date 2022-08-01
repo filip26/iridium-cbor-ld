@@ -193,7 +193,7 @@ final class ObjectExpansion {
                 typeKey = key;
             }
 
-            JsonObject object = ((JakartaMapCursor)element).getJsonObject();
+            final JsonObject object  = ((JakartaMapCursor)element).getJsonObject();
             
             // 11.2
             final List<String> terms = JsonUtils.toStream(object.get(key))
@@ -202,12 +202,14 @@ final class ObjectExpansion {
                                             .map(JsonString::getString)
                                             .sorted()
                                             .collect(Collectors.toList());
+            System.out.println(">T " + terms);
 //            final List<String> terms = element.stream(key)
 //                    .filter(ValueCursor::isString)
 //                    .map(ValueCursor::stringValue)
 //                    .sorted()
 //                    .collect(Collectors.toList());
-
+//            System.out.println("<  " + terms2);
+            
             for (final String term : terms) {
 
                 Optional<JsonValue> localContext = typeContext.getTerm(term).map(TermDefinition::getLocalContext);

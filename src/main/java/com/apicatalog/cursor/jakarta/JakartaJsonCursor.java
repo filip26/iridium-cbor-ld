@@ -14,6 +14,10 @@ public class JakartaJsonCursor implements Cursor {
     //TODO use dynamic lazy index
     final JsonValue[] path;    
     int index;
+    
+    MapCursor.Key[] indices;
+    
+//    final
 
 //    final int[] marks;
     
@@ -21,7 +25,7 @@ public class JakartaJsonCursor implements Cursor {
 //    Function<JakartaJsonCursor, MapCursor> mapCursor;
 //    Function<JakartaJsonCursor, ArrayCursor> arrayCursor;
 
-    final ValueCursor valueCursor;
+    final ValueCursor valueCursor;  //TODO always + 1
     final MapCursor mapCursor;
     final ArrayCursor arrayCursor;
 

@@ -1,7 +1,6 @@
 package com.apicatalog.cursor;
 
 import java.util.Collection;
-import java.util.stream.Stream;
 
 public interface MapCursor extends StructureCursor {
 
@@ -80,8 +79,6 @@ public interface MapCursor extends StructureCursor {
     MapCursor object(String key);
 
     ValueCursor value(String key);
-
-    Stream<ValueCursor> stream(String key);
 
     MapCursor clone();
 }

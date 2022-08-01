@@ -1,10 +1,12 @@
 package com.apicatalog.cursor;
 
-import java.util.stream.Stream;
-
 public interface ArrayCursor extends StructureCursor, Iterable<ValueCursor> {
 
-    boolean isNull(int index);
+    default boolean isNull(int index) {
+        boolean isNull = value(index).isNull();
+        parent();
+        return isNull;
+    }
 
     boolean isString(int index);
     boolean isBoolean(int index);
@@ -34,6 +36,4 @@ public interface ArrayCursor extends StructureCursor, Iterable<ValueCursor> {
     ArrayCursor array(int index);
     MapCursor object(int index);
     ValueCursor value(int index);
-
-    Stream<ValueCursor> stream();
 }

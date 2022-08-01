@@ -90,32 +90,146 @@
             "expect": "decoder/0008-out.jsonld"
         },
         {
+            "@id": "#t0009",
+            "@type": [
+                "PositiveEvaluationTest",
+                "EncoderTest"
+            ],
+            "name": "simple term value",
+            "input": "encoder/0009-in.cborld",
+            "expect": "encoder/0009-out.jsonld"
+        },
+        {
+            "@id": "#t0010",
+            "@type": [
+                "PositiveEvaluationTest",
+                "EncoderTest"
+            ],
+            "name": "single item array term value",
+            "input": "encoder/0004-in.cborld",
+            "expect": "encoder/0004-out.jsonld"
+        },
+        {
+            "@id": "#t0011",
+            "@type": [
+                "PositiveEvaluationTest",
+                "EncoderTest"
+            ],
+            "name": "two items array term value",
+            "input": "encoder/0005-in.cborld",
+            "expect": "encoder/0005-out.jsonld"
+        },  
+        {
+            "@id": "#t0012",
+            "@type": [
+                "PositiveEvaluationTest",
+                "EncoderTest"
+            ],
+            "name": "compactArrays: false - single item array term value",
+            "input": "encoder/0006-in.cborld",
+            "expect": "encoder/0006-out.jsonld",
+            "option": {
+                "compactArrays": false
+            }
+        },
+        {
+            "@id": "#t0013",
+            "@type": [
+                "PositiveEvaluationTest",
+                "EncoderTest"
+            ],
+            "name": "@list container term value",
+            "input": "encoder/0007-in.cborld",
+            "expect": "encoder/0007-out.jsonld"
+        },
+        {
+            "@id": "#t0014",
+            "@type": [
+                "PositiveEvaluationTest",
+                "EncoderTest"
+            ],
+            "name": "xsd:dateTime @type",
+            "input": "encoder/0008-in.cborld",
+            "expect": "encoder/0008-out.jsonld"
+        },
+        {
+            "@id": "#t0015",
+            "@type": [
+                "PositiveEvaluationTest",
+                "EncoderTest"
+            ],
+            "name": "xsd:date @type",
+            "input": "encoder/0009-in.cborld",
+            "expect": "encoder/0009-out.jsonld"
+        },
+        {
+            "@id": "#t0016",
+            "@type": [
+                "PositiveEvaluationTest",
+                "EncoderTest"
+            ],
+            "name": "UUID term value",
+            "input": "encoder/0010-in.cborld",
+            "expect": "encoder/0010-out.jsonld"
+        },
+        {
+            "@id": "#t0017",
+            "@type": [
+                "PositiveEvaluationTest",
+                "EncoderTest"
+            ],
+            "name": "@vocab term value",
+            "input": "encoder/0011-in.cborld",
+            "expect": "encoder/0011-out.jsonld"
+        },
+        {
+            "@id": "#t0018",
+            "@type": [
+                "PositiveEvaluationTest",
+                "EncoderTest"
+            ],
+            "name": "multibase term value",
+            "input": "encoder/0012-in.cborld",
+            "expect": "encoder/0012-out.jsonld"
+        },
+        {
+            "@id": "#t0019",
+            "@type": [
+                "PositiveEvaluationTest",
+                "EncoderTest"
+            ],
+            "name": "did:key term value",
+            "input": "encoder/0013-in.cborld",
+            "expect": "encoder/0013-out.jsonld"
+        },
+        {
             "@id": "#t0020",
             "@type": [
                 "PositiveEvaluationTest",
-                "DecoderTest"
+                "EncoderTest"
             ],
-            "name": "@type - activity streams context",
-            "input": "decoder/0020-in.cborld",
-            "expect": "decoder/0020-out.jsonld"
-        },
+            "name": "@type selector",
+            "input": "encoder/0014-in.cborld",
+            "expect": "encoder/0014-out.jsonld"
+        },        
         {
             "@id": "#t0021",
             "@type": [
                 "PositiveEvaluationTest",
-                "DecoderTest"
+                "EncoderTest"
             ],
-            "name": "@id - activity streams context",
-            "input": "decoder/0021-in.cborld",
-            "expect": "decoder/0021-out.jsonld"
+            "name": "double scoped context",
+            "input": "encoder/0015-in.cborld",
+            "expect": "encoder/0015-out.jsonld"
         },
+
         {
             "@id": "#t0022",
             "@type": [
                 "PositiveEvaluationTest",
                 "DecoderTest"
             ],
-            "name": "@type - custom context",
+            "name": "@type - activity streams context",
             "input": "decoder/0022-in.cborld",
             "expect": "decoder/0022-out.jsonld"
         },
@@ -125,7 +239,7 @@
                 "PositiveEvaluationTest",
                 "DecoderTest"
             ],
-            "name": "scoped context test",
+            "name": "@id - activity streams context",
             "input": "decoder/0023-in.cborld",
             "expect": "decoder/0023-out.jsonld"
         },
@@ -135,9 +249,39 @@
                 "PositiveEvaluationTest",
                 "DecoderTest"
             ],
-            "name": "scoped context: @type redefinition",
+            "name": "@type - custom context",
             "input": "decoder/0024-in.cborld",
             "expect": "decoder/0024-out.jsonld"
-        }
+        },
+        {
+            "@id": "#t0025",
+            "@type": [
+                "PositiveEvaluationTest",
+                "DecoderTest"
+            ],
+            "name": "scoped context test",
+            "input": "decoder/0025-in.cborld",
+            "expect": "decoder/0025-out.jsonld"
+        },
+        {
+            "@id": "#t0026",
+            "@type": [
+                "PositiveEvaluationTest",
+                "DecoderTest"
+            ],
+            "name": "scoped context: @type redefinition",
+            "input": "decoder/0026-in.cborld",
+            "expect": "decoder/0026-out.jsonld"
+        },
+        {
+            "@id": "#t0052",
+            "@type": [
+                "PositiveEvaluationTest",
+                "EncoderTest"
+            ],
+            "name": "verifiable credentials",
+            "input": "encoder/0052-in.cborld",
+            "expect": "encoder/0052-out.jsonld"
+        }        
 	]
 }

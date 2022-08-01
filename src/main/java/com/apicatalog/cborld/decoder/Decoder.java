@@ -6,11 +6,14 @@ import java.util.Collection;
 import java.util.List;
 
 import com.apicatalog.cborld.CborLd;
+import com.apicatalog.cborld.config.DefaultEncoderConfig;
 import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.decoder.DecoderError.Code;
 import com.apicatalog.cborld.dictionary.CodeTermMap;
 import com.apicatalog.cborld.dictionary.ContextDictionary;
 import com.apicatalog.cborld.dictionary.Dictionary;
+import com.apicatalog.cborld.encoder.value.ValueEncoder;
+import com.apicatalog.cborld.loader.StaticContextLoader;
 import com.apicatalog.hex.Hex;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.http.DefaultHttpClient;
@@ -38,16 +41,21 @@ public class Decoder {
 
     protected final byte[] encoded;
     protected final boolean compressed;
-    protected DocumentLoader loader;
-
+    
+    
     protected CodeTermMap index;
-    protected Dictionary contexts;
+
+    // options
+    protected Collection<ValueDecoder> valueDecoders;
+    protected DocumentLoader loader;
 
     protected Decoder(byte[] encoded, boolean compressed) {
         this.encoded = encoded;
         this.compressed = compressed;
+        
+        // default options
+        this.valueDecoders = DefaultEncoderConfig.VALUE_DECODERS;
         this.loader = null;
-        this.contexts = new ContextDictionary();    //FIXME
     }
 
     public static final Decoder create(byte[] encodedDocument) throws DecoderError {
@@ -91,6 +99,8 @@ public class Decoder {
             ((HttpLoader)loader).setFallbackContentType(MediaType.JSON);
         }
         
+        loader = new StaticContextLoader(loader);
+        
         if (compressed) {
             return decodeCompressed();
         }
@@ -105,19 +115,19 @@ public class Decoder {
     
             // nothing do de-compress
             if (dataItems.isEmpty()) {
-            return null;
+                return null;
             }
     
             // decode as an array of objects
             if (dataItems.size() > 1) {
     
-            final JsonArrayBuilder builder = Json.createArrayBuilder();
-    
-            for (final DataItem item : dataItems) {
-                builder.add(decodeCompressed(item));
-            }
-    
-            return builder.build();
+                final JsonArrayBuilder builder = Json.createArrayBuilder();
+        
+                for (final DataItem item : dataItems) {
+                    builder.add(decodeCompressed(item));
+                }
+        
+                return builder.build();
             }
     
             return decodeCompressed(dataItems.iterator().next());
@@ -245,23 +255,23 @@ public class Decoder {
             throw new IllegalArgumentException("The number parameter must not be null.");
         }
     
-    
-        if (Keywords.CONTEXT.equals(key)) {
-            final String context  = contexts.getValue(number);
-            if (context != null) {
-            return Json.createValue(context);
-            } else {
-            //TODO throw something
-            }
-        }
-        if (def != null) {
-            if (Keywords.TYPE.equals(def.getUriMapping())) {
-                    String term = index.getValue(number);
-                    if (term != null) {
-                    return Json.createValue(term);
-                    }
-            }
-        }
+//    
+//        if (Keywords.CONTEXT.equals(key)) {
+//            final String context  = contexts.getValue(number);
+//            if (context != null) {
+//            return Json.createValue(context);
+//            } else {
+//            //TODO throw something
+//            }
+//        }
+//        if (def != null) {
+//            if (Keywords.TYPE.equals(def.getUriMapping())) {
+//                    String term = index.getValue(number);
+//                    if (term != null) {
+//                    return Json.createValue(term);
+//                    }
+//            }
+//        }
     
         //TODO
         return Json.createValue(number);

@@ -3,6 +3,7 @@ package com.apicatalog.cborld.config;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import com.apicatalog.cborld.decoder.ValueDecoder;
 import com.apicatalog.cborld.dictionary.ContextDictionary;
 import com.apicatalog.cborld.encoder.EncoderConfigration;
 import com.apicatalog.cborld.encoder.value.ContextValueEncoder;
@@ -35,6 +36,8 @@ public final class DefaultEncoderConfig implements EncoderConfigration {
         VALUE_ENCODERS.add(new UuidValueEncoder());
         VALUE_ENCODERS.add(new DidKeyValueEncoder());
     }
+    
+    public static final Collection<ValueDecoder> VALUE_DECODERS = new ArrayList<>();
 
     public static final boolean COMPACT_ARRAYS = true;
 

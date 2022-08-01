@@ -128,6 +128,11 @@ public class JakartaValueCursor implements ValueCursor {
            .toString();
     }
 
+    @Override
+    public ValueCursor clone() {
+        return cursor.clone().cursor();
+    }
+    
     public JsonValue getJsonValue() {
         return cursor.value();
     }

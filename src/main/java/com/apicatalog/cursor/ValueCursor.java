@@ -35,4 +35,6 @@ public interface ValueCursor {
 
     MapCursor asObject();
     ArrayCursor asArray();
+
+    ValueCursor clone();
 }

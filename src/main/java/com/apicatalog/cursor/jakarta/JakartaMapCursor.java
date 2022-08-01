@@ -199,24 +199,10 @@ public class JakartaMapCursor extends JakartaValueCursor implements MapCursor {
         return cursor.clone().mapCursor();
     }
     
-    @Override
-    public Stream<ValueCursor> stream(String key) {
-        final MapCursor clone = this.clone();
-
-        if (clone.isArray(key)) {
-            return clone.array(key).stream();
-        }
-
-        return Stream.of(clone.value(key));
-    }
-
-    
     public JsonObject getJsonObject() {
         return (JsonObject) cursor.value();
     }
 
-    
-    
     @Override
     public boolean has(int key) {
         // TODO Auto-generated method stub
