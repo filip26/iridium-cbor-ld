@@ -2,6 +2,7 @@ package com.apicatalog.cborld.context;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.function.Consumer;
 
 import com.apicatalog.cursor.MapCursor;
 import com.apicatalog.jsonld.JsonLdError;
@@ -40,7 +41,29 @@ public class Context {
         return new Context(typeMapping, appliedContextKeys);
 
     }
-    
+
+    public static Context from(MapCursor document, DocumentLoader loader, Consumer<Collection<String>> appliedContexts) throws JsonLdError {
+
+        final JsonLdOptions options = new JsonLdOptions();
+        options.setOrdered(false);
+        options.setDocumentLoader(loader);
+        
+        final ActiveContext activeContext = new ActiveContext(null, null, options);
+
+        Collection<Collection<String>> appliedContextKeys = new LinkedHashSet<>();
+
+        final TypeMapping typeMapping = Expansion.with(
+                                            activeContext,
+                                            document, 
+                                            null, null, 
+                                            appliedContexts.andThen(appliedContextKeys::add)
+                                            )
+                                        .typeMapping();
+
+        return new Context(typeMapping, appliedContextKeys);
+
+    }
+
     public TypeMapping getTypeMapping() {
         return typeMapping;
     }

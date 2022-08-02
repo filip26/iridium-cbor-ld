@@ -12,14 +12,14 @@ import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.decoder.DecoderError.Code;
 import com.apicatalog.cborld.dictionary.CodeTermMap;
 import com.apicatalog.cborld.dictionary.ContextDictionary;
-import com.apicatalog.cborld.dictionary.Dictionary;
-import com.apicatalog.cborld.encoder.value.ValueEncoder;
 import com.apicatalog.cborld.loader.StaticContextLoader;
+import com.apicatalog.cursor.MapCursor;
+import com.apicatalog.cursor.cbor.CborCursor;
 import com.apicatalog.hex.Hex;
+import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.http.DefaultHttpClient;
 import com.apicatalog.jsonld.http.media.MediaType;
-import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.HttpLoader;
 
@@ -42,8 +42,7 @@ public class Decoder {
 
     protected final byte[] encoded;
     protected final boolean compressed;
-    
-    
+        
     protected CodeTermMap index;
 
     // options
@@ -103,7 +102,6 @@ public class Decoder {
         loader = new StaticContextLoader(loader);
         
         if (compressed) {
-            
             return decodeCompressed();
         }
         return decodeUncompressed();
@@ -126,31 +124,39 @@ public class Decoder {
                 final JsonArrayBuilder builder = Json.createArrayBuilder();
         
                 for (final DataItem item : dataItems) {
-                    
-                    //final Context context = Context.from(item, loader);
-                    
 
-                    
-                    //builder.add(decodeCompressed(item));
+                    builder.add(decodeCompressed(item));
                 }
         
                 return builder.build();
             }
     
-            //return decodeCompressed(dataItems.iterator().next());
-            return null;    //FIXME
+            return decodeCompressed(dataItems.iterator().next());
     
         } catch (final CborException e) {
-            throw new DecoderError(Code.InvalidDocument, e);
+            throw new DecoderError(Code.InvalidDocument, e);            
         }
     }
 
     final JsonValue decodeCompressed(final DataItem data) throws DecoderError, ContextError {
+  
+        try {
+            MapCursor cursor = CborCursor.from(
+                    data, 
+                    d -> d.toString(), 
+                    k -> new UnicodeString(k.toString())
+                    );
     
-        Collection<String> contextUrls = (new DecoderContext(new ContextDictionary())).get(data);
-    
-        this.index = CodeTermMap.from(contextUrls, null, loader);   //FIXME
-    
+            final Context context = Context.from(cursor, loader);
+            
+            index = CodeTermMap.from(context.getContextKeySets(), loader);
+            
+    //        Collection<String> contextUrls = (new DecoderContext(new ContextDictionary())).get(data);
+        
+    //        this.index = CodeTermMap.from(contextUrls, null, loader);   //FIXME
+        } catch (JsonLdError e) {
+            throw new DecoderError(Code.InvalidDocument, e);
+        }
         return decodeData(data, null, null);
     }
 

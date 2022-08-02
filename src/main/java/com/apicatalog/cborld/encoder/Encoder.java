@@ -144,7 +144,7 @@ public class Encoder {
                     
             final Context context = Context.from(document, loader);
       
-            index = CodeTermMap.from(contextUrls, context.getContextKeySets(), loader);
+            index = CodeTermMap.from(context.getContextKeySets(), loader);
             
             final CborBuilder builder = (CborBuilder) encode(document, new CborBuilder().addMap(), context.getTypeMapping()).end();
             

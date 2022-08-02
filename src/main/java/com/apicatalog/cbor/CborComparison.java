@@ -68,7 +68,7 @@ public class CborComparison {
             return equals(((Array)value1).getDataItems(), ((Array)value2).getDataItems());
     
         case MAP:
-    
+            return equals((Map)value1, (Map)value2);
     
         default:
             return value1.equals(value2);

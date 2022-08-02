@@ -27,7 +27,7 @@ public class CodeTermMap implements Dictionary {
         this.lastCustomIndex = lastCustomIndex;
     }
 
-    public static CodeTermMap from(Collection<String> contextUrls, Collection<Collection<String>> contextKeys, DocumentLoader loader) throws ContextError {
+    public static CodeTermMap from(Collection<Collection<String>> contextKeys, DocumentLoader loader) throws ContextError {
     
         final CodeTermMap map = new CodeTermMap(
                                   new LinkedHashMap<>(KeywordDictionary.CODE_TO_TERM),
