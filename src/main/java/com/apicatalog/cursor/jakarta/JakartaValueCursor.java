@@ -1,34 +1,23 @@
 package com.apicatalog.cursor.jakarta;
 
-import java.util.Optional;
 import java.util.function.Supplier;
 
-import com.apicatalog.cursor.ArrayCursor;
-import com.apicatalog.cursor.ArrayItemCursor;
-import com.apicatalog.cursor.MapCursor;
+import com.apicatalog.cursor.AbstractValueCursor;
 import com.apicatalog.cursor.MapEntryCursor;
 import com.apicatalog.cursor.ValueCursor;
 
+import jakarta.json.Json;
+import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonNumber;
+import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 import jakarta.json.JsonValue.ValueType;
 
-public class JakartaValueCursor implements ValueCursor {
-
-    protected final JakartaJsonCursor cursor;
-    protected final Supplier<JsonValue> value;
+public class JakartaValueCursor extends AbstractValueCursor<JsonValue> {
 
     public JakartaValueCursor(final JakartaJsonCursor cursor, Supplier<JsonValue> value) {
-        this.cursor = cursor;
-        this.value = value;
-    }
-
-    @Override
-    public Optional<ValueCursor> parent() {
-        return cursor.prev() 
-                ? Optional.of(this)
-                : Optional.empty();
+        super(cursor, value);
     }
 
     @Override
@@ -105,60 +94,52 @@ public class JakartaValueCursor implements ValueCursor {
         }
         return ((JsonString)value.get()).getString();
     }
-
-    @Override
-    public MapCursor asMap() {
-        if (!isMap()) {
-            throw new ClassCastException();
-        }
-        return cursor.mapCursor();
-    }
-
-    @Override
-    public ArrayCursor asArray() {
-        if (!isArray()) {
-            throw new ClassCastException();
-        }
-        return cursor.arrayCursor();
-    }
-
-    @Override
-    public String toString() {
-       return new StringBuilder()
-           .append(JakartaValueCursor.class.getSimpleName())
-           .append('[')
-           .append("cursor=")
-           .append(cursor.toString())
-           .append(']')
-           .toString();
-    }
-
-//    @Override
-//    public ValueCursor clone() {
-//        return cursor.clone().valueCursor();
-//    }
     
-    public JsonValue getJsonValue() {
-        return value.get();
-    }
+    public static JsonValue toJson(final ValueCursor cursor) {
+        if (cursor.isArray()) {
+            
+            if (cursor.asArray().isEmpty()) {
+                return JsonValue.EMPTY_JSON_ARRAY;
+            }
+            
+            final JsonArrayBuilder array = Json.createArrayBuilder();
+            
+            for (final ValueCursor item : cursor.asArray()) {
+                array.add(toJson(item));
+            }
+            cursor.parent();
+            
+            return array.build();
 
-    @Override
-    public boolean isArrayItem() {
-        return cursor.isArrayItem();
-    }
-
-    @Override
-    public ArrayItemCursor asArrayItem() {
-        return cursor.arrayItemCursor();
-    }
-
-    @Override
-    public boolean isMapEntry() {
-        return cursor.isMapEntry();
-    }
-
-    @Override
-    public MapEntryCursor asMapEntry() {
-        return cursor.mapEntryCursor();
+        } else if (cursor.isBoolean()) {
+            return cursor.booleanValue() ? JsonValue.TRUE : JsonValue.FALSE;
+            
+        } else if (cursor.isMap()) {
+            
+            if (cursor.asMap().isEmpty()) {
+                return JsonValue.EMPTY_JSON_OBJECT;
+            }
+            
+            final JsonObjectBuilder map = Json.createObjectBuilder();
+            
+            for (final MapEntryCursor entry : cursor.asMap()) {
+                map.add(entry.mapKey(), toJson(entry));
+            }
+            cursor.parent();
+            
+            return map.build();
+            
+        } else if (cursor.isNull()) {
+            return JsonValue.NULL;
+            
+        } else if (cursor.isNumber()) {
+            //FIXME
+            return Json.createValue(cursor.longValue());
+            
+        } else if (cursor.isString()) {
+            return Json.createValue(cursor.stringValue());
+        }
+        
+        throw new IllegalStateException();
     }
 }

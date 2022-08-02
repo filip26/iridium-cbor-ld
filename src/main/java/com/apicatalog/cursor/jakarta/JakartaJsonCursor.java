@@ -1,7 +1,6 @@
 package com.apicatalog.cursor.jakarta;
 
 import java.util.ArrayDeque;
-import java.util.Collection;
 import java.util.Deque;
 
 import com.apicatalog.cursor.ArrayCursor;
@@ -14,7 +13,7 @@ import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
 
-public class JakartaJsonCursor implements Cursor {
+public class JakartaJsonCursor implements Cursor<JsonValue> {
 
     final Deque<JsonValue> path;
     final Deque<Object> indices;
@@ -33,8 +32,8 @@ public class JakartaJsonCursor implements Cursor {
         this.indices = new ArrayDeque<>();
         
 
-        this.arrayItemCursor = new JakartaArrayItemCursor(this, this::jsonValue);
-        this.mapEntryCursor = new JakartaMapEntryCursor(this, this::jsonValue);
+        this.arrayItemCursor = new JakartaArrayItemCursor(this, this::sourceValue);
+        this.mapEntryCursor = new JakartaMapEntryCursor(this, this::sourceValue);
         
         this.arrayCursor = new JakartaArrayCursor(this);
         this.mapCursor = new JakartaMapCursor(this);
@@ -48,14 +47,16 @@ public class JakartaJsonCursor implements Cursor {
         return new JakartaJsonCursor(map).mapCursor();
     }
 
-    JsonValue jsonValue() {
+    @Override
+    public JsonValue sourceValue() {
         if (path.isEmpty()) {
             throw new IndexOutOfBoundsException();
         }
         return path.peek();
     }
 
-    boolean prev() {
+    @Override
+    public boolean prev() {
         if (path.size() == 1) {
             return false;
         }
@@ -65,21 +66,24 @@ public class JakartaJsonCursor implements Cursor {
     }
     
     // horizontal
-    MapEntryCursor entry(String mapKey) {
+    @Override
+    public MapEntryCursor entry(String mapKey) {
         indices.push(mapKey);;
         path.push(path.peek().asJsonObject().get(mapKey));
         return mapEntryCursor;
     }
 
     // horizontal
-    ArrayItemCursor item(int arrayIndex) {
+    @Override
+    public ArrayItemCursor item(int arrayIndex) {
         indices.push(arrayIndex);
         path.push(path.peek().asJsonArray().get(arrayIndex));
         return arrayItemCursor;
     }
 
     // vertical
-    MapEntryCursor mapKey(String mapKey) {
+    @Override
+    public MapEntryCursor mapKey(String mapKey) {
         indices.pop();
         indices.push(mapKey);
 
@@ -90,7 +94,8 @@ public class JakartaJsonCursor implements Cursor {
     }
 
     // vertical
-    ArrayItemCursor arrayIndex(int arrayIndex) {
+    @Override
+    public ArrayItemCursor arrayIndex(int arrayIndex) {
         indices.pop();
         indices.push(arrayIndex);
 
@@ -100,30 +105,30 @@ public class JakartaJsonCursor implements Cursor {
         return arrayItemCursor;
     }
 
+    @Override
     public MapCursor mapCursor() {
         return mapCursor;
     }
     
+    @Override
     public ArrayCursor arrayCursor() {
         return arrayCursor;
     }
     
+    @Override
     public MapEntryCursor mapEntryCursor() {
         return mapEntryCursor;
     }
     
+    @Override
     public ArrayItemCursor arrayItemCursor() {
         return arrayItemCursor;
     }
     
-    Object index() {
+    @Override
+    public Object index() {
         return indices.peek();
     }
-    
-//    @Override
-//    public JakartaJsonCursor clone() {
-//        return new JakartaJsonCursor(jsonValue(), path.length);
-//    }
     
     @Override
     public String toString() {
@@ -140,16 +145,13 @@ public class JakartaJsonCursor implements Cursor {
            .toString();
     }
 
+    @Override
     public boolean isArrayItem() {
         return !indices.isEmpty() && (indices.peek() instanceof Integer);
     }
     
+    @Override    
     public boolean isMapEntry() {
         return !indices.isEmpty() && (indices.peek() instanceof String);
-    }
-
-    public Collection<String> mapKeys() {
-        return null;    //TODO
-        //return path.;
     }
 }

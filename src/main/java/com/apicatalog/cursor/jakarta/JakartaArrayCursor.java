@@ -2,14 +2,17 @@ package com.apicatalog.cursor.jakarta;
 
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import com.apicatalog.cursor.ArrayCursor;
 import com.apicatalog.cursor.ArrayItemCursor;
+import com.apicatalog.cursor.ValueCursor;
 
 public class JakartaArrayCursor extends JakartaValueCursor implements ArrayCursor {
     
     public JakartaArrayCursor(final JakartaJsonCursor cursor) {
-        super(cursor, cursor::jsonValue);
+        super(cursor, cursor::sourceValue);
     }
 
     @Override
@@ -17,7 +20,7 @@ public class JakartaArrayCursor extends JakartaValueCursor implements ArrayCurso
         if (!isArray()) {
             throw new ClassCastException();
         }
-        return cursor.jsonValue().asJsonArray().size();
+        return cursor.sourceValue().asJsonArray().size();
     }
 
     @Override
@@ -62,29 +65,8 @@ public class JakartaArrayCursor extends JakartaValueCursor implements ArrayCurso
     public ArrayCursor asArray() {
         return this;
     }
-
-//    @Override
-//    public ArrayCursor array(int i) {
-//        if (!isArray(i)) {
-//            throw new IllegalArgumentException();
-//        }    
-//        return cursor.next(cursor.structure().asJsonArray().get(i).asJsonArray());
-//    }
-//
-//    @Override
-//    public MapCursor object(int i) {
-//        if (!isObject(i)) {
-//            throw new IllegalArgumentException();
-//        }
-//        return cursor.next(cursor.structure().asJsonArray().get(i).asJsonObject());
-//    }
-//
-//    @Override
-//    public ValueCursor value(int i) {
-//        if (!isArray()) {
-//            throw new ClassCastException();
-//        }    
-//        return cursor.value(cursor.structure().asJsonArray().get(i));
-//    }
-
+    
+    public Stream<ValueCursor> stream() {
+        return StreamSupport.stream(this.spliterator(), false).map(ValueCursor.class::cast);
+    }
 }

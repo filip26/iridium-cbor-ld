@@ -1,6 +1,5 @@
 package com.apicatalog.cursor.jakarta;
 
-import java.util.Collection;
 import java.util.function.Supplier;
 
 import com.apicatalog.cursor.MapEntryCursor;
@@ -27,13 +26,5 @@ final class JakartaMapEntryCursor extends JakartaValueCursor implements MapEntry
             throw new ClassCastException();
         }
         return cursor.mapKey(key);
-    }
-
-    @Override
-    public Collection<String> keys() {
-        if (!isMapEntry()) {
-            throw new ClassCastException();
-        }
-        return cursor.mapKeys();
     }
 }

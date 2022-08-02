@@ -7,12 +7,10 @@ import java.util.Iterator;
 import com.apicatalog.cursor.MapCursor;
 import com.apicatalog.cursor.MapEntryCursor;
 
-import jakarta.json.JsonObject;
-
 public class JakartaMapCursor extends JakartaValueCursor implements MapCursor {
 
     public JakartaMapCursor(final JakartaJsonCursor cursor) {
-        super(cursor, cursor::jsonValue);
+        super(cursor, cursor::sourceValue);
     }
 
     @Override
@@ -20,7 +18,7 @@ public class JakartaMapCursor extends JakartaValueCursor implements MapCursor {
         if (!isMap()) {
             throw new ClassCastException();
         }
-        return cursor.jsonValue().asJsonObject().size();
+        return cursor.sourceValue().asJsonObject().size();
     }
 
     @Override
@@ -29,10 +27,6 @@ public class JakartaMapCursor extends JakartaValueCursor implements MapCursor {
             throw new ClassCastException();
         }
         return value.get().asJsonObject().keySet();
-    }
-
-    public JsonObject getJsonObject() {
-        return (JsonObject) cursor.jsonValue();
     }
 
     @Override
@@ -80,38 +74,4 @@ public class JakartaMapCursor extends JakartaValueCursor implements MapCursor {
 
         return value.get().asJsonObject().containsKey(key);
     }
-
-
-//    @Override
-//    public ArrayCursor array(final String key) {
-//        if (!isArray(key)) {
-//            throw new IllegalArgumentException();
-//        }
-//    
-//        return cursor.next(cursor.structure().asJsonObject().get(key).asJsonArray());
-//    }
-//
-//    @Override
-//    public MapCursor object(final String key) {
-//        if (!isObject(key)) {
-//            throw new IllegalArgumentException();
-//        }
-//    
-//        return cursor.next(cursor.structure().asJsonObject().get(key).asJsonObject());
-//    }
-//
-//    @Override
-//    public ValueCursor value(final String key) {
-//        if (!isObject()) {
-//            throw new IllegalArgumentException();
-//        }
-//    
-//        return cursor.value(cursor.structure().asJsonObject().get(key));
-//    }
-    
-//    @Override
-//    public MapCursor clone() {
-//        return cursor.clone().mapCursor();
-//    }
-    
 }

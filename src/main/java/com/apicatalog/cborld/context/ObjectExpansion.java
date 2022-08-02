@@ -23,8 +23,8 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import com.apicatalog.cursor.MapCursor;
-import com.apicatalog.cursor.ValueCursor;
-import com.apicatalog.cursor.jakarta.JakartaMapCursor;
+import com.apicatalog.cursor.MapEntryCursor;
+import com.apicatalog.cursor.jakarta.JakartaValueCursor;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
@@ -158,7 +158,7 @@ final class ObjectExpansion {
         // 9.
         if (element.contains(Keywords.CONTEXT)) {
             
-            final JsonObject object = ((JakartaMapCursor)element.asMap()).getJsonObject();
+            final JsonObject object = JakartaValueCursor.toJson(element.asMap()).asJsonObject();
             
             for (final JsonValue context : JsonUtils.toJsonArray(object.get(Keywords.CONTEXT))) {
                 
@@ -178,8 +178,12 @@ final class ObjectExpansion {
 
         String typeKey = null;
 
+        final Collection<String> keys = element.keys();
+        
+        final MapEntryCursor entry = element.entry();
+        
         // 11.
-        for (final String key : Utils.index(element.keys(), true)) {
+        for (final String key : Utils.index(keys, true)) {
 
             final String expandedKey = UriExpansion
                                             .with(activeContext, appliedContexts)
@@ -192,23 +196,26 @@ final class ObjectExpansion {
             } else if (typeKey == null) {
                 typeKey = key;
             }
-
-            final JsonObject object  = ((JakartaMapCursor)element).getJsonObject();
+            
+            
+            final JsonValue entryValue = JakartaValueCursor.toJson(entry.mapKey(key));
             
             // 11.2
-            final List<String> terms = JsonUtils.toStream(object.get(key))
+            final List<String> terms = JsonUtils.toStream(entryValue)
                                             .filter(JsonUtils::isString)
                                             .map(JsonString.class::cast)
                                             .map(JsonString::getString)
                                             .sorted()
                                             .collect(Collectors.toList());
-            System.out.println(">T " + terms);
-//            final List<String> terms = element.stream(key)
-//                    .filter(ValueCursor::isString)
-//                    .map(ValueCursor::stringValue)
-//                    .sorted()
-//                    .collect(Collectors.toList());
-//            System.out.println("<  " + terms2);
+//            entry.save();
+//            final List<String> terms = ValueCursor
+//                                            .toStream(entry.mapKey(key))
+//                                            .filter(ValueCursor::isString)
+//                                            .map(ValueCursor::stringValue)
+//                                            .sorted()
+//                                            .collect(Collectors.toList());
+
+//            entry.restore();
             
             for (final String term : terms) {
 
@@ -236,6 +243,8 @@ final class ObjectExpansion {
                 }
             }
         }
+        
+        element.parent();
 
         return typeKey;
     }
