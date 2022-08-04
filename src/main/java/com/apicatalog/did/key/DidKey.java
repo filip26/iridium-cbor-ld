@@ -74,7 +74,7 @@ public class DidKey extends Did {
 
         return new DidKey(did, codec, rawKey);
     }
-
+    
     public static boolean isDidKey(final Did did) {
         return METHOD_KEY.equalsIgnoreCase(did.getMethod());
     }

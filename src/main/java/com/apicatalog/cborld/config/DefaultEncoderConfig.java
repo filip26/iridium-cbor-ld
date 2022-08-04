@@ -3,6 +3,7 @@ package com.apicatalog.cborld.config;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import com.apicatalog.cborld.decoder.value.DidKeyValueDecoder;
 import com.apicatalog.cborld.decoder.value.MultibaseValueDecoder;
 import com.apicatalog.cborld.decoder.value.UuidValueDecoder;
 import com.apicatalog.cborld.decoder.value.ValueDecoder;
@@ -54,6 +55,7 @@ public final class DefaultEncoderConfig implements EncoderConfigration {
         
         // value driven
         VALUE_DECODERS.add(new UuidValueDecoder());
+        VALUE_DECODERS.add(new DidKeyValueDecoder());
     }
 
     public static final boolean COMPACT_ARRAYS = true;

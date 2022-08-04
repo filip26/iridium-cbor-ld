@@ -174,6 +174,7 @@ public class Decoder {
             final Context context = Context.from(cursor, loader, index::add);
             
             System.out.println(context.getTypeMapping().getMapping());
+            System.out.println(data);
             
             return decodeData(data, null, context.getTypeMapping());
 

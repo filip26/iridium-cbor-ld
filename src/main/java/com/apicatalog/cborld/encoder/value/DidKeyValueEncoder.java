@@ -17,9 +17,9 @@ import co.nstant.in.cbor.model.UnsignedInteger;
 
 public class DidKeyValueEncoder implements ValueEncoder {
 
-    final static String PREFIX = "did:key:";
-    final static int CODE = 1025;
-    
+    public final static String PREFIX = "did:key:";
+    public final static int CODE = 1025;
+
     @Override
     public DataItem encode(Dictionary dictionary, ValueCursor value, String term, Collection<String> types) {
 
