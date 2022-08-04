@@ -66,7 +66,7 @@ public class CborMapCursor extends CborValueCursor implements MapCursor {
             throw new ClassCastException();
         }
 
-        return ((Map)value.get()).getKeys().stream().map( dataToKey).collect(Collectors.toList());
+        return ((Map)value.get()).getKeys().stream().map(dataToKey).collect(Collectors.toList());
     }
 
     @Override

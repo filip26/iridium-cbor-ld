@@ -87,8 +87,8 @@ public class CborCursor implements Cursor<DataItem> {
     public MapEntryCursor mapKey(String mapKey) {
         indices.pop();
         indices.push(mapKey);
-
         path.pop();
+        System.out.println("2 " + mapKey + ", " + keyToData.apply(mapKey).getClass() + ", " + path.peek());
         path.push(((Map)path.peek()).get(keyToData.apply(mapKey)));
 
         return mapEntryCursor;
@@ -155,5 +155,4 @@ public class CborCursor implements Cursor<DataItem> {
     public boolean isMapEntry() {
         return !indices.isEmpty() && (indices.peek() instanceof String);
     }
-
 }

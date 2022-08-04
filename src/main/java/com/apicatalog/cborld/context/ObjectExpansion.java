@@ -32,7 +32,6 @@ import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.Utils;
 
-import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 
@@ -158,9 +157,10 @@ final class ObjectExpansion {
         // 9.
         if (element.contains(Keywords.CONTEXT)) {
             
-            final JsonObject object = JakartaValueCursor.toJson(element.asMap()).asJsonObject();
+            final JsonValue jsonContext = JakartaValueCursor.toJson(element.entry(Keywords.CONTEXT));
+            element.parent();
             
-            for (final JsonValue context : JsonUtils.toJsonArray(object.get(Keywords.CONTEXT))) {
+            for (final JsonValue context : JsonUtils.toJsonArray(jsonContext)) {
                 
                 final ActiveContext ac = new ActiveContext(activeContext.getBaseUri(), activeContext.getBaseUrl(), activeContext.getOptions())
                                         .newContext()
@@ -170,7 +170,7 @@ final class ObjectExpansion {
 
             activeContext = activeContext
                     .newContext()
-                    .create(object.get(Keywords.CONTEXT), baseUrl);
+                    .create(jsonContext, baseUrl);
         }
     }
 

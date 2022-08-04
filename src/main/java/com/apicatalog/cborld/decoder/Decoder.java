@@ -11,7 +11,6 @@ import com.apicatalog.cborld.context.Context;
 import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.decoder.DecoderError.Code;
 import com.apicatalog.cborld.dictionary.CodeTermMap;
-import com.apicatalog.cborld.dictionary.ContextDictionary;
 import com.apicatalog.cborld.loader.StaticContextLoader;
 import com.apicatalog.cursor.MapCursor;
 import com.apicatalog.cursor.cbor.CborCursor;
@@ -141,26 +140,26 @@ public class Decoder {
     final JsonValue decodeCompressed(final DataItem data) throws DecoderError, ContextError {
   
         try {
-            MapCursor cursor = CborCursor.from(
+
+            index = CodeTermMap.create();
+
+            final MapCursor cursor = CborCursor.from(
                     data, 
-                    d -> d.toString(), 
-                    k -> new UnicodeString(k.toString())
+                    this::decodeKey, 
+                    this::encodeKey
                     );
     
-            final Context context = Context.from(cursor, loader);
+            final Context context = Context.from(cursor, loader, index::add);
             
-            index = CodeTermMap.from(context.getContextKeySets(), loader);
-            
-    //        Collection<String> contextUrls = (new DecoderContext(new ContextDictionary())).get(data);
-        
-    //        this.index = CodeTermMap.from(contextUrls, null, loader);   //FIXME
+            System.out.println("> "+ context);
+
         } catch (JsonLdError e) {
             throw new DecoderError(Code.InvalidDocument, e);
         }
         return decodeData(data, null, null);
     }
 
-    final JsonValue decodeData(final DataItem data, final String key, TermDefinition def) throws DecoderError {
+    final JsonValue decodeData(final DataItem data, final String key, TermDefinition def) throws DecoderError, ContextError {
     
         if (data == null) {
             throw new IllegalArgumentException("The data parameter must not be null.");
@@ -184,7 +183,7 @@ public class Decoder {
         }
     }
 
-    final JsonObject decodeMap(final Map map, TermDefinition def) throws DecoderError {
+    final JsonObject decodeMap(final Map map, TermDefinition def) throws DecoderError, ContextError {
     
         if (map == null) {
             throw new IllegalArgumentException("The map parameter must not be null.");
@@ -204,7 +203,7 @@ public class Decoder {
         return builder.build();
     }
 
-    final JsonArray decodeArray(final Collection<DataItem> items, String key, TermDefinition def) throws DecoderError {
+    final JsonArray decodeArray(final Collection<DataItem> items, String key, TermDefinition def) throws DecoderError, ContextError {
     
         if (items == null) {
             throw new IllegalArgumentException("The items parameter must not be null.");
@@ -223,8 +222,8 @@ public class Decoder {
         return builder.build();
     }
 
-    final String decodeKey(final DataItem data) throws DecoderError {
-    
+    final String decodeKey(final DataItem data) {
+    System.out.println("decode key " + data);
         if (data == null) {
             throw new IllegalArgumentException("The data parameter must not be null.");
         }
@@ -235,14 +234,18 @@ public class Decoder {
     
         case UNSIGNED_INTEGER:
             return decodeKey(((UnsignedInteger)data).getValue());
-    
+
         default:
-                throw new DecoderError(Code.Unsupported, "A property name of type [" + data.getMajorType() +"] is not supported.");
+            System.out.println("< fallback " + data.toString());
+            return data.toString();
+//        default:
+//            //TODO log throw new ContextError(com.apicatalog.cborld.context.ContextError.Code.Unsupported, "A property name of type [" + data.getMajorType() +"] is not supported.");
         }
     }
 
     final String decodeKey(String key) {
         //TODO
+        System.out.println("< string " + key);
         return key;
     }
 
@@ -250,8 +253,19 @@ public class Decoder {
     
         String result = index.getValue(key);
     
+        System.out.println("< int " + key + ", " + result);
         //TODO
         return result != null ? result : key.toString();
+    }
+    
+    final DataItem encodeKey(String key) {
+        
+        final BigInteger encodedProperty = index.getCode(key);
+        System.out.println("encode key " + key + ", " + encodedProperty);
+        if (encodedProperty != null) {
+            return new UnsignedInteger(encodedProperty);
+        }
+        return new UnicodeString(key);
     }
 
     final JsonString decodeString(final UnicodeString string, final String key) {

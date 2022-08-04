@@ -42,7 +42,25 @@ public class CodeTermMap implements Dictionary {
             return map;
     }
     
-    void add(String key) {
+    public static CodeTermMap create() {
+        
+        final CodeTermMap map = new CodeTermMap(
+                new LinkedHashMap<>(KeywordDictionary.CODE_TO_TERM),
+                KeywordDictionary.CUSTOM_OFFSET
+                );
+        
+        return map;
+    }
+    
+    public void add(Collection<String> keys) {
+        System.out.println("------------------------- add keys "+ keys);
+        keys
+        .stream()
+        .sorted()
+        .forEach(this::add);
+    }
+    
+    public void add(String key) {
         if (!reverse.containsKey(key)) {
                 index.put(lastCustomIndex, key);
                 reverse.put(key,  lastCustomIndex);
