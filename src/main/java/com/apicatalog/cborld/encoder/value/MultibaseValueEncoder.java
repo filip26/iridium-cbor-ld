@@ -11,7 +11,7 @@ import co.nstant.in.cbor.model.DataItem;
 
 public class MultibaseValueEncoder implements ValueEncoder {
     
-    static final String TYPE = "https://w3id.org/security#multibase";
+    public static final String TYPE = "https://w3id.org/security#multibase";
     
     @Override
     public DataItem encode(Dictionary dictionary, ValueCursor value, String term, Collection<String> types) {

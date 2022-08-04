@@ -3,6 +3,7 @@ package com.apicatalog.cborld.config;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import com.apicatalog.cborld.decoder.value.MultibaseValueDecoder;
 import com.apicatalog.cborld.decoder.value.UuidValueDecoder;
 import com.apicatalog.cborld.decoder.value.ValueDecoder;
 import com.apicatalog.cborld.decoder.value.VocabValueDecoder;
@@ -48,6 +49,7 @@ public final class DefaultEncoderConfig implements EncoderConfigration {
         // type driven
         VALUE_DECODERS.add(new XsdDateTimeValueDecoder());
         VALUE_DECODERS.add(new XsdDateValueDecoder());
+        VALUE_DECODERS.add(new MultibaseValueDecoder());
         VALUE_DECODERS.add(new VocabValueDecoder());
         
         // value driven
