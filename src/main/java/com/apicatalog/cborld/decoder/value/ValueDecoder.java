@@ -1,7 +1,8 @@
-package com.apicatalog.cborld.decoder;
+package com.apicatalog.cborld.decoder.value;
 
 import java.util.Collection;
 
+import com.apicatalog.cborld.decoder.DecoderError;
 import com.apicatalog.cborld.dictionary.Dictionary;
 
 import co.nstant.in.cbor.model.DataItem;

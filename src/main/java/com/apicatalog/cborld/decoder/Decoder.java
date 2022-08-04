@@ -11,6 +11,7 @@ import com.apicatalog.cborld.context.Context;
 import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.context.TypeMapping;
 import com.apicatalog.cborld.decoder.DecoderError.Code;
+import com.apicatalog.cborld.decoder.value.ValueDecoder;
 import com.apicatalog.cborld.dictionary.CodeTermMap;
 import com.apicatalog.cborld.encoder.Encoder;
 import com.apicatalog.cborld.loader.StaticContextLoader;
@@ -172,6 +173,8 @@ public class Decoder {
     
             final Context context = Context.from(cursor, loader, index::add);
             
+            System.out.println(context.getTypeMapping().getMapping());
+            
             return decodeData(data, null, context.getTypeMapping());
 
         } catch (JsonLdError e) {
@@ -180,7 +183,7 @@ public class Decoder {
     
     }
 
-    final JsonValue decodeData(final DataItem data, final String key, TypeMapping def) throws DecoderError, ContextError {
+    final JsonValue decodeData(final DataItem data, final String term, TypeMapping def) throws DecoderError, ContextError {
     
         if (data == null) {
             throw new IllegalArgumentException("The data parameter must not be null.");
@@ -191,13 +194,13 @@ public class Decoder {
             return decodeMap((Map) data, def);
     
         case ARRAY:
-            return decodeArray(((Array) data).getDataItems(), key, def);
+            return decodeArray(((Array) data).getDataItems(), term, def);
     
         case UNICODE_STRING:
-            return decodeString((UnicodeString) data, key);
+            return decodeString((UnicodeString) data, term);
     
         case UNSIGNED_INTEGER:
-            return decodeInteger(((UnsignedInteger)data).getValue(), key, def);
+            return decodeInteger(data, term, def);
             
         case BYTE_STRING:
             return Json.createValue("TODO bytestring");
@@ -336,32 +339,20 @@ public class Decoder {
         return Json.createValue(string.getString());
     }
 
-    final JsonValue decodeInteger(final BigInteger number, String key, TypeMapping def) {
+    final JsonValue decodeInteger(final DataItem number, String key, TypeMapping def) throws DecoderError {
     
         if (number == null) {
             throw new IllegalArgumentException("The number parameter must not be null.");
         }
     
-//    
-//        if (Keywords.CONTEXT.equals(key)) {
-//            final String context  = contexts.getValue(number);
-//            if (context != null) {
-//            return Json.createValue(context);
-//            } else {
-//            //TODO throw something
-//            }
-//        }
-//        if (def != null) {
-//            if (Keywords.TYPE.equals(def.getUriMapping())) {
-//                    String term = index.getValue(number);
-//                    if (term != null) {
-//                    return Json.createValue(term);
-//                    }
-//            }
-//        }
-    
-        //TODO
-        return Json.createValue(number);
+        JsonValue decoded = decodeValue(number, key, def);
+
+        if (decoded != null) {
+            return decoded;
+        }
+        
+        // fallback
+        return Json.createValue(((UnsignedInteger)number).getValue());
     }
 
     final JsonValue decodeUncompressed() throws DecoderError {

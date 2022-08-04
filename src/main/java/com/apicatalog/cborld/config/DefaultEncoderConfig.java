@@ -3,8 +3,10 @@ package com.apicatalog.cborld.config;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import com.apicatalog.cborld.decoder.ValueDecoder;
 import com.apicatalog.cborld.decoder.value.UuidValueDecoder;
+import com.apicatalog.cborld.decoder.value.ValueDecoder;
+import com.apicatalog.cborld.decoder.value.XsdDateTimeValueDecoder;
+import com.apicatalog.cborld.decoder.value.XsdDateValueDecoder;
 import com.apicatalog.cborld.dictionary.ContextDictionary;
 import com.apicatalog.cborld.encoder.EncoderConfigration;
 import com.apicatalog.cborld.encoder.value.ContextValueEncoder;
@@ -42,6 +44,11 @@ public final class DefaultEncoderConfig implements EncoderConfigration {
     
     static {
         
+        // type driven
+        VALUE_DECODERS.add(new XsdDateTimeValueDecoder());
+        VALUE_DECODERS.add(new XsdDateValueDecoder());
+
+        // value driven
         VALUE_DECODERS.add(new UuidValueDecoder());
     }
 

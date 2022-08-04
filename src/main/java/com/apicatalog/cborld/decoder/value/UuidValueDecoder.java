@@ -4,7 +4,6 @@ import java.math.BigInteger;
 import java.util.Collection;
 
 import com.apicatalog.cborld.decoder.DecoderError;
-import com.apicatalog.cborld.decoder.ValueDecoder;
 import com.apicatalog.cborld.dictionary.Dictionary;
 import com.apicatalog.cborld.encoder.value.UuidValueEncoder;
 import com.apicatalog.uuid.Uuid;
