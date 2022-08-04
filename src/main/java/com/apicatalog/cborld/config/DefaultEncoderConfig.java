@@ -5,6 +5,7 @@ import java.util.Collection;
 
 import com.apicatalog.cborld.decoder.value.UuidValueDecoder;
 import com.apicatalog.cborld.decoder.value.ValueDecoder;
+import com.apicatalog.cborld.decoder.value.VocabValueDecoder;
 import com.apicatalog.cborld.decoder.value.XsdDateTimeValueDecoder;
 import com.apicatalog.cborld.decoder.value.XsdDateValueDecoder;
 import com.apicatalog.cborld.dictionary.ContextDictionary;
@@ -12,10 +13,10 @@ import com.apicatalog.cborld.encoder.EncoderConfigration;
 import com.apicatalog.cborld.encoder.value.ContextValueEncoder;
 import com.apicatalog.cborld.encoder.value.DidKeyValueEncoder;
 import com.apicatalog.cborld.encoder.value.MultibaseValueEncoder;
-import com.apicatalog.cborld.encoder.value.StringValueEncoder;
 import com.apicatalog.cborld.encoder.value.TypeValueEncoder;
 import com.apicatalog.cborld.encoder.value.UuidValueEncoder;
 import com.apicatalog.cborld.encoder.value.ValueEncoder;
+import com.apicatalog.cborld.encoder.value.VocabValueEncoder;
 import com.apicatalog.cborld.encoder.value.XsdDateTimeValueEncoder;
 import com.apicatalog.cborld.encoder.value.XsdDateValueEncoder;
 
@@ -33,9 +34,9 @@ public final class DefaultEncoderConfig implements EncoderConfigration {
         VALUE_ENCODERS.add(new XsdDateTimeValueEncoder());
         VALUE_ENCODERS.add(new XsdDateValueEncoder());
         VALUE_ENCODERS.add(new MultibaseValueEncoder());
+        VALUE_ENCODERS.add(new VocabValueEncoder());
         
         // value driven
-        VALUE_ENCODERS.add(new StringValueEncoder());
         VALUE_ENCODERS.add(new UuidValueEncoder());
         VALUE_ENCODERS.add(new DidKeyValueEncoder());
     }
@@ -47,7 +48,8 @@ public final class DefaultEncoderConfig implements EncoderConfigration {
         // type driven
         VALUE_DECODERS.add(new XsdDateTimeValueDecoder());
         VALUE_DECODERS.add(new XsdDateValueDecoder());
-
+        VALUE_DECODERS.add(new VocabValueDecoder());
+        
         // value driven
         VALUE_DECODERS.add(new UuidValueDecoder());
     }

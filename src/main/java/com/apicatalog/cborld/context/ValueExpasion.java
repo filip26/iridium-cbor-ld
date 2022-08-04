@@ -89,6 +89,12 @@ final class ValueExpasion {
 
                 return Json.createObjectBuilder().add(Keywords.ID, expandedValue)
                         .add(Keywords.TYPE,  Keywords.VOCAB).build();
+                
+            //FIXME hack
+            } else if (Keywords.VOCAB.equals(typeMapping.get()) && value.isNumber()) {
+                return Json.createObjectBuilder()
+                        .add(Keywords.TYPE,  Keywords.VOCAB).build();
+                
             }
         }
 
