@@ -52,15 +52,7 @@ public interface ValueCursor {
     
     static Stream<ValueCursor> toStream(ValueCursor cursor) {
         if (cursor.isArray()) {
-            return StreamSupport.stream(cursor.asArray().spliterator(), false).map(ValueCursor.class::cast)
-                    .onClose(new Runnable() {
-                        
-                        @Override
-                        public void run() {
-                            System.out.println(">>> CLOSE!!!!");
-                            cursor.parent();
-                        }
-                    });
+            return StreamSupport.stream(cursor.asArray().spliterator(), false).map(ValueCursor.class::cast);
         }
 
         return Stream.of(cursor);

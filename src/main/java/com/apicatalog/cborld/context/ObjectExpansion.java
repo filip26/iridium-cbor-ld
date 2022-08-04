@@ -181,7 +181,6 @@ final class ObjectExpansion {
         final Collection<String> keys = element.keys();
         
         final MapEntryCursor entry = element.entry();
-        
         // 11.
         for (final String key : Utils.index(keys, true)) {
 
@@ -196,8 +195,7 @@ final class ObjectExpansion {
             } else if (typeKey == null) {
                 typeKey = key;
             }
-            
-            
+ 
             final JsonValue entryValue = JakartaValueCursor.toJson(entry.mapKey(key));
             
             // 11.2
@@ -216,7 +214,7 @@ final class ObjectExpansion {
 //                                            .collect(Collectors.toList());
 
 //            entry.restore();
-            
+           
             for (final String term : terms) {
 
                 Optional<JsonValue> localContext = typeContext.getTerm(term).map(TermDefinition::getLocalContext);

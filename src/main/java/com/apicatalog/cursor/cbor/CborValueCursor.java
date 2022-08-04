@@ -19,6 +19,12 @@ public class CborValueCursor extends AbstractValueCursor<DataItem> {
     }
 
     @Override
+    public boolean isPrimitive() {
+        return super.isPrimitive() 
+                || (value.get() != null && MajorType.BYTE_STRING.equals(value.get().getMajorType()));
+    }
+    
+    @Override
     public boolean isNull() {
         return value.get() == null;
     }

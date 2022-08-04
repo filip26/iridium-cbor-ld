@@ -19,7 +19,7 @@ public interface MapCursor extends StructureCursor, Iterable<MapEntryCursor> {
     
     default boolean is(String key, Predicate<ValueCursor> predicate) {
 
-        MapEntryCursor entry = entry(key); 
+        final MapEntryCursor entry = entry(key); 
         
         boolean result = predicate.test(entry);
         
@@ -29,7 +29,8 @@ public interface MapCursor extends StructureCursor, Iterable<MapEntryCursor> {
     }
     
     default <T> T value(String key, Function<ValueCursor, T> getter) {
-        MapEntryCursor entry = entry(key); 
+        
+        final MapEntryCursor entry = entry(key); 
         
         T result = getter.apply(entry); 
         

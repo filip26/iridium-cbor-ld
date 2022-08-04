@@ -89,7 +89,7 @@ final class ObjectExpansion1314 {
         
         final Collection<String> keys = element.keys();
         final MapEntryCursor entry = element.entry();
-        
+
         // 13.
         for (final String key : Utils.index(keys, ordered)) {
 
@@ -212,7 +212,6 @@ final class ObjectExpansion1314 {
 
             // 13.9.
             } else {
-
                 expandedType = Expansion
                                     .with(activeContext, value, key, baseUrl, appliedContexts)
                                     .ordered(ordered)

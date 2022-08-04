@@ -123,7 +123,7 @@ public class JakartaValueCursor extends AbstractValueCursor<JsonValue> {
             final JsonObjectBuilder map = Json.createObjectBuilder();
             
             for (final MapEntryCursor entry : cursor.asMap()) {
-                map.add(entry.mapKey(), toJson(entry));
+                map.add(entry.mapKey().toString(), toJson(entry));
             }
             cursor.parent();
             

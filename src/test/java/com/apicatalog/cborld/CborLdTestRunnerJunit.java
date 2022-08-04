@@ -104,7 +104,10 @@ public class CborLdTestRunnerJunit {
     
                 assertNotNull(document);
     
-                JsonValue result = CborLd.decoder(((CborLdDocument)document).getByteArray()).loader(LOADER).decode();
+                JsonValue result = CborLd.decoder(((CborLdDocument)document).getByteArray())
+                                        .loader(LOADER)
+                                        .compactArray(testCase.compactArrays)
+                                        .decode();
     
                 if (testCase.type.stream().noneMatch(o -> o.endsWith("PositiveEvaluationTest"))) {
                     fail("Expected error code [" + testCase.result + "].");

@@ -14,7 +14,8 @@ import co.nstant.in.cbor.model.UnsignedInteger;
 
 public class UuidValueEncoder implements ValueEncoder {
 
-    final static String PREFIX = "urn:uuid:";
+    public final static String PREFIX = "urn:uuid:";
+    public final static int CODE = 3;
     
     @Override
     public DataItem encode(Dictionary dictionary, ValueCursor value, String term, Collection<String> types) {
@@ -25,7 +26,7 @@ public class UuidValueEncoder implements ValueEncoder {
             
             Array result = new Array();
                         
-            result.add(new UnsignedInteger(3));
+            result.add(new UnsignedInteger(CODE));
             result.add(new ByteString(Uuid.toBytes(UUID.fromString(rest))));
             
             return result;

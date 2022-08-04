@@ -1,5 +1,6 @@
 package com.apicatalog.cursor.cbor;
 
+import java.math.BigInteger;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.function.Function;
@@ -12,7 +13,9 @@ import com.apicatalog.cursor.MapEntryCursor;
 
 import co.nstant.in.cbor.model.Array;
 import co.nstant.in.cbor.model.DataItem;
+import co.nstant.in.cbor.model.MajorType;
 import co.nstant.in.cbor.model.Map;
+import co.nstant.in.cbor.model.UnsignedInteger;
 
 public class CborCursor implements Cursor<DataItem> {
 
@@ -25,16 +28,18 @@ public class CborCursor implements Cursor<DataItem> {
     final MapCursor mapCursor;
     final ArrayCursor arrayCursor;
     
-    final Function<String, DataItem> keyToData;
+    final Function<String, DataItem> keyToCode;
+    final Function<DataItem, DataItem> decodeValue;
 
-    protected CborCursor(DataItem root, Function<DataItem, String> dataToKey, Function<String, DataItem> keyToData) {
+    protected CborCursor(DataItem root, Function<DataItem, String> dataToKey, Function<String, DataItem> keyToData, Function<DataItem, DataItem> decodeValue) {
         
         this.path = new ArrayDeque<>();
         this.path.add(root);
         
         this.indices = new ArrayDeque<>();
 
-        this.keyToData = keyToData;
+        this.keyToCode = keyToData;
+        this.decodeValue = decodeValue;
 
         this.arrayItemCursor = new CborArrayItemCursor(this);
         this.mapEntryCursor = new CborMapEntryCursor(this);
@@ -43,8 +48,8 @@ public class CborCursor implements Cursor<DataItem> {
         this.mapCursor = new CborMapCursor(this, dataToKey, keyToData);
     }
     
-    public static MapCursor from(DataItem data, Function<DataItem, String> dataToKey, Function<String, DataItem> keyToData) {
-        return new CborCursor(data, dataToKey, keyToData).mapCursor();
+    public static MapCursor from(DataItem data, Function<DataItem, String> dataToKey, Function<String, DataItem> keyToData, Function<DataItem, DataItem> decodeValue) {
+        return new CborCursor(data, dataToKey, keyToData, decodeValue).mapCursor();
     }
 
     @Override
@@ -68,9 +73,28 @@ public class CborCursor implements Cursor<DataItem> {
     // horizontal
     @Override
     public MapEntryCursor entry(String mapKey) {
-        indices.push(mapKey);
-        System.out.println(">>> " + mapKey + ", " + keyToData.apply(mapKey) + ", " + path.peek());
-        path.push(((Map)path.peek()).get(keyToData.apply(mapKey)));
+        indices.push(mapKey);        
+        
+        final Map map = (Map)path.peek(); 
+        
+        DataItem key = keyToCode.apply(mapKey);
+        DataItem value = map.get(key);
+        Boolean arrayCode = Boolean.FALSE;
+
+        if (value == null && MajorType.UNSIGNED_INTEGER.equals(key.getMajorType())) {
+            key = new UnsignedInteger(((UnsignedInteger)key).getValue().add(BigInteger.ONE));
+            value = map.get(key);        
+            if (value != null) {
+                arrayCode = Boolean.TRUE;
+            }   
+        }
+        
+        if (!arrayCode && MajorType.ARRAY.equals(value.getMajorType())) {
+            value = decodeValue.apply(value);
+        }
+
+        path.push(value);
+        
         return mapEntryCursor;
     }
 
@@ -86,14 +110,10 @@ public class CborCursor implements Cursor<DataItem> {
     @Override
     public MapEntryCursor mapKey(String mapKey) {
         indices.pop();
-        indices.push(mapKey);
         path.pop();
-        System.out.println("2 " + mapKey + ", " + keyToData.apply(mapKey).getClass() + ", " + path.peek());
-        path.push(((Map)path.peek()).get(keyToData.apply(mapKey)));
-
-        return mapEntryCursor;
+        return entry(mapKey);
     }
-
+    
     // vertical
     @Override
     public ArrayItemCursor arrayIndex(int arrayIndex) {

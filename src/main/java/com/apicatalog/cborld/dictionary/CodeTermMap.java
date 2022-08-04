@@ -53,7 +53,6 @@ public class CodeTermMap implements Dictionary {
     }
     
     public void add(Collection<String> keys) {
-        System.out.println("------------------------- add keys "+ keys);
         keys
         .stream()
         .sorted()
