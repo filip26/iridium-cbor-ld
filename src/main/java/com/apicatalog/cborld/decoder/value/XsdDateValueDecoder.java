@@ -2,14 +2,12 @@ package com.apicatalog.cborld.decoder.value;
 
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 
 import com.apicatalog.cborld.decoder.DecoderError;
 import com.apicatalog.cborld.dictionary.Dictionary;
-import com.apicatalog.cursor.ValueCursor;
 
 import co.nstant.in.cbor.model.DataItem;
 import co.nstant.in.cbor.model.MajorType;
@@ -21,7 +19,6 @@ public class XsdDateValueDecoder implements ValueDecoder {
 
     @Override
     public JsonValue decode(Dictionary dictionary, DataItem value, String term, Collection<String> types) throws DecoderError {
-System.out.println("!!! " + types);
         if (types != null && types.contains("http://www.w3.org/2001/XMLSchema#date")
                 && MajorType.UNSIGNED_INTEGER.equals(value.getMajorType())
                 ) {
@@ -32,14 +29,7 @@ System.out.println("!!! " + types);
             
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             
-            return Json.createValue(formatter.format(date));
-            
-//            LocalDate date = LocalDate.parse(value.stringValue(), formatter);
-                        
-            //return new UnsignedInteger(date.toEpochSecond(LocalTime.MIDNIGHT, ZoneOffset.UTC));
-            
-  //          return Json.createValue(Instant.ofEpochSecond(epochSeconds).toString());
-
+            return Json.createValue(formatter.format(LocalDate.ofInstant(date, ZoneOffset.UTC)));            
         }
         return null;
     }
