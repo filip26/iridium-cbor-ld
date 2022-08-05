@@ -180,9 +180,6 @@ public class Decoder {
     
             final Context context = Context.from(cursor, loader, index::add, typeMap);
             
-            System.out.println(context.getTypeMapping().getMapping());
-            System.out.println(data);
-            
             return decodeData(data, null, context.getTypeMapping());
 
         } catch (JsonLdError e) {
@@ -211,7 +208,12 @@ public class Decoder {
             return decodeInteger(data, term, def);
             
         case BYTE_STRING:
-            return Json.createValue("TODO bytestring");
+            JsonValue decoded = decodeValue(data, term, def);
+            if (decoded == null) {
+                throw new DecoderError(Code.InvalidDocument, "Unknown encoded value [" + data.getMajorType() + "] at key [" + term + "].");
+            }
+            
+            return decoded;
     
         default:
             throw new IllegalStateException("An unexpected data item type [" + data.getMajorType() + "].");
@@ -299,7 +301,6 @@ public class Decoder {
             return decodeKey(((UnsignedInteger)data).getValue());
 
         default:
-  //          System.out.println("< fallback " + data.toString());
             return data.toString();
 //        default:
 //            //TODO log throw new ContextError(com.apicatalog.cborld.context.ContextError.Code.Unsupported, "A property name of type [" + data.getMajorType() +"] is not supported.");
@@ -315,15 +316,11 @@ public class Decoder {
     
         if (key.mod(BigInteger.TWO).equals(BigInteger.ZERO)) {
             String result = index.getValue(key);
-//            System.out.println("< int " + key + ", " + result);
             return result != null ? result : key.toString();
-        }
-        
+        }        
     
         String result = index.getValue(key.subtract(BigInteger.ONE));
 
-        
-//        System.out.println("< int " + key + ", " + result);
         //TODO
         return result != null ? result : key.toString();
     }
@@ -331,7 +328,7 @@ public class Decoder {
     final DataItem encodeKey(String key) {
         
         final BigInteger encodedProperty = index.getCode(key);
-//        System.out.println("encode key " + key + ", " + encodedProperty);
+        
         if (encodedProperty != null) {
             return new UnsignedInteger(encodedProperty);
         }
@@ -373,7 +370,6 @@ public class Decoder {
         //FIXME
         Collection<String> TYPE = Arrays.asList(Keywords.TYPE); 
         
-        System.out.println("DECODE " + term + ", " + value);
         for (final ValueDecoder decoder : valueDecoders) {
             try {
                 final JsonValue decoded = decoder.decode(index, value, term, 

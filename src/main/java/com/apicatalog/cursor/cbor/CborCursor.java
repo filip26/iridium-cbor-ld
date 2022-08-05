@@ -116,7 +116,6 @@ public class CborCursor implements Cursor<DataItem> {
             value = decodeValue.decode(value, mapKey);
         }
 
-System.out.println("entry " + mapKey + ", " + value);
         path.push(value);
         
         return mapEntryCursor;

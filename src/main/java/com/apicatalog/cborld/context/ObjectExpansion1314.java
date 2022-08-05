@@ -118,7 +118,7 @@ final class ObjectExpansion1314 {
 
             // 13.4. If expanded property is a keyword:
             if (Keywords.contains(expandedProperty)) {
-                System.out.println(">>>> ---------------------- " + expandedProperty + ", " + key);
+
                 JsonValue expandedType = null;
                 
                 if (value.isString()) {

@@ -165,15 +165,15 @@ final class ObjectExpansion {
     }
 
     private void initLocalContext() throws JsonLdError {
-        System.out.println(" ################## context " + element);
+
         // 9.
         if (element.contains(Keywords.CONTEXT)) {
             
             final JsonValue jsonContext = JakartaValueCursor.toJson(element.entry(Keywords.CONTEXT));
             element.parent();
-            System.out.println(" ################## context " + jsonContext);
+
             for (final JsonValue context : JsonUtils.toJsonArray(jsonContext)) {
-                System.out.println(" ################## context " + context);
+
                 final ActiveContext ac = new ActiveContext(activeContext.getBaseUri(), activeContext.getBaseUrl(), activeContext.getOptions())
                                         .newContext()
                                         .create(context, baseUrl);
@@ -200,7 +200,7 @@ final class ObjectExpansion {
                                             .with(activeContext, appliedContexts)
                                             .vocab(true)
                                             .expand(key);
-            System.out.println(" ################## type " + key + ", " + expandedKey);        // 11.
+
             if (!Keywords.TYPE.equals(expandedKey)) {
                 continue;
 
@@ -213,7 +213,7 @@ final class ObjectExpansion {
             }
             
             final JsonValue entryValue = JakartaValueCursor.toJson(entry.mapKey(key));
-            System.out.println(">>>> " + expandedKey + ", " + key  + ", " + entryValue);            
+            
             // 11.2
             final List<String> terms = JsonUtils.toStream(entryValue)
                                             .filter(JsonUtils::isString)
