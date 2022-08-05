@@ -2,25 +2,26 @@ package com.apicatalog.cborld.decoder;
 
 import java.io.ByteArrayInputStream;
 import java.math.BigInteger;
+import java.net.URI;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
 import com.apicatalog.cborld.CborLd;
-import com.apicatalog.cborld.config.DefaultEncoderConfig;
+import com.apicatalog.cborld.config.DefaulConfig;
 import com.apicatalog.cborld.context.Context;
 import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.context.TypeMapping;
 import com.apicatalog.cborld.decoder.DecoderError.Code;
 import com.apicatalog.cborld.decoder.value.ValueDecoder;
 import com.apicatalog.cborld.dictionary.CodeTermMap;
-import com.apicatalog.cborld.encoder.Encoder;
 import com.apicatalog.cborld.hex.Hex;
 import com.apicatalog.cborld.loader.StaticContextLoader;
 import com.apicatalog.cursor.MapCursor;
 import com.apicatalog.cursor.cbor.CborCursor;
 import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.http.DefaultHttpClient;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.json.JsonUtils;
@@ -57,14 +58,19 @@ public class Decoder {
     protected Collection<ValueDecoder> valueDecoders;
     protected boolean compactArrays;
     protected DocumentLoader loader;
+    protected boolean bundledContexts;
+    protected URI base;
+    
 
     protected Decoder(byte[] encoded, boolean compressed) {
         this.encoded = encoded;
         this.compressed = compressed;
         
         // default options
-        this.valueDecoders = DefaultEncoderConfig.VALUE_DECODERS;
-        this.compactArrays = DefaultEncoderConfig.COMPACT_ARRAYS;
+        this.valueDecoders = DefaulConfig.VALUE_DECODERS;
+        this.compactArrays = DefaulConfig.COMPACT_ARRAYS;
+        this.bundledContexts = DefaulConfig.STATIC_CONTEXTS;
+        this.base = null;
         this.loader = null;
     }
 
@@ -74,7 +80,7 @@ public class Decoder {
      * Enabled by default.
      *
      * @param enable <code>true</code> to enable arrays compaction
-     * @return {@link Encoder} instance
+     * @return {@link Decoder} instance
      *
      */
     public Decoder compactArray(boolean enable) {
@@ -82,6 +88,41 @@ public class Decoder {
         return this;
     }
 
+    /**
+     * Set {@link DocumentLoader} used to fetch referenced JSON-LD contexts. 
+     * If not set then default document loader provided by {@link JsonLdOptions} is used. 
+     * 
+     * @param loader a document loader to set
+     * @return {@link Decoder} instance
+     */
+    public Decoder loader(DocumentLoader loader) {
+        this.loader = loader;
+        return this;
+    }
+
+    
+    /**
+     * Use well-known contexts that are bundled with the library instead of fetching it online.
+     * <code>true</code> by default. Disabling might cause slower processing.
+     *
+     * @param enable
+     * @return {@link Decoder} instance
+     */
+    public Decoder useBundledContexts(boolean enable) {
+        this.bundledContexts = enable;
+        return this;
+    }
+    
+    /**
+     * If set, then is used as the input document's base IRI.
+     *
+     * @param base
+     * @return {@link Decoder} instance
+     */
+    public Decoder base(URI base) {
+       this.base = base;
+       return this;
+    }
     
     public static final Decoder create(byte[] encodedDocument) throws DecoderError {
     
@@ -112,11 +153,14 @@ public class Decoder {
                 + Hex.toString(encodedDocument[2]) + "].");
     }
     
-    public Decoder loader(DocumentLoader loader) {
-        this.loader = loader;
-        return this;
-    }
-
+    /**
+     * Decode  CBOR-LD document as JSON-LD document.
+     * 
+     * @return a decoded CBOR-LD document
+     * 
+     * @throws DecoderError
+     * @throws ContextError
+     */
     public JsonValue decode() throws DecoderError, ContextError {
 
         if (loader == null) {
@@ -124,7 +168,9 @@ public class Decoder {
             ((HttpLoader)loader).setFallbackContentType(MediaType.JSON);
         }
         
-        loader = new StaticContextLoader(loader);
+        if (bundledContexts) {
+            loader = new StaticContextLoader(loader);
+        }
         
         if (compressed) {
             return decodeCompressed();
@@ -178,7 +224,7 @@ public class Decoder {
                     this::decodeValue
                     );
     
-            final Context context = Context.from(cursor, loader, index::add, typeMap);
+            final Context context = Context.from(cursor, base, loader, index::add, typeMap);
             
             return decodeData(data, null, context.getTypeMapping());
 

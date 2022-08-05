@@ -4,7 +4,7 @@ import java.net.URI;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.apicatalog.cborld.config.DefaultEncoderConfig;
+import com.apicatalog.cborld.config.DefaulConfig;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.DocumentLoader;
@@ -25,7 +25,7 @@ public class CborLdTestCase {
 
     public URI result;
     
-    public boolean compactArrays = DefaultEncoderConfig.COMPACT_ARRAYS;
+    public boolean compactArrays = DefaulConfig.COMPACT_ARRAYS;
 
     public static CborLdTestCase of(JsonObject test, JsonObject manifest, DocumentLoader loader) {
 
@@ -61,7 +61,7 @@ public class CborLdTestCase {
             final JsonObject options = test
                     .getJsonArray("https://github.com/filip26/iridium-cbor-ld/tests/vocab#option")
                     .getJsonObject(0);
-            testCase.compactArrays = options.getJsonArray("https://github.com/filip26/iridium-cbor-ld/tests/vocab#compactArrays").getJsonObject(0).getBoolean("@value", DefaultEncoderConfig.COMPACT_ARRAYS);
+            testCase.compactArrays = options.getJsonArray("https://github.com/filip26/iridium-cbor-ld/tests/vocab#compactArrays").getJsonObject(0).getBoolean("@value", DefaulConfig.COMPACT_ARRAYS);
 
         }
 

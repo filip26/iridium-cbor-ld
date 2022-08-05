@@ -24,7 +24,7 @@ import com.apicatalog.cborld.encoder.value.VocabValueEncoder;
 import com.apicatalog.cborld.encoder.value.XsdDateTimeValueEncoder;
 import com.apicatalog.cborld.encoder.value.XsdDateValueEncoder;
 
-public final class DefaultEncoderConfig implements EncoderConfigration {
+public final class DefaulConfig implements EncoderConfigration {
 
     public static final ContextDictionary CONTEXT_DICTIONARY = new ContextDictionary();
     
@@ -66,6 +66,8 @@ public final class DefaultEncoderConfig implements EncoderConfigration {
     }
 
     public static final boolean COMPACT_ARRAYS = true;
+
+    public static final boolean STATIC_CONTEXTS = true;
 
     @Override
     public boolean isCompactArrays() {

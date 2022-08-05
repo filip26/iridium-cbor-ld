@@ -3,6 +3,7 @@ An implementation of the [CBOR-LD 1.0 Draft](https://digitalbazaar.github.io/cbo
 
 [![Java 11 CI](https://github.com/filip26/iridium-cbor-ld/actions/workflows/java11-build.yml/badge.svg)](https://github.com/filip26/iridium-cbor-ld/actions/workflows/java11-build.yml)
 [![Android (Java 8) CI](https://github.com/filip26/iridium-cbor-ld/actions/workflows/java8-build.yml/badge.svg)](https://github.com/filip26/iridium-cbor-ld/actions/workflows/java8-build.yml)
+[![Maven Central](https://img.shields.io/maven-central/v/com.apicatalog/iridium-cbor-ld.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.apicatalog%22%20AND%20a:%22iridium-cbor-ld%22)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 ## Usage
@@ -19,18 +20,49 @@ An implementation of the [CBOR-LD 1.0 Draft](https://digitalbazaar.github.io/cbo
   document = CborLd.decoder(encoded).decode();
 ```
 
+### @digitalbazaar/cborld compatibility
+
+Set `DbConfig` as a configuration option to an encoder or decoder API.
+
+e.g.
+
+```java
+  CborLd.encoder(document)
+        .config(DbConfig.INSTANCE)
+        .encode();
+        
+  CborLd.decoder(document)
+        .config(DbConfig.INSTANCE)
+        .decode();
+        
+```
+
+## Documentation
+
+[![javadoc](https://javadoc.io/badge2/com.apicatalog/iridium-cbor-ld/javadoc.svg)](https://javadoc.io/doc/com.apicatalog/iridium-cbor-ld)
+
+
 ## Contributing
 
 All PR's welcome!
+
 
 ### Building
 
 Fork and clone the project repository.
 
+#### Java 11
 ```bash
 > cd iridium-cbor-ld
 > mvn clean package
 ```
+
+#### Java 8
+```bash
+> cd iridium-cbor-ld
+> mvn -f pom_jre8.xml clean package
+```
+
 
 ## Resources
 
@@ -40,3 +72,12 @@ Fork and clone the project repository.
 * [cbor.io](https://cbor.io/)
 * [JavaScript CBOR-LD Processor](https://github.com/digitalbazaar/cborld)
 * [CBOR Playground](https://cbor.me/)
+
+## Sponsors
+
+<a href="https://github.com/digitalbazaar">
+  <img src="https://avatars.githubusercontent.com/u/167436?s=200&v=4" width="40" />
+</a> 
+
+## Commercial Support
+Commercial support is available at filip26@gmail.com

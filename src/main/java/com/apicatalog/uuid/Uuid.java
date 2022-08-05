@@ -18,5 +18,4 @@ public class Uuid {
         long low = byteBuffer.getLong();
         return new UUID(high, low);
     }
-    
 }

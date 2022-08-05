@@ -3,10 +3,11 @@ package com.apicatalog.cborld.encoder;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.net.URI;
 import java.util.Collection;
 
 import com.apicatalog.cborld.CborLd;
-import com.apicatalog.cborld.config.DefaultEncoderConfig;
+import com.apicatalog.cborld.config.DefaulConfig;
 import com.apicatalog.cborld.context.Context;
 import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.context.TypeMapping;
@@ -20,6 +21,7 @@ import com.apicatalog.cursor.MapCursor;
 import com.apicatalog.cursor.MapEntryCursor;
 import com.apicatalog.cursor.ValueCursor;
 import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.http.DefaultHttpClient;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.loader.DocumentLoader;
@@ -45,13 +47,17 @@ public class Encoder {
     protected Collection<ValueEncoder> valueEncoders;
     protected boolean compactArrays;
     protected DocumentLoader loader;
+    protected boolean bundledContexts;
+    protected URI base;
     
     protected Encoder(MapCursor document) {
         this.document = document;
     
         // default options
-        this.valueEncoders = DefaultEncoderConfig.VALUE_ENCODERS;
-        this.compactArrays = DefaultEncoderConfig.COMPACT_ARRAYS;
+        this.valueEncoders = DefaulConfig.VALUE_ENCODERS;
+        this.compactArrays = DefaulConfig.COMPACT_ARRAYS;
+        this.bundledContexts = DefaulConfig.STATIC_CONTEXTS;
+        this.base = null;
         this.loader = null;
     }
 
@@ -77,17 +83,62 @@ public class Encoder {
         return this;
     }
 
+    /**
+     * Override any existing configuration by the given configuration set.
+     * 
+     * @param config a configuration set 
+     * @return {@link Encoder} instance
+     */
     public Encoder config(EncoderConfigration config) {
         compactArrays = config.isCompactArrays();
         valueEncoders = config.getValueEncoders();
         return this;
     }
     
+    /**
+     * Set {@link DocumentLoader} used to fetch referenced JSON-LD contexts. 
+     * If not set then default document loader provided by {@link JsonLdOptions} is used. 
+     * 
+     * @param loader a document loader to set
+     * @return {@link Encoder} instance
+     */
     public Encoder loader(DocumentLoader loader) {
         this.loader = loader;
         return this;
     }
+    
 
+    /**
+     * Use well-known contexts that are bundled with the library instead of fetching it online.
+     * <code>true</code> by default. Disabling might cause slower processing.
+     *
+     * @param enable
+     * @return {@link Encoder} instance
+     */
+    public Encoder useBundledContexts(boolean enable) {
+        this.bundledContexts = enable;
+        return this;
+    }
+    
+    /**
+     * If set, then is used as the input document's base IRI.
+     *
+     * @param base
+     * @return {@link Encoder} instance
+     */
+    public Encoder base(URI base) {
+       this.base = base;
+       return this;
+    }
+
+    /**
+     * Encode JSON-LD document as CBOR-LD document.
+     * 
+     * @return a byte array representing the encoded CBOR-LD document.
+     * 
+     * @throws EncoderError
+     * @throws ContextError
+     */
     public byte[] encode() throws EncoderError, ContextError {
     
         if (loader == null) {
@@ -95,7 +146,9 @@ public class Encoder {
             ((HttpLoader)loader).setFallbackContentType(MediaType.JSON);
         }
         
-        loader = new StaticContextLoader(loader);
+        if (bundledContexts) {
+            loader = new StaticContextLoader(loader);
+        }
         
         try {
     
@@ -116,7 +169,7 @@ public class Encoder {
     }
 
     /**
-     * Compresses the given JSON-LD document into CBOR-LD byte array.
+     * Compress the given JSON-LD document into CBOR-LD byte array.
      *
      * @see <a href=
      *      "https://digitalbazaar.github.io/cbor-ld-spec/#compressed-cbor-ld-buffer-algorithm">Compressed
@@ -136,17 +189,17 @@ public class Encoder {
         // 1.
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
     
-        try {
-            // 2.CBOR Tag - 0xD9, CBOR-LD - 0x05, Compressed - CBOR-LD compression algorithm
-            // version 1 - 0x01
-            baos.write(CborLd.CBOR_LD_BYTE_PREFIX);
-            baos.write(CborLd.COMPRESSED);
-                    
-            final Context context = Context.from(document, loader);
+        try {                    
+            final Context context = Context.from(document, base, loader);
       
             index = CodeTermMap.from(context.getContextKeySets(), loader);
             
             final CborBuilder builder = (CborBuilder) encode(document, new CborBuilder().addMap(), context.getTypeMapping()).end();
+            
+            // 2.CBOR Tag - 0xD9, CBOR-LD - 0x05, Compressed - CBOR-LD compression algorithm
+            // version 1 - 0x01
+            baos.write(CborLd.CBOR_LD_BYTE_PREFIX);
+            baos.write(CborLd.COMPRESSED);
             
             new CborEncoder(baos).encode(builder.build());
 
