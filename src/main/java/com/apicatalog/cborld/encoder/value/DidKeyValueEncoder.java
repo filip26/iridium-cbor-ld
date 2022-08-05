@@ -4,10 +4,10 @@ import java.net.URI;
 import java.util.Collection;
 
 import com.apicatalog.cborld.dictionary.Dictionary;
+import com.apicatalog.cborld.did.Did;
+import com.apicatalog.cborld.did.DidUrl;
+import com.apicatalog.cborld.did.key.DidKey;
 import com.apicatalog.cursor.ValueCursor;
-import com.apicatalog.did.Did;
-import com.apicatalog.did.DidUrl;
-import com.apicatalog.did.key.DidKey;
 import com.apicatalog.jsonld.StringUtils;
 
 import co.nstant.in.cbor.model.Array;

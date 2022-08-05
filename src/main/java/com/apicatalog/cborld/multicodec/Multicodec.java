@@ -1,4 +1,4 @@
-package com.apicatalog.multicodec;
+package com.apicatalog.cborld.multicodec;
 
 import java.math.BigInteger;
 import java.util.Arrays;

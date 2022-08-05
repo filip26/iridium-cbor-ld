@@ -8,7 +8,7 @@ import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.context.ContextError.Code;
 import com.apicatalog.cborld.dictionary.Dictionary;
 import com.apicatalog.cborld.dictionary.KeywordDictionary;
-import com.apicatalog.hex.Hex;
+import com.apicatalog.cborld.hex.Hex;
 
 import co.nstant.in.cbor.model.Array;
 import co.nstant.in.cbor.model.DataItem;

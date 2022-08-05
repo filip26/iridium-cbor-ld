@@ -7,12 +7,12 @@ import com.apicatalog.cborld.decoder.DecoderError;
 import com.apicatalog.cborld.decoder.DecoderError.Code;
 import com.apicatalog.cborld.dictionary.Dictionary;
 import com.apicatalog.cborld.encoder.value.DidKeyValueEncoder;
-import com.apicatalog.hex.Hex;
-import com.apicatalog.multibase.Multibase;
-import com.apicatalog.multibase.Multibase.Algorithm;
-import com.apicatalog.multicodec.Multicodec;
-import com.apicatalog.multicodec.Multicodec.Codec;
-import com.apicatalog.multicodec.Multicodec.Type;
+import com.apicatalog.cborld.hex.Hex;
+import com.apicatalog.cborld.multibase.Multibase;
+import com.apicatalog.cborld.multibase.Multibase.Algorithm;
+import com.apicatalog.cborld.multicodec.Multicodec;
+import com.apicatalog.cborld.multicodec.Multicodec.Codec;
+import com.apicatalog.cborld.multicodec.Multicodec.Type;
 
 import co.nstant.in.cbor.model.Array;
 import co.nstant.in.cbor.model.ByteString;

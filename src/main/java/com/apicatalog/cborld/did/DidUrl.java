@@ -1,4 +1,4 @@
-package com.apicatalog.did;
+package com.apicatalog.cborld.did;
 
 import java.net.MalformedURLException;
 import java.net.URI;

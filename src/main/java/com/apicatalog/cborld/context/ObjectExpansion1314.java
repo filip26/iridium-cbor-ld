@@ -48,7 +48,7 @@ final class ObjectExpansion1314 {
     private final URI baseUrl;
     
     private final Consumer<Collection<String>> appliedContexts;
-    private final TypeMapper typeMapper;
+    private final TypeKeyNameMapper typeMapper;
 
     private JsonMapBuilder result;
 
@@ -57,7 +57,7 @@ final class ObjectExpansion1314 {
 
     private ObjectExpansion1314(final ActiveContext activeContext, final MapCursor element,
             final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts,
-            TypeMapper typeMapper) {
+            TypeKeyNameMapper typeMapper) {
         this.activeContext = activeContext;
         this.element = element;
         this.activeProperty = activeProperty;
@@ -71,7 +71,7 @@ final class ObjectExpansion1314 {
     }
 
     public static final ObjectExpansion1314 with(final ActiveContext activeContext, final MapCursor element,
-            final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts, TypeMapper typeMapper) {
+            final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts, TypeKeyNameMapper typeMapper) {
         return new ObjectExpansion1314(activeContext, element, activeProperty, baseUrl, appliedContexts, typeMapper);
     }
 

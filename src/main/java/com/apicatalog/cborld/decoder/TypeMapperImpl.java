@@ -8,9 +8,9 @@ import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
 
-import com.apicatalog.cborld.context.TypeMapper;
+import com.apicatalog.cborld.context.TypeKeyNameMapper;
 
-class TypeMapperImpl implements TypeMapper {
+class TypeMapperImpl implements TypeKeyNameMapper {
 
     final Collection<String> paths;
     

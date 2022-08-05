@@ -40,10 +40,10 @@ final class Expansion {
     private boolean fromMap;
     
     private Consumer<Collection<String>> appliedContexts;
-    private TypeMapper typeMapper;
+    private TypeKeyNameMapper typeMapper;
 
     private Expansion(final ActiveContext activeContext, final ValueCursor element, final String activeProperty,
-            final URI baseUrl, Consumer<Collection<String>> appliedContexts, TypeMapper typeMapper
+            final URI baseUrl, Consumer<Collection<String>> appliedContexts, TypeKeyNameMapper typeMapper
             ) {
         this.activeContext = activeContext;
         this.element = element;
@@ -58,7 +58,7 @@ final class Expansion {
         this.fromMap = false;
     }
 
-    public static final Expansion with(final ActiveContext activeContext, final ValueCursor element, final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts, TypeMapper typeMapper) {
+    public static final Expansion with(final ActiveContext activeContext, final ValueCursor element, final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts, TypeKeyNameMapper typeMapper) {
         return new Expansion(activeContext, element, activeProperty, baseUrl, appliedContexts, typeMapper);
     }
 

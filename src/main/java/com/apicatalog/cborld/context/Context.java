@@ -43,7 +43,7 @@ public class Context {
 
     }
 
-    public static Context from(MapCursor document, DocumentLoader loader, Consumer<Collection<String>> appliedContexts, TypeMapper typeMapper) throws JsonLdError {
+    public static Context from(MapCursor document, DocumentLoader loader, Consumer<Collection<String>> appliedContexts, TypeKeyNameMapper typeMapper) throws JsonLdError {
 
         final JsonLdOptions options = new JsonLdOptions();
         options.setOrdered(false);

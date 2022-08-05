@@ -3,8 +3,8 @@ package com.apicatalog.cborld.encoder.value;
 import java.util.Collection;
 
 import com.apicatalog.cborld.dictionary.Dictionary;
+import com.apicatalog.cborld.multibase.Multibase;
 import com.apicatalog.cursor.ValueCursor;
-import com.apicatalog.multibase.Multibase;
 
 import co.nstant.in.cbor.model.ByteString;
 import co.nstant.in.cbor.model.DataItem;

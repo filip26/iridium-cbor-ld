@@ -1,4 +1,4 @@
-package com.apicatalog.multibase;
+package com.apicatalog.cborld.multibase;
 
 public class Multibase {
 

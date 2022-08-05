@@ -1,6 +1,6 @@
 package com.apicatalog.cborld.context;
 
-public interface TypeMapper {
+public interface TypeKeyNameMapper {
 
     void beginMap(String key);
     void typeKeyName(String type);

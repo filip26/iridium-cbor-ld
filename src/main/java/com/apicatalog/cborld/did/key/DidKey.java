@@ -1,12 +1,12 @@
-package com.apicatalog.did.key;
+package com.apicatalog.cborld.did.key;
 
 import java.net.URI;
 
-import com.apicatalog.did.Did;
-import com.apicatalog.multibase.Multibase;
-import com.apicatalog.multicodec.Multicodec;
-import com.apicatalog.multicodec.Multicodec.Codec;
-import com.apicatalog.multicodec.Multicodec.Type;
+import com.apicatalog.cborld.did.Did;
+import com.apicatalog.cborld.multibase.Multibase;
+import com.apicatalog.cborld.multicodec.Multicodec;
+import com.apicatalog.cborld.multicodec.Multicodec.Codec;
+import com.apicatalog.cborld.multicodec.Multicodec.Type;
 
 /**
  * Immutable DID Key

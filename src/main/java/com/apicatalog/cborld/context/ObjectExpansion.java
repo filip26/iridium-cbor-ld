@@ -45,14 +45,14 @@ final class ObjectExpansion {
     private URI baseUrl;
     
     private Consumer<Collection<String>> appliedContexts;
-    private TypeMapper typeMapper;
+    private TypeKeyNameMapper typeMapper;
 
     // optional
     private boolean ordered;
     private boolean fromMap;
 
     private ObjectExpansion(final ActiveContext activeContext, final JsonValue propertyContext, final MapCursor element,
-            final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts,TypeMapper typeMapper) {
+            final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts,TypeKeyNameMapper typeMapper) {
         this.activeContext = activeContext;
         this.propertyContext = propertyContext;
         this.element = element;
@@ -68,7 +68,7 @@ final class ObjectExpansion {
     }
 
     public static final ObjectExpansion with(final ActiveContext activeContext, final JsonValue propertyContext,
-            final MapCursor element, final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts,  TypeMapper typeMapper) {
+            final MapCursor element, final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts,  TypeKeyNameMapper typeMapper) {
         return new ObjectExpansion(activeContext, propertyContext, element, activeProperty, baseUrl, appliedContexts, typeMapper);
     }
 

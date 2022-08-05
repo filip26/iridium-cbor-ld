@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.List;
 
-import com.apicatalog.hex.Hex;
+import com.apicatalog.cborld.hex.Hex;
 
 import co.nstant.in.cbor.model.Array;
 import co.nstant.in.cbor.model.ByteString;

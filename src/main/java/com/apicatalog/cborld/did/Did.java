@@ -1,4 +1,4 @@
-package com.apicatalog.did;
+package com.apicatalog.cborld.did;
 
 import java.io.Serializable;
 import java.net.URI;
