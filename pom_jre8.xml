@@ -11,7 +11,7 @@
   </parent>
   <artifactId>iridium-cbor-ld</artifactId>
   <packaging>jar</packaging>
-  <name>Iridium CBOR-LD 1.0</name>
+  <name>Iridium CBOR-LD</name>
   <url>https://github.com/filip26/iridium-cbor-ld</url>
   <scm>
     <connection>scm:git:git://github.com/filip26/iridium-cbor-ld.git</connection>
