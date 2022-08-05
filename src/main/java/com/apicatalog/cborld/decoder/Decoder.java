@@ -366,17 +366,16 @@ public class Decoder {
     }
     
     final DataItem decodeValue(final DataItem value, String term) {
-        
+
         //FIXME
         Collection<String> TYPE = Arrays.asList(Keywords.TYPE); 
         
         for (final ValueDecoder decoder : valueDecoders) {
             try {
                 final JsonValue decoded = decoder.decode(index, value, term, 
-                        
-                        Keywords.TYPE.equals(typeMap.mapping.get(term))
+                        typeMap.isTypeKey(term)
                         ? TYPE
-                        : Collections.EMPTY_SET
+                        : Collections.emptySet()
                         );
                 
                 if (decoded == null) {

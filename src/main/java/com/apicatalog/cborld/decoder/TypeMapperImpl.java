@@ -1,45 +1,55 @@
 package com.apicatalog.cborld.decoder;
 
-import java.util.HashMap;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Deque;
 import java.util.HashSet;
-import java.util.Map;
+import java.util.List;
 
 import com.apicatalog.cborld.context.TypeMapper;
-import com.apicatalog.jsonld.lang.Keywords;
-
-import jakarta.json.JsonValue;
 
 class TypeMapperImpl implements TypeMapper {
 
-    final Map<String, Object> mapping;
+    final Collection<String> paths;
     
-    Map<String, Object> top;
+    final Deque<String> path;
     
     public TypeMapperImpl() {
-        this.mapping = new HashMap<>();
-        this.top = this.mapping;
+        this.paths = new HashSet<>();
+        this.path = new ArrayDeque<>(10);
     }
     
     @Override
     public void beginMap(String key) {
-        System.out.println("begin " + key);
-        
+        path.push(key);
     }
 
     @Override
     public void typeKeyName(String type) {
-        System.out.println(" @type = " + type);
-        top.put(type, Keywords.TYPE);
+        
+        final String index;
+        
+        if (path.isEmpty()) {
+            index = type;
+            
+        } else {
+            List<String> reversed = new ArrayList<>(path);
+            Collections.reverse(reversed);  //TODO
+            index =  String.join(".", reversed) + "." + type;
+        }
+        
+        paths.add(index);
     }
 
     @Override
     public void end() {
-        System.out.println("end");
-        
+        path.pop();
     }
     
-    public Map<String, Object> getMapping(String term) {
-        return mapping;
+    public boolean isTypeKey(String path) {
+        return paths.contains(path);
     }
     
 }

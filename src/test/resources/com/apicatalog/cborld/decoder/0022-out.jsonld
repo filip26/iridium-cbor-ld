@@ -1,4 +1,6 @@
 {
-	"@context": "https://raw.githubusercontent.com/filip26/iridium-cbor-ld/main/src/test/resources/com/apicatalog/cborld/encoder/0022-context.jsonld",
-	"a": "Note"
+	"@context": "https://www.w3.org/ns/activitystreams",
+	"type": "Note",
+	"summary": "CBOR-LD",
+	"content": "CBOR-LD is awesome!"
 }
