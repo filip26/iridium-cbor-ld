@@ -1,20 +1,21 @@
 {
 	"@context": {
 		"@vocab": "https://www.w3.org/ns/activitystreams#",
-        "y": {
-            "@id": "idy",
-            "@context": {
-                "b": "@id",
-                "c": "longitude"
-            }
-        },
-		
-        "a": "@type",
-        
+		"y": {
+			"@id": "idy",
+			"@context": {
+				"b": "@id",
+				"c": "longitude"
+			}
+		},
+		"a": "@type",
 		"x": {
 			"@id": "idx",
 			"@context": {
-				"a": "@id",
+				"a": {
+					"@id": "c",
+					"@type": "@id"
+				},
 				"b": "@type",
 				"d": "latitude"
 			}
