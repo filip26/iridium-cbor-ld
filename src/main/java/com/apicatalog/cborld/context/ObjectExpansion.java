@@ -43,21 +43,24 @@ final class ObjectExpansion {
     private MapCursor element;
     private String activeProperty;
     private URI baseUrl;
-    private Consumer<Collection<String>> appliedContexts;
     
+    private Consumer<Collection<String>> appliedContexts;
+    private TypeMapper typeMapper;
 
     // optional
     private boolean ordered;
     private boolean fromMap;
 
     private ObjectExpansion(final ActiveContext activeContext, final JsonValue propertyContext, final MapCursor element,
-            final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts) {
+            final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts,TypeMapper typeMapper) {
         this.activeContext = activeContext;
         this.propertyContext = propertyContext;
         this.element = element;
         this.activeProperty = activeProperty;
         this.baseUrl = baseUrl;
+        
         this.appliedContexts = appliedContexts;
+        this.typeMapper = typeMapper;
 
         // default values
         this.ordered = false;
@@ -65,8 +68,8 @@ final class ObjectExpansion {
     }
 
     public static final ObjectExpansion with(final ActiveContext activeContext, final JsonValue propertyContext,
-            final MapCursor element, final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts) {
-        return new ObjectExpansion(activeContext, propertyContext, element, activeProperty, baseUrl, appliedContexts);
+            final MapCursor element, final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts,  TypeMapper typeMapper) {
+        return new ObjectExpansion(activeContext, propertyContext, element, activeProperty, baseUrl, appliedContexts, typeMapper);
     }
 
     public ObjectExpansion ordered(boolean value) {
@@ -81,6 +84,10 @@ final class ObjectExpansion {
 
     public JsonValue expand() throws JsonLdError {
 
+        if (activeProperty != null && typeMapper != null)  {
+            typeMapper.beginMap(activeProperty);
+        }
+        
         initPreviousContext();
 
         initPropertyContext();
@@ -95,10 +102,14 @@ final class ObjectExpansion {
         final JsonMapBuilder result = JsonMapBuilder.create();
 
         ObjectExpansion1314
-                    .with(activeContext, element, activeProperty, baseUrl, appliedContexts)
+                    .with(activeContext, element, activeProperty, baseUrl, appliedContexts, typeMapper)
                     .result(result)
                     .ordered(ordered)
                     .expand();
+
+        if (activeProperty != null && typeMapper != null)  {
+            typeMapper.end();
+        }
 
         return result.build();
     }
@@ -154,14 +165,15 @@ final class ObjectExpansion {
     }
 
     private void initLocalContext() throws JsonLdError {
+        System.out.println(" ################## context " + element);
         // 9.
         if (element.contains(Keywords.CONTEXT)) {
             
             final JsonValue jsonContext = JakartaValueCursor.toJson(element.entry(Keywords.CONTEXT));
             element.parent();
-            
+            System.out.println(" ################## context " + jsonContext);
             for (final JsonValue context : JsonUtils.toJsonArray(jsonContext)) {
-                
+                System.out.println(" ################## context " + context);
                 final ActiveContext ac = new ActiveContext(activeContext.getBaseUri(), activeContext.getBaseUrl(), activeContext.getOptions())
                                         .newContext()
                                         .create(context, baseUrl);
@@ -181,23 +193,27 @@ final class ObjectExpansion {
         final Collection<String> keys = element.keys();
         
         final MapEntryCursor entry = element.entry();
-        // 11.
+
         for (final String key : Utils.index(keys, true)) {
 
             final String expandedKey = UriExpansion
                                             .with(activeContext, appliedContexts)
                                             .vocab(true)
                                             .expand(key);
-
+            System.out.println(" ################## type " + key + ", " + expandedKey);        // 11.
             if (!Keywords.TYPE.equals(expandedKey)) {
                 continue;
 
             } else if (typeKey == null) {
                 typeKey = key;
             }
- 
-            final JsonValue entryValue = JakartaValueCursor.toJson(entry.mapKey(key));
+
+            if (typeMapper != null) {
+                typeMapper.typeKeyName(key);
+            }
             
+            final JsonValue entryValue = JakartaValueCursor.toJson(entry.mapKey(key));
+            System.out.println(">>>> " + expandedKey + ", " + key  + ", " + entryValue);            
             // 11.2
             final List<String> terms = JsonUtils.toStream(entryValue)
                                             .filter(JsonUtils::isString)

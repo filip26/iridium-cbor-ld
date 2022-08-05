@@ -26,4 +26,8 @@ final class CborMapEntryCursor extends CborValueCursor implements MapEntryCursor
         }
         return cursor.mapKey(key);
     }
+
+    public DataItem getValue() {
+        return value.get();
+    }
 }

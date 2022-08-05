@@ -146,6 +146,7 @@ public final class UriExpansion {
     }
 
     private void initLocalContext(final String value) throws JsonLdError {
+
         if (localContext != null && localContext.containsKey(value)) {
 
             JsonValue entryValue = localContext.get(value);

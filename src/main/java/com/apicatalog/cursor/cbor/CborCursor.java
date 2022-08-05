@@ -2,6 +2,7 @@ package com.apicatalog.cursor.cbor;
 
 import java.math.BigInteger;
 import java.util.ArrayDeque;
+import java.util.Collection;
 import java.util.Deque;
 import java.util.function.Function;
 
@@ -19,6 +20,11 @@ import co.nstant.in.cbor.model.UnsignedInteger;
 
 public class CborCursor implements Cursor<DataItem> {
 
+    @FunctionalInterface
+    public interface ValueDecoder {
+        DataItem decode(DataItem value, String term);
+    }
+    
     final Deque<DataItem> path;
     final Deque<Object> indices;
     
@@ -29,9 +35,9 @@ public class CborCursor implements Cursor<DataItem> {
     final ArrayCursor arrayCursor;
     
     final Function<String, DataItem> keyToCode;
-    final Function<DataItem, DataItem> decodeValue;
+    final ValueDecoder decodeValue;
 
-    protected CborCursor(DataItem root, Function<DataItem, String> dataToKey, Function<String, DataItem> keyToData, Function<DataItem, DataItem> decodeValue) {
+    protected CborCursor(DataItem root, Function<DataItem, String> dataToKey, Function<String, DataItem> keyToData, ValueDecoder decodeValue) {
         
         this.path = new ArrayDeque<>();
         this.path.add(root);
@@ -48,7 +54,7 @@ public class CborCursor implements Cursor<DataItem> {
         this.mapCursor = new CborMapCursor(this, dataToKey, keyToData);
     }
     
-    public static MapCursor from(DataItem data, Function<DataItem, String> dataToKey, Function<String, DataItem> keyToData, Function<DataItem, DataItem> decodeValue) {
+    public static MapCursor from(DataItem data, Function<DataItem, String> dataToKey, Function<String, DataItem> keyToData, ValueDecoder decodeValue) {
         return new CborCursor(data, dataToKey, keyToData, decodeValue).mapCursor();
     }
 
@@ -89,10 +95,28 @@ public class CborCursor implements Cursor<DataItem> {
             }   
         }
         
-        if (!arrayCode && MajorType.ARRAY.equals(value.getMajorType())) {
-            value = decodeValue.apply(value);
+        if ((!arrayCode && MajorType.ARRAY.equals(value.getMajorType()))
+                ) {
+
+            value = decodeValue.decode(value, mapKey);
+            
+        } else if (MajorType.ARRAY.equals(value.getMajorType())) {
+            
+            Collection<DataItem> items = ((Array)value).getDataItems();
+            
+            Array newValues = new Array(items.size());
+            
+            for (DataItem item : items) {
+                newValues.add(decodeValue.decode(item, mapKey));
+            }
+            
+            value = newValues;
+            
+        } else {
+            value = decodeValue.decode(value, mapKey);
         }
 
+System.out.println("entry " + mapKey + ", " + value);
         path.push(value);
         
         return mapEntryCursor;

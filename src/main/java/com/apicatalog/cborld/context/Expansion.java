@@ -40,23 +40,26 @@ final class Expansion {
     private boolean fromMap;
     
     private Consumer<Collection<String>> appliedContexts;
+    private TypeMapper typeMapper;
 
     private Expansion(final ActiveContext activeContext, final ValueCursor element, final String activeProperty,
-            final URI baseUrl, Consumer<Collection<String>> appliedContexts
+            final URI baseUrl, Consumer<Collection<String>> appliedContexts, TypeMapper typeMapper
             ) {
         this.activeContext = activeContext;
         this.element = element;
         this.activeProperty = activeProperty;
         this.baseUrl = baseUrl;
+        
         this.appliedContexts = appliedContexts;
+        this.typeMapper = typeMapper;
 
         // default values
         this.ordered = false;
         this.fromMap = false;
     }
 
-    public static final Expansion with(final ActiveContext activeContext, final ValueCursor element, final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts) {
-        return new Expansion(activeContext, element, activeProperty, baseUrl, appliedContexts);
+    public static final Expansion with(final ActiveContext activeContext, final ValueCursor element, final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts, TypeMapper typeMapper) {
+        return new Expansion(activeContext, element, activeProperty, baseUrl, appliedContexts, typeMapper);
     }
 
     public Expansion ordered(boolean value) {
@@ -80,7 +83,7 @@ final class Expansion {
         if (element.isArray()) {
 
             return ArrayExpansion
-                        .with(activeContext, element.asArray(), activeProperty, baseUrl, appliedContexts)
+                        .with(activeContext, element.asArray(), activeProperty, baseUrl, appliedContexts, typeMapper)
                         .ordered(ordered)
                         .fromMap(fromMap)
                         .expand();
@@ -109,7 +112,7 @@ final class Expansion {
 
         // 6. Otherwise element is a map
         return ObjectExpansion
-                    .with(activeContext, propertyContext, element.asMap(), activeProperty, baseUrl, appliedContexts)
+                    .with(activeContext, propertyContext, element.asMap(), activeProperty, baseUrl, appliedContexts, typeMapper)
                     .ordered(ordered)
                     .fromMap(fromMap)
                     .expand();

@@ -37,19 +37,23 @@ final class ArrayExpansion {
     private ArrayCursor element;
     private String activeProperty;
     private URI baseUrl;
+    
     private final Consumer<Collection<String>> appliedContexts;
+    private final TypeMapper typeMapper;
 
     // optional
     private boolean ordered;
     private boolean fromMap;
 
     private ArrayExpansion(final ActiveContext activeContext, final ArrayCursor element, final String activeProperty,
-            final URI baseUrl, Consumer<Collection<String>> appliedContexts) {
+            final URI baseUrl, Consumer<Collection<String>> appliedContexts, TypeMapper typeMapper) {
         this.activeContext = activeContext;
         this.element = element;
         this.activeProperty = activeProperty;
         this.baseUrl = baseUrl;
+        
         this.appliedContexts = appliedContexts;
+        this.typeMapper = typeMapper;
 
         // default values
         this.ordered = false;
@@ -57,8 +61,8 @@ final class ArrayExpansion {
     }
 
     public static final ArrayExpansion with(final ActiveContext activeContext, final ArrayCursor element,
-            final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts) {
-        return new ArrayExpansion(activeContext, element, activeProperty, baseUrl, appliedContexts);
+            final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts, TypeMapper typeMapper) {
+        return new ArrayExpansion(activeContext, element, activeProperty, baseUrl, appliedContexts, typeMapper);
     }
 
     public ArrayExpansion ordered(boolean value) {
@@ -82,7 +86,7 @@ final class ArrayExpansion {
             // 5.2.1
             JsonValue expanded =
                             Expansion
-                                .with(activeContext, item, activeProperty, baseUrl, appliedContexts)
+                                .with(activeContext, item, activeProperty, baseUrl, appliedContexts, typeMapper)
                                 .ordered(ordered)
                                 .fromMap(fromMap)
                                 .compute();

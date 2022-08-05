@@ -48,6 +48,7 @@ final class ObjectExpansion1314 {
     private final URI baseUrl;
     
     private final Consumer<Collection<String>> appliedContexts;
+    private final TypeMapper typeMapper;
 
     private JsonMapBuilder result;
 
@@ -55,20 +56,23 @@ final class ObjectExpansion1314 {
     private boolean ordered;
 
     private ObjectExpansion1314(final ActiveContext activeContext, final MapCursor element,
-            final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts) {
+            final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts,
+            TypeMapper typeMapper) {
         this.activeContext = activeContext;
         this.element = element;
         this.activeProperty = activeProperty;
         this.baseUrl = baseUrl;
+        
         this.appliedContexts = appliedContexts;
+        this.typeMapper = typeMapper;
 
         // default values
         this.ordered = false;
     }
 
     public static final ObjectExpansion1314 with(final ActiveContext activeContext, final MapCursor element,
-            final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts) {
-        return new ObjectExpansion1314(activeContext, element, activeProperty, baseUrl, appliedContexts);
+            final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts, TypeMapper typeMapper) {
+        return new ObjectExpansion1314(activeContext, element, activeProperty, baseUrl, appliedContexts, typeMapper);
     }
 
     public ObjectExpansion1314 ordered(boolean value) {
@@ -97,7 +101,7 @@ final class ObjectExpansion1314 {
             if (Keywords.CONTEXT.equals(key)) {
                 continue;
             }
-
+            
             // 13.2.
             String expandedProperty = UriExpansion
                                         .with(activeContext, appliedContexts)
@@ -114,7 +118,7 @@ final class ObjectExpansion1314 {
 
             // 13.4. If expanded property is a keyword:
             if (Keywords.contains(expandedProperty)) {
-
+                System.out.println(">>>> ---------------------- " + expandedProperty + ", " + key);
                 JsonValue expandedType = null;
                 
                 if (value.isString()) {
@@ -152,7 +156,7 @@ final class ObjectExpansion1314 {
                     }
 
                     expandedType = Expansion
-                                        .with(activeContext, value, null, baseUrl, appliedContexts)
+                                        .with(activeContext, value, null, baseUrl, appliedContexts, typeMapper)
                                         .ordered(ordered)
                                         .compute();
                 }
@@ -213,7 +217,7 @@ final class ObjectExpansion1314 {
             // 13.9.
             } else {
                 expandedType = Expansion
-                                    .with(activeContext, value, key, baseUrl, appliedContexts)
+                                    .with(activeContext, value, key, baseUrl, appliedContexts, typeMapper)
                                     .ordered(ordered)
                                     .compute();
             }

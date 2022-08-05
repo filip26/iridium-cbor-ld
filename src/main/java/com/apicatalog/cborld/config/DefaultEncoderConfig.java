@@ -3,8 +3,10 @@ package com.apicatalog.cborld.config;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import com.apicatalog.cborld.decoder.value.ContextValueDecoder;
 import com.apicatalog.cborld.decoder.value.DidKeyValueDecoder;
 import com.apicatalog.cborld.decoder.value.MultibaseValueDecoder;
+import com.apicatalog.cborld.decoder.value.TypeValueDecoder;
 import com.apicatalog.cborld.decoder.value.UuidValueDecoder;
 import com.apicatalog.cborld.decoder.value.ValueDecoder;
 import com.apicatalog.cborld.decoder.value.VocabValueDecoder;
@@ -24,15 +26,17 @@ import com.apicatalog.cborld.encoder.value.XsdDateValueEncoder;
 
 public final class DefaultEncoderConfig implements EncoderConfigration {
 
+    public static final ContextDictionary CONTEXT_DICTIONARY = new ContextDictionary();
+    
     public static final Collection<ValueEncoder> VALUE_ENCODERS = new ArrayList<>();
 
     static {
         // term driven
-        VALUE_ENCODERS.add(new ContextValueEncoder(new ContextDictionary()));
+        VALUE_ENCODERS.add(new ContextValueEncoder(CONTEXT_DICTIONARY));
 //        VALUE_ENCODERS.add(new IdValueEncoder());
-        VALUE_ENCODERS.add(new TypeValueEncoder());
         
         // type driven
+        VALUE_ENCODERS.add(new TypeValueEncoder());
         VALUE_ENCODERS.add(new XsdDateTimeValueEncoder());
         VALUE_ENCODERS.add(new XsdDateValueEncoder());
         VALUE_ENCODERS.add(new MultibaseValueEncoder());
@@ -46,8 +50,11 @@ public final class DefaultEncoderConfig implements EncoderConfigration {
     public static final Collection<ValueDecoder> VALUE_DECODERS = new ArrayList<>();
     
     static {
+        // term driven
+        VALUE_DECODERS.add(new ContextValueDecoder(CONTEXT_DICTIONARY));
         
         // type driven
+        VALUE_DECODERS.add(new TypeValueDecoder());
         VALUE_DECODERS.add(new XsdDateTimeValueDecoder());
         VALUE_DECODERS.add(new XsdDateValueDecoder());
         VALUE_DECODERS.add(new MultibaseValueDecoder());

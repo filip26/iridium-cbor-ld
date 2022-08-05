@@ -2,7 +2,9 @@ package com.apicatalog.cborld.decoder;
 
 import java.io.ByteArrayInputStream;
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import com.apicatalog.cborld.CborLd;
@@ -22,6 +24,7 @@ import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.http.DefaultHttpClient;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.json.JsonUtils;
+import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.HttpLoader;
 
@@ -48,6 +51,8 @@ public class Decoder {
         
     protected CodeTermMap index;
 
+    protected TypeMapperImpl typeMap;
+    
     // options
     protected Collection<ValueDecoder> valueDecoders;
     protected boolean compactArrays;
@@ -162,16 +167,18 @@ public class Decoder {
   
         try {
 
+            typeMap = new TypeMapperImpl();
+            
             index = CodeTermMap.create();
 
             final MapCursor cursor = CborCursor.from(
                     data, 
                     this::decodeKey, 
                     this::encodeKey,
-                    this::decodeDataItem
+                    this::decodeValue
                     );
     
-            final Context context = Context.from(cursor, loader, index::add);
+            final Context context = Context.from(cursor, loader, index::add, typeMap);
             
             System.out.println(context.getTypeMapping().getMapping());
             System.out.println(data);
@@ -361,18 +368,27 @@ public class Decoder {
         return null;
     }
     
-    final DataItem decodeDataItem(final DataItem value) {
+    final DataItem decodeValue(final DataItem value, String term) {
         
+        //FIXME
+        Collection<String> TYPE = Arrays.asList(Keywords.TYPE); 
+        
+        System.out.println("DECODE " + term + ", " + value);
         for (final ValueDecoder decoder : valueDecoders) {
             try {
-                final JsonValue decoded = decoder.decode(index, value, null, null);
+                final JsonValue decoded = decoder.decode(index, value, term, 
+                        
+                        Keywords.TYPE.equals(typeMap.mapping.get(term))
+                        ? TYPE
+                        : Collections.EMPTY_SET
+                        );
                 
                 if (decoded == null) {
                     continue;
                 }
                 
                 if (JsonUtils.isString(decoded)) {
-                    return new UnicodeString(decoded.toString());
+                    return new UnicodeString(((JsonString)decoded).getString());
                 }
                 
             } catch (DecoderError e) {

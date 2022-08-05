@@ -1,5 +1,6 @@
 package com.apicatalog.cursor.cbor;
 
+import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -11,7 +12,9 @@ import com.apicatalog.cursor.MapCursor;
 import com.apicatalog.cursor.MapEntryCursor;
 
 import co.nstant.in.cbor.model.DataItem;
+import co.nstant.in.cbor.model.MajorType;
 import co.nstant.in.cbor.model.Map;
+import co.nstant.in.cbor.model.UnsignedInteger;
 
 public class CborMapCursor extends CborValueCursor implements MapCursor {
 
@@ -84,6 +87,18 @@ public class CborMapCursor extends CborValueCursor implements MapCursor {
             throw new ClassCastException();
         }
 
-        return ((Map)value.get()).getKeys().contains(keyToData.apply(key));
+        DataItem item = keyToData.apply(key);
+
+        if (((Map)value.get()).getKeys().contains(item)) {
+            return true;
+        }
+
+        if (MajorType.UNSIGNED_INTEGER.equals(item.getMajorType())) {
+            item = new UnsignedInteger(((UnsignedInteger)item).getValue().add(BigInteger.ONE));
+            return (((Map)value.get()).getKeys().contains(item));            
+        }
+        
+        return false;
+
     }
 }

@@ -34,7 +34,8 @@ public class Context {
                                             activeContext,
                                             document, 
                                             null, null, 
-                                            appliedContextKeys::add
+                                            appliedContextKeys::add,
+                                            null
                                             )
                                         .typeMapping();
 
@@ -42,7 +43,7 @@ public class Context {
 
     }
 
-    public static Context from(MapCursor document, DocumentLoader loader, Consumer<Collection<String>> appliedContexts) throws JsonLdError {
+    public static Context from(MapCursor document, DocumentLoader loader, Consumer<Collection<String>> appliedContexts, TypeMapper typeMapper) throws JsonLdError {
 
         final JsonLdOptions options = new JsonLdOptions();
         options.setOrdered(false);
@@ -56,7 +57,8 @@ public class Context {
                                             activeContext,
                                             document, 
                                             null, null, 
-                                            appliedContexts.andThen(appliedContextKeys::add)
+                                            appliedContexts.andThen(appliedContextKeys::add),
+                                            typeMapper
                                             )
                                         .typeMapping();
 
