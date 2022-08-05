@@ -1,9 +1,9 @@
 {
 	"@context": "https://raw.githubusercontent.com/filip26/iridium-cbor-ld/main/src/test/resources/com/apicatalog/cborld/encoder/0024-context.jsonld",
-	"a": "Note",
+	"a": "A",
 	"b": 100,
 	"x": {
-		"a": 100,
-		"b": "Note"
+		"a": 110,
+		"b": "B"
 	}
 }

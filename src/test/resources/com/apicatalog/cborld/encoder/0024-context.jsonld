@@ -2,12 +2,12 @@
 	"@context": {
 		"@vocab": "https://www.w3.org/ns/activitystreams#",
 		"a": "@type",
-		"b": "#c",
+		"b": "c",
 		"x": {
-			"@id": "id",
+			"@id": "y",
 			"@context": {
-				"@base": "https://www.w3.org/2018/credentials/v1",
-				"a": "#c",
+				"@vocab": "https://www.w3.org/2018/credentials/v1#",
+				"a": "c",
 				"b": "@type"
 			}
 		}
