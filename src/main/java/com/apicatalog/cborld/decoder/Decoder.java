@@ -199,7 +199,7 @@ public class Decoder {
     
         switch (data.getMajorType()) {
         case MAP:
-            return decodeMap((Map) data, def);
+            return decodeMap((Map) data, term != null ? def.getMapping(term) : def);
     
         case ARRAY:
             return decodeArray(((Array) data).getDataItems(), term, def);
