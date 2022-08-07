@@ -1,8 +1,8 @@
 /**
  * Provides APIs to process CBOR-LD.
- * <br/>
+ * <p>
  * Use only {@link com.apicatalog.cborld.CborLd} static methods to interact with the processor.
- *
+ * </p>
  * <pre>
  * e.g.
  * {@code

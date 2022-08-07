@@ -61,7 +61,6 @@ class DbDecoderMapping implements Mapping {
             } catch (DecoderError e) {
                 /*/ ignored */ 
             }
-            
         }
         
         return value;

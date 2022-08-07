@@ -164,11 +164,11 @@ public class Decoder implements DecoderConfig {
      * Decode  CBOR-LD document as JSON-LD document.
      * 
      * @return a decoded CBOR-LD document
-     * 
      *
      * @throws ContextError
+     * @throws DecoderError 
      */
-    public JsonValue decode() throws DecoderError, ContextError {
+    public JsonValue decode() throws ContextError, DecoderError {
 
         if (loader == null) {
             loader = new HttpLoader(DefaultHttpClient.defaultInstance());
@@ -363,7 +363,6 @@ public class Decoder implements DecoderConfig {
         if (string == null) {
             throw new IllegalArgumentException("The string parameter must not be null.");
         }
-        //TODO
         return Json.createValue(string.getString());
     }
 
