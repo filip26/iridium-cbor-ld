@@ -116,7 +116,7 @@ public class Encoder implements EncoderConfig {
      * Use well-known contexts that are bundled with the library instead of fetching it online.
      * <code>true</code> by default. Disabling might cause slower processing.
      *
-     * @param enable
+     * @param enable <code>true</code> to use static bundled contexts
      * @return {@link Encoder} instance
      */
     public Encoder useBundledContexts(boolean enable) {
@@ -127,7 +127,7 @@ public class Encoder implements EncoderConfig {
     /**
      * If set, then is used as the input document's base IRI.
      *
-     * @param base
+     * @param base a document base
      * @return {@link Encoder} instance
      */
     public Encoder base(URI base) {

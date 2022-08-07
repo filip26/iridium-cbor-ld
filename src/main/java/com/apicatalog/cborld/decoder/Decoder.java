@@ -112,7 +112,7 @@ public class Decoder implements DecoderConfig {
      * Use well-known contexts that are bundled with the library instead of fetching it online.
      * <code>true</code> by default. Disabling might cause slower processing.
      *
-     * @param enable
+     * @param enable <code>true</code> to use static bundled contexts
      * @return {@link Decoder} instance
      */
     public Decoder useBundledContexts(boolean enable) {
@@ -123,7 +123,7 @@ public class Decoder implements DecoderConfig {
     /**
      * If set, then is used as the input document's base IRI.
      *
-     * @param base
+     * @param base a document base
      * @return {@link Decoder} instance
      */
     public Decoder base(URI base) {
@@ -165,7 +165,7 @@ public class Decoder implements DecoderConfig {
      * 
      * @return a decoded CBOR-LD document
      * 
-     * @throws DecoderError 
+     * @throws DecoderError  
      * @throws ContextError
      */
     public JsonValue decode() throws DecoderError, ContextError {

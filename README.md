@@ -6,6 +6,45 @@ An implementation of the [CBOR-LD 1.0 Draft](https://digitalbazaar.github.io/cbo
 [![Maven Central](https://img.shields.io/maven-central/v/com.apicatalog/iridium-cbor-ld.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.apicatalog%22%20AND%20a:%22iridium-cbor-ld%22)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
+## Installation
+
+### Maven
+
+```xml
+<!-- Java 17 -->
+<dependency>
+    <groupId>com.apicatalog</groupId>
+    <artifactId>iridium-cbor-ld</artifactId>
+    <version>0.0.1</version>
+</dependency>
+
+```
+
+or
+
+```xml
+<!-- Android (Java 8) -->
+<dependency>
+    <groupId>com.apicatalog</groupId>
+    <artifactId>iridium-cbor-ld-jre8</artifactId>
+    <version>0.0.1</version>
+</dependency>
+```
+
+#### JSON-P Provider
+
+Add JSON-P provider, if it is not on the classpath already.
+
+
+```xml
+<dependency>
+    <groupId>org.glassfish</groupId>
+    <artifactId>jakarta.json</artifactId>
+    <version>2.0.1</version>
+</dependency>
+```
+
+
 ## Usage
 
 ### Encoding

@@ -76,13 +76,6 @@
             <version>${junit.version}</version>
 	        <scope>test</scope>
 	    </dependency>
-
-        <dependency>
-            <groupId>com.apicatalog</groupId>
-            <artifactId>titanium-json-ld-jre8</artifactId>
-            <version>${titanium.version}</version>
-            <scope>test</scope>
-        </dependency>
       
         <dependency>
             <groupId>org.glassfish</groupId>
