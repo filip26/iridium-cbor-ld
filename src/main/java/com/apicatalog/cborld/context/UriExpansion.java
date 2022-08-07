@@ -36,7 +36,7 @@ import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 
-public final class UriExpansion {
+final class UriExpansion {
 
     private static final Logger LOGGER = Logger.getLogger(UriExpansion.class.getName());
 

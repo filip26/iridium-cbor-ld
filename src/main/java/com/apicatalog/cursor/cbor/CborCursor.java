@@ -5,6 +5,7 @@ import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Deque;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import com.apicatalog.cursor.ArrayCursor;
 import com.apicatalog.cursor.ArrayItemCursor;
@@ -22,11 +23,10 @@ public class CborCursor implements Cursor<DataItem> {
 
     @FunctionalInterface
     public interface ValueDecoder {
-        DataItem decode(DataItem value, String term);
+        DataItem decode(DataItem value, String term, Collection<String> path);
     }
-    
-    final Deque<DataItem> path;
-    final Deque<Object> indices;
+
+    final Deque<CborCursorState> stack;
     
     final ArrayItemCursor arrayItemCursor;
     final MapEntryCursor mapEntryCursor;
@@ -39,11 +39,9 @@ public class CborCursor implements Cursor<DataItem> {
 
     protected CborCursor(DataItem root, Function<DataItem, String> dataToKey, Function<String, DataItem> keyToData, ValueDecoder decodeValue) {
         
-        this.path = new ArrayDeque<>();
-        this.path.add(root);
+        this.stack = new ArrayDeque<>();
+        this.stack.add(new CborCursorState(root, null, null));
         
-        this.indices = new ArrayDeque<>();
-
         this.keyToCode = keyToData;
         this.decodeValue = decodeValue;
 
@@ -60,28 +58,26 @@ public class CborCursor implements Cursor<DataItem> {
 
     @Override
     public DataItem sourceValue() {
-        if (path.isEmpty()) {
+        if (stack.isEmpty()) {
             throw new IndexOutOfBoundsException();
         }
-        return path.peek();
+        return stack.peek().data();
     }
 
     @Override
     public boolean prev() {
-        if (path.size() == 1) {
+        if (stack.size() == 1) {
             return false;
         }
-        path.pop();
-        indices.pop();
+        stack.pop();
         return true;        
     }
     
     // horizontal
     @Override
-    public MapEntryCursor entry(String mapKey) {
-        indices.push(mapKey);        
+    public MapEntryCursor entry(final String mapKey) {
         
-        final Map map = (Map)path.peek(); 
+        final Map map = (Map)stack.peek().data(); 
         
         DataItem key = keyToCode.apply(mapKey);
         DataItem value = map.get(key);
@@ -95,10 +91,15 @@ public class CborCursor implements Cursor<DataItem> {
             }   
         }
         
+        final Collection<String> path = stack.stream()
+                .filter(ss -> ss.key() != null)
+                .map(ss -> ss.key())
+                .collect(Collectors.toList());
+
         if ((!arrayCode && MajorType.ARRAY.equals(value.getMajorType()))
                 ) {
 
-            value = decodeValue.decode(value, mapKey);
+            value = decodeValue.decode(value, mapKey, path);
             
         } else if (MajorType.ARRAY.equals(value.getMajorType())) {
             
@@ -107,16 +108,16 @@ public class CborCursor implements Cursor<DataItem> {
             Array newValues = new Array(items.size());
             
             for (DataItem item : items) {
-                newValues.add(decodeValue.decode(item, mapKey));
+                newValues.add(decodeValue.decode(item, mapKey, path));
             }
             
             value = newValues;
             
         } else {
-            value = decodeValue.decode(value, mapKey);
+            value = decodeValue.decode(value, mapKey, path);
         }
 
-        path.push(value);
+        stack.push(new CborCursorState(value, null, mapKey));
         
         return mapEntryCursor;
     }
@@ -124,29 +125,22 @@ public class CborCursor implements Cursor<DataItem> {
     // horizontal
     @Override
     public ArrayItemCursor item(int arrayIndex) {
-        indices.push(arrayIndex);
-        path.push(((Array)path.peek()).getDataItems().get(arrayIndex));
+        stack.push(new CborCursorState(((Array)stack.peek().data()).getDataItems().get(arrayIndex), arrayIndex, null));
         return arrayItemCursor;
     }
 
     // vertical
     @Override
     public MapEntryCursor mapKey(String mapKey) {
-        indices.pop();
-        path.pop();
+        stack.pop();
         return entry(mapKey);
     }
     
     // vertical
     @Override
     public ArrayItemCursor arrayIndex(int arrayIndex) {
-        indices.pop();
-        indices.push(arrayIndex);
-
-        path.pop();
-        path.push(((Array)path.peek()).getDataItems().get(arrayIndex));
-
-        return arrayItemCursor;
+        stack.pop();
+        return item(arrayIndex);
     }
 
     @Override
@@ -170,32 +164,35 @@ public class CborCursor implements Cursor<DataItem> {
     }
     
     @Override
-    public Object index() {
-        return indices.peek();
+    public Integer index() {
+        return stack.peek().index();
     }
-    
+
+    @Override
+    public String key() {
+        return stack.peek().key();
+    }
+
     @Override
     public String toString() {
        return new StringBuilder()
            .append(getClass().getSimpleName())
            .append('[')
            .append("depth=")
-           .append(path.size())
-           .append(", indices=")
-           .append(indices)           
+           .append(stack.size())
            .append(", path=")
-           .append(path)
+           .append(stack)
            .append(']')
            .toString();
     }
 
     @Override
     public boolean isArrayItem() {
-        return !indices.isEmpty() && (indices.peek() instanceof Integer);
+        return !stack.isEmpty() && (stack.peek().index() != null);
     }
     
     @Override    
     public boolean isMapEntry() {
-        return !indices.isEmpty() && (indices.peek() instanceof String);
+        return !stack.isEmpty() && (stack.peek().key() != null);
     }
 }

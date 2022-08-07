@@ -47,7 +47,7 @@ public class CborArrayCursor extends CborValueCursor implements ArrayCursor {
         
         final int size = size();
 
-        return new Iterator<>() {
+        return new Iterator<ArrayItemCursor>() {
             
             final ArrayItemCursor item = cursor.item(0);
                         

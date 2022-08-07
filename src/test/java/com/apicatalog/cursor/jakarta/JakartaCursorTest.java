@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
 import com.apicatalog.cursor.ArrayCursor;
-import com.apicatalog.cursor.ValueCursor;
 
 import jakarta.json.Json;
 import jakarta.json.JsonArray;

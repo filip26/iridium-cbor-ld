@@ -7,7 +7,7 @@ import com.apicatalog.cborld.decoder.DecoderError;
 import com.apicatalog.cborld.decoder.DecoderError.Code;
 import com.apicatalog.cborld.dictionary.Dictionary;
 import com.apicatalog.cborld.encoder.value.DidKeyValueEncoder;
-import com.apicatalog.hex.Hex;
+import com.apicatalog.cborld.hex.Hex;
 import com.apicatalog.multibase.Multibase;
 import com.apicatalog.multibase.Multibase.Algorithm;
 import com.apicatalog.multicodec.Multicodec;

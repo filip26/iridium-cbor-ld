@@ -4,7 +4,7 @@ import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.apicatalog.hex.Hex;
+import com.apicatalog.cborld.hex.Hex;
 
 /**
  * A registry of well-know term values as defined by the specification.

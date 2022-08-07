@@ -90,7 +90,7 @@ public class CborComparison {
         while (keys.hasNext()) {
             final DataItem key = keys.next();
             if (!equals(value1.get(key), value2.get(key))) {
-            return false;
+                return false;
             }
         }
         return true;

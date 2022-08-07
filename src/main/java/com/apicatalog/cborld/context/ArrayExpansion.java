@@ -19,6 +19,7 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.function.Consumer;
 
+import com.apicatalog.cborld.db.TypeKeyNameMapper;
 import com.apicatalog.cursor.ArrayCursor;
 import com.apicatalog.cursor.ValueCursor;
 import com.apicatalog.jsonld.JsonLdError;
@@ -39,14 +40,14 @@ final class ArrayExpansion {
     private URI baseUrl;
     
     private final Consumer<Collection<String>> appliedContexts;
-    private final TypeMapper typeMapper;
+    private final TypeKeyNameMapper typeMapper;
 
     // optional
     private boolean ordered;
     private boolean fromMap;
 
     private ArrayExpansion(final ActiveContext activeContext, final ArrayCursor element, final String activeProperty,
-            final URI baseUrl, Consumer<Collection<String>> appliedContexts, TypeMapper typeMapper) {
+            final URI baseUrl, Consumer<Collection<String>> appliedContexts, TypeKeyNameMapper typeMapper) {
         this.activeContext = activeContext;
         this.element = element;
         this.activeProperty = activeProperty;
@@ -61,7 +62,7 @@ final class ArrayExpansion {
     }
 
     public static final ArrayExpansion with(final ActiveContext activeContext, final ArrayCursor element,
-            final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts, TypeMapper typeMapper) {
+            final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts, TypeKeyNameMapper typeMapper) {
         return new ArrayExpansion(activeContext, element, activeProperty, baseUrl, appliedContexts, typeMapper);
     }
 

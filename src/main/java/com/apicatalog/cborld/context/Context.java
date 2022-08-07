@@ -1,9 +1,12 @@
 package com.apicatalog.cborld.context;
 
+import java.net.URI;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.function.Consumer;
 
+import com.apicatalog.cborld.db.TypeKeyNameMapper;
+import com.apicatalog.cborld.mapper.TypeMap;
 import com.apicatalog.cursor.MapCursor;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdOptions;
@@ -12,28 +15,29 @@ import com.apicatalog.jsonld.loader.DocumentLoader;
 
 public class Context {
 
-    private final TypeMapping typeMapping;
+    private final TypeMap typeMapping;
     private final Collection<Collection<String>> appliedContextKeys;
     
-    protected Context(TypeMapping typeMapping, Collection<Collection<String>> appliedContextKeys) {
+    protected Context(TypeMap typeMapping, Collection<Collection<String>> appliedContextKeys) {
         this.typeMapping = typeMapping;
         this.appliedContextKeys = appliedContextKeys;
     }
     
-    public static Context from(MapCursor document, DocumentLoader loader) throws JsonLdError {
+    public static Context from(MapCursor document, URI base, DocumentLoader loader) throws JsonLdError {
 
         final JsonLdOptions options = new JsonLdOptions();
         options.setOrdered(false);
         options.setDocumentLoader(loader);
+        options.setBase(base);
         
         final ActiveContext activeContext = new ActiveContext(null, null, options);
 
         Collection<Collection<String>> appliedContextKeys = new LinkedHashSet<>();
 
-        final TypeMapping typeMapping = Expansion.with(
+        final TypeMap typeMapping = Expansion.with(
                                             activeContext,
                                             document, 
-                                            null, null, 
+                                            null, base, 
                                             appliedContextKeys::add,
                                             null
                                             )
@@ -43,20 +47,21 @@ public class Context {
 
     }
 
-    public static Context from(MapCursor document, DocumentLoader loader, Consumer<Collection<String>> appliedContexts, TypeMapper typeMapper) throws JsonLdError {
+    public static Context from(MapCursor document, URI base,  DocumentLoader loader, Consumer<Collection<String>> appliedContexts, TypeKeyNameMapper typeMapper) throws JsonLdError {
 
         final JsonLdOptions options = new JsonLdOptions();
         options.setOrdered(false);
         options.setDocumentLoader(loader);
-        
+        options.setBase(base);
+
         final ActiveContext activeContext = new ActiveContext(null, null, options);
 
         Collection<Collection<String>> appliedContextKeys = new LinkedHashSet<>();
 
-        final TypeMapping typeMapping = Expansion.with(
+        final TypeMap typeMapping = Expansion.with(
                                             activeContext,
                                             document, 
-                                            null, null, 
+                                            null, base, 
                                             appliedContexts.andThen(appliedContextKeys::add),
                                             typeMapper
                                             )
@@ -66,7 +71,7 @@ public class Context {
 
     }
 
-    public TypeMapping getTypeMapping() {
+    public TypeMap getTypeMapping() {
         return typeMapping;
     }
     

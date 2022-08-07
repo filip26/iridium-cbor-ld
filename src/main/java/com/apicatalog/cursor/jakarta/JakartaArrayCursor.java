@@ -43,7 +43,7 @@ public class JakartaArrayCursor extends JakartaValueCursor implements ArrayCurso
         
         final int size = size();
 
-        return new Iterator<>() {
+        return new Iterator<ArrayItemCursor>() {
             
             final ArrayItemCursor item = cursor.item(0);
                         

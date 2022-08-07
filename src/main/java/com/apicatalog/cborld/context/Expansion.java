@@ -19,6 +19,8 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.function.Consumer;
 
+import com.apicatalog.cborld.db.TypeKeyNameMapper;
+import com.apicatalog.cborld.mapper.TypeMap;
 import com.apicatalog.cursor.ValueCursor;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
@@ -40,10 +42,10 @@ final class Expansion {
     private boolean fromMap;
     
     private Consumer<Collection<String>> appliedContexts;
-    private TypeMapper typeMapper;
+    private TypeKeyNameMapper typeMapper;
 
     private Expansion(final ActiveContext activeContext, final ValueCursor element, final String activeProperty,
-            final URI baseUrl, Consumer<Collection<String>> appliedContexts, TypeMapper typeMapper
+            final URI baseUrl, Consumer<Collection<String>> appliedContexts, TypeKeyNameMapper typeMapper
             ) {
         this.activeContext = activeContext;
         this.element = element;
@@ -58,7 +60,7 @@ final class Expansion {
         this.fromMap = false;
     }
 
-    public static final Expansion with(final ActiveContext activeContext, final ValueCursor element, final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts, TypeMapper typeMapper) {
+    public static final Expansion with(final ActiveContext activeContext, final ValueCursor element, final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts, TypeKeyNameMapper typeMapper) {
         return new Expansion(activeContext, element, activeProperty, baseUrl, appliedContexts, typeMapper);
     }
 
@@ -118,7 +120,7 @@ final class Expansion {
                     .expand();
     }
 
-    public TypeMapping typeMapping() throws JsonLdError {
-        return new TypeMapping(compute());
+    public TypeMap typeMapping() throws JsonLdError {
+        return new TypeMap(compute());
     }
 }
