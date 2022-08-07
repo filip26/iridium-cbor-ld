@@ -98,5 +98,5 @@ public final class DbConfig implements EncoderConfig, DecoderConfig {
         return MAPPING_PROVIDER;
     }
 
-    protected DbConfig() {}
+    DbConfig() {}
 }
