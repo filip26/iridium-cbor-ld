@@ -15,13 +15,7 @@ import jakarta.json.JsonValue;
 
 public class JakartaJsonCursor implements Cursor<JsonValue> {
 
-    record StackState(
-            JsonValue data,
-            Integer index,
-            String key
-            ) {};
-    
-    final Deque<StackState> stack;
+    final Deque<JakartaCursorState> stack;
     
     final ArrayItemCursor arrayItemCursor;
     final MapEntryCursor mapEntryCursor;
@@ -32,7 +26,7 @@ public class JakartaJsonCursor implements Cursor<JsonValue> {
     protected JakartaJsonCursor(JsonValue root) {
         
         this.stack = new ArrayDeque<>();
-        this.stack.add(new StackState(root, null, null));
+        this.stack.add(new JakartaCursorState(root, null, null));
         
         this.arrayItemCursor = new JakartaArrayItemCursor(this, this::sourceValue);
         this.mapEntryCursor = new JakartaMapEntryCursor(this, this::sourceValue);
@@ -54,7 +48,7 @@ public class JakartaJsonCursor implements Cursor<JsonValue> {
         if (stack.isEmpty()) {
             throw new IndexOutOfBoundsException();
         }
-        return stack.peek().data;
+        return stack.peek().data();
     }
 
     @Override
@@ -69,14 +63,14 @@ public class JakartaJsonCursor implements Cursor<JsonValue> {
     // horizontal
     @Override
     public MapEntryCursor entry(String mapKey) {
-        stack.push(new StackState(stack.peek().data.asJsonObject().get(mapKey), null, mapKey));
+        stack.push(new JakartaCursorState(stack.peek().data().asJsonObject().get(mapKey), null, mapKey));
         return mapEntryCursor;
     }
 
     // horizontal
     @Override
     public ArrayItemCursor item(int arrayIndex) {
-        stack.push(new StackState(stack.peek().data.asJsonArray().get(arrayIndex), arrayIndex, null));
+        stack.push(new JakartaCursorState(stack.peek().data().asJsonArray().get(arrayIndex), arrayIndex, null));
         return arrayItemCursor;
     }
 
@@ -116,12 +110,12 @@ public class JakartaJsonCursor implements Cursor<JsonValue> {
     
     @Override
     public Integer index() {
-        return stack.peek().index;
+        return stack.peek().index();
     }
     
     @Override
     public String key() {
-        return stack.peek().key;
+        return stack.peek().key();
     }
     
     @Override
@@ -139,11 +133,11 @@ public class JakartaJsonCursor implements Cursor<JsonValue> {
 
     @Override
     public boolean isArrayItem() {
-        return !stack.isEmpty() && (stack.peek().index != null);
+        return !stack.isEmpty() && (stack.peek().index() != null);
     }
     
     @Override    
     public boolean isMapEntry() {
-        return !stack.isEmpty() && (stack.peek().key != null);
+        return !stack.isEmpty() && (stack.peek().key() != null);
     }
 }

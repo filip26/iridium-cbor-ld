@@ -274,7 +274,7 @@ public class Decoder implements DecoderConfig {
             final DataItem value = map.get(key);
             
             boolean isArray = MajorType.UNSIGNED_INTEGER.equals(key.getMajorType())
-                                && !((UnsignedInteger)key).getValue().mod(BigInteger.TWO).equals(BigInteger.ZERO)
+                                && !((UnsignedInteger)key).getValue().mod(BigInteger.ONE.add(BigInteger.ONE)).equals(BigInteger.ZERO)
                                 ;
             
             JsonValue json = null;
@@ -329,7 +329,7 @@ public class Decoder implements DecoderConfig {
     
     final String decodeKey(final BigInteger key) {
         
-        if (key.mod(BigInteger.TWO).equals(BigInteger.ZERO)) {
+        if (key.mod(BigInteger.ONE.add(BigInteger.ONE)).equals(BigInteger.ZERO)) {
             String result = index.getValue(key);
             return result != null ? result : key.toString();
         }        

@@ -9,7 +9,7 @@
     <version>0.0.1-SNAPSHOT</version>
     <relativePath>pom_parent.xml</relativePath>
   </parent>
-  <artifactId>iridium-cbor-ld</artifactId>
+  <artifactId>iridium-cbor-ld-jre8</artifactId>
   <packaging>jar</packaging>
   <name>Iridium CBOR-LD (JRE8)</name>
   <url>https://github.com/filip26/iridium-cbor-ld</url>

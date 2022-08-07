@@ -103,7 +103,7 @@ class DbDecoderMapping implements Mapping {
 
     final String decodeKey(BigInteger key) {
         
-        if (key.mod(BigInteger.TWO).equals(BigInteger.ZERO)) {
+        if (key.mod(BigInteger.ONE.add(BigInteger.ONE)).equals(BigInteger.ZERO)) {
             String result = dictionary.getValue(key);
             return result != null ? result : key.toString();
         }        

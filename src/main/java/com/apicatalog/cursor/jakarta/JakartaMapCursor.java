@@ -41,7 +41,7 @@ public class JakartaMapCursor extends JakartaValueCursor implements MapCursor {
 
         final Iterator<String> iterator = keys().iterator();
 
-        return new Iterator<>() {
+        return new Iterator<MapEntryCursor>() {
 
             final MapEntryCursor entry = entry();
             
