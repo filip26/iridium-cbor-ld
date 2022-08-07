@@ -90,7 +90,7 @@ All PR's welcome!
 
 Fork and clone the project repository.
 
-#### Java 11
+#### Java 17
 ```bash
 > cd iridium-cbor-ld
 > mvn clean package
