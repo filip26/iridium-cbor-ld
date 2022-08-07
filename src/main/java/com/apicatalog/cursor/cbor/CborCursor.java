@@ -22,7 +22,7 @@ public class CborCursor implements Cursor<DataItem> {
 
     @FunctionalInterface
     public interface ValueDecoder {
-        DataItem decode(DataItem value, String term);
+        DataItem decode(DataItem value, String term, Collection<String> path);
     }
 
     record StackState(
@@ -96,10 +96,15 @@ public class CborCursor implements Cursor<DataItem> {
             }   
         }
         
+        final Collection<String> path = stack.stream()
+                .filter(ss -> ss.key != null)
+                .map(ss -> ss.key)            
+                .toList();
+        
         if ((!arrayCode && MajorType.ARRAY.equals(value.getMajorType()))
                 ) {
 
-            value = decodeValue.decode(value, mapKey);
+            value = decodeValue.decode(value, mapKey, path);
             
         } else if (MajorType.ARRAY.equals(value.getMajorType())) {
             
@@ -108,13 +113,13 @@ public class CborCursor implements Cursor<DataItem> {
             Array newValues = new Array(items.size());
             
             for (DataItem item : items) {
-                newValues.add(decodeValue.decode(item, mapKey));
+                newValues.add(decodeValue.decode(item, mapKey, path));
             }
             
             value = newValues;
             
         } else {
-            value = decodeValue.decode(value, mapKey);
+            value = decodeValue.decode(value, mapKey, path);
         }
 
         stack.push(new StackState(value, null, mapKey));

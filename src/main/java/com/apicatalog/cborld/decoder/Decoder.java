@@ -410,7 +410,7 @@ public class Decoder {
         return null;
     }
     
-    final DataItem decodeValue(final DataItem value, String term) {
+    final DataItem decodeValue(final DataItem value, String term, Collection<String> path) {
 
         //FIXME
         Collection<String> TYPE = Arrays.asList(Keywords.TYPE); 
@@ -418,7 +418,7 @@ public class Decoder {
         for (final ValueDecoder decoder : valueDecoders) {
             try {
                 final JsonValue decoded = decoder.decode(index, value, term, 
-                        typeMap.isTypeKey(term)
+                        typeMap.isTypeKey(term, path)
                         ? TYPE
                         : Collections.emptySet()
                         );

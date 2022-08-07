@@ -1,12 +1,9 @@
 package com.apicatalog.cborld.decoder;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Deque;
 import java.util.HashSet;
-import java.util.List;
 
 import com.apicatalog.cborld.context.TypeKeyNameMapper;
 
@@ -35,9 +32,7 @@ class DefaultTypeKeyNameMapper implements TypeKeyNameMapper {
             index = type;
             
         } else {
-            List<String> reversed = new ArrayList<>(path);
-            Collections.reverse(reversed);  //TODO
-            index =  String.join(".", reversed) + "." + type;
+            index =  pointer(type, path);
         }
         
         paths.add(index);
@@ -47,10 +42,13 @@ class DefaultTypeKeyNameMapper implements TypeKeyNameMapper {
     public void end() {
         path.pop();
     }
+
+    public boolean isTypeKey(String term, Collection<String> termPath) {
+        return paths.contains(pointer(term, termPath));
+    }
     
-    public boolean isTypeKey(String pointer) {
-        System.out.println(pointer + ", " + paths);
-        return paths.contains(pointer);
+    static final String pointer(String term, Collection<String> path) {
+        return term + ((path == null || path.isEmpty()) ? "" : "." + String.join(".", path));
     }
     
 }
