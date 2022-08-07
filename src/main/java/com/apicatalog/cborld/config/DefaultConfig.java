@@ -101,5 +101,5 @@ public final class DefaultConfig implements EncoderConfig, DecoderConfig {
         return MAPPING_PROVIDER;
     }
     
-    protected DefaultConfig() {}
+    DefaultConfig() {}
 }
