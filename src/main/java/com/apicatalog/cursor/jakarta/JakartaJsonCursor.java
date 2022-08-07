@@ -15,8 +15,13 @@ import jakarta.json.JsonValue;
 
 public class JakartaJsonCursor implements Cursor<JsonValue> {
 
-    final Deque<JsonValue> path;
-    final Deque<Object> indices;
+    record StackState(
+            JsonValue data,
+            Integer index,
+            String key
+            ) {};
+    
+    final Deque<StackState> stack;
     
     final ArrayItemCursor arrayItemCursor;
     final MapEntryCursor mapEntryCursor;
@@ -26,12 +31,9 @@ public class JakartaJsonCursor implements Cursor<JsonValue> {
 
     protected JakartaJsonCursor(JsonValue root) {
         
-        this.path = new ArrayDeque<>();
-        this.path.add(root);
+        this.stack = new ArrayDeque<>();
+        this.stack.add(new StackState(root, null, null));
         
-        this.indices = new ArrayDeque<>();
-        
-
         this.arrayItemCursor = new JakartaArrayItemCursor(this, this::sourceValue);
         this.mapEntryCursor = new JakartaMapEntryCursor(this, this::sourceValue);
         
@@ -49,60 +51,47 @@ public class JakartaJsonCursor implements Cursor<JsonValue> {
 
     @Override
     public JsonValue sourceValue() {
-        if (path.isEmpty()) {
+        if (stack.isEmpty()) {
             throw new IndexOutOfBoundsException();
         }
-        return path.peek();
+        return stack.peek().data;
     }
 
     @Override
     public boolean prev() {
-        if (path.size() == 1) {
+        if (stack.size() == 1) {
             return false;
         }
-        path.pop();
-        indices.pop();
+        stack.pop();
         return true;        
     }
     
     // horizontal
     @Override
     public MapEntryCursor entry(String mapKey) {
-        indices.push(mapKey);;
-        path.push(path.peek().asJsonObject().get(mapKey));
+        stack.push(new StackState(stack.peek().data.asJsonObject().get(mapKey), null, mapKey));
         return mapEntryCursor;
     }
 
     // horizontal
     @Override
     public ArrayItemCursor item(int arrayIndex) {
-        indices.push(arrayIndex);
-        path.push(path.peek().asJsonArray().get(arrayIndex));
+        stack.push(new StackState(stack.peek().data.asJsonArray().get(arrayIndex), arrayIndex, null));
         return arrayItemCursor;
     }
 
     // vertical
     @Override
     public MapEntryCursor mapKey(String mapKey) {
-        indices.pop();
-        indices.push(mapKey);
-
-        path.pop();
-        path.push(path.peek().asJsonObject().get(mapKey));
-
-        return mapEntryCursor;
+        stack.pop();
+        return entry(mapKey);
     }
 
     // vertical
     @Override
     public ArrayItemCursor arrayIndex(int arrayIndex) {
-        indices.pop();
-        indices.push(arrayIndex);
-
-        path.pop();
-        path.push(path.peek().asJsonArray().get(arrayIndex));
-
-        return arrayItemCursor;
+        stack.pop();
+        return item(arrayIndex);
     }
 
     @Override
@@ -126,8 +115,13 @@ public class JakartaJsonCursor implements Cursor<JsonValue> {
     }
     
     @Override
-    public Object index() {
-        return indices.peek();
+    public Integer index() {
+        return stack.peek().index;
+    }
+    
+    @Override
+    public String key() {
+        return stack.peek().key;
     }
     
     @Override
@@ -136,22 +130,20 @@ public class JakartaJsonCursor implements Cursor<JsonValue> {
            .append(JakartaJsonCursor.class.getSimpleName())
            .append('[')
            .append("depth=")
-           .append(path.size())
-           .append(", indices=")
-           .append(indices)           
+           .append(stack.size())
            .append(", path=")
-           .append(path)
+           .append(stack)
            .append(']')
            .toString();
     }
 
     @Override
     public boolean isArrayItem() {
-        return !indices.isEmpty() && (indices.peek() instanceof Integer);
+        return !stack.isEmpty() && (stack.peek().index != null);
     }
     
     @Override    
     public boolean isMapEntry() {
-        return !indices.isEmpty() && (indices.peek() instanceof String);
+        return !stack.isEmpty() && (stack.peek().key != null);
     }
 }

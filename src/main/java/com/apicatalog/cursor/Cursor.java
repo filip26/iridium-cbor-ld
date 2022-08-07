@@ -18,11 +18,12 @@ public interface Cursor<T>  {
 
     MapEntryCursor mapKey(String key);
 
-    Object index();
-
     MapEntryCursor entry(String key);
 
     T sourceValue();
+    
+    String key();
+    Integer index();
 
     ArrayItemCursor arrayIndex(int index);
 

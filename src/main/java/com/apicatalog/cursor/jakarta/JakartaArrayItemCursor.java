@@ -17,7 +17,7 @@ public class JakartaArrayItemCursor extends JakartaValueCursor implements ArrayI
         if (!isArrayItem()) {
             throw new ClassCastException();    
         }        
-        return (Integer)cursor.index();
+        return cursor.index();
     }
 
     @Override

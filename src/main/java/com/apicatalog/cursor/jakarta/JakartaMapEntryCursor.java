@@ -17,7 +17,7 @@ final class JakartaMapEntryCursor extends JakartaValueCursor implements MapEntry
         if (!isMapEntry()) {
             throw new ClassCastException();    
         }        
-        return (String)cursor.index();
+        return cursor.key();
     }
 
     @Override

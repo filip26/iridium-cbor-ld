@@ -16,7 +16,7 @@ final class CborMapEntryCursor extends CborValueCursor implements MapEntryCursor
         if (!isMapEntry()) {
             throw new ClassCastException();    
         }        
-        return (String)cursor.index();
+        return cursor.key();
     }
 
     @Override

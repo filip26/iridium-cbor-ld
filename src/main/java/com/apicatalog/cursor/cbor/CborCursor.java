@@ -24,9 +24,14 @@ public class CborCursor implements Cursor<DataItem> {
     public interface ValueDecoder {
         DataItem decode(DataItem value, String term);
     }
-    
-    final Deque<DataItem> path;
-    final Deque<Object> indices;
+
+    record StackState(
+        DataItem data,
+        Integer index,
+        String key
+        ) {};
+
+    final Deque<StackState> stack;
     
     final ArrayItemCursor arrayItemCursor;
     final MapEntryCursor mapEntryCursor;
@@ -39,11 +44,9 @@ public class CborCursor implements Cursor<DataItem> {
 
     protected CborCursor(DataItem root, Function<DataItem, String> dataToKey, Function<String, DataItem> keyToData, ValueDecoder decodeValue) {
         
-        this.path = new ArrayDeque<>();
-        this.path.add(root);
+        this.stack = new ArrayDeque<>();
+        this.stack.add(new StackState(root, null, null));
         
-        this.indices = new ArrayDeque<>();
-
         this.keyToCode = keyToData;
         this.decodeValue = decodeValue;
 
@@ -60,28 +63,26 @@ public class CborCursor implements Cursor<DataItem> {
 
     @Override
     public DataItem sourceValue() {
-        if (path.isEmpty()) {
+        if (stack.isEmpty()) {
             throw new IndexOutOfBoundsException();
         }
-        return path.peek();
+        return stack.peek().data;
     }
 
     @Override
     public boolean prev() {
-        if (path.size() == 1) {
+        if (stack.size() == 1) {
             return false;
         }
-        path.pop();
-        indices.pop();
+        stack.pop();
         return true;        
     }
     
     // horizontal
     @Override
     public MapEntryCursor entry(String mapKey) {
-        indices.push(mapKey);        
         
-        final Map map = (Map)path.peek(); 
+        final Map map = (Map)stack.peek().data; 
         
         DataItem key = keyToCode.apply(mapKey);
         DataItem value = map.get(key);
@@ -116,7 +117,7 @@ public class CborCursor implements Cursor<DataItem> {
             value = decodeValue.decode(value, mapKey);
         }
 
-        path.push(value);
+        stack.push(new StackState(value, null, mapKey));
         
         return mapEntryCursor;
     }
@@ -124,29 +125,22 @@ public class CborCursor implements Cursor<DataItem> {
     // horizontal
     @Override
     public ArrayItemCursor item(int arrayIndex) {
-        indices.push(arrayIndex);
-        path.push(((Array)path.peek()).getDataItems().get(arrayIndex));
+        stack.push(new StackState(((Array)stack.peek().data).getDataItems().get(arrayIndex), arrayIndex, null));
         return arrayItemCursor;
     }
 
     // vertical
     @Override
     public MapEntryCursor mapKey(String mapKey) {
-        indices.pop();
-        path.pop();
+        stack.pop();
         return entry(mapKey);
     }
     
     // vertical
     @Override
     public ArrayItemCursor arrayIndex(int arrayIndex) {
-        indices.pop();
-        indices.push(arrayIndex);
-
-        path.pop();
-        path.push(((Array)path.peek()).getDataItems().get(arrayIndex));
-
-        return arrayItemCursor;
+        stack.pop();
+        return item(arrayIndex);
     }
 
     @Override
@@ -170,32 +164,35 @@ public class CborCursor implements Cursor<DataItem> {
     }
     
     @Override
-    public Object index() {
-        return indices.peek();
+    public Integer index() {
+        return stack.peek().index;
     }
-    
+
+    @Override
+    public String key() {
+        return stack.peek().key;
+    }
+
     @Override
     public String toString() {
        return new StringBuilder()
            .append(getClass().getSimpleName())
            .append('[')
            .append("depth=")
-           .append(path.size())
-           .append(", indices=")
-           .append(indices)           
+           .append(stack.size())
            .append(", path=")
-           .append(path)
+           .append(stack)
            .append(']')
            .toString();
     }
 
     @Override
     public boolean isArrayItem() {
-        return !indices.isEmpty() && (indices.peek() instanceof Integer);
+        return !stack.isEmpty() && (stack.peek().index != null);
     }
     
     @Override    
     public boolean isMapEntry() {
-        return !indices.isEmpty() && (indices.peek() instanceof String);
+        return !stack.isEmpty() && (stack.peek().key != null);
     }
 }

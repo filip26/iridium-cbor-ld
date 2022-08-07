@@ -61,7 +61,6 @@ public class Decoder {
     protected boolean bundledContexts;
     protected URI base;
     
-
     protected Decoder(byte[] encoded, boolean compressed) {
         this.encoded = encoded;
         this.compressed = compressed;
@@ -158,7 +157,7 @@ public class Decoder {
      * 
      * @return a decoded CBOR-LD document
      * 
-     *
+     * @throws DecoderError 
      * @throws ContextError
      */
     public JsonValue decode() throws DecoderError, ContextError {
