@@ -52,7 +52,7 @@ public class Decoder {
         
     protected CodeTermMap index;
 
-    protected TypeMapperImpl typeMap;
+    protected DefaultTypeKeyNameMapper typeMap;
     
     // options
     protected Collection<ValueDecoder> valueDecoders;
@@ -213,7 +213,7 @@ public class Decoder {
   
         try {
 
-            typeMap = new TypeMapperImpl();
+            typeMap = new DefaultTypeKeyNameMapper();
             
             index = CodeTermMap.create();
 

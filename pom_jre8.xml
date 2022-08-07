@@ -11,7 +11,7 @@
   </parent>
   <artifactId>iridium-cbor-ld</artifactId>
   <packaging>jar</packaging>
-  <name>Iridium CBOR-LD</name>
+  <name>Iridium CBOR-LD (JRE8)</name>
   <url>https://github.com/filip26/iridium-cbor-ld</url>
   <scm>
     <connection>scm:git:git://github.com/filip26/iridium-cbor-ld.git</connection>
@@ -28,6 +28,11 @@
       <groupId>com.apicatalog</groupId>
       <artifactId>titanium-json-ld-jre8</artifactId>
       <version>${titanium.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.apicatalog</groupId>
+      <artifactId>carbon-did-jre8</artifactId>
+      <version>${carbon.version}</version>
     </dependency>
   </dependencies>
 </project>

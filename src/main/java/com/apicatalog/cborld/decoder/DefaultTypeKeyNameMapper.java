@@ -10,13 +10,13 @@ import java.util.List;
 
 import com.apicatalog.cborld.context.TypeKeyNameMapper;
 
-class TypeMapperImpl implements TypeKeyNameMapper {
+class DefaultTypeKeyNameMapper implements TypeKeyNameMapper {
 
     final Collection<String> paths;
     
     final Deque<String> path;
     
-    public TypeMapperImpl() {
+    public DefaultTypeKeyNameMapper() {
         this.paths = new HashSet<>();
         this.path = new ArrayDeque<>(10);
     }
@@ -48,8 +48,9 @@ class TypeMapperImpl implements TypeKeyNameMapper {
         path.pop();
     }
     
-    public boolean isTypeKey(String path) {
-        return paths.contains(path);
+    public boolean isTypeKey(String pointer) {
+        System.out.println(pointer + ", " + paths);
+        return paths.contains(pointer);
     }
     
 }

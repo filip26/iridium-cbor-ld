@@ -5,8 +5,8 @@ import java.util.Collection;
 import com.apicatalog.cborld.decoder.DecoderError;
 import com.apicatalog.cborld.dictionary.Dictionary;
 import com.apicatalog.cborld.encoder.value.MultibaseValueEncoder;
-import com.apicatalog.cborld.multibase.Multibase;
-import com.apicatalog.cborld.multibase.Multibase.Algorithm;
+import com.apicatalog.multibase.Multibase;
+import com.apicatalog.multibase.Multibase.Algorithm;
 
 import co.nstant.in.cbor.model.ByteString;
 import co.nstant.in.cbor.model.DataItem;
