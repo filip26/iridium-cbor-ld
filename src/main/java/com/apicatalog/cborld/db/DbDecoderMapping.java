@@ -40,7 +40,6 @@ class DbDecoderMapping implements Mapping {
     
     final DataItem decodeValue(final DataItem value, String term, Collection<String> path) {
 
-        //FIXME
         Collection<String> TYPE = Arrays.asList(Keywords.TYPE); 
         
         for (final ValueDecoder decoder : valueDecoders) {
@@ -60,8 +59,7 @@ class DbDecoderMapping implements Mapping {
                 }
                 
             } catch (DecoderError e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                /*/ ignored */ 
             }
             
         }
