@@ -165,7 +165,7 @@ public class Decoder implements DecoderConfig {
      * 
      * @return a decoded CBOR-LD document
      * 
-     * @throws DecoderError  
+     *
      * @throws ContextError
      */
     public JsonValue decode() throws DecoderError, ContextError {
