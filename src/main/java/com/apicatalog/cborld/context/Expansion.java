@@ -19,6 +19,8 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.function.Consumer;
 
+import com.apicatalog.cborld.db.TypeKeyNameMapper;
+import com.apicatalog.cborld.mapper.TypeMap;
 import com.apicatalog.cursor.ValueCursor;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
@@ -118,7 +120,7 @@ final class Expansion {
                     .expand();
     }
 
-    public TypeMapping typeMapping() throws JsonLdError {
-        return new TypeMapping(compute());
+    public TypeMap typeMapping() throws JsonLdError {
+        return new TypeMap(compute());
     }
 }

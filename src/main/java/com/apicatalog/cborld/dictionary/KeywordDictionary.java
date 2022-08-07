@@ -29,7 +29,6 @@ public class KeywordDictionary implements Dictionary {
         add("@nest", 22);
         add("@reverse", 24);
         
-        // TODO: remove these? these only appear in frames and contexts
         add("@base", 26);
         add("@container", 28);
         add("@default", 30);

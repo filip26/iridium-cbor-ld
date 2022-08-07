@@ -1,8 +1,10 @@
-package com.apicatalog.cborld.config;
+package com.apicatalog.cborld.db;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
+import com.apicatalog.cborld.config.DictionaryAlgorithm;
+import com.apicatalog.cborld.decoder.DecoderConfig;
 import com.apicatalog.cborld.decoder.value.ContextValueDecoder;
 import com.apicatalog.cborld.decoder.value.DidKeyValueDecoder;
 import com.apicatalog.cborld.decoder.value.MultibaseValueDecoder;
@@ -13,7 +15,7 @@ import com.apicatalog.cborld.decoder.value.VocabValueDecoder;
 import com.apicatalog.cborld.decoder.value.XsdDateTimeValueDecoder;
 import com.apicatalog.cborld.decoder.value.XsdDateValueDecoder;
 import com.apicatalog.cborld.dictionary.ContextDictionary;
-import com.apicatalog.cborld.encoder.EncoderConfigration;
+import com.apicatalog.cborld.encoder.EncoderConfig;
 import com.apicatalog.cborld.encoder.value.ContextValueEncoder;
 import com.apicatalog.cborld.encoder.value.DidKeyValueEncoder;
 import com.apicatalog.cborld.encoder.value.MultibaseValueEncoder;
@@ -23,17 +25,19 @@ import com.apicatalog.cborld.encoder.value.ValueEncoder;
 import com.apicatalog.cborld.encoder.value.VocabValueEncoder;
 import com.apicatalog.cborld.encoder.value.XsdDateTimeValueEncoder;
 import com.apicatalog.cborld.encoder.value.XsdDateValueEncoder;
+import com.apicatalog.cborld.mapper.MappingProvider;
 
-public final class DefaulConfig implements EncoderConfigration {
+public final class DbConfig implements EncoderConfig, DecoderConfig {
 
-    public static final ContextDictionary CONTEXT_DICTIONARY = new ContextDictionary();
+    public static final DbConfig INSTANCE = new DbConfig();
     
-    public static final Collection<ValueEncoder> VALUE_ENCODERS = new ArrayList<>();
+    static final ContextDictionary CONTEXT_DICTIONARY = new ContextDictionary();
+    
+    static final Collection<ValueEncoder> VALUE_ENCODERS = new ArrayList<>();
 
     static {
         // term driven
         VALUE_ENCODERS.add(new ContextValueEncoder(CONTEXT_DICTIONARY));
-//        VALUE_ENCODERS.add(new IdValueEncoder());
         
         // type driven
         VALUE_ENCODERS.add(new TypeValueEncoder());
@@ -46,8 +50,8 @@ public final class DefaulConfig implements EncoderConfigration {
         VALUE_ENCODERS.add(new UuidValueEncoder());
         VALUE_ENCODERS.add(new DidKeyValueEncoder());
     }
-    
-    public static final Collection<ValueDecoder> VALUE_DECODERS = new ArrayList<>();
+
+    static final Collection<ValueDecoder> VALUE_DECODERS = new ArrayList<>();
     
     static {
         // term driven
@@ -64,10 +68,10 @@ public final class DefaulConfig implements EncoderConfigration {
         VALUE_DECODERS.add(new UuidValueDecoder());
         VALUE_DECODERS.add(new DidKeyValueDecoder());
     }
-
-    public static final boolean COMPACT_ARRAYS = true;
-
-    public static final boolean STATIC_CONTEXTS = true;
+    
+    static final boolean COMPACT_ARRAYS = false;
+    
+    static final MappingProvider MAPPING_PROVIDER = new DbMappingProvider();
 
     @Override
     public boolean isCompactArrays() {
@@ -75,13 +79,24 @@ public final class DefaulConfig implements EncoderConfigration {
     }
 
     @Override
-    public Collection<ValueEncoder> getValueEncoders() {
+    public Collection<ValueEncoder> valueEncoders() {
         return VALUE_ENCODERS;
+    }
+
+    @Override
+    public DictionaryAlgorithm dictonaryAlgorithm() {
+        return DictionaryAlgorithm.ProcessingOrderAppliedContexts;
+    }
+
+    @Override
+    public Collection<ValueDecoder> valueDecoders() {
+        return VALUE_DECODERS;
     }
     
     @Override
-    public DictionaryAlgorithm getDictonaryAlgorithm() {
-        return DictionaryAlgorithm.ContextBag;
+    public MappingProvider provider() {
+        return MAPPING_PROVIDER;
     }
 
+    protected DbConfig() {}
 }

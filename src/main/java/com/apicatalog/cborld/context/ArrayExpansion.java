@@ -19,6 +19,7 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.function.Consumer;
 
+import com.apicatalog.cborld.db.TypeKeyNameMapper;
 import com.apicatalog.cursor.ArrayCursor;
 import com.apicatalog.cursor.ValueCursor;
 import com.apicatalog.jsonld.JsonLdError;

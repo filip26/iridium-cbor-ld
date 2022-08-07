@@ -1,11 +1,9 @@
-package com.apicatalog.cborld.decoder;
+package com.apicatalog.cborld.db;
 
 import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Deque;
 import java.util.HashSet;
-
-import com.apicatalog.cborld.context.TypeKeyNameMapper;
 
 class DefaultTypeKeyNameMapper implements TypeKeyNameMapper {
 
@@ -43,6 +41,7 @@ class DefaultTypeKeyNameMapper implements TypeKeyNameMapper {
         path.pop();
     }
 
+    @Override
     public boolean isTypeKey(String term, Collection<String> termPath) {
         return paths.contains(pointer(term, termPath));
     }

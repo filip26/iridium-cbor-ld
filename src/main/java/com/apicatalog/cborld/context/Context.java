@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.function.Consumer;
 
+import com.apicatalog.cborld.db.TypeKeyNameMapper;
+import com.apicatalog.cborld.mapper.TypeMap;
 import com.apicatalog.cursor.MapCursor;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdOptions;
@@ -13,10 +15,10 @@ import com.apicatalog.jsonld.loader.DocumentLoader;
 
 public class Context {
 
-    private final TypeMapping typeMapping;
+    private final TypeMap typeMapping;
     private final Collection<Collection<String>> appliedContextKeys;
     
-    protected Context(TypeMapping typeMapping, Collection<Collection<String>> appliedContextKeys) {
+    protected Context(TypeMap typeMapping, Collection<Collection<String>> appliedContextKeys) {
         this.typeMapping = typeMapping;
         this.appliedContextKeys = appliedContextKeys;
     }
@@ -32,7 +34,7 @@ public class Context {
 
         Collection<Collection<String>> appliedContextKeys = new LinkedHashSet<>();
 
-        final TypeMapping typeMapping = Expansion.with(
+        final TypeMap typeMapping = Expansion.with(
                                             activeContext,
                                             document, 
                                             null, base, 
@@ -56,7 +58,7 @@ public class Context {
 
         Collection<Collection<String>> appliedContextKeys = new LinkedHashSet<>();
 
-        final TypeMapping typeMapping = Expansion.with(
+        final TypeMap typeMapping = Expansion.with(
                                             activeContext,
                                             document, 
                                             null, base, 
@@ -69,7 +71,7 @@ public class Context {
 
     }
 
-    public TypeMapping getTypeMapping() {
+    public TypeMap getTypeMapping() {
         return typeMapping;
     }
     

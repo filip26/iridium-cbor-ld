@@ -1,4 +1,4 @@
-package com.apicatalog.cborld.context;
+package com.apicatalog.cborld.mapper;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -11,11 +11,11 @@ import com.apicatalog.jsonld.lang.Keywords;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 
-public class TypeMapping {
+public class TypeMap {
 
     private final JsonValue mapping;
     
-    protected TypeMapping(JsonValue mapping) {
+    public TypeMap(JsonValue mapping) {
         this.mapping = mapping;
     }
     
@@ -33,8 +33,6 @@ public class TypeMapping {
                             .filter(JsonUtils::isString)
                             .map(JsonString.class::cast)
                             .map(JsonString::getString)
-//                            .filter(e -> JsonUtils.isString(e.getValue()) && Keywords.TYPE.equals(((JsonString) e.getValue()).getString()))
-//                            .map(Map.Entry::getKey)
                             .collect(Collectors.toSet());
             }
             if (JsonUtils.isString(value)) {
@@ -53,11 +51,11 @@ public class TypeMapping {
         return null;
     }
     
-    public TypeMapping getMapping(String term) {
+    public TypeMap getMapping(String term) {
         if (JsonUtils.isObject(mapping)) {
             JsonValue value =  mapping.asJsonObject().get(term);
             if (JsonUtils.isObject(value)) {
-                return new TypeMapping(value);
+                return new TypeMap(value);
             }
         }
         return null;
@@ -65,6 +63,5 @@ public class TypeMapping {
     
     public JsonValue getMapping() {
         return mapping;
-    }
-    
+    }    
 }

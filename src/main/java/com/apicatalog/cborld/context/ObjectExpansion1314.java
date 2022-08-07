@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+import com.apicatalog.cborld.db.TypeKeyNameMapper;
 import com.apicatalog.cursor.MapCursor;
 import com.apicatalog.cursor.MapEntryCursor;
 import com.apicatalog.cursor.ValueCursor;

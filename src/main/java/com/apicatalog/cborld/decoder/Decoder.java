@@ -3,29 +3,26 @@ package com.apicatalog.cborld.decoder;
 import java.io.ByteArrayInputStream;
 import java.math.BigInteger;
 import java.net.URI;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import com.apicatalog.cborld.CborLd;
-import com.apicatalog.cborld.config.DefaulConfig;
-import com.apicatalog.cborld.context.Context;
+import com.apicatalog.cborld.config.DefaultConfig;
+import com.apicatalog.cborld.config.DictionaryAlgorithm;
 import com.apicatalog.cborld.context.ContextError;
-import com.apicatalog.cborld.context.TypeMapping;
 import com.apicatalog.cborld.decoder.DecoderError.Code;
 import com.apicatalog.cborld.decoder.value.ValueDecoder;
-import com.apicatalog.cborld.dictionary.CodeTermMap;
+import com.apicatalog.cborld.dictionary.Dictionary;
+import com.apicatalog.cborld.encoder.Encoder;
 import com.apicatalog.cborld.hex.Hex;
 import com.apicatalog.cborld.loader.StaticContextLoader;
-import com.apicatalog.cursor.MapCursor;
-import com.apicatalog.cursor.cbor.CborCursor;
-import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.cborld.mapper.Mapping;
+import com.apicatalog.cborld.mapper.MappingProvider;
+import com.apicatalog.cborld.mapper.TypeMap;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.http.DefaultHttpClient;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.json.JsonUtils;
-import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.HttpLoader;
 
@@ -45,14 +42,13 @@ import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 
-public class Decoder {
+public class Decoder implements DecoderConfig {
 
     protected final byte[] encoded;
     protected final boolean compressed;
         
-    protected CodeTermMap index;
-
-    protected DefaultTypeKeyNameMapper typeMap;
+    protected MappingProvider provider;
+    protected Dictionary index;
     
     // options
     protected Collection<ValueDecoder> valueDecoders;
@@ -66,9 +62,9 @@ public class Decoder {
         this.compressed = compressed;
         
         // default options
-        this.valueDecoders = DefaulConfig.VALUE_DECODERS;
-        this.compactArrays = DefaulConfig.COMPACT_ARRAYS;
-        this.bundledContexts = DefaulConfig.STATIC_CONTEXTS;
+        config(DefaultConfig.INSTANCE);
+        
+        this.bundledContexts = DefaultConfig.STATIC_CONTEXTS;
         this.base = null;
         this.loader = null;
     }
@@ -88,6 +84,19 @@ public class Decoder {
     }
 
     /**
+     * Override any existing configuration by the given configuration set.
+     * 
+     * @param config a configuration set 
+     * @return {@link Encoder} instance
+     */
+    public Decoder config(DecoderConfig config) {
+        this.compactArrays = config.isCompactArrays();
+        this.valueDecoders = config.valueDecoders();
+        this.provider = config.provider();
+        return this;
+    }
+    
+    /**
      * Set {@link DocumentLoader} used to fetch referenced JSON-LD contexts. 
      * If not set then default document loader provided by {@link JsonLdOptions} is used. 
      * 
@@ -98,7 +107,6 @@ public class Decoder {
         this.loader = loader;
         return this;
     }
-
     
     /**
      * Use well-known contexts that are bundled with the library instead of fetching it online.
@@ -210,30 +218,14 @@ public class Decoder {
 
     final JsonValue decodeCompressed(final DataItem data) throws DecoderError, ContextError {
   
-        try {
-
-            typeMap = new DefaultTypeKeyNameMapper();
+        final Mapping mapping = provider.getDecoderMapping(data, base, loader, this);
             
-            index = CodeTermMap.create();
+        index = mapping.dictionary();
 
-            final MapCursor cursor = CborCursor.from(
-                    data, 
-                    this::decodeKey, 
-                    this::encodeKey,
-                    this::decodeValue
-                    );
-    
-            final Context context = Context.from(cursor, base, loader, index::add, typeMap);
-            
-            return decodeData(data, null, context.getTypeMapping());
-
-        } catch (JsonLdError e) {
-            throw new DecoderError(Code.InvalidDocument, e);
-        }
-    
+        return decodeData(data, null, mapping.typeMap());
     }
 
-    final JsonValue decodeData(final DataItem data, final String term, TypeMapping def) throws DecoderError, ContextError {
+    final JsonValue decodeData(final DataItem data, final String term, final TypeMap def) throws DecoderError, ContextError {
     
         if (data == null) {
             throw new IllegalArgumentException("The data parameter must not be null.");
@@ -265,7 +257,7 @@ public class Decoder {
         }
     }
 
-    final JsonObject decodeMap(final Map map, TypeMapping def) throws DecoderError, ContextError {
+    final JsonObject decodeMap(final Map map, final TypeMap def) throws DecoderError, ContextError {
     
         if (map == null) {
             throw new IllegalArgumentException("The map parameter must not be null.");
@@ -312,8 +304,42 @@ public class Decoder {
     
         return builder.build();
     }
+    
+    final String decodeKey(final DataItem data) {
 
-    final JsonArray decodeArray(final Collection<DataItem> items, String key, TypeMapping def) throws DecoderError, ContextError {
+        if (data == null) {
+            throw new IllegalArgumentException("The data parameter must not be null.");
+        }
+    
+        switch (data.getMajorType()) {
+        case UNICODE_STRING:
+            return decodeKey(((UnicodeString)data).getString());
+    
+        case UNSIGNED_INTEGER:
+            return decodeKey(((UnsignedInteger)data).getValue());
+
+        default:
+            return data.toString();
+        }
+    }
+
+    final String decodeKey(final String key) {
+        return key;
+    }
+    
+    final String decodeKey(final BigInteger key) {
+        
+        if (key.mod(BigInteger.TWO).equals(BigInteger.ZERO)) {
+            String result = index.getValue(key);
+            return result != null ? result : key.toString();
+        }        
+    
+        String result = index.getValue(key.subtract(BigInteger.ONE));
+
+        return result != null ? result : key.toString();
+    }
+
+    final JsonArray decodeArray(final Collection<DataItem> items, final String key, final TypeMap def) throws DecoderError, ContextError {
     
         if (items == null) {
             throw new IllegalArgumentException("The items parameter must not be null.");
@@ -332,54 +358,6 @@ public class Decoder {
         return builder.build();
     }
 
-    final String decodeKey(final DataItem data) {
-
-        if (data == null) {
-            throw new IllegalArgumentException("The data parameter must not be null.");
-        }
-    
-        switch (data.getMajorType()) {
-        case UNICODE_STRING:
-            return decodeKey(((UnicodeString)data).getString());
-    
-        case UNSIGNED_INTEGER:
-            return decodeKey(((UnsignedInteger)data).getValue());
-
-        default:
-            return data.toString();
-//        default:
-//            //TODO log throw new ContextError(com.apicatalog.cborld.context.ContextError.Code.Unsupported, "A property name of type [" + data.getMajorType() +"] is not supported.");
-        }
-    }
-
-    final String decodeKey(String key) {
-        //TODO
-        return key;
-    }
-
-    final String decodeKey(BigInteger key) {
-    
-        if (key.mod(BigInteger.TWO).equals(BigInteger.ZERO)) {
-            String result = index.getValue(key);
-            return result != null ? result : key.toString();
-        }        
-    
-        String result = index.getValue(key.subtract(BigInteger.ONE));
-
-        //TODO
-        return result != null ? result : key.toString();
-    }
-    
-    final DataItem encodeKey(String key) {
-        
-        final BigInteger encodedProperty = index.getCode(key);
-        
-        if (encodedProperty != null) {
-            return new UnsignedInteger(encodedProperty);
-        }
-        return new UnicodeString(key);
-    }
-
     final JsonString decodeString(final UnicodeString string, final String key) {
     
         if (string == null) {
@@ -389,7 +367,7 @@ public class Decoder {
         return Json.createValue(string.getString());
     }
 
-    final JsonValue decodeInteger(final DataItem number, String key, TypeMapping def) throws DecoderError {
+    final JsonValue decodeInteger(final DataItem number, final String key, final TypeMap def) throws DecoderError {
     
         if (number == null) {
             throw new IllegalArgumentException("The number parameter must not be null.");
@@ -405,46 +383,9 @@ public class Decoder {
         return Json.createValue(((UnsignedInteger)number).getValue());
     }
 
-    final JsonValue decodeUncompressed() throws DecoderError {
-        /// TODO
-        return null;
-    }
-    
-    final DataItem decodeValue(final DataItem value, String term, Collection<String> path) {
-
-        //FIXME
-        Collection<String> TYPE = Arrays.asList(Keywords.TYPE); 
-        
-        for (final ValueDecoder decoder : valueDecoders) {
-            try {
-                final JsonValue decoded = decoder.decode(index, value, term, 
-                        typeMap.isTypeKey(term, path)
-                        ? TYPE
-                        : Collections.emptySet()
-                        );
-                
-                if (decoded == null) {
-                    continue;
-                }
-                
-                if (JsonUtils.isString(decoded)) {
-                    return new UnicodeString(((JsonString)decoded).getString());
-                }
-                
-            } catch (DecoderError e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            
-        }
-        
-        return value;
-    }
-
-    final JsonValue decodeValue(final DataItem value, String term, TypeMapping typeMapping) throws DecoderError {
-        
-        if (typeMapping != null) { 
-            final Collection<String> types = typeMapping.getType(term);
+    final JsonValue decodeValue(final DataItem value, final String term, final TypeMap def) throws DecoderError {
+        if (def != null) { 
+            final Collection<String> types = def.getType(term);
 
             for (final ValueDecoder decoder : valueDecoders) {
                 final JsonValue decoded = decoder.decode(index, value, term, types);
@@ -454,8 +395,31 @@ public class Decoder {
                 }            
             }
         }
-
         return null;
     }
 
+    final JsonValue decodeUncompressed() throws DecoderError {
+        /// TODO
+        return null;
+    }
+    
+    @Override
+    public boolean isCompactArrays() {
+        return compactArrays;
+    }
+
+    @Override
+    public DictionaryAlgorithm dictonaryAlgorithm() {
+        return DictionaryAlgorithm.ProcessingOrderAppliedContexts;
+    }
+
+    @Override
+    public Collection<ValueDecoder> valueDecoders() {
+        return valueDecoders;
+    }
+
+    @Override
+    public MappingProvider provider() {
+        return provider;
+    }
 }

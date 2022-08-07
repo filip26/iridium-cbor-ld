@@ -7,14 +7,16 @@ import java.net.URI;
 import java.util.Collection;
 
 import com.apicatalog.cborld.CborLd;
-import com.apicatalog.cborld.config.DefaulConfig;
-import com.apicatalog.cborld.context.Context;
+import com.apicatalog.cborld.config.DefaultConfig;
+import com.apicatalog.cborld.config.DictionaryAlgorithm;
 import com.apicatalog.cborld.context.ContextError;
-import com.apicatalog.cborld.context.TypeMapping;
-import com.apicatalog.cborld.dictionary.CodeTermMap;
+import com.apicatalog.cborld.dictionary.Dictionary;
 import com.apicatalog.cborld.encoder.EncoderError.Code;
 import com.apicatalog.cborld.encoder.value.ValueEncoder;
 import com.apicatalog.cborld.loader.StaticContextLoader;
+import com.apicatalog.cborld.mapper.Mapping;
+import com.apicatalog.cborld.mapper.MappingProvider;
+import com.apicatalog.cborld.mapper.TypeMap;
 import com.apicatalog.cursor.ArrayCursor;
 import com.apicatalog.cursor.ArrayItemCursor;
 import com.apicatalog.cursor.MapCursor;
@@ -37,11 +39,12 @@ import co.nstant.in.cbor.model.SimpleValue;
 import co.nstant.in.cbor.model.UnicodeString;
 import co.nstant.in.cbor.model.UnsignedInteger;
 
-public class Encoder {
+public class Encoder implements EncoderConfig {
 
     protected final MapCursor document;
 
-    protected CodeTermMap index;
+    protected MappingProvider provider;
+    protected Dictionary index;
 
     // options
     protected Collection<ValueEncoder> valueEncoders;
@@ -54,9 +57,9 @@ public class Encoder {
         this.document = document;
     
         // default options
-        this.valueEncoders = DefaulConfig.VALUE_ENCODERS;
-        this.compactArrays = DefaulConfig.COMPACT_ARRAYS;
-        this.bundledContexts = DefaulConfig.STATIC_CONTEXTS;
+        config(DefaultConfig.INSTANCE);
+        
+        this.bundledContexts = DefaultConfig.STATIC_CONTEXTS;
         this.base = null;
         this.loader = null;
     }
@@ -89,9 +92,10 @@ public class Encoder {
      * @param config a configuration set 
      * @return {@link Encoder} instance
      */
-    public Encoder config(EncoderConfigration config) {
-        compactArrays = config.isCompactArrays();
-        valueEncoders = config.getValueEncoders();
+    public Encoder config(EncoderConfig config) {
+        this.compactArrays = config.isCompactArrays();
+        this.valueEncoders = config.valueEncoders();
+        this.provider = config.provider();
         return this;
     }
     
@@ -189,12 +193,12 @@ public class Encoder {
         // 1.
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
     
-        try {                    
-            final Context context = Context.from(document, base, loader);
-      
-            index = CodeTermMap.from(context.getContextKeySets(), loader);
+        try {             
+            final Mapping mapping = provider.getEncoderMapping(document, base, loader, this);
+
+            index = mapping.dictionary();
             
-            final CborBuilder builder = (CborBuilder) encode(document, new CborBuilder().addMap(), context.getTypeMapping()).end();
+            final CborBuilder builder = (CborBuilder) encode(document, new CborBuilder().addMap(), mapping.typeMap()).end();
             
             // 2.CBOR Tag - 0xD9, CBOR-LD - 0x05, Compressed - CBOR-LD compression algorithm
             // version 1 - 0x01
@@ -213,7 +217,7 @@ public class Encoder {
         }
     }
 
-    final MapBuilder<?> encode(final MapCursor object, final MapBuilder<?> builder, TypeMapping typeMapping) throws EncoderError, JsonLdError {
+    final MapBuilder<?> encode(final MapCursor object, final MapBuilder<?> builder, TypeMap typeMapping) throws EncoderError, JsonLdError {
 
         MapBuilder<?> flow = builder;
     
@@ -234,7 +238,7 @@ public class Encoder {
                     object.asArray().item(0);
         
                     if (object.isMap()) {
-                        final TypeMapping propertyTypeMapping = typeMapping.getMapping(property);
+                        final TypeMap propertyTypeMapping = typeMapping.getMapping(property);
                         flow = (MapBuilder<?>) encode(object.asMap(), flow.putMap(key), propertyTypeMapping).end();
         
                     } else if (object.isArray()) {
@@ -267,7 +271,7 @@ public class Encoder {
                 : new UnicodeString(property);
     
             if (entry.isMap()) {
-                final TypeMapping propertyTypeMapping = typeMapping.getMapping(property);
+                final TypeMap propertyTypeMapping = typeMapping.getMapping(property);
                 flow = (MapBuilder<?>) encode(entry.asMap(), flow.putMap(key),
                     propertyTypeMapping
                     ).end();
@@ -284,7 +288,7 @@ public class Encoder {
         return flow;
     }
 
-    final DataItem encode(final ValueCursor value, final String term, TypeMapping typeMapping) throws EncoderError {
+    final DataItem encode(final ValueCursor value, final String term, TypeMap typeMapping) throws EncoderError {
     
         if (value.isBoolean()) {
             return value.booleanValue() ? SimpleValue.TRUE : SimpleValue.FALSE;
@@ -312,7 +316,7 @@ public class Encoder {
         throw new IllegalStateException("TODO " + value);
     }
 
-    final ArrayBuilder<?> encode(final ArrayCursor object, final ArrayBuilder<?> builder, String property, TypeMapping typeMapping) throws EncoderError, JsonLdError {
+    final ArrayBuilder<?> encode(final ArrayCursor object, final ArrayBuilder<?> builder, String property, TypeMap typeMapping) throws EncoderError, JsonLdError {
     
         ArrayBuilder<?> flow = builder;
     
@@ -336,5 +340,25 @@ public class Encoder {
         object.parent();
         
         return flow;
+    }
+
+    @Override
+    public boolean isCompactArrays() {
+        return compactArrays;
+    }
+
+    @Override
+    public DictionaryAlgorithm dictonaryAlgorithm() {
+        return DictionaryAlgorithm.ProcessingOrderAppliedContexts;
+    }
+
+    @Override
+    public Collection<ValueEncoder> valueEncoders() {
+        return valueEncoders;
+    }
+
+    @Override
+    public MappingProvider provider() {
+        return provider;
     }
 }
