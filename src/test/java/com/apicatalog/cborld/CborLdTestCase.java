@@ -61,8 +61,10 @@ public class CborLdTestCase {
             final JsonObject options = test
                     .getJsonArray("https://github.com/filip26/iridium-cbor-ld/tests/vocab#option")
                     .getJsonObject(0);
-            testCase.compactArrays = options.getJsonArray("https://github.com/filip26/iridium-cbor-ld/tests/vocab#compactArrays").getJsonObject(0).getBoolean("@value", DefaultConfig.INSTANCE.isCompactArrays());
 
+            if (options.containsKey("https://github.com/filip26/iridium-cbor-ld/tests/vocab#compactArrays")) {
+                testCase.compactArrays = options.getJsonArray("https://github.com/filip26/iridium-cbor-ld/tests/vocab#compactArrays").getJsonObject(0).getBoolean("@value", DefaultConfig.INSTANCE.isCompactArrays());                
+            }
         }
 
         return testCase;

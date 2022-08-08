@@ -15,7 +15,7 @@ An implementation of the [CBOR-LD 1.0 Draft](https://digitalbazaar.github.io/cbo
 <dependency>
     <groupId>com.apicatalog</groupId>
     <artifactId>iridium-cbor-ld</artifactId>
-    <version>0.0.1</version>
+    <version>0.1.0</version>
 </dependency>
 
 ```
@@ -27,7 +27,7 @@ or
 <dependency>
     <groupId>com.apicatalog</groupId>
     <artifactId>iridium-cbor-ld-jre8</artifactId>
-    <version>0.0.1</version>
+    <version>0.1.0</version>
 </dependency>
 ```
 

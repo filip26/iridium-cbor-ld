@@ -16,7 +16,7 @@ public final class CborLd {
     public static final byte[] CBOR_LD_BYTE_PREFIX = new byte[] { (byte)0xD9, 0x05 };
     
     public static final byte UNCOMPRESSED = 0x00;
-    public static final byte COMPRESSED =  0x01;
+    public static final byte COMPRESSED_V1 =  0x01;
 
     /**
      * Encodes JSON-LD document as CBOR-LD document.

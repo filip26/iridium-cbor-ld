@@ -189,10 +189,14 @@ final class ObjectExpansion {
 
     private String processTypeScoped(final ActiveContext typeContext) throws JsonLdError {
 
+        if (element.isEmpty()) {
+            return null;
+        }
+
         String typeKey = null;
 
         final Collection<String> keys = element.keys();
-        
+                
         final MapEntryCursor entry = element.entry();
 
         for (final String key : Utils.index(keys, true)) {

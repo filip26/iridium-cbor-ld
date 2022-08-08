@@ -1,5 +1,7 @@
 package com.apicatalog.cursor.jakarta;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.function.Supplier;
 
 import com.apicatalog.cursor.AbstractValueCursor;
@@ -35,6 +37,16 @@ public class JakartaValueCursor extends AbstractValueCursor<JsonValue> {
         return ValueType.FALSE.equals(value.get().getValueType()) || ValueType.TRUE.equals(value.get().getValueType());
     }
 
+    @Override
+    public boolean isInteger() {
+        return isNumber() && ((JsonNumber)value.get()).isIntegral();
+    }
+    
+    @Override
+    public boolean isDecimal() {
+        return isNumber() && !((JsonNumber)value.get()).isIntegral();
+    }
+    
     @Override
     public boolean isNumber() {
         return ValueType.NUMBER.equals(value.get().getValueType());
@@ -72,19 +84,19 @@ public class JakartaValueCursor extends AbstractValueCursor<JsonValue> {
     }
 
     @Override
-    public Integer integerValue() {
-        if (!isNumber()) {
+    public BigInteger integerValue() {
+        if (!isInteger()) {
             throw new ClassCastException();
         }
-        return ((JsonNumber)value.get()).intValueExact();
+        return ((JsonNumber)value.get()).bigIntegerValueExact();
     }
 
     @Override
-    public Long longValue() {
-        if (!isNumber()) {
+    public BigDecimal decimalValue() {
+        if (!isDecimal()) {
             throw new ClassCastException();
         }
-        return ((JsonNumber)value.get()).longValueExact();
+        return ((JsonNumber)value.get()).bigDecimalValue();
     }
 
     @Override
@@ -132,9 +144,11 @@ public class JakartaValueCursor extends AbstractValueCursor<JsonValue> {
         } else if (cursor.isNull()) {
             return JsonValue.NULL;
             
-        } else if (cursor.isNumber()) {
-            //FIXME
-            return Json.createValue(cursor.longValue());
+        } else if (cursor.isInteger()) {
+            return Json.createValue(cursor.integerValue());
+            
+        } else if (cursor.isDecimal()) {
+            return Json.createValue(cursor.decimalValue());
             
         } else if (cursor.isString()) {
             return Json.createValue(cursor.stringValue());

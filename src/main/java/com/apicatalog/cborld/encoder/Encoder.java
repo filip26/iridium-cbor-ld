@@ -35,6 +35,8 @@ import co.nstant.in.cbor.CborException;
 import co.nstant.in.cbor.builder.ArrayBuilder;
 import co.nstant.in.cbor.builder.MapBuilder;
 import co.nstant.in.cbor.model.DataItem;
+import co.nstant.in.cbor.model.DoublePrecisionFloat;
+import co.nstant.in.cbor.model.NegativeInteger;
 import co.nstant.in.cbor.model.SimpleValue;
 import co.nstant.in.cbor.model.UnicodeString;
 import co.nstant.in.cbor.model.UnsignedInteger;
@@ -166,10 +168,10 @@ public class Encoder implements EncoderConfig {
     
         // non compressable context
         } catch (IllegalArgumentException e) {
-            System.out.println("TODO: non-compressable");
+            /* ignored, expected in a case of non compress-able documents */
         }
     
-        return null;
+        throw new EncoderError(Code.InvalidDocument, "Non compress-able document.");
     }
 
     /**
@@ -189,8 +191,7 @@ public class Encoder implements EncoderConfig {
      * @throws EncoderError
      */
     final byte[] compress(final MapCursor document, Collection<String> contextUrls) throws ContextError, EncoderError {
-    
-        // 1.
+
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
     
         try {             
@@ -203,7 +204,7 @@ public class Encoder implements EncoderConfig {
             // 2.CBOR Tag - 0xD9, CBOR-LD - 0x05, Compressed - CBOR-LD compression algorithm
             // version 1 - 0x01
             baos.write(CborLd.CBOR_LD_BYTE_PREFIX);
-            baos.write(CborLd.COMPRESSED);
+            baos.write(CborLd.COMPRESSED_V1);
             
             new CborEncoder(baos).encode(builder.build());
 
@@ -216,9 +217,13 @@ public class Encoder implements EncoderConfig {
             throw new EncoderError(Code.Internal, e);
         }
     }
-
+    
     final MapBuilder<?> encode(final MapCursor object, final MapBuilder<?> builder, TypeMap typeMapping) throws EncoderError, JsonLdError {
 
+        if (object.isEmpty()) {
+            return builder;
+        }
+        
         MapBuilder<?> flow = builder;
     
         for (final MapEntryCursor entry  : object) {
@@ -308,16 +313,36 @@ public class Encoder implements EncoderConfig {
             return new UnicodeString(value.stringValue());
         }
     
-        if (value.isNumber()) {
-            //TODO
-            return new UnsignedInteger(value.integerValue());
+        if (value.isInteger()) {
+            BigInteger integer = value.integerValue();
+            
+            switch (integer.signum()) {
+            case -1:
+                return new NegativeInteger(integer);
+            case 0:
+                return new UnsignedInteger(BigInteger.ZERO);
+            case 1:
+                return new UnsignedInteger(integer);
+            }            
         }
-    
-        throw new IllegalStateException("TODO " + value);
+        
+        if (value.isDecimal()) {
+            return new DoublePrecisionFloat(value.decimalValue().doubleValue());
+        }
+        
+        if (value.isNull()) {
+            return SimpleValue.NULL;
+        }
+
+        throw new IllegalStateException();
     }
 
     final ArrayBuilder<?> encode(final ArrayCursor object, final ArrayBuilder<?> builder, String property, TypeMap typeMapping) throws EncoderError, JsonLdError {
     
+        if (object.isEmpty()) {
+            return builder;
+        }
+        
         ArrayBuilder<?> flow = builder;
     
         for (final ArrayItemCursor item : object) {
@@ -362,3 +387,4 @@ public class Encoder implements EncoderConfig {
         return provider;
     }
 }
+

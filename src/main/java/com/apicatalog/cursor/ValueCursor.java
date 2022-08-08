@@ -1,5 +1,7 @@
 package com.apicatalog.cursor;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Optional;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -16,11 +18,17 @@ public interface ValueCursor {
     boolean isBoolean();
     Boolean booleanValue();
 
-    boolean isNumber();
-    Integer integerValue();
-    Long longValue();
+    boolean isInteger();
+    boolean isDecimal();
+    
+    BigInteger integerValue();
+    BigDecimal decimalValue();
 
-    default boolean isPrimitive() {
+    default boolean isNumber() {
+        return isInteger() || isDecimal();
+    }
+    
+    default boolean isScalar() {
         return isString() || isBoolean() || isNumber();
     }
 
@@ -41,8 +49,6 @@ public interface ValueCursor {
     default boolean isStructure() {
         return isArray() || isMap();
     }
-    
-//    ValueCursor clone();
     
     boolean isArrayItem();
     ArrayItemCursor asArrayItem();

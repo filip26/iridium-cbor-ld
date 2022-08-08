@@ -1,5 +1,7 @@
 package com.apicatalog.cursor;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -41,10 +43,18 @@ public interface ArrayCursor extends StructureCursor, Iterable<ArrayItemCursor> 
         return is(index, ValueCursor::isBoolean);
     }
     
-    default boolean isNumber(int index) {
-        return is(index, ValueCursor::isNumber);
+    default boolean isInteger(int index) {
+        return is(index, ValueCursor::isInteger);
     }
 
+    default boolean isDecimal(int index) {
+        return is(index, ValueCursor::isDecimal);
+    }
+
+    default boolean isNumber(int index) {
+        return isInteger(index) || isDecimal(index);
+    }
+    
     default boolean isPrimitive(int index) {
         return isString(index) || isBoolean(index) || isNumber(index);
     }
@@ -73,19 +83,15 @@ public interface ArrayCursor extends StructureCursor, Iterable<ArrayItemCursor> 
         return value(index, ValueCursor::booleanValue);
     }
 
-    default Integer integerValue(int index) {
+    default BigInteger integerValue(int index) {
         return value(index, ValueCursor::integerValue);        
     }
     
-    default Long longValue(int index) {
-        return value(index, ValueCursor::longValue);
+    default BigDecimal decimalValue(int index) {
+        return value(index, ValueCursor::decimalValue);
     }
 
     default String stringValue(int index) {
         return value(index, ValueCursor::stringValue);
     }
-//
-//    ArrayCursor array(int index);
-//    MapCursor object(int index);
-//    ValueCursor value(int index);
 }

@@ -30,8 +30,14 @@ import co.nstant.in.cbor.CborDecoder;
 import co.nstant.in.cbor.CborException;
 import co.nstant.in.cbor.model.Array;
 import co.nstant.in.cbor.model.DataItem;
+import co.nstant.in.cbor.model.DoublePrecisionFloat;
+import co.nstant.in.cbor.model.HalfPrecisionFloat;
 import co.nstant.in.cbor.model.MajorType;
 import co.nstant.in.cbor.model.Map;
+import co.nstant.in.cbor.model.NegativeInteger;
+import co.nstant.in.cbor.model.SimpleValue;
+import co.nstant.in.cbor.model.SinglePrecisionFloat;
+import co.nstant.in.cbor.model.Special;
 import co.nstant.in.cbor.model.UnicodeString;
 import co.nstant.in.cbor.model.UnsignedInteger;
 import jakarta.json.Json;
@@ -147,7 +153,7 @@ public class Decoder implements DecoderConfig {
             throw new DecoderError(Code.InvalidDocument, "The document is not CBOR-LD document.");
         }
     
-        if (encodedDocument[2] == CborLd.COMPRESSED) {
+        if (encodedDocument[2] == CborLd.COMPRESSED_V1) {
             return new Decoder(encodedDocument, true);
         }
     
@@ -243,6 +249,12 @@ public class Decoder implements DecoderConfig {
     
         case UNSIGNED_INTEGER:
             return decodeInteger(data, term, def);
+            
+        case SPECIAL:
+            return decode((Special) data);
+            
+        case NEGATIVE_INTEGER:
+            return Json.createValue(((NegativeInteger)data).getValue());
             
         case BYTE_STRING:
             JsonValue decoded = decodeValue(data, term, def);
@@ -396,10 +408,48 @@ public class Decoder implements DecoderConfig {
         }
         return null;
     }
+    
+    final JsonValue decode(final Special value) {
+        switch (value.getSpecialType()) {
+        case IEEE_754_DOUBLE_PRECISION_FLOAT:
+            return Json.createValue( ((DoublePrecisionFloat)value).getValue());
+            
+        case IEEE_754_HALF_PRECISION_FLOAT:
+            return Json.createValue( ((HalfPrecisionFloat)value).getValue());
+            
+        case IEEE_754_SINGLE_PRECISION_FLOAT:
+            return Json.createValue( ((SinglePrecisionFloat)value).getValue());
+            
+        case SIMPLE_VALUE:
+            return decode((SimpleValue) value);
+            
+        default:
+            break;
+        }
+        
+        throw new IllegalStateException("Unsupported CBOR special type [" + value.getSpecialType() + "].");
+    }
+    
+    final JsonValue decode(final SimpleValue value) {
+        switch (value.getSimpleValueType()) {
+        case FALSE:
+            return JsonValue.FALSE;
+            
+        case TRUE:
+            return JsonValue.TRUE;
+            
+        case NULL:
+            return JsonValue.NULL;
+            
+        default:
+            break;
+        }
+
+        throw new IllegalStateException("Unsupported CBOR siple value type [" + value.getSimpleValueType() + "].");        
+    }
 
     final JsonValue decodeUncompressed() throws DecoderError {
-        /// TODO
-        return null;
+        throw new DecoderError(Code.InvalidDocument, "Unsupported document compression algorithm");
     }
     
     @Override
