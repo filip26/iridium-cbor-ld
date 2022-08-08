@@ -445,10 +445,10 @@ public class Decoder implements DecoderConfig {
             break;
         }
 
-        throw new IllegalStateException("Unsupported CBOR siple value type [" + value.getSimpleValueType() + "].");        
+        throw new IllegalStateException("Unsupported CBOR simple value type [" + value.getSimpleValueType() + "].");        
     }
-
-    @DoNotCall("Always throws com.apicatalog.cborld.decoder.DecoderError") final JsonValue decodeUncompressed() throws DecoderError {
+ 
+    final JsonValue decodeUncompressed() throws DecoderError {
         throw new DecoderError(Code.InvalidDocument, "Unsupported document compression algorithm");
     }
     
