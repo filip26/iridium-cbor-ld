@@ -65,7 +65,6 @@ public class CborLdTestRunnerJunit {
         try {
             if (testCase.type.contains(CborLdTest.VOCAB + "EncoderTest")) {
 
-                assumeFalse("t0012".equals(testCase.id.getFragment()));
                 assumeFalse("t0025".equals(testCase.id.getFragment()));
                 assumeFalse("t0026".equals(testCase.id.getFragment()));
                 
@@ -82,8 +81,22 @@ public class CborLdTestRunnerJunit {
                     fail("Expected error code [" + testCase.result + "].");
                     return;
                 }
-    
+ 
+                
                 assertNotNull(bytes);
+ 
+//                try (var is =  (new FileOutputStream("/home/filip/" + testCase.id.getFragment() + ".cborld"))) {
+//                    
+//                    is.write(bytes);
+//                    is.flush();
+//                    
+//                } catch (FileNotFoundException e) {
+//                    // TODO Auto-generated catch block
+//                    e.printStackTrace();
+//                } catch (IOException e) {
+//                    // TODO Auto-generated catch block
+//                    e.printStackTrace();
+//                }
     
                 Document expected = LOADER.loadDocument(testCase.result, new DocumentLoaderOptions());
     
@@ -147,7 +160,6 @@ public class CborLdTestRunnerJunit {
             assertException(e.getCode().name(), e);
 
         } catch (JsonLdError e) {
-            e.printStackTrace();
             fail(e);
         }
     }

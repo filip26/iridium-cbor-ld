@@ -93,6 +93,7 @@ final class ObjectExpansion1314 {
         }
         
         final Collection<String> keys = element.keys();
+
         final MapEntryCursor entry = element.entry();
 
         // 13.

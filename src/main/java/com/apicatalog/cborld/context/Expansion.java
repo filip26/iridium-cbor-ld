@@ -75,7 +75,7 @@ final class Expansion {
     }
 
     protected JsonValue compute() throws JsonLdError {
-        
+
         // 1. If element is null, return null
         if (element.isNull()) {
             return JsonValue.NULL;
@@ -105,7 +105,7 @@ final class Expansion {
         }
         
         // 4. If element is a scalar
-        if (element.isPrimitive()) {
+        if (element.isScalar()) {
 
             return ScalarExpansion
                         .with(activeContext, propertyContext, element, activeProperty, appliedContexts)

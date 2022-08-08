@@ -62,6 +62,6 @@ public class EncoderContext {
             }
         }
     
-        throw new IllegalArgumentException("Non serializable context detected.");
+        throw new IllegalArgumentException("Non compress-able context detected.");
     }
 }

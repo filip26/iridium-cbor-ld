@@ -78,9 +78,12 @@ final class ArrayExpansion {
 
     public JsonArray expand() throws JsonLdError {
 
-        // 5.1
+        if (element.isEmpty()) {
+            return JsonValue.EMPTY_JSON_ARRAY; 
+        }
+        
         final JsonArrayBuilder result = Json.createArrayBuilder();
-
+        
         // 5.2.
         for (final ValueCursor item : element) {
 

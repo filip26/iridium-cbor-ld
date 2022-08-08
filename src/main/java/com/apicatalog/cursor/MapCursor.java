@@ -1,5 +1,7 @@
 package com.apicatalog.cursor;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Collection;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -53,8 +55,16 @@ public interface MapCursor extends StructureCursor, Iterable<MapEntryCursor> {
         return is(key, ValueCursor::isBoolean);
     }
     
+    default boolean isInteger(String key) {
+        return is(key, ValueCursor::isInteger);
+    }
+
+    default boolean isDecimal(String key) {
+        return is(key, ValueCursor::isDecimal);
+    }
+
     default boolean isNumber(String key) {
-        return is(key, ValueCursor::isNumber);
+        return isInteger(key) || isDecimal(key);
     }
 
     default boolean isScalar(String key) {
@@ -85,23 +95,15 @@ public interface MapCursor extends StructureCursor, Iterable<MapEntryCursor> {
         return value(key, ValueCursor::booleanValue);
     }
 
-    default Integer integerValue(String key) {
+    default BigInteger integerValue(String key) {
         return value(key, ValueCursor::integerValue);
     }
 
-    default Long longValue(String key) {
-        return value(key, ValueCursor::longValue);
+    default BigDecimal decimalValue(String key) {
+        return value(key, ValueCursor::decimalValue);
     }
 
     default String stringValue(String key) {
         return value(key, ValueCursor::stringValue);
     }
-
-//    ArrayCursor array(String key);
-//
-//    MapCursor object(String key);
-//
-//    ValueCursor value(String key);
-//
-//    MapCursor clone();
 }

@@ -254,6 +254,42 @@
             "option": {
                 "compactArrays": false
             }            
-        }        
+        },
+        {
+            "@id": "#t0060",
+            "@type": [
+                "PositiveEvaluationTest",
+                "EncoderTest"
+            ],
+            "name": "inline @type, @id",
+            "input": "encoder/0060-in.jsonld",
+            "expect": "encoder/0060-out.cborld",
+            "option": {
+                
+            }            
+        },
+        {
+            "@id": "#t0061",
+            "@type": [
+                "NegativeEvaluationTest",
+                "EncoderTest"
+            ],
+            "name": "non compress-able document",
+            "input": "encoder/0061-in.jsonld",
+            "expectErrorCode": "InvalidDocument"            
+        },
+        {
+            "@id": "#t0062",
+            "@type": [
+                "PositiveEvaluationTest",
+                "EncoderTest"
+            ],
+            "name": "simple values",
+            "input": "encoder/0062-in.jsonld",
+            "expect": "encoder/0062-out.cborld",
+            "option": {
+                
+            }            
+        }
 	]
 }

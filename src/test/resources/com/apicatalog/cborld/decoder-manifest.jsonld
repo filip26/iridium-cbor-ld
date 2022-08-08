@@ -282,6 +282,26 @@
             "name": "verifiable credentials",
             "input": "decoder/0052-in.cborld",
             "expect": "decoder/0052-out.jsonld"
-        }        
+        },
+        {
+            "@id": "#t0060",
+            "@type": [
+                "PositiveEvaluationTest",
+                "DecoderTest"
+            ],
+            "name": "inline @type, @id",
+            "input": "decoder/0060-in.cborld",
+            "expect": "decoder/0060-out.jsonld"
+        },
+        {
+            "@id": "#t0062",
+            "@type": [
+                "PositiveEvaluationTest",
+                "DecoderTest"
+            ],
+            "name": "simple values",
+            "input": "decoder/0062-in.cborld",
+            "expect": "decoder/0062-out.jsonld"
+        }
 	]
 }
