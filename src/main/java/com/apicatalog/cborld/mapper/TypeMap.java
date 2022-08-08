@@ -19,7 +19,7 @@ public class TypeMap {
         this.mapping = mapping;
     }
     
-    public Collection<String> getType(String term) {
+    public Collection<String> getType(final String term) {
         
         if (JsonUtils.isObject(mapping)) {
             JsonValue value =  mapping.asJsonObject().get(term);
@@ -51,7 +51,7 @@ public class TypeMap {
         return null;
     }
     
-    public TypeMap getMapping(String term) {
+    public TypeMap getMapping(final String term) {
         if (JsonUtils.isObject(mapping)) {
             JsonValue value =  mapping.asJsonObject().get(term);
             if (JsonUtils.isObject(value)) {
@@ -60,7 +60,7 @@ public class TypeMap {
         }
         return null;
     }
-    
+
     public JsonValue getMapping() {
         return mapping;
     }    

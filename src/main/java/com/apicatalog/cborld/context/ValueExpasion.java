@@ -19,7 +19,7 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import com.apicatalog.cursor.ValueCursor;
+import com.apicatalog.cursor.DataCursor;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
@@ -50,7 +50,7 @@ final class ValueExpasion {
         return new ValueExpasion(activeContext, appliedContexts);
     }
 
-    public JsonValue expand(final ValueCursor value, final String activeProperty) throws JsonLdError {
+    public JsonValue expand(final DataCursor value, final String activeProperty) throws JsonLdError {
         
         definition = activeContext.getTerm(activeProperty);
 

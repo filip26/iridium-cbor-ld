@@ -8,7 +8,7 @@ import java.util.stream.StreamSupport;
 import com.apicatalog.cursor.ArrayCursor;
 import com.apicatalog.cursor.ArrayItemCursor;
 import com.apicatalog.cursor.Cursor;
-import com.apicatalog.cursor.ValueCursor;
+import com.apicatalog.cursor.DataCursor;
 
 import co.nstant.in.cbor.model.Array;
 import co.nstant.in.cbor.model.DataItem;
@@ -70,7 +70,7 @@ public class CborArrayCursor extends CborValueCursor implements ArrayCursor {
         return this;
     }
 
-    public Stream<ValueCursor> stream() {
-        return StreamSupport.stream(this.spliterator(), false).map(ValueCursor.class::cast);
+    public Stream<DataCursor> stream() {
+        return StreamSupport.stream(this.spliterator(), false).map(DataCursor.class::cast);
     }
 }

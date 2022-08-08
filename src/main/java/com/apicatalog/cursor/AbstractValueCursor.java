@@ -3,7 +3,7 @@ package com.apicatalog.cursor;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-public abstract class AbstractValueCursor<T> implements ValueCursor {
+public abstract class AbstractValueCursor<T> implements DataCursor {
 
     protected final Cursor<T> cursor;
     protected final Supplier<T> value;
@@ -14,7 +14,7 @@ public abstract class AbstractValueCursor<T> implements ValueCursor {
     }
 
     @Override
-    public Optional<ValueCursor> parent() {
+    public Optional<DataCursor> parent() {
         return cursor.prev() 
                 ? Optional.of(this)
                 : Optional.empty();

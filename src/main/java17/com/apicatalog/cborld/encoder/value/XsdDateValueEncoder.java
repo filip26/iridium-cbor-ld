@@ -7,7 +7,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 
 import com.apicatalog.cborld.dictionary.Dictionary;
-import com.apicatalog.cursor.ValueCursor;
+import com.apicatalog.cursor.DataCursor;
 
 import co.nstant.in.cbor.model.DataItem;
 import co.nstant.in.cbor.model.UnsignedInteger;
@@ -15,7 +15,7 @@ import co.nstant.in.cbor.model.UnsignedInteger;
 public class XsdDateValueEncoder implements ValueEncoder {
 
     @Override
-    public DataItem encode(Dictionary dictionary, ValueCursor value, String term, Collection<String> types) {
+    public DataItem encode(Dictionary dictionary, DataCursor value, String term, Collection<String> types) {
 
         if (types != null && types.contains("http://www.w3.org/2001/XMLSchema#date")
                 && value.isString()

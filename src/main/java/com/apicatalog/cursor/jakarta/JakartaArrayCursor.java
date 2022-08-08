@@ -7,7 +7,7 @@ import java.util.stream.StreamSupport;
 
 import com.apicatalog.cursor.ArrayCursor;
 import com.apicatalog.cursor.ArrayItemCursor;
-import com.apicatalog.cursor.ValueCursor;
+import com.apicatalog.cursor.DataCursor;
 
 public class JakartaArrayCursor extends JakartaValueCursor implements ArrayCursor {
     
@@ -66,7 +66,7 @@ public class JakartaArrayCursor extends JakartaValueCursor implements ArrayCurso
         return this;
     }
     
-    public Stream<ValueCursor> stream() {
-        return StreamSupport.stream(this.spliterator(), false).map(ValueCursor.class::cast);
+    public Stream<DataCursor> stream() {
+        return StreamSupport.stream(this.spliterator(), false).map(DataCursor.class::cast);
     }
 }

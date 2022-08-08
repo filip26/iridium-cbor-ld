@@ -1,6 +1,6 @@
 package com.apicatalog.cursor;
 
-public interface ArrayItemCursor extends ValueCursor {
+public interface ArrayItemCursor extends DataCursor {
 
     int arrayIndex();
     

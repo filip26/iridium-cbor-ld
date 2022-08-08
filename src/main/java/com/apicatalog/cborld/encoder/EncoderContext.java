@@ -3,7 +3,7 @@ package com.apicatalog.cborld.encoder;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 
-import com.apicatalog.cursor.ValueCursor;
+import com.apicatalog.cursor.DataCursor;
 import com.apicatalog.cursor.ArrayItemCursor;
 import com.apicatalog.cursor.MapCursor;
 import com.apicatalog.cursor.MapEntryCursor;
@@ -20,7 +20,7 @@ public class EncoderContext {
 
         for (final MapEntryCursor entry : document) {
     
-            if (Keywords.CONTEXT.equals(entry.mapKey())) {
+            if (Keywords.CONTEXT.equals(entry.stringKey())) {
                 processContextValue(entry, contexts);
 
             } else if (entry.isMap()) {
@@ -31,7 +31,7 @@ public class EncoderContext {
         return contexts;
     }
 
-    static final void processContextValue(final ValueCursor value, final Collection<String> result) {
+    static final void processContextValue(final DataCursor value, final Collection<String> result) {
     
         if (value.isString()) {
             final String uri = value.stringValue();

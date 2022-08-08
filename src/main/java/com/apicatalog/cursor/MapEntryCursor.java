@@ -1,8 +1,18 @@
 package com.apicatalog.cursor;
 
-public interface MapEntryCursor extends ValueCursor {
+import java.math.BigInteger;
 
-    String mapKey();
+public interface MapEntryCursor extends DataCursor<MapCursor> {
 
-    MapEntryCursor mapKey(String key);
+    boolean hasNumericKey();
+    boolean hasStringKey();
+
+    String stringKey();
+    BigInteger numericKey();
+
+    MapEntryCursor key(String key);
+    MapEntryCursor key(BigInteger key);
+    
+    @Override
+    MapCursor parent();
 }

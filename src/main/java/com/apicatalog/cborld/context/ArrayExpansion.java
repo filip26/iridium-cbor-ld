@@ -21,7 +21,7 @@ import java.util.function.Consumer;
 
 import com.apicatalog.cborld.db.TypeKeyNameMapper;
 import com.apicatalog.cursor.ArrayCursor;
-import com.apicatalog.cursor.ValueCursor;
+import com.apicatalog.cursor.DataCursor;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.json.JsonUtils;
@@ -82,7 +82,7 @@ final class ArrayExpansion {
         final JsonArrayBuilder result = Json.createArrayBuilder();
 
         // 5.2.
-        for (final ValueCursor item : element) {
+        for (final DataCursor item : element) {
 
             // 5.2.1
             JsonValue expanded =

@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Objects;
 
 import com.apicatalog.cbor.CborComparison;
-import com.apicatalog.cbor.CborWriter;
+import com.apicatalog.cbor.CborPrinter;
 import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.decoder.DecoderError;
 import com.apicatalog.cborld.encoder.EncoderError;
@@ -197,30 +197,30 @@ public class CborLdTestRunnerJunit {
     public static void write(final CborLdTestCase testCase, final byte[] result, final byte[] expected) {
         final StringWriter stringWriter = new StringWriter();
 
-        try (final PrintWriter writer = new PrintWriter(stringWriter)) {
-            writer.println("Test " + testCase.id.getFragment() + ": " + testCase.name);
+        try (final PrintWriter printer = new PrintWriter(stringWriter)) {
+            printer.println("Test " + testCase.id.getFragment() + ": " + testCase.name);
 
-            writer.println("Expected");
+            printer.println("Expected");
 
-            CborWriter cborWriter = new CborWriter(writer);
+            CborPrinter cborWriter = new CborPrinter(printer);
             
             List<DataItem> decodedExpected = CborDecoder.decode(expected);
             assertNotNull(decodedExpected);
 
             if (decodedExpected != null) {
-                cborWriter.write(decodedExpected);
-                writer.println();
+                cborWriter.print(decodedExpected);
+                printer.println();
             }
-            writer.println();
+            printer.println();
 
-            writer.println("Actual");
+            printer.println("Actual");
             
             List<DataItem> decodedResult = CborDecoder.decode(result);
             assertNotNull(decodedResult);
 
             if (decodedResult != null) {
-                cborWriter.write(decodedResult);
-                writer.println();
+                cborWriter.print(decodedResult);
+                printer.println();
             }
 
         } catch (IOException e) {

@@ -1,12 +1,19 @@
 package com.apicatalog.cursor;
 
-import java.util.Optional;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
+public interface DataCursor<P> {
+    
+    public enum DataType {
+        Null,
+        String,
+        Integer,
+        Decimal,
+        Boolean,
+        Array,
+        Map,
+        Binary
+    }
 
-public interface ValueCursor {
-
-    Optional<ValueCursor> parent();
+    P parent();
 
     boolean isNull();
 
@@ -50,11 +57,11 @@ public interface ValueCursor {
     boolean isMapEntry();
     MapEntryCursor asMapEntry();
     
-    static Stream<ValueCursor> toStream(ValueCursor cursor) {
-        if (cursor.isArray()) {
-            return StreamSupport.stream(cursor.asArray().spliterator(), false).map(ValueCursor.class::cast);
-        }
-
-        return Stream.of(cursor);
-    }
+//    static Stream<DataCursor> toStream(DataCursor cursor) {
+//        if (cursor.isArray()) {
+//            return StreamSupport.stream(cursor.asArray().spliterator(), false).map(DataCursor.class::cast);
+//        }
+//
+//        return Stream.of(cursor);
+//    }
 }

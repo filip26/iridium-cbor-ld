@@ -52,7 +52,7 @@ public class JakartaMapCursor extends JakartaValueCursor implements MapCursor {
 
             @Override
             public MapEntryCursor next() {
-                return  entry.mapKey(iterator.next());
+                return  entry.key(iterator.next());
             }
         };
     }

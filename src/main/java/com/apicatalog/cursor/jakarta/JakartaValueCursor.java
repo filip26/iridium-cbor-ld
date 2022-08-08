@@ -4,7 +4,7 @@ import java.util.function.Supplier;
 
 import com.apicatalog.cursor.AbstractValueCursor;
 import com.apicatalog.cursor.MapEntryCursor;
-import com.apicatalog.cursor.ValueCursor;
+import com.apicatalog.cursor.DataCursor;
 
 import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
@@ -95,7 +95,7 @@ public class JakartaValueCursor extends AbstractValueCursor<JsonValue> {
         return ((JsonString)value.get()).getString();
     }
     
-    public static JsonValue toJson(final ValueCursor cursor) {
+    public static JsonValue toJson(final DataCursor cursor) {
         if (cursor.isArray()) {
             
             if (cursor.asArray().isEmpty()) {
@@ -104,7 +104,7 @@ public class JakartaValueCursor extends AbstractValueCursor<JsonValue> {
             
             final JsonArrayBuilder array = Json.createArrayBuilder();
             
-            for (final ValueCursor item : cursor.asArray()) {
+            for (final DataCursor item : cursor.asArray()) {
                 array.add(toJson(item));
             }
             cursor.parent();
@@ -123,7 +123,7 @@ public class JakartaValueCursor extends AbstractValueCursor<JsonValue> {
             final JsonObjectBuilder map = Json.createObjectBuilder();
             
             for (final MapEntryCursor entry : cursor.asMap()) {
-                map.add(entry.mapKey().toString(), toJson(entry));
+                map.add(entry.stringKey().toString(), toJson(entry));
             }
             cursor.parent();
             

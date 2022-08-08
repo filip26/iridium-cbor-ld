@@ -12,7 +12,7 @@ final class CborMapEntryCursor extends CborValueCursor implements MapEntryCursor
     }
 
     @Override
-    public String mapKey() {
+    public String stringKey() {
         if (!isMapEntry()) {
             throw new ClassCastException();    
         }        
@@ -20,7 +20,7 @@ final class CborMapEntryCursor extends CborValueCursor implements MapEntryCursor
     }
 
     @Override
-    public MapEntryCursor mapKey(final String key) {
+    public MapEntryCursor key(final String key) {
         if (!isMapEntry()) {
             throw new ClassCastException();
         }

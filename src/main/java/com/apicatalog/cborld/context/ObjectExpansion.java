@@ -213,7 +213,7 @@ final class ObjectExpansion {
                 typeMapper.typeKeyName(key);
             }
             
-            final JsonValue entryValue = JakartaValueCursor.toJson(entry.mapKey(key));
+            final JsonValue entryValue = JakartaValueCursor.toJson(entry.key(key));
             
             // 11.2
             final List<String> terms = JsonUtils.toStream(entryValue)

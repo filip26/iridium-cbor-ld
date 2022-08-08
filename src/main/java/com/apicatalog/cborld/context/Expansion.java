@@ -21,7 +21,7 @@ import java.util.function.Consumer;
 
 import com.apicatalog.cborld.db.TypeKeyNameMapper;
 import com.apicatalog.cborld.mapper.TypeMap;
-import com.apicatalog.cursor.ValueCursor;
+import com.apicatalog.cursor.DataCursor;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
@@ -33,7 +33,7 @@ final class Expansion {
 
     // mandatory
     private ActiveContext activeContext;
-    private ValueCursor element;
+    private DataCursor element;
     private String activeProperty;
     private URI baseUrl;
     
@@ -44,7 +44,7 @@ final class Expansion {
     private Consumer<Collection<String>> appliedContexts;
     private TypeKeyNameMapper typeMapper;
 
-    private Expansion(final ActiveContext activeContext, final ValueCursor element, final String activeProperty,
+    private Expansion(final ActiveContext activeContext, final DataCursor element, final String activeProperty,
             final URI baseUrl, Consumer<Collection<String>> appliedContexts, TypeKeyNameMapper typeMapper
             ) {
         this.activeContext = activeContext;
@@ -60,7 +60,7 @@ final class Expansion {
         this.fromMap = false;
     }
 
-    public static final Expansion with(final ActiveContext activeContext, final ValueCursor element, final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts, TypeKeyNameMapper typeMapper) {
+    public static final Expansion with(final ActiveContext activeContext, final DataCursor element, final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts, TypeKeyNameMapper typeMapper) {
         return new Expansion(activeContext, element, activeProperty, baseUrl, appliedContexts, typeMapper);
     }
 

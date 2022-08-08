@@ -1,23 +1,32 @@
 package com.apicatalog.cursor;
 
-import java.util.Collection;
+import java.math.BigInteger;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 public interface MapCursor extends StructureCursor, Iterable<MapEntryCursor> {
 
-    Collection<String> keys();
+//    Collection<String> keys();
 
     MapEntryCursor entry(String key);
+
+    MapEntryCursor entry(BigInteger key);
     
-    default MapEntryCursor entry() {
-        if (isEmpty()) {
-            throw new IndexOutOfBoundsException();
-        }
-        return entry(keys().iterator().next());
+    default Iterable<MapEntryCursor> entries() {
+        return entries(false);
     }
+
+    Iterable<MapEntryCursor> entries(boolean sorted);
     
-    default boolean is(String key, Predicate<ValueCursor> predicate) {
+//    default MapEntryCursor entry() {
+//        if (isEmpty()) {
+//            throw new IndexOutOfBoundsException();
+//        }
+//        return entry(keys().iterator().next());
+//    }
+    
+    default boolean is(String key, Predicate<DataCursor> predicate) {
 
         final MapEntryCursor entry = entry(key); 
         
@@ -28,7 +37,7 @@ public interface MapCursor extends StructureCursor, Iterable<MapEntryCursor> {
         return result;
     }
     
-    default <T> T value(String key, Function<ValueCursor, T> getter) {
+    default <T> T value(String key, Function<DataCursor, T> getter) {
         
         final MapEntryCursor entry = entry(key); 
         
@@ -42,19 +51,19 @@ public interface MapCursor extends StructureCursor, Iterable<MapEntryCursor> {
     boolean contains(String key);
 
     default boolean isNull(String key) {
-        return is(key, ValueCursor::isNull);
+        return is(key, DataCursor::isNull);
     }
 
     default boolean isString(String key) {
-        return is(key, ValueCursor::isString);
+        return is(key, DataCursor::isString);
     }
 
     default boolean isBoolean(String key) {
-        return is(key, ValueCursor::isBoolean);
+        return is(key, DataCursor::isBoolean);
     }
     
     default boolean isNumber(String key) {
-        return is(key, ValueCursor::isNumber);
+        return is(key, DataCursor::isNumber);
     }
 
     default boolean isScalar(String key) {
@@ -62,19 +71,19 @@ public interface MapCursor extends StructureCursor, Iterable<MapEntryCursor> {
     }
 
     default boolean isArray(String key) {
-        return is(key, ValueCursor::isArray);
+        return is(key, DataCursor::isArray);
     }
     
     default boolean isNonEmptyArray(String key) {
-        return is(key, ValueCursor::isNonEmptyArray);
+        return is(key, DataCursor::isNonEmptyArray);
     }
 
     default boolean isMap(String key) {
-        return is(key, ValueCursor::isMap);
+        return is(key, DataCursor::isMap);
     }
 
     default boolean isNonEmptyMap(String key) {
-        return is(key, ValueCursor::isNonEmptyMap);
+        return is(key, DataCursor::isNonEmptyMap);
     }
 
     default boolean isStructure(String key) {
@@ -82,26 +91,18 @@ public interface MapCursor extends StructureCursor, Iterable<MapEntryCursor> {
     }
     
     default Boolean booleanValue(String key) {
-        return value(key, ValueCursor::booleanValue);
+        return value(key, DataCursor::booleanValue);
     }
 
     default Integer integerValue(String key) {
-        return value(key, ValueCursor::integerValue);
+        return value(key, DataCursor::integerValue);
     }
 
     default Long longValue(String key) {
-        return value(key, ValueCursor::longValue);
+        return value(key, DataCursor::longValue);
     }
 
     default String stringValue(String key) {
-        return value(key, ValueCursor::stringValue);
+        return value(key, DataCursor::stringValue);
     }
-
-//    ArrayCursor array(String key);
-//
-//    MapCursor object(String key);
-//
-//    ValueCursor value(String key);
-//
-//    MapCursor clone();
 }

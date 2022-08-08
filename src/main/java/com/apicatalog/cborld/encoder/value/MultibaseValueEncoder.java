@@ -3,7 +3,7 @@ package com.apicatalog.cborld.encoder.value;
 import java.util.Collection;
 
 import com.apicatalog.cborld.dictionary.Dictionary;
-import com.apicatalog.cursor.ValueCursor;
+import com.apicatalog.cursor.DataCursor;
 import com.apicatalog.multibase.Multibase;
 
 import co.nstant.in.cbor.model.ByteString;
@@ -14,7 +14,7 @@ public class MultibaseValueEncoder implements ValueEncoder {
     public static final String TYPE = "https://w3id.org/security#multibase";
     
     @Override
-    public DataItem encode(Dictionary dictionary, ValueCursor value, String term, Collection<String> types) {
+    public DataItem encode(Dictionary dictionary, DataCursor value, String term, Collection<String> types) {
 
         if (value.isString() && types != null && types.contains(TYPE)) {
 

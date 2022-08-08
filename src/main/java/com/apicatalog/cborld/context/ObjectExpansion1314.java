@@ -24,7 +24,7 @@ import java.util.function.Consumer;
 import com.apicatalog.cborld.db.TypeKeyNameMapper;
 import com.apicatalog.cursor.MapCursor;
 import com.apicatalog.cursor.MapEntryCursor;
-import com.apicatalog.cursor.ValueCursor;
+import com.apicatalog.cursor.DataCursor;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.JsonLdVersion;
@@ -115,7 +115,7 @@ final class ObjectExpansion1314 {
                 continue;
             }
 
-            final ValueCursor value = entry.mapKey(key);
+            final DataCursor value = entry.key(key);
 
             // 13.4. If expanded property is a keyword:
             if (Keywords.contains(expandedProperty)) {

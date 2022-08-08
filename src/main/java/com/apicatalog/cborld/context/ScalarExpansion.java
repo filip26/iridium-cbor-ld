@@ -18,7 +18,7 @@ package com.apicatalog.cborld.context;
 import java.util.Collection;
 import java.util.function.Consumer;
 
-import com.apicatalog.cursor.ValueCursor;
+import com.apicatalog.cursor.DataCursor;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
@@ -31,13 +31,13 @@ final class ScalarExpansion {
     // mandatory
     private ActiveContext activeContext;
     private JsonValue propertyContext;
-    private ValueCursor element;
+    private DataCursor element;
     private String activeProperty;
     
     private final Consumer<Collection<String>> appliedContexts;
 
     private ScalarExpansion(final ActiveContext activeContext, final JsonValue propertyContext,
-            final ValueCursor element, final String activeProperty, Consumer<Collection<String>> appliedContexts) {
+            final DataCursor element, final String activeProperty, Consumer<Collection<String>> appliedContexts) {
         this.activeContext = activeContext;
         this.propertyContext = propertyContext;
         this.element = element;
@@ -46,7 +46,7 @@ final class ScalarExpansion {
     }
 
     public static final ScalarExpansion with(final ActiveContext activeContext, final JsonValue propertyContext,
-            final ValueCursor element, final String activeProperty, Consumer<Collection<String>> appliedContexts) {
+            final DataCursor element, final String activeProperty, Consumer<Collection<String>> appliedContexts) {
         return new ScalarExpansion(activeContext, propertyContext, element, activeProperty, appliedContexts);
     }
 

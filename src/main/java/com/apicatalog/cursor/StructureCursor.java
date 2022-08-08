@@ -1,6 +1,6 @@
 package com.apicatalog.cursor;
 
-public interface StructureCursor extends ValueCursor {
+public interface StructureCursor<P> extends DataCursor<P> {
 
     int size();
     

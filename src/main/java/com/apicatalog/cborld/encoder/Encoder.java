@@ -21,7 +21,7 @@ import com.apicatalog.cursor.ArrayCursor;
 import com.apicatalog.cursor.ArrayItemCursor;
 import com.apicatalog.cursor.MapCursor;
 import com.apicatalog.cursor.MapEntryCursor;
-import com.apicatalog.cursor.ValueCursor;
+import com.apicatalog.cursor.DataCursor;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.http.DefaultHttpClient;
@@ -223,7 +223,7 @@ public class Encoder implements EncoderConfig {
     
         for (final MapEntryCursor entry  : object) {
             
-            final String property = entry.mapKey();
+            final String property = entry.stringKey();
     
             final BigInteger encodedProperty = index.getCode(property);
                 
@@ -288,7 +288,7 @@ public class Encoder implements EncoderConfig {
         return flow;
     }
 
-    final DataItem encode(final ValueCursor value, final String term, TypeMap typeMapping) throws EncoderError {
+    final DataItem encode(final DataCursor value, final String term, TypeMap typeMapping) throws EncoderError {
     
         if (value.isBoolean()) {
             return value.booleanValue() ? SimpleValue.TRUE : SimpleValue.FALSE;

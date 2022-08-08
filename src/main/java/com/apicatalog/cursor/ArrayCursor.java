@@ -7,7 +7,7 @@ public interface ArrayCursor extends StructureCursor, Iterable<ArrayItemCursor> 
 
     ArrayItemCursor item(int index);
     
-    default boolean is(int index, Predicate<ValueCursor> predicate) {
+    default boolean is(int index, Predicate<DataCursor> predicate) {
 
         ArrayItemCursor item = item(index); 
         
@@ -18,7 +18,7 @@ public interface ArrayCursor extends StructureCursor, Iterable<ArrayItemCursor> 
         return result;
     }
     
-    default <T> T value(int index, Function<ValueCursor, T> getter) {
+    default <T> T value(int index, Function<DataCursor, T> getter) {
         
         ArrayItemCursor item = item(index); 
         
@@ -30,19 +30,19 @@ public interface ArrayCursor extends StructureCursor, Iterable<ArrayItemCursor> 
     }
     
     default boolean isNull(int index) {
-        return is(index, ValueCursor::isNull);
+        return is(index, DataCursor::isNull);
     }
 
     default boolean isString(int index) {
-        return is(index, ValueCursor::isString);
+        return is(index, DataCursor::isString);
     }
     
     default boolean isBoolean(int index) {
-        return is(index, ValueCursor::isBoolean);
+        return is(index, DataCursor::isBoolean);
     }
     
     default boolean isNumber(int index) {
-        return is(index, ValueCursor::isNumber);
+        return is(index, DataCursor::isNumber);
     }
 
     default boolean isPrimitive(int index) {
@@ -50,19 +50,19 @@ public interface ArrayCursor extends StructureCursor, Iterable<ArrayItemCursor> 
     }
 
     default boolean isArray(int index) {
-        return is(index, ValueCursor::isArray);
+        return is(index, DataCursor::isArray);
     }
     
     default boolean isNonEmptyArray(int index) {
-        return is(index, ValueCursor::isNonEmptyArray);
+        return is(index, DataCursor::isNonEmptyArray);
     }
 
     default boolean isMap(int index) {
-        return is(index, ValueCursor::isMap);
+        return is(index, DataCursor::isMap);
     }
     
     default boolean isNonEmptyMap(int index) {
-        return is(index, ValueCursor::isNonEmptyMap);
+        return is(index, DataCursor::isNonEmptyMap);
     }
 
     default boolean isStructure(int index) {
@@ -70,19 +70,19 @@ public interface ArrayCursor extends StructureCursor, Iterable<ArrayItemCursor> 
     }
 
     default Boolean booleanValue(int index) {
-        return value(index, ValueCursor::booleanValue);
+        return value(index, DataCursor::booleanValue);
     }
 
     default Integer integerValue(int index) {
-        return value(index, ValueCursor::integerValue);        
+        return value(index, DataCursor::integerValue);        
     }
     
     default Long longValue(int index) {
-        return value(index, ValueCursor::longValue);
+        return value(index, DataCursor::longValue);
     }
 
     default String stringValue(int index) {
-        return value(index, ValueCursor::stringValue);
+        return value(index, DataCursor::stringValue);
     }
 //
 //    ArrayCursor array(int index);

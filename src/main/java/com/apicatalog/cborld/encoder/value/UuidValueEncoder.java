@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.UUID;
 
 import com.apicatalog.cborld.dictionary.Dictionary;
-import com.apicatalog.cursor.ValueCursor;
+import com.apicatalog.cursor.DataCursor;
 import com.apicatalog.uuid.Uuid;
 
 import co.nstant.in.cbor.model.Array;
@@ -18,7 +18,7 @@ public class UuidValueEncoder implements ValueEncoder {
     public final static int CODE = 3;
     
     @Override
-    public DataItem encode(Dictionary dictionary, ValueCursor value, String term, Collection<String> types) {
+    public DataItem encode(Dictionary dictionary, DataCursor value, String term, Collection<String> types) {
 
         if (value.isString() && value.stringValue().toLowerCase().startsWith(PREFIX)) {
             
