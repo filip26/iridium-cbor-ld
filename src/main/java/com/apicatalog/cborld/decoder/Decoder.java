@@ -448,7 +448,7 @@ public class Decoder implements DecoderConfig {
         throw new IllegalStateException("Unsupported CBOR siple value type [" + value.getSimpleValueType() + "].");        
     }
 
-    final JsonValue decodeUncompressed() throws DecoderError {
+    @DoNotCall("Always throws com.apicatalog.cborld.decoder.DecoderError") final JsonValue decodeUncompressed() throws DecoderError {
         throw new DecoderError(Code.InvalidDocument, "Unsupported document compression algorithm");
     }
     
