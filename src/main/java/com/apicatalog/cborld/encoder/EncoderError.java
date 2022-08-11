@@ -1,6 +1,6 @@
 package com.apicatalog.cborld.encoder;
 
-public class EncoderError extends Throwable {
+public class EncoderError extends Exception {
 
     private static final long serialVersionUID = -5385517008580552451L;
 
