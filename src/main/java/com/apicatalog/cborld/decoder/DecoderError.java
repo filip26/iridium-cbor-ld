@@ -1,8 +1,8 @@
 package com.apicatalog.cborld.decoder;
 
-public class DecoderError extends Throwable {
+public class DecoderError extends Exception {
 
-    private static final long serialVersionUID = -2025187747774695053L;
+    private static final long serialVersionUID = -482268633978506824L;
 
     public enum Code {
         Internal,

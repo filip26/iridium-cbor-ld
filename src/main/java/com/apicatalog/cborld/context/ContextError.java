@@ -1,6 +1,6 @@
 package com.apicatalog.cborld.context;
 
-public class ContextError extends Throwable {
+public class ContextError extends Exception {
 
     private static final long serialVersionUID = -1522925335270709947L;
 
