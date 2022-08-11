@@ -284,6 +284,16 @@
             "expect": "decoder/0052-out.jsonld"
         },
         {
+            "@id": "#t0053",
+            "@type": [
+                "PositiveEvaluationTest",
+                "DecoderTest"
+            ],
+            "name": "issue #4 CborCursor NPE",
+            "input": "decoder/0053-in.cborld",
+            "expect": "decoder/0052-out.jsonld"
+        },
+        {
             "@id": "#t0060",
             "@type": [
                 "PositiveEvaluationTest",

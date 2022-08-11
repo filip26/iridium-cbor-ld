@@ -91,30 +91,32 @@ public class CborCursor implements Cursor<DataItem> {
             }   
         }
         
-        final Collection<String> path = stack.stream()
-                .filter(ss -> ss.key() != null)
-                .map(ss -> ss.key())
-                .collect(Collectors.toList());
-
-        if ((!arrayCode && MajorType.ARRAY.equals(value.getMajorType()))
-                ) {
-
-            value = decodeValue.decode(value, mapKey, path);
-            
-        } else if (MajorType.ARRAY.equals(value.getMajorType())) {
-            
-            Collection<DataItem> items = ((Array)value).getDataItems();
-            
-            Array newValues = new Array(items.size());
-            
-            for (DataItem item : items) {
-                newValues.add(decodeValue.decode(item, mapKey, path));
+        if (value != null) {
+            final Collection<String> path = stack.stream()
+                    .filter(ss -> ss.key() != null)
+                    .map(ss -> ss.key())
+                    .collect(Collectors.toList());
+    
+            if ((!arrayCode && MajorType.ARRAY.equals(value.getMajorType()))
+                    ) {
+    
+                value = decodeValue.decode(value, mapKey, path);
+                
+            } else if (MajorType.ARRAY.equals(value.getMajorType())) {
+                
+                Collection<DataItem> items = ((Array)value).getDataItems();
+                
+                Array newValues = new Array(items.size());
+                
+                for (DataItem item : items) {
+                    newValues.add(decodeValue.decode(item, mapKey, path));
+                }
+                
+                value = newValues;
+                
+            } else {
+                value = decodeValue.decode(value, mapKey, path);
             }
-            
-            value = newValues;
-            
-        } else {
-            value = decodeValue.decode(value, mapKey, path);
         }
 
         stack.push(new CborCursorState(value, null, mapKey));
