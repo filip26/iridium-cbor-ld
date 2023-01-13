@@ -58,7 +58,7 @@ public class ContextDictionary implements Dictionary {
     @Override
     public String getValue(BigInteger code) {
     
-        final int value = code.intValueExact();
+        final int value = code.intValue();
     
         if (value < OFFSET) {
             throw new IllegalArgumentException(

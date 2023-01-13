@@ -88,7 +88,7 @@ public class JakartaValueCursor extends AbstractValueCursor<JsonValue> {
         if (!isInteger()) {
             throw new ClassCastException();
         }
-        return ((JsonNumber)value.get()).bigIntegerValueExact();
+        return ((JsonNumber)value.get()).bigIntegerValue();
     }
 
     @Override

@@ -60,6 +60,6 @@ public class KeywordDictionary implements Dictionary {
 
     @Override
     public String getValue(BigInteger code) {
-        return CODE_TO_TERM.get(code.intValueExact());
+        return CODE_TO_TERM.get(code.intValue());
     }
 }

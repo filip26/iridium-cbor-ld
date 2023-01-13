@@ -40,7 +40,7 @@ public class DidKeyValueDecoder implements ValueDecoder {
             final DataItem part2 = items.size() == 3 ? items.get(2) : null; 
             
             if (!MajorType.UNSIGNED_INTEGER.equals(code.getMajorType())
-                    || DidKeyValueEncoder.CODE != ((UnsignedInteger)code).getValue().longValueExact()
+                    || DidKeyValueEncoder.CODE != ((UnsignedInteger)code).getValue().longValue()
                     || !MajorType.BYTE_STRING.equals(part1.getMajorType())
                     || (part2 != null && !MajorType.BYTE_STRING.equals(part2.getMajorType()))
                     ) {

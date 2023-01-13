@@ -23,7 +23,7 @@ public class XsdDateValueDecoder implements ValueDecoder {
                 && MajorType.UNSIGNED_INTEGER.equals(value.getMajorType())
                 ) {
             
-            long epochSeconds = ((UnsignedInteger)value).getValue().longValueExact();
+            long epochSeconds = ((UnsignedInteger)value).getValue().longValue();
             
             final Instant date = Instant.ofEpochSecond(epochSeconds);
             

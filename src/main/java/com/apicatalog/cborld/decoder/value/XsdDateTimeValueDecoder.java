@@ -23,7 +23,7 @@ public class XsdDateTimeValueDecoder implements ValueDecoder {
                 && MajorType.UNSIGNED_INTEGER.equals(value.getMajorType())
                 ) {
             
-            long epochSeconds = ((UnsignedInteger)value).getValue().longValueExact();
+            long epochSeconds = ((UnsignedInteger)value).getValue().longValue();
             
             return Json.createValue(Instant.ofEpochSecond(epochSeconds).toString());            
         }

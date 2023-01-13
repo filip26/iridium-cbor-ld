@@ -69,7 +69,7 @@ public class CodeTermMap implements Dictionary {
 
     @Override
     public String getValue(BigInteger code) {
-        return index.get(code.intValueExact());
+        return index.get(code.intValue());
     }
 
     @Override

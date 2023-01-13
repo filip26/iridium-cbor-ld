@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
- <modelVersion>4.0.0</modelVersion>
-   <parent>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
     <groupId>com.apicatalog</groupId>
     <artifactId>iridium</artifactId>
     <version>0.1.1</version>
     <relativePath>pom_parent.xml</relativePath>
   </parent>
-  <artifactId>iridium-cbor-ld</artifactId>
+  <artifactId>iridium-cbor-ld-android-l23</artifactId>
   <packaging>jar</packaging>
-  <name>Iridium CBOR-LD (JRE17)</name>
+  <name>Iridium CBOR-LD (Custom Android API Level 23 Build)</name>
   <url>https://github.com/filip26/iridium-cbor-ld</url>
   <scm>
     <connection>scm:git:git://github.com/filip26/iridium-cbor-ld.git</connection>
@@ -18,19 +19,19 @@
     <url>https://github.com/filip26/iridium-cbor-ld/tree/main</url>
   </scm>
   <properties>
-    <maven.compiler.target>17</maven.compiler.target>
-    <maven.compiler.source>17</maven.compiler.source>
-    <envSources>src/main/java17</envSources>
+    <maven.compiler.target>1.8</maven.compiler.target>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <envSources>src/main/java8</envSources>
   </properties>
   <dependencies>
     <dependency>
       <groupId>com.apicatalog</groupId>
-      <artifactId>titanium-json-ld</artifactId>
+      <artifactId>titanium-json-ld-jre8</artifactId>
       <version>${titanium.version}</version>
     </dependency>
     <dependency>
       <groupId>com.apicatalog</groupId>
-      <artifactId>carbon-did</artifactId>
+      <artifactId>carbon-did-jre8</artifactId>
       <version>${carbon.version}</version>
     </dependency>
   </dependencies>
