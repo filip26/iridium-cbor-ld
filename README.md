@@ -23,7 +23,7 @@ An implementation of the [CBOR-LD 1.0 Draft](https://digitalbazaar.github.io/cbo
 or
 
 ```xml
-<!-- Android (Java 8) -->
+<!-- Android 12 or higher (API Level >=31) -->
 <dependency>
     <groupId>com.apicatalog</groupId>
     <artifactId>iridium-cbor-ld-jre8</artifactId>
