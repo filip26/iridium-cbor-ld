@@ -1,7 +1,11 @@
 package com.apicatalog.cborld.encoder.value;
 
-import java.time.Instant;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
+import java.util.TimeZone;
 
 import com.apicatalog.cborld.dictionary.Dictionary;
 import com.apicatalog.cursor.ValueCursor;
@@ -18,9 +22,21 @@ public class XsdDateTimeValueEncoder implements ValueEncoder {
                 && value.isString()
                 ) {
             
-            final Instant instant = Instant.parse(value.stringValue());
+            DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+            formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
             
-            return new UnsignedInteger(instant.getEpochSecond());
+            try {
+                Date date = formatter.parse(value.stringValue());
+
+                return new UnsignedInteger(date.getTime() / 1000);
+                
+            } catch (ParseException e) {
+                
+            }
+            
+//            final Instant instant = Instant.parse(value.stringValue());
+            
+
         }
         return null;
     }

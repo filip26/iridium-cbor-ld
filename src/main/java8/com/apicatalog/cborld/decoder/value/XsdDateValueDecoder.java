@@ -1,14 +1,11 @@
 package com.apicatalog.cborld.decoder.value;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
+import java.util.TimeZone;
 
 import com.apicatalog.cborld.decoder.DecoderError;
-import com.apicatalog.cborld.decoder.value.ValueDecoder;
 import com.apicatalog.cborld.dictionary.Dictionary;
 
 import co.nstant.in.cbor.model.DataItem;
@@ -24,14 +21,15 @@ public class XsdDateValueDecoder implements ValueDecoder {
         if (types != null && types.contains("http://www.w3.org/2001/XMLSchema#date")
                 && MajorType.UNSIGNED_INTEGER.equals(value.getMajorType())
                 ) {
-            
+
             long epochSeconds = ((UnsignedInteger)value).getValue().longValue();
             
-            final Instant date = Instant.ofEpochSecond(epochSeconds);
+            final Date date = new Date(epochSeconds*1000);
+                        
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+            formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
             
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            
-            return Json.createValue(formatter.format(date.atZone(ZoneId.of("Z"))));            
+            return Json.createValue(formatter.format(date));            
         }
         return null;
     }

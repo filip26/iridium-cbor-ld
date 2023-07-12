@@ -1,7 +1,10 @@
 package com.apicatalog.cborld.decoder.value;
 
-import java.time.Instant;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
+import java.util.TimeZone;
 
 import com.apicatalog.cborld.decoder.DecoderError;
 import com.apicatalog.cborld.dictionary.Dictionary;
@@ -18,14 +21,16 @@ public class XsdDateTimeValueDecoder implements ValueDecoder {
     public JsonValue decode(Dictionary dictionary, DataItem value, String term, Collection<String> types) throws DecoderError {
         
         
-        
         if (types != null && types.contains("http://www.w3.org/2001/XMLSchema#dateTime")
                 && MajorType.UNSIGNED_INTEGER.equals(value.getMajorType())
                 ) {
             
             long epochSeconds = ((UnsignedInteger)value).getValue().longValue();
             
-            return Json.createValue(Instant.ofEpochSecond(epochSeconds).toString());            
+            DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+            formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
+            
+            return Json.createValue(formatter.format(new Date(epochSeconds*1000)));            
         }
         return null;
 
