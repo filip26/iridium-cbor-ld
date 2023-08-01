@@ -6,6 +6,10 @@ An implementation of the [CBOR-LD 1.0 Draft](https://digitalbazaar.github.io/cbo
 [![Maven Central](https://img.shields.io/maven-central/v/com.apicatalog/iridium-cbor-ld.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.apicatalog%22%20AND%20a:%22iridium-cbor-ld%22)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
+## CLI
+[LD-CLI](https://github.com/filip26/ld-cli) ia a command line utility for Ubuntu, Mac and Windows.
+
+
 ## Installation
 
 ### Maven
