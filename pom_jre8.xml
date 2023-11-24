@@ -29,10 +29,5 @@
       <artifactId>titanium-json-ld-jre8</artifactId>
       <version>${titanium.version}</version>
     </dependency>
-    <dependency>
-      <groupId>com.apicatalog</groupId>
-      <artifactId>carbon-did-jre8</artifactId>
-      <version>${carbon.version}</version>
-    </dependency>
   </dependencies>
 </project>

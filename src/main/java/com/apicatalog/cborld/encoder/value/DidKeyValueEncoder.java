@@ -34,13 +34,13 @@ public class DidKeyValueEncoder implements ValueEncoder {
                 Array result = new Array();
                 
                 result.add(new UnsignedInteger(CODE));
-                result.add(concatenate(key.getCodec().code(), key.getRawKey()));
+                result.add(concatenate(key.getCodec().varint(), key.getRawKey()));
                 
                 if (StringUtils.isNotBlank(did.getFragment())) {
                     
                     DidKey fragment = DidKey.from(Did.from(PREFIX + did.getFragment()));
                     
-                    result.add(concatenate(fragment.getCodec().code(), fragment.getRawKey()));
+                    result.add(concatenate(fragment.getCodec().varint(), fragment.getRawKey()));
                 }
 
                 return result;
