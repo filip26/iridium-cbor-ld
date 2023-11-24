@@ -6,7 +6,6 @@ import com.apicatalog.cborld.decoder.DecoderError;
 import com.apicatalog.cborld.dictionary.Dictionary;
 import com.apicatalog.cborld.encoder.value.MultibaseValueEncoder;
 import com.apicatalog.multibase.Multibase;
-import com.apicatalog.multibase.Multibase.Algorithm;
 
 import co.nstant.in.cbor.model.ByteString;
 import co.nstant.in.cbor.model.DataItem;
@@ -34,7 +33,7 @@ public class MultibaseValueDecoder implements ValueDecoder {
             byte[] data = new byte[byteString.length - 1];
             System.arraycopy(byteString, 1, data, 0, byteString.length - 1);
             
-            String encoded = Multibase.encode(Algorithm.Base58Btc, data);
+            String encoded = Multibase.BASE_58_BTC.encode(data);
 
             if (encoded != null) {
                 return Json.createValue(encoded);

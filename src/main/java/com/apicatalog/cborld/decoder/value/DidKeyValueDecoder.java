@@ -9,10 +9,9 @@ import com.apicatalog.cborld.dictionary.Dictionary;
 import com.apicatalog.cborld.encoder.value.DidKeyValueEncoder;
 import com.apicatalog.cborld.hex.Hex;
 import com.apicatalog.multibase.Multibase;
-import com.apicatalog.multibase.Multibase.Algorithm;
 import com.apicatalog.multicodec.Multicodec;
-import com.apicatalog.multicodec.Multicodec.Codec;
-import com.apicatalog.multicodec.Multicodec.Type;
+import com.apicatalog.multicodec.Multicodec.Tag;
+import com.apicatalog.multicodec.MulticodecDecoder;
 
 import co.nstant.in.cbor.model.Array;
 import co.nstant.in.cbor.model.ByteString;
@@ -24,6 +23,8 @@ import jakarta.json.JsonValue;
 
 public class DidKeyValueDecoder implements ValueDecoder {
 
+    protected static final MulticodecDecoder CODECS = MulticodecDecoder.getInstance(Tag.Key);
+    
     @Override
     public JsonValue decode(Dictionary dictionary, DataItem value, String term, Collection<String> types) throws DecoderError {
 
@@ -65,14 +66,14 @@ public class DidKeyValueDecoder implements ValueDecoder {
         
         byte[] codecBytes = new byte[] { bytes[0], bytes[1] };
         
-        Codec codec = Multicodec.codec(Type.Key, codecBytes).orElseThrow(() -> new DecoderError(Code.Unsupported, "Unknown DID key codec " + Hex.toString(codecBytes) + "."));
+        Multicodec codec = CODECS.getCodec(codecBytes).orElseThrow(() -> new DecoderError(Code.Unsupported, "Unknown DID key codec " + Hex.toString(codecBytes) + "."));
     
         byte[] rawKey = new byte[bytes.length - 2];
         System.arraycopy(bytes, 2, rawKey, 0, bytes.length - 2);
         
-        byte[] encodedBytes = Multicodec.encode(codec, rawKey);
+        byte[] encodedBytes = codec.encode(rawKey);
         
-        String encoded = Multibase.encode(Algorithm.Base58Btc, encodedBytes);
+        String encoded = Multibase.BASE_58_BTC.encode(encodedBytes);
         
         return encoded;
     }
