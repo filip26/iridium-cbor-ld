@@ -2,7 +2,7 @@
 An implementation of the [CBOR-LD 1.0 Draft](https://digitalbazaar.github.io/cbor-ld-spec/) in Java.
 
 [![Java 17 CI](https://github.com/filip26/iridium-cbor-ld/actions/workflows/java17-build.yml/badge.svg)](https://github.com/filip26/iridium-cbor-ld/actions/workflows/java17-build.yml)
-[![Android (Java 8) CI](https://github.com/filip26/iridium-cbor-ld/actions/workflows/java8-build.yml/badge.svg)](https://github.com/filip26/iridium-cbor-ld/actions/workflows/java8-build.yml)
+[![Java 8 CI](https://github.com/filip26/iridium-cbor-ld/actions/workflows/java8-build.yml/badge.svg)](https://github.com/filip26/iridium-cbor-ld/actions/workflows/java8-build.yml)
 [![Maven Central](https://img.shields.io/maven-central/v/com.apicatalog/iridium-cbor-ld.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:com.apicatalog%20AND%20a:iridium-cbor-ld)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
@@ -14,31 +14,29 @@ An implementation of the [CBOR-LD 1.0 Draft](https://digitalbazaar.github.io/cbo
 
 ### Maven
 
+Java 17+
+
 ```xml
-<!-- Java 17 -->
 <dependency>
     <groupId>com.apicatalog</groupId>
     <artifactId>iridium-cbor-ld</artifactId>
-    <version>0.1.1</version>
+    <version>0.1.2</version>
 </dependency>
 
 ```
 
-or
+### Gradle
+Java 8+, Android API Level >=31
 
-```xml
-<!-- Android 12 or higher (API Level >=31) -->
-<dependency>
-    <groupId>com.apicatalog</groupId>
-    <artifactId>iridium-cbor-ld-jre8</artifactId>
-    <version>0.1.1</version>
-</dependency>
+```gradle
+implementation("com.apicatalog:iridium-cbor-ld-jre8:0.1.2")
 ```
 
 #### JSON-P Provider
 
 Add JSON-P provider, if it is not on the classpath already.
 
+##### Maven
 
 ```xml
 <dependency>
@@ -48,6 +46,11 @@ Add JSON-P provider, if it is not on the classpath already.
 </dependency>
 ```
 
+##### Gradle
+
+```gradle
+implementation("org.glassfish:jakarta.json:2.0.1")
+```
 
 ## Usage
 
