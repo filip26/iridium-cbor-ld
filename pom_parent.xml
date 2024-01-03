@@ -49,7 +49,7 @@
 		<carbon.version>0.1.0</carbon.version>
 
 		<copper.version>0.1.1</copper.version>
-		<copper-multibase>0.0.2</copper-multibase>
+		<copper-multibase>0.4.0</copper-multibase>
 
 		<cbor-java.version>0.9</cbor-java.version>
 
