@@ -9,6 +9,9 @@ import com.apicatalog.did.Did;
 import com.apicatalog.did.DidUrl;
 import com.apicatalog.did.key.DidKey;
 import com.apicatalog.jsonld.StringUtils;
+import com.apicatalog.multibase.MultibaseDecoder;
+import com.apicatalog.multicodec.Multicodec.Tag;
+import com.apicatalog.multicodec.MulticodecDecoder;
 
 import co.nstant.in.cbor.model.Array;
 import co.nstant.in.cbor.model.ByteString;
@@ -20,6 +23,9 @@ public class DidKeyValueEncoder implements ValueEncoder {
     public final static String PREFIX = "did:key:";
     public final static int CODE = 1025;
 
+    protected static MultibaseDecoder BASES = MultibaseDecoder.getInstance();
+    protected static MulticodecDecoder CODECS = MulticodecDecoder.getInstance(Tag.Key);
+    
     @Override
     public DataItem encode(Dictionary dictionary, ValueCursor value, String term, Collection<String> types) {
 
@@ -29,7 +35,7 @@ public class DidKeyValueEncoder implements ValueEncoder {
                 
                 DidUrl did = DidUrl.from(URI.create(value.stringValue()));
                 
-                DidKey key = DidKey.from(did);
+                DidKey key = DidKey.from(did, BASES, CODECS);
                 
                 Array result = new Array();
                 
@@ -38,7 +44,7 @@ public class DidKeyValueEncoder implements ValueEncoder {
                 
                 if (StringUtils.isNotBlank(did.getFragment())) {
                     
-                    DidKey fragment = DidKey.from(Did.from(PREFIX + did.getFragment()));
+                    DidKey fragment = DidKey.from(Did.from(PREFIX + did.getFragment()), BASES, CODECS);
                     
                     result.add(concatenate(fragment.getCodec().varint(), fragment.getRawKey()));
                 }
