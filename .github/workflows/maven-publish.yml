@@ -21,8 +21,8 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-          java-package: 'jdk'
-          cache: 'maven'
+#          java-package: 'jdk'
+#          cache: 'maven'
           server-id: ossrh
 #      - name: Configure Git User
 #        run: |
@@ -30,7 +30,7 @@ jobs:
 #          git config user.name "GitHub Actions"
 #          echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
       - name: Import GPG Key
-        uses: crazy-max/ghaction-import-gpg@v5.0.0
+        uses: crazy-max/ghaction-import-gpg@v6
         with:
           gpg_private_key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
           passphrase: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
@@ -44,7 +44,7 @@ jobs:
  #           echo "auto_release=false" >> $GITHUB_ENV
  #         fi          
       - name: Publish package
-        run: mvn --batch-mode -Pmaven-central -Dgpg.passphrase=${{ secrets.MAVEN_GPG_PASSPHRASE }} deploy
+        run: mvn -B -Pmaven-central -Dgpg.passphrase=${{ secrets.MAVEN_GPG_PASSPHRASE }} -s maven-settings.xml deploy
         #  -DreleaseVersion=${{ github.event.inputs.releaseVersion }} \
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
