@@ -20,7 +20,7 @@ Java 17+
 <dependency>
     <groupId>com.apicatalog</groupId>
     <artifactId>iridium-cbor-ld</artifactId>
-    <version>0.1.2</version>
+    <version>0.1.3</version>
 </dependency>
 
 ```
@@ -29,7 +29,7 @@ Java 17+
 Java 8+, Android API Level >=31
 
 ```gradle
-implementation("com.apicatalog:iridium-cbor-ld-jre8:0.1.2")
+implementation("com.apicatalog:iridium-cbor-ld-jre8:0.1.3")
 ```
 
 #### JSON-P Provider
@@ -109,7 +109,6 @@ Fork and clone the project repository.
 > mvn -f pom_jre8.xml clean package
 ```
 
-
 ## Resources
 
 * [CBOR-LD 1.0 Draft](https://digitalbazaar.github.io/cbor-ld-spec/)
@@ -126,4 +125,6 @@ Fork and clone the project repository.
 </a> 
 
 ## Commercial Support
+
 Commercial support is available at filip26@gmail.com
+
