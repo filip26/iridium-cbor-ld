@@ -21,8 +21,8 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-          java-package: 'jdk'
-          cache: 'maven'
+            #          java-package: 'jdk'
+            #          cache: 'maven'
           server-id: ossrh
 #      - name: Configure Git User
 #        run: |
@@ -44,7 +44,7 @@ jobs:
  #           echo "auto_release=false" >> $GITHUB_ENV
  #         fi          
       - name: Publish package
-        run: mvn --batch-mode -Pmaven-central -Dgpg.passphrase=${{ secrets.MAVEN_GPG_PASSPHRASE }} deploy
+        run: mvn -B -Pmaven-central -Dgpg.passphrase=${{secrets.MAVEN_GPG_PASSPHRASE}} -s maven-settings.xml deploy
         #  -DreleaseVersion=${{ github.event.inputs.releaseVersion }} \
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
