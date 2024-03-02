@@ -1,5 +1,5 @@
 # Iridium CBOR-LD
-An implementation of the [CBOR-LD 1.0 Draft](https://digitalbazaar.github.io/cbor-ld-spec/) in Java.
+An implementation of the [CBOR-LD 1.0](https://json-ld.github.io/cbor-ld-spec/) in Java.
 
 [![Java 17 CI](https://github.com/filip26/iridium-cbor-ld/actions/workflows/java17-build.yml/badge.svg)](https://github.com/filip26/iridium-cbor-ld/actions/workflows/java17-build.yml)
 [![Java 8 CI](https://github.com/filip26/iridium-cbor-ld/actions/workflows/java8-build.yml/badge.svg)](https://github.com/filip26/iridium-cbor-ld/actions/workflows/java8-build.yml)
@@ -111,7 +111,7 @@ Fork and clone the project repository.
 
 ## Resources
 
-* [CBOR-LD 1.0 Draft](https://digitalbazaar.github.io/cbor-ld-spec/)
+* [CBOR-LD 1.0](https://json-ld.github.io/cbor-ld-spec/)
 * [Concise Binary Object Representation (CBOR)](https://datatracker.ietf.org/doc/html/rfc8949)
 * [Hello CBOR-LD Presentation](https://docs.google.com/presentation/d/1ksh-gUdjJJwDpdleasvs9aRXEmeRvqhkVWqeitx5ZAE/edit?usp=sharing)
 * [cbor.io](https://cbor.io/)
