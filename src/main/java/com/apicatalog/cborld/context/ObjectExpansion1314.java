@@ -27,7 +27,6 @@ import com.apicatalog.cursor.MapEntryCursor;
 import com.apicatalog.cursor.ValueCursor;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdErrorCode;
-import com.apicatalog.jsonld.JsonLdVersion;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.json.JsonUtils;
@@ -153,7 +152,7 @@ final class ObjectExpansion1314 {
                 else if (Keywords.INCLUDED.equals(expandedProperty)) {
 
                     // 13.4.6.1
-                    if (activeContext.inMode(JsonLdVersion.V1_0)) {
+                    if (activeContext.runtime().isV10()) {
                         continue;
                     }
 

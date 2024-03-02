@@ -12,6 +12,7 @@ import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.loader.DocumentLoader;
+import com.apicatalog.jsonld.processor.ProcessingRuntime;
 
 public class Context {
 
@@ -30,7 +31,7 @@ public class Context {
         options.setDocumentLoader(loader);
         options.setBase(base);
         
-        final ActiveContext activeContext = new ActiveContext(null, null, options);
+        final ActiveContext activeContext = new ActiveContext(null, null, ProcessingRuntime.of(options));
 
         Collection<Collection<String>> appliedContextKeys = new LinkedHashSet<>();
 
@@ -54,7 +55,7 @@ public class Context {
         options.setDocumentLoader(loader);
         options.setBase(base);
 
-        final ActiveContext activeContext = new ActiveContext(null, null, options);
+        final ActiveContext activeContext = new ActiveContext(null, null, ProcessingRuntime.of(options));
 
         Collection<Collection<String>> appliedContextKeys = new LinkedHashSet<>();
 
