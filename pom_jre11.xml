@@ -21,7 +21,7 @@
   <properties>
     <maven.compiler.target>11</maven.compiler.target>
     <maven.compiler.source>11</maven.compiler.source>
-    <envSources>src/main/java</envSources>
+    <envSources>src/main/java11</envSources>
   </properties>
   <dependencies>
     <dependency>
