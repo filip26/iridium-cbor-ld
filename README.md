@@ -32,6 +32,8 @@ Android 12+ (API Level >=32)
 implementation("com.apicatalog:iridium-cbor-ld-jre8:0.1.3")
 ```
 
+Do you need to support an older Android version? [Contact me](mailto:filip26@gmail.com)
+
 #### JSON-P Provider
 
 Add JSON-P provider, if it is not on the classpath already.
@@ -103,10 +105,10 @@ Fork and clone the project repository.
 > mvn clean package
 ```
 
-#### Java 8
+#### Java 11
 ```bash
 > cd iridium-cbor-ld
-> mvn -f pom_jre8.xml clean package
+> mvn -f pom_jre11.xml clean package
 ```
 
 ## Resources
