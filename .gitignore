@@ -58,3 +58,5 @@ local.properties
 **/nbactions.xml
 META-INF
 /.flattened-pom.xml
+/README.md.gpg
+/private.txt

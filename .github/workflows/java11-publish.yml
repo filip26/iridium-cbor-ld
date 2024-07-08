@@ -1,4 +1,4 @@
-name: Publish JRE8 to the Maven Central
+name: Publish JRE11 to the Maven Central
 on:
   release:
     types: [created]
@@ -11,10 +11,10 @@ jobs:
     environment: RELEASE
     steps:
       - uses: actions/checkout@v4
-      - name: Set up JDK 8
+      - name: Set up JDK 11
         uses: actions/setup-java@v4
         with:
-          java-version: '8'
+          java-version: 11
           distribution: 'temurin'
           server-id: ossrh
       - name: Import GPG Key
@@ -23,7 +23,7 @@ jobs:
           gpg_private_key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
           passphrase: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
       - name: Publish package
-        run: mvn -f pom_jre8.xml -B -Pmaven-central -Dgpg.passphrase=${{secrets.MAVEN_GPG_PASSPHRASE}} -s maven-settings.xml deploy
+        run: mvn -f pom_jre11.xml -B -Pmaven-central -Dgpg.passphrase=${{secrets.MAVEN_GPG_PASSPHRASE}} -s maven-settings.xml deploy
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}

@@ -2,7 +2,7 @@
 An implementation of the [CBOR-LD 1.0](https://json-ld.github.io/cbor-ld-spec/) in Java.
 
 [![Java 17 CI](https://github.com/filip26/iridium-cbor-ld/actions/workflows/java17-build.yml/badge.svg)](https://github.com/filip26/iridium-cbor-ld/actions/workflows/java17-build.yml)
-[![Java 8 CI](https://github.com/filip26/iridium-cbor-ld/actions/workflows/java8-build.yml/badge.svg)](https://github.com/filip26/iridium-cbor-ld/actions/workflows/java8-build.yml)
+[![Java 11 CI](https://github.com/filip26/iridium-cbor-ld/actions/workflows/java11-build.yml/badge.svg)](https://github.com/filip26/iridium-cbor-ld/actions/workflows/java11-build.yml)
 [![Maven Central](https://img.shields.io/maven-central/v/com.apicatalog/iridium-cbor-ld.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:com.apicatalog%20AND%20a:iridium-cbor-ld)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
@@ -26,11 +26,13 @@ Java 17+
 ```
 
 ### Gradle
-Java 8+, Android API Level >=31
+Android 12+ (API Level >=32)
 
 ```gradle
 implementation("com.apicatalog:iridium-cbor-ld-jre8:0.1.3")
 ```
+
+Do you need to support an older Android version? [Contact me](mailto:filip26@gmail.com)
 
 #### JSON-P Provider
 
@@ -103,10 +105,10 @@ Fork and clone the project repository.
 > mvn clean package
 ```
 
-#### Java 8
+#### Java 11
 ```bash
 > cd iridium-cbor-ld
-> mvn -f pom_jre8.xml clean package
+> mvn -f pom_jre11.xml clean package
 ```
 
 ## Resources
