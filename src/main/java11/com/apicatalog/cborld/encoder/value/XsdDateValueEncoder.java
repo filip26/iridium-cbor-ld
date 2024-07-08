@@ -2,6 +2,7 @@ package com.apicatalog.cborld.encoder.value;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
@@ -23,8 +24,8 @@ public class XsdDateValueEncoder implements ValueEncoder {
             
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             LocalDate date = LocalDate.parse(value.stringValue(), formatter);
-                        
-            return new UnsignedInteger(date.toEpochSecond(LocalTime.MIDNIGHT, ZoneOffset.UTC));
+
+            return new UnsignedInteger(date.atStartOfDay(ZoneId.of("Z")).toEpochSecond());
         }
         return null;
     }
