@@ -48,7 +48,7 @@
 		<titanium.version>1.4.0</titanium.version>
 		<carbon.version>0.3.0</carbon.version>
 
-		<copper.version>0.1.1</copper.version>
+		<copper.version>1.0.0</copper.version>
 		<copper-multibase>0.5.0</copper-multibase>
 
 		<cbor-java.version>0.9</cbor-java.version>
