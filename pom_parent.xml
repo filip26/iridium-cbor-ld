@@ -75,12 +75,6 @@
 
 		<dependency>
 			<groupId>com.apicatalog</groupId>
-			<artifactId>copper-multicodec</artifactId>
-			<version>${copper.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.apicatalog</groupId>
 			<artifactId>copper-multibase</artifactId>
 			<version>${copper-multibase}</version>
 		</dependency>

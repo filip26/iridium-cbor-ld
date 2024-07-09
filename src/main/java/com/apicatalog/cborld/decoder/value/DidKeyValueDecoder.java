@@ -4,14 +4,9 @@ import java.util.Collection;
 import java.util.List;
 
 import com.apicatalog.cborld.decoder.DecoderError;
-import com.apicatalog.cborld.decoder.DecoderError.Code;
 import com.apicatalog.cborld.dictionary.Dictionary;
 import com.apicatalog.cborld.encoder.value.DidKeyValueEncoder;
-import com.apicatalog.cborld.hex.Hex;
 import com.apicatalog.multibase.Multibase;
-import com.apicatalog.multicodec.Multicodec;
-import com.apicatalog.multicodec.Multicodec.Tag;
-import com.apicatalog.multicodec.MulticodecDecoder;
 
 import co.nstant.in.cbor.model.Array;
 import co.nstant.in.cbor.model.ByteString;
@@ -23,8 +18,6 @@ import jakarta.json.JsonValue;
 
 public class DidKeyValueDecoder implements ValueDecoder {
 
-    protected static final MulticodecDecoder CODECS = MulticodecDecoder.getInstance(Tag.Key);
-    
     @Override
     public JsonValue decode(Dictionary dictionary, DataItem value, String term, Collection<String> types) throws DecoderError {
 
@@ -64,16 +57,16 @@ public class DidKeyValueDecoder implements ValueDecoder {
         
         byte[] bytes = dataItem.getBytes();
         
-        byte[] codecBytes = new byte[] { bytes[0], bytes[1] };
+//        byte[] codecBytes = new byte[] { bytes[0], bytes[1] };
+//        
+//        Multicodec codec = CODECS.getCodec(codecBytes).orElseThrow(() -> new DecoderError(Code.Unsupported, "Unknown DID key codec " + Hex.toString(codecBytes) + "."));
+//    
+//        byte[] rawKey = new byte[bytes.length - 2];
+//        System.arraycopy(bytes, 2, rawKey, 0, bytes.length - 2);
+//        
+//        byte[] encodedBytes = codec.encode(rawKey);
         
-        Multicodec codec = CODECS.getCodec(codecBytes).orElseThrow(() -> new DecoderError(Code.Unsupported, "Unknown DID key codec " + Hex.toString(codecBytes) + "."));
-    
-        byte[] rawKey = new byte[bytes.length - 2];
-        System.arraycopy(bytes, 2, rawKey, 0, bytes.length - 2);
-        
-        byte[] encodedBytes = codec.encode(rawKey);
-        
-        String encoded = Multibase.BASE_58_BTC.encode(encodedBytes);
+        String encoded = Multibase.BASE_58_BTC.encode(bytes);
         
         return encoded;
     }
