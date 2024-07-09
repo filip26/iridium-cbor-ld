@@ -10,8 +10,6 @@ import com.apicatalog.did.DidUrl;
 import com.apicatalog.did.key.DidKey;
 import com.apicatalog.jsonld.StringUtils;
 import com.apicatalog.multibase.MultibaseDecoder;
-import com.apicatalog.multicodec.Multicodec.Tag;
-import com.apicatalog.multicodec.MulticodecDecoder;
 
 import co.nstant.in.cbor.model.Array;
 import co.nstant.in.cbor.model.ByteString;
@@ -24,7 +22,6 @@ public class DidKeyValueEncoder implements ValueEncoder {
     public final static int CODE = 1025;
 
     protected static MultibaseDecoder BASES = MultibaseDecoder.getInstance();
-    protected static MulticodecDecoder CODECS = MulticodecDecoder.getInstance(Tag.Key);
     
     @Override
     public DataItem encode(Dictionary dictionary, ValueCursor value, String term, Collection<String> types) {
@@ -33,20 +30,20 @@ public class DidKeyValueEncoder implements ValueEncoder {
 
             try {
                 
-                DidUrl did = DidUrl.from(URI.create(value.stringValue()));
+                final DidUrl did = DidUrl.from(URI.create(value.stringValue()));
                 
-                DidKey key = DidKey.from(did, BASES, CODECS);
+                final DidKey key = DidKey.from(did, BASES);
                 
-                Array result = new Array();
+                final Array result = new Array();
                 
                 result.add(new UnsignedInteger(CODE));
-                result.add(concatenate(key.getCodec().varint(), key.getRawKey()));
+                result.add(new ByteString(key.getKey()));
                 
                 if (StringUtils.isNotBlank(did.getFragment())) {
                     
-                    DidKey fragment = DidKey.from(Did.from(PREFIX + did.getFragment()), BASES, CODECS);
+                    final DidKey fragment = DidKey.from(Did.from(PREFIX + did.getFragment()), BASES);
                     
-                    result.add(concatenate(fragment.getCodec().varint(), fragment.getRawKey()));
+                    result.add(new ByteString(fragment.getKey()));
                 }
 
                 return result;
@@ -56,12 +53,5 @@ public class DidKeyValueEncoder implements ValueEncoder {
             }
         }
         return null;
-    }
-    
-    final static ByteString concatenate(byte[] codec, byte[] key) {
-        byte[] bytes = new byte[codec.length + key.length];
-        System.arraycopy(codec, 0, bytes, 0, codec.length);
-        System.arraycopy(key, 0, bytes, codec.length, key.length);
-        return new ByteString(bytes);
     }
 }
