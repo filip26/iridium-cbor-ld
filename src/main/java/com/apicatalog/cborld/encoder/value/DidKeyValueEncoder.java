@@ -54,11 +54,4 @@ public class DidKeyValueEncoder implements ValueEncoder {
         }
         return null;
     }
-    
-    final static ByteString concatenate(byte[] codec, byte[] key) {
-        byte[] bytes = new byte[codec.length + key.length];
-        System.arraycopy(codec, 0, bytes, 0, codec.length);
-        System.arraycopy(key, 0, bytes, codec.length, key.length);
-        return new ByteString(bytes);
-    }
 }
