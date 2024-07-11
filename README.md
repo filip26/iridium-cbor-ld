@@ -10,6 +10,7 @@ An implementation of the [CBOR-LD 1.0](https://json-ld.github.io/cbor-ld-spec/) 
 [![Java 17 CI](https://github.com/filip26/iridium-cbor-ld/actions/workflows/java17-build.yml/badge.svg)](https://github.com/filip26/iridium-cbor-ld/actions/workflows/java17-build.yml)
 [![Java 11 CI](https://github.com/filip26/iridium-cbor-ld/actions/workflows/java11-build.yml/badge.svg)](https://github.com/filip26/iridium-cbor-ld/actions/workflows/java11-build.yml)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/07fd47ee8fa64d68a47cc83365fa07d6)](https://app.codacy.com/gh/filip26/iridium-cbor-ld/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+[![Codacy Badge](https://app.codacy.com/project/badge/Coverage/07fd47ee8fa64d68a47cc83365fa07d6)](https://app.codacy.com/gh/filip26/iridium-cbor-ld/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_coverage)
 [![Maven Central](https://img.shields.io/maven-central/v/com.apicatalog/iridium-cbor-ld.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:com.apicatalog%20AND%20a:iridium-cbor-ld)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
