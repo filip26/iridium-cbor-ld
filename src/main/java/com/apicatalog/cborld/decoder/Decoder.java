@@ -140,7 +140,7 @@ public class Decoder implements DecoderConfig {
     public static final Decoder create(byte[] encodedDocument) throws DecoderError {
     
         if (encodedDocument == null) {
-            throw new IllegalArgumentException("The encoded document paramenter must not be null but byte arrayy.");
+            throw new IllegalArgumentException("The encoded document paramenter must not be null but byte array.");
         }
     
         if (encodedDocument.length < 4) {
@@ -150,7 +150,17 @@ public class Decoder implements DecoderConfig {
     
         if (encodedDocument[0] != CborLd.CBOR_LD_BYTE_PREFIX[0]
             || encodedDocument[1] != CborLd.CBOR_LD_BYTE_PREFIX[1]) {
-            throw new DecoderError(Code.InvalidDocument, "The document is not CBOR-LD document.");
+            throw new DecoderError(Code.InvalidDocument, "The document is not CBOR-LD document. "
+                    + "Two leading bytes are [" 
+                    + Hex.toString(encodedDocument[0])
+                    + ","
+                    + Hex.toString(encodedDocument[1])
+                    + "], expected ["
+                    + Hex.toString(CborLd.CBOR_LD_BYTE_PREFIX[0])
+                    + ","
+                    + Hex.toString(CborLd.CBOR_LD_BYTE_PREFIX[1])
+                    + "]."
+                    );
         }
     
         if (encodedDocument[2] == CborLd.COMPRESSED_V1) {
