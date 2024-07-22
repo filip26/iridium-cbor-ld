@@ -69,9 +69,7 @@ implementation("org.glassfish:jakarta.json:2.0.1")
   var encoder = CborLdEncoder
                    // default encoder instance
                    .default()   
-                   // set default compression - true by default
-                   .compression(true)
-                   // or set custom terms dictionary
+                   // custom terms dictionary (optional)
                    .dictionary(customDictionary); // e.g. BarcodesDictionary
                    
   byte[] encoded = encoder.encode(document);
@@ -80,11 +78,11 @@ implementation("org.glassfish:jakarta.json:2.0.1")
 ### Decoding
 
 ```java
-  // default decoder instance
-  var decoder = CborLdDecoder.default();
-  
-  // add custom terms dictionary
-  decoder.dictionaries(customDictionary); // e.g. BarcodesDictionary
+  var decoder = CborLdDecoder
+                   // default decoder instance
+                   .default()
+                   // custom terms dictionaries (optional)
+                   .dictionaries(customDictionary); // e.g. BarcodesDictionary
 
   document = decoder.decode(encoded);
 ```
@@ -96,10 +94,20 @@ Set `DbConfig` as a configuration option to an encoder or decoder API.
 e.g.
 
 ```java
-  var encoder = CborLdEncoder.of(DbConfig.INSTANCE);
+  var encoder = CborLdEncoder
+                   // custom encoder instance
+                   .of(DbConfig.INSTANCE)
+                   // custom terms dictionary (optional)
+                   .dictionary(customDictionary); // e.g. BarcodesDictionary
+                   
   encoded = encoder.encode(document);
   
-  var decoder = CborLdDecoder.of(DbConfig.INSTANCE);
+  var decoder = CborLdDecoder
+                   // custom encoder instance
+                   .of(DbConfig.INSTANCE)
+                   // custom terms dictionaries (optional)
+                   .dictionaries(customDictionary); // e.g. BarcodesDictionary
+
   document = decoder.decode(encoded);
 ```
 
