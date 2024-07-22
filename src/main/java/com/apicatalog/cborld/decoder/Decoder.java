@@ -178,7 +178,7 @@ public class Decoder implements DecoderConfig {
 
         if (loader == null) {
             loader = new HttpLoader(DefaultHttpClient.defaultInstance());
-            ((HttpLoader)loader).setFallbackContentType(MediaType.JSON);
+            ((HttpLoader)loader).fallbackContentType(MediaType.JSON);
         }
         
         if (bundledContexts) {
