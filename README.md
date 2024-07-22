@@ -27,7 +27,7 @@ Java 17+
 <dependency>
     <groupId>com.apicatalog</groupId>
     <artifactId>iridium-cbor-ld</artifactId>
-    <version>0.1.3</version>
+    <version>0.2.0</version>
 </dependency>
 
 ```
@@ -36,7 +36,7 @@ Java 17+
 Android 12+ (API Level >=32)
 
 ```gradle
-implementation("com.apicatalog:iridium-cbor-ld-jre8:0.1.3")
+implementation("com.apicatalog:iridium-cbor-ld-jre8:0.2.0")
 ```
 
 Do you need to support an older Android version? [Contact me](mailto:filip26@gmail.com)
@@ -66,13 +66,28 @@ implementation("org.glassfish:jakarta.json:2.0.1")
 ### Encoding
 
 ```java
-  byte[] encoded = CborLd.encoder(document).encode();
+  // default encoder instance
+  var encoder = CborLdEncoder.default();
+  
+  // set default compression - true by default
+  encoder.compression(true);  
+  
+  // set custom terms dictionary
+  encoder.dictionary(customDictionary); // e.g. BarcodesDictionary
+  
+  byte[] encoded = encoder.encode(document);
 ```
 
 ### Decoding
 
 ```java
-  document = CborLd.decoder(encoded).decode();
+  // default decoder instance
+  var decoder = CborLdDecoder.default();
+  
+  // add custom terms dictionary
+  decoder.dictionaries(customDictionary); // e.g. BarcodesDictionary
+
+  document = decoder.decode(encoded);
 ```
 
 ### @digitalbazaar/cborld compatibility
@@ -82,14 +97,11 @@ Set `DbConfig` as a configuration option to an encoder or decoder API.
 e.g.
 
 ```java
-  CborLd.encoder(document)
-        .config(DbConfig.INSTANCE)
-        .encode();
-        
-  CborLd.decoder(document)
-        .config(DbConfig.INSTANCE)
-        .decode();
-        
+  var encoder = CborLdEncoder.of(DbConfig.INSTANCE);
+  encoded = encoder.encode(document);
+  
+  var decoder = CborLdDecoder.of(DbConfig.INSTANCE);
+  document = decoder.decode(encoded);
 ```
 
 ## Documentation
