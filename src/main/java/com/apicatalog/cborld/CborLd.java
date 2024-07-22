@@ -13,7 +13,10 @@ import jakarta.json.JsonObject;
  */
 public final class CborLd {
 
-    public static final byte[] CBOR_LD_BYTE_PREFIX = new byte[] { (byte)0xD9, 0x05 };
+    public static final byte CBOR_LD_LEADING_BYTE = (byte)0xD9;
+    
+    public static final byte CBOR_LD_VERSION_5_BYTE = (byte)0x05;
+    public static final byte CBOR_LD_VERSION_6_BYTE = (byte)0x06;
     
     public static final byte UNCOMPRESSED = 0x00;
     public static final byte COMPRESSED_V1 =  0x01;

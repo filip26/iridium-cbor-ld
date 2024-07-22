@@ -203,7 +203,8 @@ public class Encoder implements EncoderConfig {
             
             // 2.CBOR Tag - 0xD9, CBOR-LD - 0x05, Compressed - CBOR-LD compression algorithm
             // version 1 - 0x01
-            baos.write(CborLd.CBOR_LD_BYTE_PREFIX);
+            baos.write(CborLd.CBOR_LD_LEADING_BYTE);
+            baos.write(CborLd.CBOR_LD_VERSION_5_BYTE);  //TODO
             baos.write(CborLd.COMPRESSED_V1);
             
             new CborEncoder(baos).encode(builder.build());
@@ -213,7 +214,7 @@ public class Encoder implements EncoderConfig {
         } catch (CborException e) {
             throw new EncoderError(Code.InvalidDocument, e);
 
-        } catch (IOException | JsonLdError e) {
+        } catch (JsonLdError e) {
             throw new EncoderError(Code.Internal, e);
         }
     }
