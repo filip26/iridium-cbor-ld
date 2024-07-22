@@ -66,15 +66,14 @@ implementation("org.glassfish:jakarta.json:2.0.1")
 ### Encoding
 
 ```java
-  // default encoder instance
-  var encoder = CborLdEncoder.default();
-  
-  // set default compression - true by default
-  encoder.compression(true);  
-  
-  // set custom terms dictionary
-  encoder.dictionary(customDictionary); // e.g. BarcodesDictionary
-  
+  var encoder = CborLdEncoder
+                   // default encoder instance
+                   .default()   
+                   // set default compression - true by default
+                   .compression(true)
+                   // or set custom terms dictionary
+                   .dictionary(customDictionary); // e.g. BarcodesDictionary
+                   
   byte[] encoded = encoder.encode(document);
 ```
 
