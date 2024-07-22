@@ -312,6 +312,16 @@
             "name": "simple values",
             "input": "decoder/0062-in.cborld",
             "expect": "decoder/0062-out.jsonld"
-        }
+        },
+        {
+            "@id": "#t0100",
+            "@type": [
+                "PositiveEvaluationTest",
+                "DecoderTest"
+            ],
+            "name": "barcode ex. #10",
+            "input": "decoder/barcode-ex-10.cborld",
+            "expect": "decoder/0062-out.jsonld"
+        }        
 	]
 }

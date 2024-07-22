@@ -96,6 +96,9 @@ e.g.
 
 [![javadoc](https://javadoc.io/badge2/com.apicatalog/iridium-cbor-ld/javadoc.svg)](https://javadoc.io/doc/com.apicatalog/iridium-cbor-ld)
 
+## Commercial Support
+
+Commercial support is available at filip26@gmail.com
 
 ## Contributing
 
@@ -133,7 +136,4 @@ Fork and clone the project repository.
   <img src="https://avatars.githubusercontent.com/u/167436?s=200&v=4" width="40" />
 </a> 
 
-## Commercial Support
-
-Commercial support is available at filip26@gmail.com
 
