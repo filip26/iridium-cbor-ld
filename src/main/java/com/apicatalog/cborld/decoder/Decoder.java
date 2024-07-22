@@ -126,6 +126,13 @@ public abstract class Decoder implements DecoderConfig {
         return this;
     }
 
+    /** 
+     * Create a new {@link Decoder} instance for the given encoded document.
+     * 
+     * @param encodedDocument
+     * @return
+     * @throws DecoderError
+     */
     public static final Decoder create(byte[] encodedDocument) throws DecoderError {
 
         if (encodedDocument == null) {
@@ -159,7 +166,8 @@ public abstract class Decoder implements DecoderConfig {
                             + Hex.toString(encodedDocument[2]) + "].");
         }
 
-        if (encodedDocument[1] != CborLd.CBOR_LD_VERSION_6_BYTE) {
+        if (encodedDocument[1] == CborLd.CBOR_LD_VERSION_6_BYTE) {
+            return new DecoderV6(encodedDocument, encodedDocument[2]);
         }
 
         throw new DecoderError(Code.InvalidDocument, "The document is not CBOR-LD document. Must start with "

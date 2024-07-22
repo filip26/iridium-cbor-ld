@@ -18,13 +18,13 @@ import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonValue;
 
-class DecoderV5 extends Decoder {
+class DecoderV6 extends Decoder {
 
-    protected final boolean compressed;
+    protected final int registryId;
 
-    protected DecoderV5(byte[] encoded, boolean compressed) {
+    protected DecoderV6(byte[] encoded, int registryId) {
         super(encoded);
-        this.compressed = compressed;
+        this.registryId = registryId;
     }
 
     /**
@@ -45,11 +45,7 @@ class DecoderV5 extends Decoder {
         if (bundledContexts) {
             loader = new StaticContextLoader(loader);
         }
-
-        if (compressed) {
-            return decodeCompressed();
-        }
-        return decodeUncompressed();
+        return decodeCompressed();
     }
 
     final JsonValue decodeCompressed() throws DecoderError, ContextError {
@@ -91,10 +87,4 @@ class DecoderV5 extends Decoder {
 
         return decodeData(data, null, mapping.typeMap());
     }
-    
-
-    final JsonValue decodeUncompressed() throws DecoderError {
-        throw new DecoderError(Code.InvalidDocument, "Unsupported document compression algorithm");
-    }
-
 }
