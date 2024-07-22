@@ -67,7 +67,7 @@ implementation("org.glassfish:jakarta.json:2.0.1")
 
 ```java
   var encoder = CborLdEncoder
-                   // default encoder instance
+                   // new default encoder instance
                    .default()   
                    // custom terms dictionary (optional)
                    .dictionary(customDictionary); // e.g. BarcodesDictionary
@@ -79,10 +79,10 @@ implementation("org.glassfish:jakarta.json:2.0.1")
 
 ```java
   var decoder = CborLdDecoder
-                   // default decoder instance
+                   // new default decoder instance
                    .default()
-                   // custom terms dictionaries (optional)
-                   .dictionaries(customDictionary); // e.g. BarcodesDictionary
+                   // add custom terms dictionary (optional)
+                   .dictionary(customDictionary);
 
   document = decoder.decode(encoded);
 ```
@@ -95,18 +95,18 @@ e.g.
 
 ```java
   var encoder = CborLdEncoder
-                   // custom encoder instance
+                   // new custom encoder instance
                    .of(DbConfig.INSTANCE)
                    // custom terms dictionary (optional)
-                   .dictionary(customDictionary); // e.g. BarcodesDictionary
+                   .dictionary(customDictionary);
                    
   encoded = encoder.encode(document);
   
   var decoder = CborLdDecoder
-                   // custom encoder instance
+                   // new custom encoder instance
                    .of(DbConfig.INSTANCE)
-                   // custom terms dictionaries (optional)
-                   .dictionaries(customDictionary); // e.g. BarcodesDictionary
+                   // add custom terms dictionary (optional)
+                   .dictionary(customDictionary);
 
   document = decoder.decode(encoded);
 ```
