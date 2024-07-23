@@ -16,7 +16,7 @@ import java.util.Objects;
 import com.apicatalog.cbor.CborComparison;
 import com.apicatalog.cbor.CborWriter;
 import com.apicatalog.cborld.barcode.BarcodesContextDictionary;
-import com.apicatalog.cborld.compressor.DynamicMappingProvider;
+import com.apicatalog.cborld.compressor.ContextMappingProvider;
 import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.decoder.CborLdDecoder;
 import com.apicatalog.cborld.decoder.DecoderError;
@@ -65,7 +65,7 @@ public class CborLdTestRunnerJunit {
 
     public final static CborLdDecoder DECODER = new CborLdDecoder().loader(LOADER)
             .dictionary(100, new BarcodesContextDictionary())
-            .dictionary(100, new DynamicMappingProvider());
+            .dictionary(100, new ContextMappingProvider());
 
     public CborLdTestRunnerJunit(CborLdTestCase testCase) {
         this.testCase = testCase;

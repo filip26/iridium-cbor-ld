@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.apicatalog.cborld.CborLdConstants;
-import com.apicatalog.cborld.compressor.DynamicMappingProvider;
+import com.apicatalog.cborld.compressor.ContextMappingProvider;
 import com.apicatalog.cborld.config.DefaultConfig;
 import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.decoder.DecoderError.Code;
@@ -71,7 +71,7 @@ public class CborLdDecoder implements DecoderConfig {
         this.valueDecoders = config.valueDecoders();
 
         this.providers = new LinkedHashMap<>();
-        this.providers.put(0x01, new DynamicMappingProvider());
+        this.providers.put(0x01, new ContextMappingProvider());
         this.bundledContexts = DefaultConfig.STATIC_CONTEXTS;
         this.base = null;
         this.loader = null;

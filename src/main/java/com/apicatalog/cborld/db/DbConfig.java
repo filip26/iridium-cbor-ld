@@ -6,6 +6,7 @@ import java.util.Collection;
 import com.apicatalog.cborld.decoder.DecoderConfig;
 import com.apicatalog.cborld.decoder.value.ContextValueDecoder;
 import com.apicatalog.cborld.decoder.value.DidKeyValueDecoder;
+import com.apicatalog.cborld.decoder.value.IdValueDecoder;
 import com.apicatalog.cborld.decoder.value.MultibaseValueDecoder;
 import com.apicatalog.cborld.decoder.value.TypeValueDecoder;
 import com.apicatalog.cborld.decoder.value.UuidValueDecoder;
@@ -17,6 +18,7 @@ import com.apicatalog.cborld.dictionary.ContextDictionary;
 import com.apicatalog.cborld.encoder.EncoderConfig;
 import com.apicatalog.cborld.encoder.value.ContextValueEncoder;
 import com.apicatalog.cborld.encoder.value.DidKeyValueEncoder;
+import com.apicatalog.cborld.encoder.value.IdValueEncoder;
 import com.apicatalog.cborld.encoder.value.MultibaseValueEncoder;
 import com.apicatalog.cborld.encoder.value.TypeValueEncoder;
 import com.apicatalog.cborld.encoder.value.UuidValueEncoder;
@@ -38,6 +40,7 @@ public final class DbConfig implements EncoderConfig, DecoderConfig {
         VALUE_ENCODERS.add(new ContextValueEncoder(CONTEXT_DICTIONARY));
 
         // type driven
+        VALUE_ENCODERS.add(new IdValueEncoder());        
         VALUE_ENCODERS.add(new TypeValueEncoder());
         VALUE_ENCODERS.add(new XsdDateTimeValueEncoder());
         VALUE_ENCODERS.add(new XsdDateValueEncoder());
@@ -56,6 +59,7 @@ public final class DbConfig implements EncoderConfig, DecoderConfig {
         VALUE_DECODERS.add(new ContextValueDecoder(CONTEXT_DICTIONARY));
 
         // type driven
+        VALUE_DECODERS.add(new IdValueDecoder());
         VALUE_DECODERS.add(new TypeValueDecoder());
         VALUE_DECODERS.add(new XsdDateTimeValueDecoder());
         VALUE_DECODERS.add(new XsdDateValueDecoder());
