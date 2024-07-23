@@ -11,7 +11,7 @@ import com.apicatalog.cborld.hex.Hex;
  *
  * @see <a href=
  *      "https://digitalbazaar.github.io/cbor-ld-spec/#term-codec-registry">Term
- *      Codeec Registry</a>
+ *      Codec Registry</a>
  *
  */
 public class ContextDictionary implements Dictionary {
@@ -64,7 +64,7 @@ public class ContextDictionary implements Dictionary {
 
         if (index < 0 || index >= TERMS.length) {
             throw new IllegalArgumentException(
-                    "Invalid code=" + Hex.toString(code.toByteArray()) + ", offset=" + Hex.toString(OFFSET) + "."
+                    "Invalid code=" + Hex.toString(code.toByteArray()) + ", index=" + index + ", offset=" + Hex.toString(OFFSET) + "."
                             + "Available range "
                             + Hex.toString(OFFSET)
                             + "-"

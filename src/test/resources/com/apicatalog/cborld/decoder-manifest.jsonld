@@ -321,7 +321,7 @@
             ],
             "name": "barcode ex. #10",
             "input": "decoder/barcode-ex-10.cborld",
-            "expect": "decoder/0062-out.jsonld"
+            "expect": "decoder/barcode-ex-10.jsonld"
         }        
 	]
 }

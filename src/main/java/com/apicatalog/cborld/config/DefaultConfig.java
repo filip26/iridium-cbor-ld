@@ -13,7 +13,9 @@ import com.apicatalog.cborld.decoder.value.ValueDecoder;
 import com.apicatalog.cborld.decoder.value.VocabValueDecoder;
 import com.apicatalog.cborld.decoder.value.XsdDateTimeValueDecoder;
 import com.apicatalog.cborld.decoder.value.XsdDateValueDecoder;
+import com.apicatalog.cborld.dictionary.BarcodesDictionary;
 import com.apicatalog.cborld.dictionary.ContextDictionary;
+import com.apicatalog.cborld.dictionary.Dictionary;
 import com.apicatalog.cborld.encoder.EncoderConfig;
 import com.apicatalog.cborld.encoder.value.ContextValueEncoder;
 import com.apicatalog.cborld.encoder.value.DidKeyValueEncoder;
@@ -29,7 +31,8 @@ public final class DefaultConfig implements EncoderConfig, DecoderConfig {
 
     public static final DefaultConfig INSTANCE = new DefaultConfig();
     
-    static final ContextDictionary CONTEXT_DICTIONARY = new ContextDictionary();
+//    static final ContextDictionary CONTEXT_DICTIONARY = new ContextDictionary();
+    static final Dictionary CONTEXT_DICTIONARY = new BarcodesDictionary();
     
     static final Collection<ValueEncoder> VALUE_ENCODERS = new ArrayList<>();
 

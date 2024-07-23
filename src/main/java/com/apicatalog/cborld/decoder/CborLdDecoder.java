@@ -3,6 +3,7 @@ package com.apicatalog.cborld.decoder;
 import java.io.ByteArrayInputStream;
 import java.math.BigInteger;
 import java.net.URI;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -20,6 +21,7 @@ import com.apicatalog.cborld.hex.Hex;
 import com.apicatalog.cborld.loader.StaticContextLoader;
 import com.apicatalog.cborld.mapping.DecoderMappingProvider;
 import com.apicatalog.cborld.mapping.Mapping;
+import com.apicatalog.cborld.mapping.StaticDecoderMappingProvider;
 import com.apicatalog.cborld.mapping.TypeMap;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.http.DefaultHttpClient;
@@ -31,6 +33,7 @@ import com.apicatalog.jsonld.loader.HttpLoader;
 import co.nstant.in.cbor.CborDecoder;
 import co.nstant.in.cbor.CborException;
 import co.nstant.in.cbor.model.Array;
+import co.nstant.in.cbor.model.ByteString;
 import co.nstant.in.cbor.model.DataItem;
 import co.nstant.in.cbor.model.DoublePrecisionFloat;
 import co.nstant.in.cbor.model.HalfPrecisionFloat;
@@ -144,7 +147,7 @@ public class CborLdDecoder implements DecoderConfig {
      * @return {@link CborLdDecoder} instance
      */
     public CborLdDecoder dictionary(int code, Dictionary dictionary) {
-        //TODO
+        providers.put(code, new StaticDecoderMappingProvider(dictionary));
         return this;
     }
 
@@ -156,7 +159,7 @@ public class CborLdDecoder implements DecoderConfig {
      * @return {@link CborLdDecoder} instance
      */
     public CborLdDecoder dictionary(int code, DecoderMappingProvider mapping) {
-        //TODO
+        providers.put(code, mapping);
         return this;
     }
     
@@ -415,6 +418,7 @@ public class CborLdDecoder implements DecoderConfig {
     }
 
     protected final JsonValue decodeValue(final DataItem value, final String term, final TypeMap def, final Dictionary index) throws DecoderError {
+        System.out.println(">> decodeValue(" + value + ", " + term + "," + def);
         if (def != null) {
             final Collection<String> types = def.getType(term);
 
@@ -425,6 +429,9 @@ public class CborLdDecoder implements DecoderConfig {
                     return decoded;
                 }
             }
+        }
+        if (value instanceof ByteString) {
+            System.out.println("> " + new String(((ByteString)value).getBytes()));
         }
         return null;
     }

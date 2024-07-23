@@ -16,8 +16,10 @@ import java.util.Objects;
 import com.apicatalog.cbor.CborComparison;
 import com.apicatalog.cbor.CborWriter;
 import com.apicatalog.cborld.context.ContextError;
+import com.apicatalog.cborld.context.mapping.ContextDecoderMappingProvider;
 import com.apicatalog.cborld.decoder.CborLdDecoder;
 import com.apicatalog.cborld.decoder.DecoderError;
+import com.apicatalog.cborld.dictionary.BarcodesDictionary;
 import com.apicatalog.cborld.encoder.CborLdEncoder;
 import com.apicatalog.cborld.encoder.EncoderError;
 import com.apicatalog.jsonld.JsonLdError;
@@ -56,7 +58,10 @@ public class CborLdTestRunnerJunit {
                         ));
 
     public final static CborLdEncoder ENCODER = new CborLdEncoder().loader(LOADER);
-    public final static CborLdDecoder DECODER = new CborLdDecoder().loader(LOADER);
+    public final static CborLdDecoder DECODER = new CborLdDecoder().loader(LOADER)
+            .dictionary(100, new BarcodesDictionary())
+            .dictionary(100, new ContextDecoderMappingProvider())
+            ;
     
     public CborLdTestRunnerJunit(CborLdTestCase testCase) {
         this.testCase = testCase;
