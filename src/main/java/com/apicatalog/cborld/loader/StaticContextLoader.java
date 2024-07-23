@@ -17,13 +17,13 @@ public class StaticContextLoader implements DocumentLoader {
     protected static Map<String, Document> staticCache = new HashMap<>();
 
     static {
-        staticCache.put("https://www.w3.org/2018/credentials/examples/v1", get("2018-credentials-examples-v1.jsonld"));
-        staticCache.put("https://www.w3.org/2018/credentials/v1", get("2018-credentials-v1.jsonld"));
-        staticCache.put("https://w3id.org/security/suites/ed25519-2020/v1", get("security-suites-ed25519-2020-v1.jsonld"));
-        staticCache.put("https://www.w3.org/ns/odrl.jsonld", get("odrl.jsonld"));
-        staticCache.put("https://www.w3.org/ns/did/v1", get("did-v1.jsonld"));
-        staticCache.put("https://www.w3.org/ns/credentials/v2", get("credentials-v2.jsonld"));
-        staticCache.put("https://w3id.org/vc-barcodes/v1", get("vc-barcodes-v1.jsonld"));
+        set("https://www.w3.org/2018/credentials/examples/v1", "2018-credentials-examples-v1.jsonld");
+        set("https://www.w3.org/2018/credentials/v1", "2018-credentials-v1.jsonld");
+        set("https://w3id.org/security/suites/ed25519-2020/v1", "security-suites-ed25519-2020-v1.jsonld");
+        set("https://www.w3.org/ns/odrl.jsonld", "odrl.jsonld");
+        set("https://www.w3.org/ns/did/v1", "did-v1.jsonld");
+        set("https://www.w3.org/ns/credentials/v2", "credentials-v2.jsonld");
+        set("https://w3id.org/vc-barcodes/v1", "vc-barcodes-v1.jsonld");
     }
 
     protected final DocumentLoader defaultLoader;
@@ -41,19 +41,17 @@ public class StaticContextLoader implements DocumentLoader {
                 return document;
             }
         }
-System.out.println("FAIL " + url);
         return defaultLoader.loadDocument(url, options);
     }
 
-    public static Class<StaticContextLoader> add(String url, Document document) {
+    public static void set(String url, Document document) {
         staticCache.put(url, document);
-        return StaticContextLoader.class;
     }
-    
-    public static Class<StaticContextLoader> add(String url, Class<?> clazz, String name) {
-        return add(url, get(clazz, name));
+
+    public static void set(String url, Class<?> clazz, String name) {
+        set(url, get(clazz, name));
     }
-    
+
     protected static JsonDocument get(Class<?> clazz, String name) {
         try (final InputStream is = clazz.getResourceAsStream(name)) {
 
@@ -62,10 +60,10 @@ System.out.println("FAIL " + url);
         } catch (IOException | JsonLdError e) {
             e.printStackTrace();
         }
-        return  null;
+        return null;
     }
 
-    private static JsonDocument get(String name) {
-        return get(StaticContextLoader.class, name);
+    private static void set(String url, String name) {
+        set(url, get(StaticContextLoader.class, name));
     }
 }

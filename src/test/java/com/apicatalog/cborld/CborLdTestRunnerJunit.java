@@ -47,7 +47,7 @@ public class CborLdTestRunnerJunit {
     private final CborLdTestCase testCase;
 
     static {
-        StaticContextLoader.add("https://w3id.org/utopia/v2", CborLdTestRunnerJunit.class, "utopia-v2.jsonld");
+        StaticContextLoader.set("https://w3id.org/utopia/v2", CborLdTestRunnerJunit.class, "utopia-v2.jsonld");
     }
     
     public final static DocumentLoader LOADER =
