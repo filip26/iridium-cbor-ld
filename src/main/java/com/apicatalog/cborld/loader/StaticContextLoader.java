@@ -41,10 +41,19 @@ public class StaticContextLoader implements DocumentLoader {
                 return document;
             }
         }
-
+System.out.println("FAIL " + url);
         return defaultLoader.loadDocument(url, options);
     }
 
+    public static Class<StaticContextLoader> add(String url, Document document) {
+        staticCache.put(url, document);
+        return StaticContextLoader.class;
+    }
+    
+    public static Class<StaticContextLoader> add(String url, Class<?> clazz, String name) {
+        return add(url, get(clazz, name));
+    }
+    
     protected static JsonDocument get(Class<?> clazz, String name) {
         try (final InputStream is = clazz.getResourceAsStream(name)) {
 

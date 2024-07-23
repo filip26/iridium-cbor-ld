@@ -1,4 +1,4 @@
-package com.apicatalog.cborld.context.mapping;
+package com.apicatalog.cborld.compressor;
 
 import java.net.URI;
 

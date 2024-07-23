@@ -3,17 +3,18 @@ package com.apicatalog.cborld.config;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import com.apicatalog.cborld.barcode.BarcodesContextDictionary;
 import com.apicatalog.cborld.decoder.DecoderConfig;
 import com.apicatalog.cborld.decoder.value.ContextValueDecoder;
 import com.apicatalog.cborld.decoder.value.DidKeyValueDecoder;
 import com.apicatalog.cborld.decoder.value.MultibaseValueDecoder;
+import com.apicatalog.cborld.decoder.value.TypeBasedDecoder;
 import com.apicatalog.cborld.decoder.value.TypeValueDecoder;
 import com.apicatalog.cborld.decoder.value.UuidValueDecoder;
 import com.apicatalog.cborld.decoder.value.ValueDecoder;
 import com.apicatalog.cborld.decoder.value.VocabValueDecoder;
 import com.apicatalog.cborld.decoder.value.XsdDateTimeValueDecoder;
 import com.apicatalog.cborld.decoder.value.XsdDateValueDecoder;
-import com.apicatalog.cborld.dictionary.BarcodesDictionary;
 import com.apicatalog.cborld.dictionary.ContextDictionary;
 import com.apicatalog.cborld.dictionary.Dictionary;
 import com.apicatalog.cborld.encoder.EncoderConfig;
@@ -32,7 +33,7 @@ public final class DefaultConfig implements EncoderConfig, DecoderConfig {
     public static final DefaultConfig INSTANCE = new DefaultConfig();
     
 //    static final ContextDictionary CONTEXT_DICTIONARY = new ContextDictionary();
-    static final Dictionary CONTEXT_DICTIONARY = new BarcodesDictionary();
+    static final Dictionary CONTEXT_DICTIONARY = new BarcodesContextDictionary();
     
     static final Collection<ValueEncoder> VALUE_ENCODERS = new ArrayList<>();
 
@@ -60,6 +61,7 @@ public final class DefaultConfig implements EncoderConfig, DecoderConfig {
         VALUE_DECODERS.add(new ContextValueDecoder(CONTEXT_DICTIONARY));
         
         // type driven
+//        VALUE_DECODERS.add(new TypeBasedDecoder());
         VALUE_DECODERS.add(new TypeValueDecoder());
         VALUE_DECODERS.add(new XsdDateTimeValueDecoder());
         VALUE_DECODERS.add(new XsdDateValueDecoder());

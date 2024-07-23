@@ -1,9 +1,11 @@
-package com.apicatalog.cborld.context.mapping;
+package com.apicatalog.cborld.compressor;
 
 import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Deque;
 import java.util.HashSet;
+
+import com.apicatalog.cborld.mapping.TypeKeyNameMapper;
 
 class DefaultTypeKeyNameMapper implements TypeKeyNameMapper {
 

@@ -15,13 +15,14 @@ import java.util.Objects;
 
 import com.apicatalog.cbor.CborComparison;
 import com.apicatalog.cbor.CborWriter;
+import com.apicatalog.cborld.barcode.BarcodesContextDictionary;
+import com.apicatalog.cborld.compressor.DynamicMappingProvider;
 import com.apicatalog.cborld.context.ContextError;
-import com.apicatalog.cborld.context.mapping.ContextDecoderMappingProvider;
 import com.apicatalog.cborld.decoder.CborLdDecoder;
 import com.apicatalog.cborld.decoder.DecoderError;
-import com.apicatalog.cborld.dictionary.BarcodesDictionary;
 import com.apicatalog.cborld.encoder.CborLdEncoder;
 import com.apicatalog.cborld.encoder.EncoderError;
+import com.apicatalog.cborld.loader.StaticContextLoader;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.json.JsonLdComparison;
@@ -45,7 +46,11 @@ public class CborLdTestRunnerJunit {
 
     private final CborLdTestCase testCase;
 
-    public final static DocumentLoader LOADER = new StaticLoader(
+    static {
+        StaticContextLoader.add("https://w3id.org/utopia/v2", CborLdTestRunnerJunit.class, "utopia-v2.jsonld");
+    }
+    
+    public final static DocumentLoader LOADER =
             new UriBaseRewriter(
                     CborLdTest.BASE,
                     "classpath:",
@@ -54,15 +59,13 @@ public class CborLdTestRunnerJunit {
                             new SchemeRouter()
                                     .set("http", HttpLoader.defaultInstance())
                                     .set("https", HttpLoader.defaultInstance())
-                                    .set("classpath", new ClasspathLoader()))));
+                                    .set("classpath", new ClasspathLoader())));
 
-    public final static CborLdEncoder ENCODER = new CborLdEncoder().loader(LOADER)
-            .useBundledContexts(false);
+    public final static CborLdEncoder ENCODER = new CborLdEncoder().loader(LOADER);
 
     public final static CborLdDecoder DECODER = new CborLdDecoder().loader(LOADER)
-            .dictionary(100, new BarcodesDictionary())
-            .dictionary(100, new ContextDecoderMappingProvider())
-            .useBundledContexts(false);
+            .dictionary(100, new BarcodesContextDictionary())
+            .dictionary(100, new DynamicMappingProvider());
 
     public CborLdTestRunnerJunit(CborLdTestCase testCase) {
         this.testCase = testCase;

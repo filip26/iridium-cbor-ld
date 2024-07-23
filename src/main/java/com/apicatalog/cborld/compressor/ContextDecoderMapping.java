@@ -1,4 +1,4 @@
-package com.apicatalog.cborld.context.mapping;
+package com.apicatalog.cborld.compressor;
 
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -10,6 +10,7 @@ import com.apicatalog.cborld.decoder.value.ValueDecoder;
 import com.apicatalog.cborld.dictionary.CodeTermMap;
 import com.apicatalog.cborld.dictionary.Dictionary;
 import com.apicatalog.cborld.mapping.Mapping;
+import com.apicatalog.cborld.mapping.TypeKeyNameMapper;
 import com.apicatalog.cborld.mapping.TypeMap;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;

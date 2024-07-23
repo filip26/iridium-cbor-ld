@@ -3,16 +3,15 @@ package com.apicatalog.cborld.decoder;
 import java.io.ByteArrayInputStream;
 import java.math.BigInteger;
 import java.net.URI;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.apicatalog.cborld.CborLdConstants;
+import com.apicatalog.cborld.compressor.DynamicMappingProvider;
 import com.apicatalog.cborld.config.DefaultConfig;
 import com.apicatalog.cborld.context.ContextError;
-import com.apicatalog.cborld.context.mapping.ContextDecoderMappingProvider;
 import com.apicatalog.cborld.decoder.DecoderError.Code;
 import com.apicatalog.cborld.decoder.value.ValueDecoder;
 import com.apicatalog.cborld.dictionary.Dictionary;
@@ -57,10 +56,10 @@ public class CborLdDecoder implements DecoderConfig {
     protected Map<Integer, DecoderMappingProvider> providers;
 
     Collection<ValueDecoder> valueDecoders;
-    
+
     protected DocumentLoader loader;
     protected boolean bundledContexts;
-    protected boolean compactArrays;    
+    protected boolean compactArrays;
     protected URI base;
 
     public CborLdDecoder() {
@@ -72,7 +71,7 @@ public class CborLdDecoder implements DecoderConfig {
         this.valueDecoders = config.valueDecoders();
 
         this.providers = new LinkedHashMap<>();
-        this.providers.put(0x01, new ContextDecoderMappingProvider());
+        this.providers.put(0x01, new DynamicMappingProvider());
         this.bundledContexts = DefaultConfig.STATIC_CONTEXTS;
         this.base = null;
         this.loader = null;
@@ -138,11 +137,11 @@ public class CborLdDecoder implements DecoderConfig {
         this.base = base;
         return this;
     }
-    
+
     /**
      * Associate new terms dictionary
      * 
-     * @param code CBOR-LD terms dictionary code 
+     * @param code       CBOR-LD terms dictionary code
      * @param dictionary a dictionary instance
      * @return {@link CborLdDecoder} instance
      */
@@ -154,7 +153,7 @@ public class CborLdDecoder implements DecoderConfig {
     /**
      * Associate new terms dictionary
      * 
-     * @param code CBOR-LD terms dictionary code 
+     * @param code    CBOR-LD terms dictionary code
      * @param mapping terms dictionary provider
      * @return {@link CborLdDecoder} instance
      */
@@ -162,7 +161,7 @@ public class CborLdDecoder implements DecoderConfig {
         providers.put(code, mapping);
         return this;
     }
-    
+
     /**
      * Decode CBOR-LD document as JSON-LD document.
      * 
@@ -193,35 +192,37 @@ public class CborLdDecoder implements DecoderConfig {
         }
 
         if (encodedDocument[1] != CborLdConstants.CBOR_LD_VERSION_6_BYTE
-                && encodedDocument[1] != CborLdConstants.CBOR_LD_VERSION_5_BYTE
-                ) {
+                && encodedDocument[1] != CborLdConstants.CBOR_LD_VERSION_5_BYTE) {
             throw new DecoderError(Code.InvalidDocument, "The document is not CBOR-LD document. Must start with "
                     + Hex.toString(CborLdConstants.CBOR_LD_VERSION_6_BYTE)
                     + ", or "
                     + Hex.toString(CborLdConstants.CBOR_LD_VERSION_5_BYTE)
                     + ", but is "
                     + Hex.toString(encodedDocument[1])
-                    + ".");            
+                    + ".");
         }
 
-        final DecoderMappingProvider mapping = providers.get(Byte.toUnsignedInt(encodedDocument[2]));
+        if (encodedDocument[2] == CborLdConstants.UNCOMPRESSED) {
+            throw new DecoderError(Code.UnknownCompression, "Uncompressed CBOR-LD documents are not supported.");
+        }
         
+        final DecoderMappingProvider mapping = providers.get(Byte.toUnsignedInt(encodedDocument[2]));
+
         if (mapping == null) {
             throw new DecoderError(Code.UnknownCompression,
                     "Unkknown CBOR-LD document terms dictionary type id, found ["
-                            + Hex.toString(encodedDocument[2]) + "].");            
+                            + Hex.toString(encodedDocument[2]) + "].");
         }
 
         if (loader == null) {
             loader = new HttpLoader(DefaultHttpClient.defaultInstance());
             ((HttpLoader) loader).fallbackContentType(MediaType.JSON);
         }
-        
+
         return decode(encodedDocument, mapping, bundledContexts
                 ? new StaticContextLoader(loader)
                 : loader);
     }
-    
 
     protected JsonValue decode(byte[] encoded, final DecoderMappingProvider provider, final DocumentLoader loader) throws ContextError, DecoderError {
         try {
@@ -235,15 +236,14 @@ public class CborLdDecoder implements DecoderConfig {
 
             // only one object
             if (dataItems.size() == 1) {
-                return decodeCompressed(dataItems.iterator().next(), provider, loader);
+                return decode(dataItems.iterator().next(), provider, loader);
             }
 
             // decode as an array of objects
             final JsonArrayBuilder builder = Json.createArrayBuilder();
 
             for (final DataItem item : dataItems) {
-
-                builder.add(decodeCompressed(item, provider, loader));
+                builder.add(decode(item, provider, loader));
             }
 
             return builder.build();
@@ -253,7 +253,7 @@ public class CborLdDecoder implements DecoderConfig {
         }
     }
 
-    final JsonValue decodeCompressed(final DataItem data, final DecoderMappingProvider provider, final DocumentLoader loader) throws DecoderError, ContextError {
+    protected final JsonValue decode(final DataItem data, final DecoderMappingProvider provider, final DocumentLoader loader) throws DecoderError, ContextError {
         final Mapping mapping = provider.getDecoderMapping(data, base, loader, this);
         return decodeData(data, null, mapping.typeMap(), mapping.dictionary());
     }
@@ -418,7 +418,6 @@ public class CborLdDecoder implements DecoderConfig {
     }
 
     protected final JsonValue decodeValue(final DataItem value, final String term, final TypeMap def, final Dictionary index) throws DecoderError {
-        System.out.println(">> decodeValue(" + value + ", " + term + "," + def);
         if (def != null) {
             final Collection<String> types = def.getType(term);
 
@@ -431,7 +430,7 @@ public class CborLdDecoder implements DecoderConfig {
             }
         }
         if (value instanceof ByteString) {
-            System.out.println("> " + new String(((ByteString)value).getBytes()));
+            System.out.println("> " + new String(((ByteString) value).getBytes()));
         }
         return null;
     }

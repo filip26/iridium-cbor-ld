@@ -4,7 +4,7 @@ import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
-public class KeywordDictionary implements Dictionary {
+class KeywordDictionary implements Dictionary {
 
     public static final byte CONTEXT_CODE = 0;
 

@@ -16,7 +16,6 @@ public class TypeValueDecoder implements ValueDecoder {
 
     @Override
     public JsonValue decode(Dictionary dictionary, DataItem value, String term, Collection<String> types) throws DecoderError {
-
         if (types != null && types.contains(Keywords.TYPE)
                 && MajorType.UNSIGNED_INTEGER.equals(value.getMajorType())
                 ) {

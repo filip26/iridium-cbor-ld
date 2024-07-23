@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.function.Consumer;
 
-import com.apicatalog.cborld.context.mapping.TypeKeyNameMapper;
+import com.apicatalog.cborld.mapping.TypeKeyNameMapper;
 import com.apicatalog.cborld.mapping.TypeMap;
 import com.apicatalog.cursor.MapCursor;
 import com.apicatalog.jsonld.JsonLdError;

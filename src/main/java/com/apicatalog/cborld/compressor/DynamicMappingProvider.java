@@ -1,4 +1,4 @@
-package com.apicatalog.cborld.context.mapping;
+package com.apicatalog.cborld.compressor;
 
 import java.net.URI;
 
@@ -15,7 +15,7 @@ import com.apicatalog.jsonld.loader.DocumentLoader;
 
 import co.nstant.in.cbor.model.DataItem;
 
-public class ContextDecoderMappingProvider implements DecoderMappingProvider {
+public class DynamicMappingProvider implements DecoderMappingProvider {
 
     @Override
     public Mapping getDecoderMapping(DataItem document, URI base, DocumentLoader loader, DecoderConfig config) throws ContextError {

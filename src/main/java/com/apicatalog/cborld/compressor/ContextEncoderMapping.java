@@ -1,4 +1,4 @@
-package com.apicatalog.cborld.context.mapping;
+package com.apicatalog.cborld.compressor;
 
 import com.apicatalog.cborld.dictionary.Dictionary;
 import com.apicatalog.cborld.mapping.Mapping;

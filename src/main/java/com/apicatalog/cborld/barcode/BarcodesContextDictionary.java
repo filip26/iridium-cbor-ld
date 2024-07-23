@@ -1,11 +1,13 @@
-package com.apicatalog.cborld.dictionary;
+package com.apicatalog.cborld.barcode;
 
 import java.math.BigInteger;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import com.apicatalog.cborld.dictionary.Dictionary;
 
-public class BarcodesDictionary implements Dictionary {
+
+public class BarcodesContextDictionary implements Dictionary {
 
     protected final static Map<String, BigInteger> INDEX = new LinkedHashMap<>();
     protected final static Map<BigInteger, String> REVERSE = new LinkedHashMap<>();
@@ -30,5 +32,4 @@ public class BarcodesDictionary implements Dictionary {
     public String getValue(BigInteger code) {
         return REVERSE.get(code);
     }
-
 }
