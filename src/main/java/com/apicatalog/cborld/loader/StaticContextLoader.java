@@ -22,7 +22,8 @@ public class StaticContextLoader implements DocumentLoader {
         staticCache.put("https://w3id.org/security/suites/ed25519-2020/v1", get("security-suites-ed25519-2020-v1.jsonld"));
         staticCache.put("https://www.w3.org/ns/odrl.jsonld", get("odrl.jsonld"));
         staticCache.put("https://www.w3.org/ns/did/v1", get("did-v1.jsonld"));
-        staticCache.put("https://www.w3.org/ns/activitystreams", get("activitystreams.jsonld"));
+        staticCache.put("https://www.w3.org/ns/credentials/v2", get("credentials-v2.jsonld"));
+        staticCache.put("https://w3id.org/vc-barcodes/v1", get("vc-barcodes-v1.jsonld"));
     }
 
     protected final DocumentLoader defaultLoader;
@@ -52,6 +53,8 @@ public class StaticContextLoader implements DocumentLoader {
             }
         }
 
-        return defaultLoader.loadDocument(url, options);
+        var x = defaultLoader.loadDocument(url, options);
+        System.out.println(">>> " + url + ", " + x);
+        return x;
     }
 }
