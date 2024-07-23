@@ -12,6 +12,7 @@ import com.apicatalog.jsonld.loader.DocumentLoader;
 
 import co.nstant.in.cbor.model.DataItem;
 
+
 public interface MappingProvider {
     
     Mapping getEncoderMapping(MapCursor document, URI base, DocumentLoader loader, EncoderConfig config) throws EncoderError, ContextError;

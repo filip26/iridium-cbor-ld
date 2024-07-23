@@ -66,9 +66,7 @@ implementation("org.glassfish:jakarta.json:2.0.1")
 ### Encoding
 
 ```java
-  var encoder = CborLdEncoder
-                   // new default encoder instance
-                   .default()   
+  var encoder = new CborLdEncoder()
                    // custom terms dictionary (optional)
                    .dictionary(customDictionary); // e.g. BarcodesDictionary
                    
@@ -78,9 +76,7 @@ implementation("org.glassfish:jakarta.json:2.0.1")
 ### Decoding
 
 ```java
-  var decoder = CborLdDecoder
-                   // new default decoder instance
-                   .default()
+  var decoder = new CborLdDecoder()
                    // add custom terms dictionary (optional)
                    .dictionary(customDictionary);
 
@@ -94,17 +90,13 @@ Set `DbConfig` as a configuration option to an encoder or decoder API.
 e.g.
 
 ```java
-  var encoder = CborLdEncoder
-                   // new custom encoder instance
-                   .of(DbConfig.INSTANCE)
+  var encoder = new CborLdEncoder(DbConfig.INSTANCE)
                    // custom terms dictionary (optional)
                    .dictionary(customDictionary);
                    
   encoded = encoder.encode(document);
   
-  var decoder = CborLdDecoder
-                   // new custom encoder instance
-                   .of(DbConfig.INSTANCE)
+  var decoder = new CborLdDecoder(DbConfig.INSTANCE)
                    // add custom terms dictionary (optional)
                    .dictionary(customDictionary);
 
@@ -114,10 +106,6 @@ e.g.
 ## Documentation
 
 [![javadoc](https://javadoc.io/badge2/com.apicatalog/iridium-cbor-ld/javadoc.svg)](https://javadoc.io/doc/com.apicatalog/iridium-cbor-ld)
-
-## Commercial Support
-
-Commercial support is available at filip26@gmail.com
 
 ## Contributing
 
@@ -155,4 +143,7 @@ Fork and clone the project repository.
   <img src="https://avatars.githubusercontent.com/u/167436?s=200&v=4" width="40" />
 </a> 
 
+## Commercial Support
+
+Commercial support is available at filip26@gmail.com
 

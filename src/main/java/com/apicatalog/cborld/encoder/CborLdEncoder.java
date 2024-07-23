@@ -21,6 +21,7 @@ import com.apicatalog.cursor.ArrayItemCursor;
 import com.apicatalog.cursor.MapCursor;
 import com.apicatalog.cursor.MapEntryCursor;
 import com.apicatalog.cursor.ValueCursor;
+import com.apicatalog.cursor.jakarta.JakartaJsonCursor;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.http.DefaultHttpClient;
@@ -39,10 +40,9 @@ import co.nstant.in.cbor.model.NegativeInteger;
 import co.nstant.in.cbor.model.SimpleValue;
 import co.nstant.in.cbor.model.UnicodeString;
 import co.nstant.in.cbor.model.UnsignedInteger;
+import jakarta.json.JsonObject;
 
-public class Encoder implements EncoderConfig {
-
-    protected final MapCursor document;
+public class CborLdEncoder implements EncoderConfig {
 
     protected MappingProvider provider;
     protected Dictionary index;
@@ -54,9 +54,7 @@ public class Encoder implements EncoderConfig {
     protected boolean bundledContexts;
     protected URI base;
     
-    protected Encoder(MapCursor document) {
-        this.document = document;
-    
+    public CborLdEncoder() {    
         // default options
         config(DefaultConfig.INSTANCE);
         
@@ -65,24 +63,16 @@ public class Encoder implements EncoderConfig {
         this.loader = null;
     }
 
-    public static final Encoder create(MapCursor document) throws EncoderError {
-        if (document == null) {
-            throw new IllegalArgumentException("The 'document' parameter must not be null.");
-        }
-    
-        return new Encoder(document);
-    }
-
     /**
      * If set to true, the encoder replaces arrays with
      * just one element with that element during encoding saving one byte.
      * Enabled by default.
      *
      * @param enable <code>true</code> to enable arrays compaction
-     * @return {@link Encoder} instance
+     * @return {@link CborLdEncoder} instance
      *
      */
-    public Encoder compactArray(boolean enable) {
+    public CborLdEncoder compactArray(boolean enable) {
         compactArrays = enable;
         return this;
     }
@@ -91,9 +81,9 @@ public class Encoder implements EncoderConfig {
      * Override any existing configuration by the given configuration set.
      * 
      * @param config a configuration set 
-     * @return {@link Encoder} instance
+     * @return {@link CborLdEncoder} instance
      */
-    public Encoder config(EncoderConfig config) {
+    public CborLdEncoder config(EncoderConfig config) {
         this.compactArrays = config.isCompactArrays();
         this.valueEncoders = config.valueEncoders();
         return this;
@@ -104,9 +94,9 @@ public class Encoder implements EncoderConfig {
      * If not set then default document loader provided by {@link JsonLdOptions} is used. 
      * 
      * @param loader a document loader to set
-     * @return {@link Encoder} instance
+     * @return {@link CborLdEncoder} instance
      */
-    public Encoder loader(DocumentLoader loader) {
+    public CborLdEncoder loader(DocumentLoader loader) {
         this.loader = loader;
         return this;
     }
@@ -117,9 +107,9 @@ public class Encoder implements EncoderConfig {
      * <code>true</code> by default. Disabling might cause slower processing.
      *
      * @param enable <code>true</code> to use static bundled contexts
-     * @return {@link Encoder} instance
+     * @return {@link CborLdEncoder} instance
      */
-    public Encoder useBundledContexts(boolean enable) {
+    public CborLdEncoder useBundledContexts(boolean enable) {
         this.bundledContexts = enable;
         return this;
     }
@@ -128,11 +118,29 @@ public class Encoder implements EncoderConfig {
      * If set, then is used as the input document's base IRI.
      *
      * @param base a document base
-     * @return {@link Encoder} instance
+     * @return {@link CborLdEncoder} instance
      */
-    public Encoder base(URI base) {
+    public CborLdEncoder base(URI base) {
        this.base = base;
        return this;
+    }
+    
+    /**
+     * Encodes JSON-LD document as CBOR-LD document.
+     * 
+     * @param document JSON-LD document to encode 
+     * @return a byte array representing the encoded CBOR-LD document.
+     * 
+     * @throws EncoderError
+     * @throws ContextError 
+     */
+    public final byte[] encode(JsonObject document) throws EncoderError, ContextError {
+
+        if (document == null) {
+            throw new IllegalArgumentException("The 'document' parameter must not be null.");
+        }
+
+        return encode(JakartaJsonCursor.from(document));
     }
 
     /**
@@ -143,7 +151,7 @@ public class Encoder implements EncoderConfig {
      * @throws EncoderError
      * @throws ContextError
      */
-    public byte[] encode() throws EncoderError, ContextError {
+    byte[] encode(MapCursor document) throws EncoderError, ContextError {
     
         if (loader == null) {
             loader = new HttpLoader(DefaultHttpClient.defaultInstance());
@@ -203,7 +211,7 @@ public class Encoder implements EncoderConfig {
             // version 1 - 0x01
             baos.write(CborLdConstants.CBOR_LD_LEADING_BYTE);
             baos.write(CborLdConstants.CBOR_LD_VERSION_5_BYTE);  //TODO
-//FIXME            baos.write(CborLdConstants.COMPRESSED_V1);
+//            baos.write(CborLd.COMPRESSED_V1);
             
             new CborEncoder(baos).encode(builder.build());
 

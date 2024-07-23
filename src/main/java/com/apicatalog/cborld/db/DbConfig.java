@@ -83,20 +83,20 @@ public final class DbConfig implements EncoderConfig, DecoderConfig {
         return VALUE_ENCODERS;
     }
 
-    @Override
-    public DictionaryAlgorithm dictonaryAlgorithm() {
-        return DictionaryAlgorithm.ProcessingOrderAppliedContexts;
-    }
+//    @Override
+//    public DictionaryAlgorithm dictonaryAlgorithm() {
+//        return DictionaryAlgorithm.ProcessingOrderAppliedContexts;
+//    }
 
     @Override
     public Collection<ValueDecoder> valueDecoders() {
         return VALUE_DECODERS;
     }
     
-    @Override
-    public MappingProvider provider() {
-        return MAPPING_PROVIDER;
-    }
+//    @Override
+//    public MappingProvider provider() {
+//        return MAPPING_PROVIDER;
+//    }
 
     DbConfig() {}
 }

@@ -6,7 +6,6 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.apicatalog.cborld.CborLd;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.document.JsonDocument;
@@ -29,7 +28,7 @@ public class StaticContextLoader implements DocumentLoader {
     protected final DocumentLoader defaultLoader;
 
     protected static JsonDocument get(String name) {
-        try (final InputStream is = CborLd.class.getResourceAsStream(name)) {
+        try (final InputStream is = StaticContextLoader.class.getResourceAsStream(name)) {
 
             return JsonDocument.of(is);
 

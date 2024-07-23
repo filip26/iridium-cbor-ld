@@ -16,7 +16,9 @@ import java.util.Objects;
 import com.apicatalog.cbor.CborComparison;
 import com.apicatalog.cbor.CborWriter;
 import com.apicatalog.cborld.context.ContextError;
+import com.apicatalog.cborld.decoder.CborLdDecoder;
 import com.apicatalog.cborld.decoder.DecoderError;
+import com.apicatalog.cborld.encoder.CborLdEncoder;
 import com.apicatalog.cborld.encoder.EncoderError;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.document.Document;
@@ -53,6 +55,9 @@ public class CborLdTestRunnerJunit {
                             .set("classpath", new ClasspathLoader())
                         ));
 
+    public final static CborLdEncoder ENCODER = new CborLdEncoder().loader(LOADER);
+    public final static CborLdDecoder DECODER = new CborLdDecoder().loader(LOADER);
+    
     public CborLdTestRunnerJunit(CborLdTestCase testCase) {
         this.testCase = testCase;
     }
@@ -72,10 +77,9 @@ public class CborLdTestRunnerJunit {
     
                 JsonObject object = document.getJsonContent().orElseThrow(IllegalStateException::new).asJsonObject();
     
-                byte[] bytes = CborLd.encoder(object)
-                                    .loader(LOADER)
+                byte[] bytes = ENCODER
                                     .compactArray(testCase.compactArrays)
-                                    .encode();
+                                    .encode(object);
     
                 if (testCase.type.stream().noneMatch(o -> o.endsWith("PositiveEvaluationTest"))) {
                     fail("Expected error code [" + testCase.result + "].");
@@ -118,10 +122,9 @@ public class CborLdTestRunnerJunit {
     
                 assertNotNull(document);
     
-                JsonValue result = CborLd.decoder(((CborLdDocument)document).getByteArray())
-                                        .loader(LOADER)
+                JsonValue result = DECODER
                                         .compactArray(testCase.compactArrays)
-                                        .decode();
+                                        .decode(((CborLdDocument)document).getByteArray());
     
                 if (testCase.type.stream().noneMatch(o -> o.endsWith("PositiveEvaluationTest"))) {
                     fail("Expected error code [" + testCase.result + "].");

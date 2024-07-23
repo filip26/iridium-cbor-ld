@@ -6,7 +6,7 @@ public interface Config {
 
     boolean isCompactArrays();
     
-    DictionaryAlgorithm dictonaryAlgorithm();
-    
-    MappingProvider provider();
+//    DictionaryAlgorithm dictonaryAlgorithm();
+//    
+//    MappingProvider provider();
 }

@@ -29,7 +29,7 @@ import com.apicatalog.cborld.mapper.MappingProvider;
 
 public final class DefaultConfig implements EncoderConfig, DecoderConfig {
 
-    public static DefaultConfig INSTANCE = new DefaultConfig();
+    public static final DefaultConfig INSTANCE = new DefaultConfig();
     
     static final ContextDictionary CONTEXT_DICTIONARY = new ContextDictionary();
     
@@ -86,20 +86,20 @@ public final class DefaultConfig implements EncoderConfig, DecoderConfig {
         return VALUE_ENCODERS;
     }
     
-    @Override
-    public DictionaryAlgorithm dictonaryAlgorithm() {
-        return DictionaryAlgorithm.ProcessingOrderAppliedContexts;
-    }
+//    @Override
+//    public DictionaryAlgorithm dictonaryAlgorithm() {
+//        return DictionaryAlgorithm.ProcessingOrderAppliedContexts;
+//    }
 
     @Override
     public Collection<ValueDecoder> valueDecoders() {
         return VALUE_DECODERS;
     }
     
-    @Override
-    public MappingProvider provider() {
-        return MAPPING_PROVIDER;
-    }
+//    @Override
+//    public MappingProvider provider() {
+//        return MAPPING_PROVIDER;
+//    }
     
     DefaultConfig() {}
 }
