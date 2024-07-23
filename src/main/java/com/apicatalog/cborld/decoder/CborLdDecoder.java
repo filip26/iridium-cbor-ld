@@ -4,12 +4,14 @@ import java.io.ByteArrayInputStream;
 import java.math.BigInteger;
 import java.net.URI;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.apicatalog.cborld.CborLdConstants;
 import com.apicatalog.cborld.config.DefaultConfig;
 import com.apicatalog.cborld.context.ContextError;
+import com.apicatalog.cborld.db.DbMappingProvider;
 import com.apicatalog.cborld.decoder.DecoderError.Code;
 import com.apicatalog.cborld.decoder.value.ValueDecoder;
 import com.apicatalog.cborld.dictionary.Dictionary;
@@ -66,6 +68,8 @@ public class CborLdDecoder implements DecoderConfig {
         this.compactArrays = config.isCompactArrays();
         this.valueDecoders = config.valueDecoders();
 
+        this.providers = new LinkedHashMap<>();
+        this.providers.put(0x01, new DbMappingProvider());
         this.bundledContexts = DefaultConfig.STATIC_CONTEXTS;
         this.base = null;
         this.loader = null;
@@ -129,6 +133,30 @@ public class CborLdDecoder implements DecoderConfig {
      */
     public CborLdDecoder base(URI base) {
         this.base = base;
+        return this;
+    }
+    
+    /**
+     * Associate new terms dictionary
+     * 
+     * @param code CBOR-LD terms dictionary code 
+     * @param dictionary a dictionary instance
+     * @return {@link CborLdDecoder} instance
+     */
+    public CborLdDecoder dictionary(int code, Dictionary dictionary) {
+        //TODO
+        return this;
+    }
+
+    /**
+     * Associate new terms dictionary
+     * 
+     * @param code CBOR-LD terms dictionary code 
+     * @param mapping terms dictionary provider
+     * @return {@link CborLdDecoder} instance
+     */
+    public CborLdDecoder dictionary(int code, MappingProvider mapping) {
+        //TODO
         return this;
     }
     
