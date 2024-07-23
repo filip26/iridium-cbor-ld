@@ -2,6 +2,7 @@ package com.apicatalog.cborld.db;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 
 import com.apicatalog.cborld.decoder.DecoderConfig;
 import com.apicatalog.cborld.decoder.value.ContextValueDecoder;
@@ -15,6 +16,7 @@ import com.apicatalog.cborld.decoder.value.VocabValueDecoder;
 import com.apicatalog.cborld.decoder.value.XsdDateTimeValueDecoder;
 import com.apicatalog.cborld.decoder.value.XsdDateValueDecoder;
 import com.apicatalog.cborld.dictionary.ContextDictionary;
+import com.apicatalog.cborld.dictionary.Dictionary;
 import com.apicatalog.cborld.encoder.EncoderConfig;
 import com.apicatalog.cborld.encoder.value.ContextValueEncoder;
 import com.apicatalog.cborld.encoder.value.DidKeyValueEncoder;
@@ -26,6 +28,7 @@ import com.apicatalog.cborld.encoder.value.ValueEncoder;
 import com.apicatalog.cborld.encoder.value.VocabValueEncoder;
 import com.apicatalog.cborld.encoder.value.XsdDateTimeValueEncoder;
 import com.apicatalog.cborld.encoder.value.XsdDateValueEncoder;
+import com.apicatalog.cborld.mapping.DecoderMappingProvider;
 
 public final class DbConfig implements EncoderConfig, DecoderConfig {
 
@@ -56,7 +59,7 @@ public final class DbConfig implements EncoderConfig, DecoderConfig {
 
     static {
         // term driven
-        VALUE_DECODERS.add(new ContextValueDecoder(CONTEXT_DICTIONARY));
+        VALUE_DECODERS.add(new ContextValueDecoder());
 
         // type driven
         VALUE_DECODERS.add(new IdValueDecoder());
@@ -94,5 +97,23 @@ public final class DbConfig implements EncoderConfig, DecoderConfig {
     }
 
     DbConfig() {
+    }
+
+    @Override
+    public Map<String, Dictionary> types() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Dictionary contexts() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public DecoderMappingProvider mapping() {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

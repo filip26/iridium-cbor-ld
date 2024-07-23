@@ -13,6 +13,12 @@ An implementation of the [CBOR-LD 1.0](https://json-ld.github.io/cbor-ld-spec/) 
 [![Maven Central](https://img.shields.io/maven-central/v/com.apicatalog/iridium-cbor-ld.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:com.apicatalog%20AND%20a:iridium-cbor-ld)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
+## Features
+
+* Semantic compression / decompression
+* Custom dictionaries
+* Verifiable Credential Barcodes
+
 ## CLI
 [LD-CLI](https://github.com/filip26/ld-cli) ia a command line utility for Ubuntu, Mac and Windows.
 
@@ -66,7 +72,7 @@ implementation("org.glassfish:jakarta.json:2.0.1")
 ### Encoding
 
 ```java
-  var encoder = new CborLdEncoder()
+  var encoder = CborLdEncoder.newInstance()
                    // custom terms dictionary (optional)
                    .dictionary(customDictionary); // e.g. BarcodesDictionary
                    

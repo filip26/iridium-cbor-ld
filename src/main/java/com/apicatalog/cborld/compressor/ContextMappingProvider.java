@@ -37,7 +37,7 @@ public class ContextMappingProvider implements EncoderMappingProvider, DecoderMa
     @Override
     public Mapping getDecoderMapping(DataItem document, URI base, DocumentLoader loader, DecoderConfig config) throws ContextError {
         try {
-            final ContextDecoderMapping mapping = new ContextDecoderMapping();
+            final ContextDecoderMapping mapping = new ContextDecoderMapping(config.contexts(), config.types());
             mapping.valueDecoders(config.valueDecoders());
 
             final MapCursor cursor = CborCursor.from(

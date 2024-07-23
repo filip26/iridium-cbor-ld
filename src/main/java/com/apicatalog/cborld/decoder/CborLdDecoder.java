@@ -9,18 +9,17 @@ import java.util.List;
 import java.util.Map;
 
 import com.apicatalog.cborld.CborLdConstants;
-import com.apicatalog.cborld.compressor.ContextMappingProvider;
 import com.apicatalog.cborld.config.DefaultConfig;
 import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.decoder.DecoderError.Code;
 import com.apicatalog.cborld.decoder.value.ValueDecoder;
+import com.apicatalog.cborld.dictionary.Dictionaries;
 import com.apicatalog.cborld.dictionary.Dictionary;
 import com.apicatalog.cborld.encoder.Encoder;
 import com.apicatalog.cborld.hex.Hex;
 import com.apicatalog.cborld.loader.StaticContextLoader;
 import com.apicatalog.cborld.mapping.DecoderMappingProvider;
 import com.apicatalog.cborld.mapping.Mapping;
-import com.apicatalog.cborld.mapping.StaticDecoderMappingProvider;
 import com.apicatalog.cborld.mapping.TypeMap;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.http.DefaultHttpClient;
@@ -53,9 +52,11 @@ import jakarta.json.JsonValue;
 
 public class CborLdDecoder implements DecoderConfig {
 
-    protected Map<Integer, DecoderMappingProvider> providers;
+    protected DecoderMappingProvider provider;
+    
+    protected Map<Integer, Dictionaries> customDictionaries;
 
-    Collection<ValueDecoder> valueDecoders;
+    protected Collection<ValueDecoder> valueDecoders;
 
     protected DocumentLoader loader;
     protected boolean bundledContexts;
@@ -70,8 +71,7 @@ public class CborLdDecoder implements DecoderConfig {
         this.compactArrays = config.isCompactArrays();
         this.valueDecoders = config.valueDecoders();
 
-        this.providers = new LinkedHashMap<>();
-        this.providers.put(0x01, new ContextMappingProvider());
+        this.customDictionaries = new LinkedHashMap<>();
         this.bundledContexts = DefaultConfig.STATIC_CONTEXTS;
         this.base = null;
         this.loader = null;
@@ -142,23 +142,11 @@ public class CborLdDecoder implements DecoderConfig {
      * Associate new terms dictionary
      * 
      * @param code       CBOR-LD terms dictionary code
-     * @param dictionary a dictionary instance
+     * @param dictionary a custom dictionary
      * @return {@link CborLdDecoder} instance
      */
-    public CborLdDecoder dictionary(int code, Dictionary dictionary) {
-        providers.put(code, new StaticDecoderMappingProvider(dictionary));
-        return this;
-    }
-
-    /**
-     * Associate new terms dictionary
-     * 
-     * @param code    CBOR-LD terms dictionary code
-     * @param mapping terms dictionary provider
-     * @return {@link CborLdDecoder} instance
-     */
-    public CborLdDecoder dictionary(int code, DecoderMappingProvider mapping) {
-        providers.put(code, mapping);
+    public CborLdDecoder dictionary(int code, Dictionaries dictionary) {
+        customDictionaries.put(code, dictionary);
         return this;
     }
 
@@ -206,9 +194,9 @@ public class CborLdDecoder implements DecoderConfig {
             throw new DecoderError(Code.UnknownCompression, "Uncompressed CBOR-LD documents are not supported.");
         }
         
-        final DecoderMappingProvider mapping = providers.get(Byte.toUnsignedInt(encodedDocument[2]));
+        final Dictionaries dictionaries = customDictionaries.get(Byte.toUnsignedInt(encodedDocument[2]));
 
-        if (mapping == null) {
+        if (dictionaries == null) {
             throw new DecoderError(Code.UnknownCompression,
                     "Unkknown CBOR-LD document terms dictionary type id, found ["
                             + Hex.toString(encodedDocument[2]) + "].");
@@ -219,12 +207,12 @@ public class CborLdDecoder implements DecoderConfig {
             ((HttpLoader) loader).fallbackContentType(MediaType.JSON);
         }
 
-        return decode(encodedDocument, mapping, bundledContexts
+        return decode(encodedDocument, dictionaries, bundledContexts
                 ? new StaticContextLoader(loader)
                 : loader);
     }
 
-    protected JsonValue decode(byte[] encoded, final DecoderMappingProvider provider, final DocumentLoader loader) throws ContextError, DecoderError {
+    protected JsonValue decode(byte[] encoded, final Dictionaries provider, final DocumentLoader loader) throws ContextError, DecoderError {
         try {
             final ByteArrayInputStream bais = new ByteArrayInputStream(encoded);
             final List<DataItem> dataItems = new CborDecoder(bais).decode();
@@ -253,12 +241,12 @@ public class CborLdDecoder implements DecoderConfig {
         }
     }
 
-    protected final JsonValue decode(final DataItem data, final DecoderMappingProvider provider, final DocumentLoader loader) throws DecoderError, ContextError {
+    protected final JsonValue decode(final DataItem data, final Dictionaries custom, final DocumentLoader loader) throws DecoderError, ContextError {
         final Mapping mapping = provider.getDecoderMapping(data, base, loader, this);
-        return decodeData(data, null, mapping.typeMap(), mapping.dictionary());
+        return decodeData(data, null, mapping.typeMap(), mapping);
     }
 
-    protected final JsonValue decodeData(final DataItem data, final String term, final TypeMap def, final Dictionary index) throws DecoderError, ContextError {
+    protected final JsonValue decodeData(final DataItem data, final String term, final TypeMap def, Mapping mapping) throws DecoderError, ContextError {
 
         if (data == null) {
             throw new IllegalArgumentException("The data parameter must not be null.");
@@ -266,16 +254,16 @@ public class CborLdDecoder implements DecoderConfig {
 
         switch (data.getMajorType()) {
         case MAP:
-            return decodeMap((co.nstant.in.cbor.model.Map) data, term != null ? def.getMapping(term) : def, index);
+            return decodeMap((co.nstant.in.cbor.model.Map) data, term != null ? def.getMapping(term) : def, mapping);
 
         case ARRAY:
-            return decodeArray(((Array) data).getDataItems(), term, def, index);
+            return decodeArray(((Array) data).getDataItems(), term, def, mapping);
 
         case UNICODE_STRING:
             return decodeString((UnicodeString) data, term);
 
         case UNSIGNED_INTEGER:
-            return decodeInteger(data, term, def, index);
+            return decodeInteger(data, term, def, mapping);
 
         case SPECIAL:
             return decode((Special) data);
@@ -284,7 +272,7 @@ public class CborLdDecoder implements DecoderConfig {
             return Json.createValue(((NegativeInteger) data).getValue());
 
         case BYTE_STRING:
-            JsonValue decoded = decodeValue(data, term, def, index);
+            JsonValue decoded = decodeValue(data, term, def, mapping);
             if (decoded == null) {
                 throw new DecoderError(Code.InvalidDocument, "Unknown encoded value [" + data.getMajorType() + "] at key [" + term + "].");
             }
@@ -296,7 +284,7 @@ public class CborLdDecoder implements DecoderConfig {
         }
     }
 
-    protected final JsonObject decodeMap(final co.nstant.in.cbor.model.Map map, final TypeMap def, final Dictionary index) throws DecoderError, ContextError {
+    protected final JsonObject decodeMap(final co.nstant.in.cbor.model.Map map, final TypeMap def, final Mapping mapping) throws DecoderError, ContextError {
 
         if (map == null) {
             throw new IllegalArgumentException("The map parameter must not be null.");
@@ -316,14 +304,14 @@ public class CborLdDecoder implements DecoderConfig {
                     && !((UnsignedInteger) key).getValue().mod(BigInteger.ONE.add(BigInteger.ONE)).equals(BigInteger.ZERO);
 
             JsonValue json = null;
-            String term = decodeKey(key, index);
+            String term = decodeKey(key, mapping);
 
             if (!isArray && MajorType.ARRAY.equals(value.getMajorType())) {
-                json = decodeValue(value, term, def, index);
+                json = decodeValue(value, term, def, mapping);
             }
 
             if (json == null) {
-                json = decodeData(value, term, def, index);
+                json = decodeData(value, term, def, mapping);
 
                 if (isArray
                         && compactArrays
@@ -334,13 +322,13 @@ public class CborLdDecoder implements DecoderConfig {
                 }
             }
 
-            builder.add(decodeKey(key, index), json);
+            builder.add(decodeKey(key, mapping), json);
         }
 
         return builder.build();
     }
 
-    protected static final String decodeKey(final DataItem data, final Dictionary index) {
+    protected static final String decodeKey(final DataItem data, final Mapping mapping) {
 
         if (data == null) {
             throw new IllegalArgumentException("The data parameter must not be null.");
@@ -351,7 +339,7 @@ public class CborLdDecoder implements DecoderConfig {
             return decodeKey(((UnicodeString) data).getString());
 
         case UNSIGNED_INTEGER:
-            return decodeKey(((UnsignedInteger) data).getValue(), index);
+            return decodeKey(((UnsignedInteger) data).getValue(), mapping);
 
         default:
             return data.toString();
@@ -362,19 +350,19 @@ public class CborLdDecoder implements DecoderConfig {
         return key;
     }
 
-    protected static final String decodeKey(final BigInteger key, final Dictionary index) {
+    protected static final String decodeKey(final BigInteger key, final Mapping mapping) {
 
         if (key.mod(BigInteger.ONE.add(BigInteger.ONE)).equals(BigInteger.ZERO)) {
-            String result = index.getValue(key);
+            String result = mapping.terms().getValue(key);
             return result != null ? result : key.toString();
         }
 
-        String result = index.getValue(key.subtract(BigInteger.ONE));
+        String result = mapping.terms().getValue(key.subtract(BigInteger.ONE));
 
         return result != null ? result : key.toString();
     }
 
-    protected final JsonArray decodeArray(final Collection<DataItem> items, final String key, final TypeMap def, final Dictionary index) throws DecoderError, ContextError {
+    protected final JsonArray decodeArray(final Collection<DataItem> items, final String key, final TypeMap def, final Mapping mapping) throws DecoderError, ContextError {
 
         if (items == null) {
             throw new IllegalArgumentException("The items parameter must not be null.");
@@ -387,7 +375,7 @@ public class CborLdDecoder implements DecoderConfig {
         final JsonArrayBuilder builder = Json.createArrayBuilder();
 
         for (final DataItem item : items) {
-            builder.add(decodeData(item, key, def, index));
+            builder.add(decodeData(item, key, def, mapping));
         }
 
         return builder.build();
@@ -401,13 +389,13 @@ public class CborLdDecoder implements DecoderConfig {
         return Json.createValue(string.getString());
     }
 
-    protected final JsonValue decodeInteger(final DataItem number, final String key, final TypeMap def, final Dictionary index) throws DecoderError {
+    protected final JsonValue decodeInteger(final DataItem number, final String key, final TypeMap def, final Mapping mapping) throws DecoderError {
 
         if (number == null) {
             throw new IllegalArgumentException("The number parameter must not be null.");
         }
 
-        JsonValue decoded = decodeValue(number, key, def, index);
+        JsonValue decoded = decodeValue(number, key, def, mapping);
 
         if (decoded != null) {
             return decoded;
@@ -417,12 +405,12 @@ public class CborLdDecoder implements DecoderConfig {
         return Json.createValue(((UnsignedInteger) number).getValue());
     }
 
-    protected final JsonValue decodeValue(final DataItem value, final String term, final TypeMap def, final Dictionary index) throws DecoderError {
+    protected final JsonValue decodeValue(final DataItem value, final String term, final TypeMap def, final Mapping mapping) throws DecoderError {
         if (def != null) {
             final Collection<String> types = def.getType(term);
 
             for (final ValueDecoder decoder : valueDecoders) {
-                final JsonValue decoded = decoder.decode(index, value, term, types);
+                final JsonValue decoded = decoder.decode(mapping, value, term, types);
 
                 if (decoded != null) {
                     return decoded;
@@ -482,5 +470,22 @@ public class CborLdDecoder implements DecoderConfig {
     @Override
     public Collection<ValueDecoder> valueDecoders() {
         return valueDecoders;
+    }
+
+    @Override
+    public Map<String, Dictionary> types() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Dictionary contexts() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public DecoderMappingProvider mapping() {
+        return provider;
     }
 }

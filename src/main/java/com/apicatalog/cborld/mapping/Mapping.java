@@ -4,7 +4,11 @@ import com.apicatalog.cborld.dictionary.Dictionary;
 
 public interface Mapping {
 
-    Dictionary dictionary();
+    Dictionary context();
+    
+    Dictionary type(String type);
+    
+    Dictionary terms();
     
     TypeMap typeMap();
 }

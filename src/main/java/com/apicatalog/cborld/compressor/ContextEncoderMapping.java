@@ -16,12 +16,24 @@ class ContextEncoderMapping implements Mapping {
     }
 
     @Override
-    public Dictionary dictionary() {
+    public Dictionary terms() {
         return dictionary;
     }
 
     @Override
     public TypeMap typeMap() {
         return typeMap;
+    }
+
+    @Override
+    public Dictionary context() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Dictionary type(String type) {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

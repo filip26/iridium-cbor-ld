@@ -2,10 +2,12 @@ package com.apicatalog.cborld.config;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 
 import com.apicatalog.cborld.barcode.BarcodesContextDictionary;
 import com.apicatalog.cborld.decoder.DecoderConfig;
 import com.apicatalog.cborld.decoder.value.ContextValueDecoder;
+import com.apicatalog.cborld.decoder.value.CustomTypeValueDecoder;
 import com.apicatalog.cborld.decoder.value.DidKeyValueDecoder;
 import com.apicatalog.cborld.decoder.value.IdValueDecoder;
 import com.apicatalog.cborld.decoder.value.MultibaseValueDecoder;
@@ -27,6 +29,7 @@ import com.apicatalog.cborld.encoder.value.ValueEncoder;
 import com.apicatalog.cborld.encoder.value.VocabValueEncoder;
 import com.apicatalog.cborld.encoder.value.XsdDateTimeValueEncoder;
 import com.apicatalog.cborld.encoder.value.XsdDateValueEncoder;
+import com.apicatalog.cborld.mapping.DecoderMappingProvider;
 
 public final class DefaultConfig implements EncoderConfig, DecoderConfig {
 
@@ -58,16 +61,17 @@ public final class DefaultConfig implements EncoderConfig, DecoderConfig {
 
     static {
         // term driven
-        VALUE_DECODERS.add(new ContextValueDecoder(CONTEXT_DICTIONARY));
+        VALUE_DECODERS.add(new ContextValueDecoder());
 
         // type driven
         VALUE_DECODERS.add(new IdValueDecoder());
-//        VALUE_DECODERS.add(new TypeBasedDecoder());
         VALUE_DECODERS.add(new TypeValueDecoder());
         VALUE_DECODERS.add(new XsdDateTimeValueDecoder());
         VALUE_DECODERS.add(new XsdDateValueDecoder());
         VALUE_DECODERS.add(new MultibaseValueDecoder());
         VALUE_DECODERS.add(new VocabValueDecoder());
+        VALUE_DECODERS.add(new CustomTypeValueDecoder());
+        
         // value driven
         VALUE_DECODERS.add(new UuidValueDecoder());
         VALUE_DECODERS.add(new DidKeyValueDecoder());
@@ -93,5 +97,23 @@ public final class DefaultConfig implements EncoderConfig, DecoderConfig {
     }
 
     DefaultConfig() {
+    }
+
+    @Override
+    public Map<String, Dictionary> types() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Dictionary contexts() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public DecoderMappingProvider mapping() {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

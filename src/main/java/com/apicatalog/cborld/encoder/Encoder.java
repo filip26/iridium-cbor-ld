@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URI;
 import java.util.Collection;
+import java.util.Map;
 
 import com.apicatalog.cborld.CborLdConstants;
 import com.apicatalog.cborld.config.DefaultConfig;
@@ -195,7 +196,7 @@ public class Encoder implements EncoderConfig {
         try {             
             final Mapping mapping = provider.getEncoderMapping(document, base, loader, this);
 
-            index = mapping.dictionary();
+            index = mapping.terms();
             
             final CborBuilder builder = (CborBuilder) encode(document, new CborBuilder().addMap(), mapping.typeMap()).end();
             
@@ -374,6 +375,18 @@ public class Encoder implements EncoderConfig {
     @Override
     public Collection<ValueEncoder> valueEncoders() {
         return valueEncoders;
+    }
+
+    @Override
+    public Map<String, Dictionary> types() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Dictionary contexts() {
+        // TODO Auto-generated method stub
+        return null;
     }
 }
 
