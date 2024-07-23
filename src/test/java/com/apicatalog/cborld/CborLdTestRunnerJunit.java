@@ -45,24 +45,25 @@ public class CborLdTestRunnerJunit {
 
     private final CborLdTestCase testCase;
 
-    public final static DocumentLoader LOADER =
+    public final static DocumentLoader LOADER = new StaticLoader(
             new UriBaseRewriter(
                     CborLdTest.BASE,
                     "classpath:",
                     new UriBaseRewriter("https://raw.githubusercontent.com/filip26/iridium-cbor-ld/main/src/test/resources/com/apicatalog/cborld/",
-                        "classpath:",
-                        new SchemeRouter()
-                            .set("http", HttpLoader.defaultInstance())
-                            .set("https", HttpLoader.defaultInstance())
-                            .set("classpath", new ClasspathLoader())
-                        ));
+                            "classpath:",
+                            new SchemeRouter()
+                                    .set("http", HttpLoader.defaultInstance())
+                                    .set("https", HttpLoader.defaultInstance())
+                                    .set("classpath", new ClasspathLoader()))));
 
-    public final static CborLdEncoder ENCODER = new CborLdEncoder().loader(LOADER);
+    public final static CborLdEncoder ENCODER = new CborLdEncoder().loader(LOADER)
+            .useBundledContexts(false);
+
     public final static CborLdDecoder DECODER = new CborLdDecoder().loader(LOADER)
             .dictionary(100, new BarcodesDictionary())
             .dictionary(100, new ContextDecoderMappingProvider())
-            ;
-    
+            .useBundledContexts(false);
+
     public CborLdTestRunnerJunit(CborLdTestCase testCase) {
         this.testCase = testCase;
     }
@@ -77,23 +78,22 @@ public class CborLdTestRunnerJunit {
 
                 assumeFalse("t0025".equals(testCase.id.getFragment()));
                 assumeFalse("t0026".equals(testCase.id.getFragment()));
-                
+
                 Document document = LOADER.loadDocument(testCase.input, new DocumentLoaderOptions());
-    
+
                 JsonObject object = document.getJsonContent().orElseThrow(IllegalStateException::new).asJsonObject();
-    
+
                 byte[] bytes = ENCODER
-                                    .compactArray(testCase.compactArrays)
-                                    .encode(object);
-    
+                        .compactArray(testCase.compactArrays)
+                        .encode(object);
+
                 if (testCase.type.stream().noneMatch(o -> o.endsWith("PositiveEvaluationTest"))) {
                     fail("Expected error code [" + testCase.result + "].");
                     return;
                 }
- 
-                
+
                 assertNotNull(bytes);
- 
+
 //                try (var is =  (new FileOutputStream("/home/filip/" + testCase.id.getFragment() + ".cborld"))) {
 //                    
 //                    is.write(bytes);
@@ -106,48 +106,47 @@ public class CborLdTestRunnerJunit {
 //                    // TODO Auto-generated catch block
 //                    e.printStackTrace();
 //                }
-    
+
                 Document expected = LOADER.loadDocument(testCase.result, new DocumentLoaderOptions());
-    
+
                 assertNotNull(expected);
                 assertEquals(CborLdDocument.MEDIA_TYPE, expected.getContentType());
-    
-                final boolean match = CborComparison.equals(((CborLdDocument)expected).getByteArray(), bytes);
-    
-                if (!match) {
-                    write(testCase, bytes, ((CborLdDocument)expected).getByteArray());
-                }
-    
-                assertTrue(match, "The expected result does not match.");
 
+                final boolean match = CborComparison.equals(((CborLdDocument) expected).getByteArray(), bytes);
+
+                if (!match) {
+                    write(testCase, bytes, ((CborLdDocument) expected).getByteArray());
+                }
+
+                assertTrue(match, "The expected result does not match.");
 
             } else if (testCase.type.contains(CborLdTest.VOCAB + "DecoderTest")) {
 
                 Document document = LOADER.loadDocument(testCase.input, new DocumentLoaderOptions());
-    
+
                 assertNotNull(document);
-    
+
                 JsonValue result = DECODER
-                                        .compactArray(testCase.compactArrays)
-                                        .decode(((CborLdDocument)document).getByteArray());
-    
+                        .compactArray(testCase.compactArrays)
+                        .decode(((CborLdDocument) document).getByteArray());
+
                 if (testCase.type.stream().noneMatch(o -> o.endsWith("PositiveEvaluationTest"))) {
                     fail("Expected error code [" + testCase.result + "].");
                     return;
                 }
-    
+
                 assertNotNull(result);
-    
+
                 final JsonStructure expected = LOADER.loadDocument(testCase.result, new DocumentLoaderOptions()).getJsonContent().orElse(null);
-    
+
                 assertNotNull(expected);
-    
+
                 final boolean match = JsonLdComparison.equals(expected, result);
-    
+
                 if (!match) {
                     write(testCase, result, expected);
                 }
-    
+
                 assertTrue(match, "The expected result does not match.");
 
             } else {
@@ -183,7 +182,7 @@ public class CborLdTestRunnerJunit {
         // compare expected exception
         if (!Objects.equals(testCase.result.toASCIIString(), code)) {
             e.printStackTrace();
-            fail("Expected error code [" + testCase.result.toASCIIString() +"] does not match [" + code + "].");
+            fail("Expected error code [" + testCase.result.toASCIIString() + "] does not match [" + code + "].");
             return;
         }
     }
@@ -223,7 +222,7 @@ public class CborLdTestRunnerJunit {
             writer.println("Expected");
 
             CborWriter cborWriter = new CborWriter(writer);
-            
+
             List<DataItem> decodedExpected = CborDecoder.decode(expected);
             assertNotNull(decodedExpected);
 
@@ -234,7 +233,7 @@ public class CborLdTestRunnerJunit {
             writer.println();
 
             writer.println("Actual");
-            
+
             List<DataItem> decodedResult = CborDecoder.decode(result);
             assertNotNull(decodedResult);
 
@@ -245,7 +244,7 @@ public class CborLdTestRunnerJunit {
 
         } catch (IOException e) {
             fail(e);
-            
+
         } catch (CborException e) {
             fail(e);
         }

@@ -28,17 +28,6 @@ public class StaticContextLoader implements DocumentLoader {
 
     protected final DocumentLoader defaultLoader;
 
-    protected static JsonDocument get(String name) {
-        try (final InputStream is = StaticContextLoader.class.getResourceAsStream(name)) {
-
-            return JsonDocument.of(is);
-
-        } catch (IOException | JsonLdError e) {
-            e.printStackTrace();
-        }
-        return  null;
-    }
-
     public StaticContextLoader(DocumentLoader defaultLoader) {
         this.defaultLoader = defaultLoader;
     }
@@ -53,8 +42,21 @@ public class StaticContextLoader implements DocumentLoader {
             }
         }
 
-        var x = defaultLoader.loadDocument(url, options);
-        System.out.println(">>> " + url + ", " + x);
-        return x;
+        return defaultLoader.loadDocument(url, options);
+    }
+
+    protected static JsonDocument get(Class<?> clazz, String name) {
+        try (final InputStream is = clazz.getResourceAsStream(name)) {
+
+            return JsonDocument.of(is);
+
+        } catch (IOException | JsonLdError e) {
+            e.printStackTrace();
+        }
+        return  null;
+    }
+
+    private static JsonDocument get(String name) {
+        return get(StaticContextLoader.class, name);
     }
 }
