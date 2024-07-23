@@ -1,16 +1,16 @@
-package com.apicatalog.cborld.db;
+package com.apicatalog.cborld.context.mapping;
 
 import com.apicatalog.cborld.dictionary.Dictionary;
-import com.apicatalog.cborld.mapper.Mapping;
-import com.apicatalog.cborld.mapper.TypeMap;
+import com.apicatalog.cborld.mapping.Mapping;
+import com.apicatalog.cborld.mapping.TypeMap;
 
-class DbEncoderMapping implements Mapping {
+class ContextEncoderMapping implements Mapping {
 
     private final Dictionary dictionary;
 
     private final TypeMap typeMap;
         
-    DbEncoderMapping(Dictionary dictionary, TypeMap typeMap) {
+    ContextEncoderMapping(Dictionary dictionary, TypeMap typeMap) {
         this.dictionary = dictionary;
         this.typeMap = typeMap;
     }

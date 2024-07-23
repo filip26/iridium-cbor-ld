@@ -22,7 +22,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import com.apicatalog.cborld.db.TypeKeyNameMapper;
+import com.apicatalog.cborld.context.mapping.TypeKeyNameMapper;
 import com.apicatalog.cursor.MapCursor;
 import com.apicatalog.cursor.MapEntryCursor;
 import com.apicatalog.cursor.jakarta.JakartaValueCursor;

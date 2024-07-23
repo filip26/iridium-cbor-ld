@@ -11,16 +11,16 @@ import java.util.Map;
 import com.apicatalog.cborld.CborLdConstants;
 import com.apicatalog.cborld.config.DefaultConfig;
 import com.apicatalog.cborld.context.ContextError;
-import com.apicatalog.cborld.db.DbMappingProvider;
+import com.apicatalog.cborld.context.mapping.ContextDecoderMappingProvider;
 import com.apicatalog.cborld.decoder.DecoderError.Code;
 import com.apicatalog.cborld.decoder.value.ValueDecoder;
 import com.apicatalog.cborld.dictionary.Dictionary;
 import com.apicatalog.cborld.encoder.Encoder;
 import com.apicatalog.cborld.hex.Hex;
 import com.apicatalog.cborld.loader.StaticContextLoader;
-import com.apicatalog.cborld.mapper.Mapping;
-import com.apicatalog.cborld.mapper.MappingProvider;
-import com.apicatalog.cborld.mapper.TypeMap;
+import com.apicatalog.cborld.mapping.DecoderMappingProvider;
+import com.apicatalog.cborld.mapping.Mapping;
+import com.apicatalog.cborld.mapping.TypeMap;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.http.DefaultHttpClient;
 import com.apicatalog.jsonld.http.media.MediaType;
@@ -51,7 +51,7 @@ import jakarta.json.JsonValue;
 
 public class CborLdDecoder implements DecoderConfig {
 
-    protected Map<Integer, MappingProvider> providers;
+    protected Map<Integer, DecoderMappingProvider> providers;
 
     Collection<ValueDecoder> valueDecoders;
     
@@ -69,7 +69,7 @@ public class CborLdDecoder implements DecoderConfig {
         this.valueDecoders = config.valueDecoders();
 
         this.providers = new LinkedHashMap<>();
-        this.providers.put(0x01, new DbMappingProvider());
+        this.providers.put(0x01, new ContextDecoderMappingProvider());
         this.bundledContexts = DefaultConfig.STATIC_CONTEXTS;
         this.base = null;
         this.loader = null;
@@ -155,7 +155,7 @@ public class CborLdDecoder implements DecoderConfig {
      * @param mapping terms dictionary provider
      * @return {@link CborLdDecoder} instance
      */
-    public CborLdDecoder dictionary(int code, MappingProvider mapping) {
+    public CborLdDecoder dictionary(int code, DecoderMappingProvider mapping) {
         //TODO
         return this;
     }
@@ -201,7 +201,7 @@ public class CborLdDecoder implements DecoderConfig {
                     + ".");            
         }
 
-        final MappingProvider mapping = providers.get(Byte.toUnsignedInt(encodedDocument[2]));
+        final DecoderMappingProvider mapping = providers.get(Byte.toUnsignedInt(encodedDocument[2]));
         
         if (mapping == null) {
             throw new DecoderError(Code.UnknownCompression,
@@ -220,7 +220,7 @@ public class CborLdDecoder implements DecoderConfig {
     }
     
 
-    protected JsonValue decode(byte[] encoded, final MappingProvider provider, final DocumentLoader loader) throws ContextError, DecoderError {
+    protected JsonValue decode(byte[] encoded, final DecoderMappingProvider provider, final DocumentLoader loader) throws ContextError, DecoderError {
         try {
             final ByteArrayInputStream bais = new ByteArrayInputStream(encoded);
             final List<DataItem> dataItems = new CborDecoder(bais).decode();
@@ -250,7 +250,7 @@ public class CborLdDecoder implements DecoderConfig {
         }
     }
 
-    final JsonValue decodeCompressed(final DataItem data, final MappingProvider provider, final DocumentLoader loader) throws DecoderError, ContextError {
+    final JsonValue decodeCompressed(final DataItem data, final DecoderMappingProvider provider, final DocumentLoader loader) throws DecoderError, ContextError {
         final Mapping mapping = provider.getDecoderMapping(data, base, loader, this);
         return decodeData(data, null, mapping.typeMap(), mapping.dictionary());
     }

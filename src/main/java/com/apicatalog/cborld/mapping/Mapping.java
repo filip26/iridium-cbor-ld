@@ -1,4 +1,4 @@
-package com.apicatalog.cborld.mapper;
+package com.apicatalog.cborld.mapping;
 
 import com.apicatalog.cborld.dictionary.Dictionary;
 

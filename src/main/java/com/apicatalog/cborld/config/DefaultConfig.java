@@ -3,7 +3,6 @@ package com.apicatalog.cborld.config;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import com.apicatalog.cborld.db.DbMappingProvider;
 import com.apicatalog.cborld.decoder.DecoderConfig;
 import com.apicatalog.cborld.decoder.value.ContextValueDecoder;
 import com.apicatalog.cborld.decoder.value.DidKeyValueDecoder;
@@ -25,7 +24,6 @@ import com.apicatalog.cborld.encoder.value.ValueEncoder;
 import com.apicatalog.cborld.encoder.value.VocabValueEncoder;
 import com.apicatalog.cborld.encoder.value.XsdDateTimeValueEncoder;
 import com.apicatalog.cborld.encoder.value.XsdDateValueEncoder;
-import com.apicatalog.cborld.mapper.MappingProvider;
 
 public final class DefaultConfig implements EncoderConfig, DecoderConfig {
 
@@ -72,8 +70,6 @@ public final class DefaultConfig implements EncoderConfig, DecoderConfig {
 
     static final boolean COMPACT_ARRAYS = true;
     
-    static final MappingProvider MAPPING_PROVIDER = new DbMappingProvider(); 
-
     public static final boolean STATIC_CONTEXTS = true;
 
     @Override
@@ -86,20 +82,10 @@ public final class DefaultConfig implements EncoderConfig, DecoderConfig {
         return VALUE_ENCODERS;
     }
     
-//    @Override
-//    public DictionaryAlgorithm dictonaryAlgorithm() {
-//        return DictionaryAlgorithm.ProcessingOrderAppliedContexts;
-//    }
-
     @Override
     public Collection<ValueDecoder> valueDecoders() {
         return VALUE_DECODERS;
     }
-    
-//    @Override
-//    public MappingProvider provider() {
-//        return MAPPING_PROVIDER;
-//    }
     
     DefaultConfig() {}
 }

@@ -13,9 +13,9 @@ import com.apicatalog.cborld.dictionary.Dictionary;
 import com.apicatalog.cborld.encoder.EncoderError.Code;
 import com.apicatalog.cborld.encoder.value.ValueEncoder;
 import com.apicatalog.cborld.loader.StaticContextLoader;
-import com.apicatalog.cborld.mapper.Mapping;
-import com.apicatalog.cborld.mapper.MappingProvider;
-import com.apicatalog.cborld.mapper.TypeMap;
+import com.apicatalog.cborld.mapping.EncoderMappingProvider;
+import com.apicatalog.cborld.mapping.Mapping;
+import com.apicatalog.cborld.mapping.TypeMap;
 import com.apicatalog.cursor.ArrayCursor;
 import com.apicatalog.cursor.ArrayItemCursor;
 import com.apicatalog.cursor.MapCursor;
@@ -44,7 +44,7 @@ import jakarta.json.JsonObject;
 
 public class CborLdEncoder implements EncoderConfig {
 
-    protected MappingProvider provider;
+    protected EncoderMappingProvider provider;
     protected Dictionary index;
 
     // options

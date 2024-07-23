@@ -1,4 +1,4 @@
-package com.apicatalog.cborld.db;
+package com.apicatalog.cborld.context.mapping;
 
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -9,8 +9,8 @@ import com.apicatalog.cborld.decoder.DecoderError;
 import com.apicatalog.cborld.decoder.value.ValueDecoder;
 import com.apicatalog.cborld.dictionary.CodeTermMap;
 import com.apicatalog.cborld.dictionary.Dictionary;
-import com.apicatalog.cborld.mapper.Mapping;
-import com.apicatalog.cborld.mapper.TypeMap;
+import com.apicatalog.cborld.mapping.Mapping;
+import com.apicatalog.cborld.mapping.TypeMap;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 
@@ -20,7 +20,7 @@ import co.nstant.in.cbor.model.UnsignedInteger;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 
-class DbDecoderMapping implements Mapping {
+class ContextDecoderMapping implements Mapping {
 
     private final CodeTermMap dictionary;
     private final TypeKeyNameMapper typeKeyNameMap;
@@ -28,7 +28,7 @@ class DbDecoderMapping implements Mapping {
     
     private Collection<ValueDecoder> valueDecoders;
     
-    DbDecoderMapping() {
+    ContextDecoderMapping() {
         this.dictionary = CodeTermMap.create();
         this.typeKeyNameMap = new DefaultTypeKeyNameMapper();
         this.typeMap = null;
