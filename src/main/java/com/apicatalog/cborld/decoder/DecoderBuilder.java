@@ -2,14 +2,12 @@ package com.apicatalog.cborld.decoder;
 
 import java.net.URI;
 import java.util.Collection;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.apicatalog.cborld.config.DefaultConfig;
 import com.apicatalog.cborld.decoder.value.ValueDecoder;
-import com.apicatalog.cborld.dictionary.ContextDictionary;
 import com.apicatalog.cborld.dictionary.CustomDictionary;
-import com.apicatalog.cborld.dictionary.Dictionary;
 import com.apicatalog.cborld.loader.StaticContextLoader;
 import com.apicatalog.cborld.mapping.DecoderMappingProvider;
 import com.apicatalog.jsonld.JsonLdOptions;
@@ -26,9 +24,6 @@ public class DecoderBuilder implements DecoderConfig {
 
     protected Collection<ValueDecoder> valueDecoders;
 
-    protected Dictionary contexts;
-    protected Map<String, Dictionary> types;
-
     protected DocumentLoader loader;
     protected boolean bundledContexts;
     protected boolean compactArrays;
@@ -38,9 +33,10 @@ public class DecoderBuilder implements DecoderConfig {
         this.provider = config.decoderMapping();
         this.compactArrays = config.isCompactArrays();
         this.valueDecoders = config.valueDecoders();
+        this.dictionaries = config.dictionaries() != null
+                ? new HashMap<>(config.dictionaries())
+                : new HashMap<>();
 
-        this.dictionaries = new LinkedHashMap<>();
-        this.dictionaries.put(0x01, new CustomDictionary(0x01, ContextDictionary.INSTANCE, null));
         this.bundledContexts = DefaultConfig.STATIC_CONTEXTS;
         this.base = null;
         this.loader = null;
@@ -63,13 +59,15 @@ public class DecoderBuilder implements DecoderConfig {
      * Override any existing configuration by the given configuration set.
      * 
      * @param config a configuration set
-     * @return {@link Encoder} instance
+     * @return {@link DecoderBuilder} instance
      */
     public DecoderBuilder config(DecoderConfig config) {
         this.provider = config.decoderMapping();
         this.compactArrays = config.isCompactArrays();
         this.valueDecoders = config.valueDecoders();
-        this.dictionaries = config.dictionaries();
+        if (config.dictionaries() != null) {
+            this.dictionaries = new HashMap<>(config.dictionaries());
+        }
         return this;
     }
 
@@ -127,10 +125,13 @@ public class DecoderBuilder implements DecoderConfig {
      * @return {@link DecoderBuilder} instance
      */
     public DecoderBuilder dictionary(int code, CustomDictionary dictionary) {
+        if (dictionaries == null) {
+            dictionaries = new HashMap<>();
+        }
         dictionaries.put(code, dictionary);
         return this;
     }
-
+    
     @Override
     public boolean isCompactArrays() {
         return compactArrays;
@@ -150,7 +151,7 @@ public class DecoderBuilder implements DecoderConfig {
     public Map<Integer, CustomDictionary> dictionaries() {
         return dictionaries;
     }
-    
+
     @Override
     public DocumentLoader loader() {
         return loader;
@@ -160,16 +161,16 @@ public class DecoderBuilder implements DecoderConfig {
     public URI base() {
         return base;
     }
-    
+
     public Decoder build() {
-        
+
         if (loader == null) {
             loader = new HttpLoader(DefaultHttpClient.defaultInstance());
             ((HttpLoader) loader).fallbackContentType(MediaType.JSON);
         }
-        
+
         if (bundledContexts) {
-            loader = new StaticContextLoader(loader); 
+            loader = new StaticContextLoader(loader);
         }
 
         return new Decoder(this);

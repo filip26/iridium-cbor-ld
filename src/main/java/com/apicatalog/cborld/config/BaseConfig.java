@@ -12,9 +12,9 @@ public class BaseConfig implements Config {
     protected boolean compactArrays;
     protected URI base;
 
-    protected BaseConfig() {
-        this.bundledContexts = DefaultConfig.STATIC_CONTEXTS;
-        this.compactArrays = DefaultConfig.COMPACT_ARRAYS;
+    protected BaseConfig(boolean bundledContexts, boolean compactArrays) {
+        this.bundledContexts = bundledContexts;
+        this.compactArrays = compactArrays;
         this.loader = null;
         this.base = null;
     }

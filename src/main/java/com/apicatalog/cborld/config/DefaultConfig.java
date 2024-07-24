@@ -2,6 +2,7 @@ package com.apicatalog.cborld.config;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.apicatalog.cborld.CborLd;
@@ -18,6 +19,7 @@ import com.apicatalog.cborld.decoder.value.ValueDecoder;
 import com.apicatalog.cborld.decoder.value.VocabValueDecoder;
 import com.apicatalog.cborld.decoder.value.XsdDateTimeValueDecoder;
 import com.apicatalog.cborld.decoder.value.XsdDateValueDecoder;
+import com.apicatalog.cborld.dictionary.ContextDictionary;
 import com.apicatalog.cborld.dictionary.CustomDictionary;
 import com.apicatalog.cborld.encoder.EncoderConfig;
 import com.apicatalog.cborld.encoder.value.ContextValueEncoder;
@@ -78,16 +80,21 @@ public final class DefaultConfig extends BaseConfig implements EncoderConfig, De
         VALUE_DECODERS.add(new DidKeyValueDecoder());
     }
 
-    public static final boolean COMPACT_ARRAYS = false;
+    static final boolean COMPACT_ARRAYS = false;
 
     public static final boolean STATIC_CONTEXTS = true;
 
-    public static final byte VERSION = CborLd.VERSION_6_BYTE;
+    static final byte VERSION = CborLd.VERSION_6_BYTE;
 
-    DefaultConfig() {
-        super();
-        this.compactArrays = COMPACT_ARRAYS;
-//        this.dictionaries = new LinkedHashMap<>();
+    static final Map<Integer, CustomDictionary> DICTIONARIES;
+    
+    static {
+        DICTIONARIES = new HashMap<>();
+        DICTIONARIES.put(0x01, new CustomDictionary(0x01, ContextDictionary.INSTANCE, null));
+    }
+    
+    protected DefaultConfig() {
+        super(STATIC_CONTEXTS, COMPACT_ARRAYS);
     }
 
     @Override
@@ -112,8 +119,7 @@ public final class DefaultConfig extends BaseConfig implements EncoderConfig, De
 
     @Override
     public Map<Integer, CustomDictionary> dictionaries() {
-        // TODO Auto-generated method stub
-        return null;
+        return DICTIONARIES;
     }
 
     @Override
@@ -124,7 +130,6 @@ public final class DefaultConfig extends BaseConfig implements EncoderConfig, De
 
     @Override
     public byte version() {
-        // TODO Auto-generated method stub
-        return 0;
+        return VERSION;
     }
 }

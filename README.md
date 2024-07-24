@@ -73,41 +73,47 @@ implementation("org.glassfish:jakarta.json:2.0.1")
 ### Encoding
 
 ```java
-  var encoder = CborLdEncoder.newInstance()
-                   // custom terms dictionary (optional)
-                   .dictionary(customDictionary); // e.g. BarcodesDictionary.INSTANCE)
+// create an encoder builder initialized with default values
+var encoder = CborLd.createEncoder()
+               // use bundled static contexts (true by default)
+               .useBundledContexts(true)
+               // loader (optional)
+               .loader(...)
+               // custom terms dictionary (optional)
+               .dictionary(customDictionary)
+               // create a new encoder instance
+               .build(); 
                    
-  byte[] encoded = encoder.encode(document);
+// create barcodes encoder builder 
+var encoder = CborLd.createEncoder(BarcodesConfig.INSTANCE)
+               // ... customize
+               .build()
+  
+// encode a document
+byte[] encoded = encoder.encode(document);
 ```
 
 ### Decoding
 
 ```java
-  var decoder = new CborLdDecoder()
-                   // add custom terms dictionary (optional)
-                   .dictionary(customDictionary);
-
-  document = decoder.decode(encoded);
-```
-
-### @digitalbazaar/cborld compatibility
-
-Set `DbConfig` as a configuration option to an encoder or decoder API.
-
-e.g.
-
-```java
-  var encoder = new CborLdEncoder(DbConfig.INSTANCE)
-                   // custom terms dictionary (optional)
-                   .dictionary(customDictionary);
+// create a decoder builder initialized with default values
+var decoder = CborLd.createDecoder()
+               // use bundled static contexts (true by default)
+               .useBundledContexts(true)
+               // loader (optional)
+               .loader(...)
+               // add custom terms dictionary (optional)
+               .dictionary(customDictionary);
+               // create a new decoder instance
+               .build(); 
                    
-  encoded = encoder.encode(document);
+// create barcodes decoder builder
+var decoder = CborLd.createDecoder(BarcodesConfig.INSTANCE)
+               // ... customize
+               .build()
   
-  var decoder = new CborLdDecoder(DbConfig.INSTANCE)
-                   // add custom terms dictionary (optional)
-                   .dictionary(customDictionary);
-
-  document = decoder.decode(encoded);
+// decode
+document = decoder.decode(encoded);
 ```
 
 ## Documentation
