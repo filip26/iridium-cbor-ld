@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
-import com.apicatalog.cborld.barcode.BarcodesContextDictionary;
+import com.apicatalog.cborld.context.mapping.ContextMappingProvider;
 import com.apicatalog.cborld.decoder.DecoderConfig;
 import com.apicatalog.cborld.decoder.value.ContextValueDecoder;
 import com.apicatalog.cborld.decoder.value.CustomTypeValueDecoder;
@@ -17,6 +17,7 @@ import com.apicatalog.cborld.decoder.value.ValueDecoder;
 import com.apicatalog.cborld.decoder.value.VocabValueDecoder;
 import com.apicatalog.cborld.decoder.value.XsdDateTimeValueDecoder;
 import com.apicatalog.cborld.decoder.value.XsdDateValueDecoder;
+import com.apicatalog.cborld.dictionary.ContextDictionary;
 import com.apicatalog.cborld.dictionary.Dictionary;
 import com.apicatalog.cborld.encoder.EncoderConfig;
 import com.apicatalog.cborld.encoder.value.ContextValueEncoder;
@@ -35,9 +36,10 @@ public final class DefaultConfig implements EncoderConfig, DecoderConfig {
 
     public static final DefaultConfig INSTANCE = new DefaultConfig();
 
-//    static final ContextDictionary CONTEXT_DICTIONARY = new ContextDictionary();
-    static final Dictionary CONTEXT_DICTIONARY = new BarcodesContextDictionary();
+    static final ContextDictionary CONTEXT_DICTIONARY = new ContextDictionary();
 
+    static final DecoderMappingProvider DECODER = new ContextMappingProvider();
+    
     static final Collection<ValueEncoder> VALUE_ENCODERS = new ArrayList<>();
 
     static {
@@ -100,20 +102,7 @@ public final class DefaultConfig implements EncoderConfig, DecoderConfig {
     }
 
     @Override
-    public Map<String, Dictionary> types() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public Dictionary contexts() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public DecoderMappingProvider mapping() {
-        // TODO Auto-generated method stub
-        return null;
+    public DecoderMappingProvider decoderMapping() {
+        return DECODER;
     }
 }

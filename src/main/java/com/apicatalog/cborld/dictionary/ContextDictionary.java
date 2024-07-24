@@ -16,6 +16,8 @@ import com.apicatalog.cborld.hex.Hex;
  */
 public class ContextDictionary implements Dictionary {
 
+    public static final ContextDictionary INSTANCE = new ContextDictionary();
+    
     private static final byte OFFSET = 0x10;
 
     private static final String[] TERMS = new String[] {

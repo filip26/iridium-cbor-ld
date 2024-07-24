@@ -16,7 +16,6 @@ public class ContextValueDecoder implements ValueDecoder {
 
     @Override
     public JsonValue decode(Mapping mapping, DataItem value, String term, Collection<String> types) throws DecoderError {
-
         if (mapping != null
                 && mapping.context() != null
                 && Keywords.CONTEXT.equals(term)

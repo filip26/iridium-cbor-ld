@@ -13,7 +13,8 @@ import com.apicatalog.cborld.config.DefaultConfig;
 import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.decoder.DecoderError.Code;
 import com.apicatalog.cborld.decoder.value.ValueDecoder;
-import com.apicatalog.cborld.dictionary.Dictionaries;
+import com.apicatalog.cborld.dictionary.ContextDictionary;
+import com.apicatalog.cborld.dictionary.CustomDictionary;
 import com.apicatalog.cborld.dictionary.Dictionary;
 import com.apicatalog.cborld.encoder.Encoder;
 import com.apicatalog.cborld.hex.Hex;
@@ -31,7 +32,6 @@ import com.apicatalog.jsonld.loader.HttpLoader;
 import co.nstant.in.cbor.CborDecoder;
 import co.nstant.in.cbor.CborException;
 import co.nstant.in.cbor.model.Array;
-import co.nstant.in.cbor.model.ByteString;
 import co.nstant.in.cbor.model.DataItem;
 import co.nstant.in.cbor.model.DoublePrecisionFloat;
 import co.nstant.in.cbor.model.HalfPrecisionFloat;
@@ -54,10 +54,13 @@ public class CborLdDecoder implements DecoderConfig {
 
     protected DecoderMappingProvider provider;
     
-    protected Map<Integer, Dictionaries> customDictionaries;
+    protected Map<Integer, CustomDictionary> customDictionaries;
 
     protected Collection<ValueDecoder> valueDecoders;
 
+    protected Dictionary contexts;
+    protected Map<String, Dictionary> types;
+    
     protected DocumentLoader loader;
     protected boolean bundledContexts;
     protected boolean compactArrays;
@@ -68,10 +71,12 @@ public class CborLdDecoder implements DecoderConfig {
     }
 
     public CborLdDecoder(DecoderConfig config) {
+        this.provider = config.decoderMapping();
         this.compactArrays = config.isCompactArrays();
         this.valueDecoders = config.valueDecoders();
 
         this.customDictionaries = new LinkedHashMap<>();
+        this.customDictionaries.put(0x01, new CustomDictionary(ContextDictionary.INSTANCE, null));
         this.bundledContexts = DefaultConfig.STATIC_CONTEXTS;
         this.base = null;
         this.loader = null;
@@ -97,6 +102,7 @@ public class CborLdDecoder implements DecoderConfig {
      * @return {@link Encoder} instance
      */
     public CborLdDecoder config(DecoderConfig config) {
+        this.provider = config.decoderMapping();
         this.compactArrays = config.isCompactArrays();
         this.valueDecoders = config.valueDecoders();
         return this;
@@ -145,7 +151,7 @@ public class CborLdDecoder implements DecoderConfig {
      * @param dictionary a custom dictionary
      * @return {@link CborLdDecoder} instance
      */
-    public CborLdDecoder dictionary(int code, Dictionaries dictionary) {
+    public CborLdDecoder dictionary(int code, CustomDictionary dictionary) {
         customDictionaries.put(code, dictionary);
         return this;
     }
@@ -194,7 +200,7 @@ public class CborLdDecoder implements DecoderConfig {
             throw new DecoderError(Code.UnknownCompression, "Uncompressed CBOR-LD documents are not supported.");
         }
         
-        final Dictionaries dictionaries = customDictionaries.get(Byte.toUnsignedInt(encodedDocument[2]));
+        final CustomDictionary dictionaries = customDictionaries.get(Byte.toUnsignedInt(encodedDocument[2]));
 
         if (dictionaries == null) {
             throw new DecoderError(Code.UnknownCompression,
@@ -212,7 +218,7 @@ public class CborLdDecoder implements DecoderConfig {
                 : loader);
     }
 
-    protected JsonValue decode(byte[] encoded, final Dictionaries provider, final DocumentLoader loader) throws ContextError, DecoderError {
+    protected JsonValue decode(byte[] encoded, final CustomDictionary provider, final DocumentLoader loader) throws ContextError, DecoderError {
         try {
             final ByteArrayInputStream bais = new ByteArrayInputStream(encoded);
             final List<DataItem> dataItems = new CborDecoder(bais).decode();
@@ -241,8 +247,8 @@ public class CborLdDecoder implements DecoderConfig {
         }
     }
 
-    protected final JsonValue decode(final DataItem data, final Dictionaries custom, final DocumentLoader loader) throws DecoderError, ContextError {
-        final Mapping mapping = provider.getDecoderMapping(data, base, loader, this);
+    protected final JsonValue decode(final DataItem data, final CustomDictionary custom, final DocumentLoader loader) throws DecoderError, ContextError {
+        final Mapping mapping = provider.getDecoderMapping(data, base, loader, custom, this);
         return decodeData(data, null, mapping.typeMap(), mapping);
     }
 
@@ -417,9 +423,6 @@ public class CborLdDecoder implements DecoderConfig {
                 }
             }
         }
-        if (value instanceof ByteString) {
-            System.out.println("> " + new String(((ByteString) value).getBytes()));
-        }
         return null;
     }
 
@@ -473,19 +476,7 @@ public class CborLdDecoder implements DecoderConfig {
     }
 
     @Override
-    public Map<String, Dictionary> types() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public Dictionary contexts() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public DecoderMappingProvider mapping() {
+    public DecoderMappingProvider decoderMapping() {
         return provider;
     }
 }

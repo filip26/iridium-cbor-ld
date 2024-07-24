@@ -1,4 +1,4 @@
-package com.apicatalog.cborld.compressor;
+package com.apicatalog.cborld.context.mapping;
 
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -22,7 +22,7 @@ import co.nstant.in.cbor.model.UnsignedInteger;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 
-class ContextDecoderMapping implements Mapping {
+class DecoderContextMapping implements Mapping {
 
     private final Dictionary contexts;
     private final Map<String, Dictionary> types;
@@ -30,18 +30,15 @@ class ContextDecoderMapping implements Mapping {
     private final TypeKeyNameMapper typeKeyNameMap;
     private TypeMap typeMap;
 
-    private Collection<ValueDecoder> valueDecoders;
+    private final Collection<ValueDecoder> valueDecoders;
 
-    ContextDecoderMapping(Dictionary contexts, Map<String, Dictionary> types) {
+    DecoderContextMapping(Dictionary contexts, Map<String, Dictionary> types, Collection<ValueDecoder> valueDecoders) {
         this.contexts = contexts;
         this.types = types;
+        this.valueDecoders = valueDecoders;
         this.dictionary = CodeTermMap.create();
         this.typeKeyNameMap = new DefaultTypeKeyNameMapper();
         this.typeMap = null;
-    }
-
-    void valueDecoders(Collection<ValueDecoder> valueDecoders) {
-        this.valueDecoders = valueDecoders;
     }
 
     final DataItem decodeValue(final DataItem value, String term, Collection<String> path) {

@@ -1,4 +1,4 @@
-package com.apicatalog.cborld.compressor;
+package com.apicatalog.cborld.context.mapping;
 
 import java.net.URI;
 
@@ -7,6 +7,7 @@ import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.context.ContextError.Code;
 import com.apicatalog.cborld.decoder.DecoderConfig;
 import com.apicatalog.cborld.dictionary.CodeTermMap;
+import com.apicatalog.cborld.dictionary.CustomDictionary;
 import com.apicatalog.cborld.encoder.EncoderConfig;
 import com.apicatalog.cborld.mapping.DecoderMappingProvider;
 import com.apicatalog.cborld.mapping.EncoderMappingProvider;
@@ -25,7 +26,7 @@ public class ContextMappingProvider implements EncoderMappingProvider, DecoderMa
         try {
             final Context context = Context.from(document, base, loader);
 
-            return new ContextEncoderMapping(
+            return new EncoderContextMapping(
                     CodeTermMap.from(context.getContextKeySets(), loader),
                     context.getTypeMapping());
 
@@ -35,10 +36,9 @@ public class ContextMappingProvider implements EncoderMappingProvider, DecoderMa
     }
 
     @Override
-    public Mapping getDecoderMapping(DataItem document, URI base, DocumentLoader loader, DecoderConfig config) throws ContextError {
+    public Mapping getDecoderMapping(DataItem document, URI base, DocumentLoader loader, CustomDictionary custom, DecoderConfig config) throws ContextError {
         try {
-            final ContextDecoderMapping mapping = new ContextDecoderMapping(config.contexts(), config.types());
-            mapping.valueDecoders(config.valueDecoders());
+            final DecoderContextMapping mapping = new DecoderContextMapping(custom.contexts(), custom.types(), config.valueDecoders());
 
             final MapCursor cursor = CborCursor.from(
                     document,

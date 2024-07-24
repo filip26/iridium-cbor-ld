@@ -384,17 +384,5 @@ public class CborLdEncoder implements EncoderConfig {
     public Collection<ValueEncoder> valueEncoders() {
         return valueEncoders;
     }
-
-    @Override
-    public Map<String, Dictionary> types() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public Dictionary contexts() {
-        // TODO Auto-generated method stub
-        return null;
-    }
 }
 

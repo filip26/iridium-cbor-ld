@@ -174,7 +174,6 @@ final class ObjectExpansion {
             element.parent();
 
             for (final JsonValue context : JsonUtils.toJsonArray(jsonContext)) {
-
                 final ActiveContext ac = new ActiveContext(activeContext.getBaseUri(), activeContext.getBaseUrl(), activeContext.runtime())
                                         .newContext()
                                         .create(context, baseUrl);

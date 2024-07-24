@@ -8,7 +8,7 @@ public interface Config {
     
     boolean isCompactArrays();
     
-    Map<String, Dictionary> types();
-    
-    Dictionary contexts();
+//    Map<String, Dictionary> types();
+//    
+//    Dictionary contexts();
 }

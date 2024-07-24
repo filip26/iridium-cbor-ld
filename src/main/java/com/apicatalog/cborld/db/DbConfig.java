@@ -100,19 +100,7 @@ public final class DbConfig implements EncoderConfig, DecoderConfig {
     }
 
     @Override
-    public Map<String, Dictionary> types() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public Dictionary contexts() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public DecoderMappingProvider mapping() {
+    public DecoderMappingProvider decoderMapping() {
         // TODO Auto-generated method stub
         return null;
     }
