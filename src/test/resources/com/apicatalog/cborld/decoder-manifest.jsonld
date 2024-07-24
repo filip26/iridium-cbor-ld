@@ -107,7 +107,10 @@
       ],
       "name": "single item array term value",
       "input": "decoder/0010-in.cborld",
-      "expect": "decoder/0010-out.jsonld"
+      "expect": "decoder/0010-out.jsonld",
+      "option": {
+        "compactArrays": true
+      }
     },
     {
       "@id": "#t0011",
@@ -127,10 +130,7 @@
       ],
       "name": "compactArrays: false - single item array term value",
       "input": "decoder/0012-in.cborld",
-      "expect": "decoder/0012-out.jsonld",
-      "option": {
-        "compactArrays": false
-      }
+      "expect": "decoder/0012-out.jsonld"
     },
     {
       "@id": "#t0013",
@@ -140,7 +140,10 @@
       ],
       "name": "@list container term value",
       "input": "decoder/0013-in.cborld",
-      "expect": "decoder/0013-out.jsonld"
+      "expect": "decoder/0013-out.jsonld",
+      "option": {
+        "compactArrays": true
+      }
     },
     {
       "@id": "#t0014",

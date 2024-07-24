@@ -83,6 +83,7 @@ public class CborLdEncoder implements EncoderConfig {
      * @return {@link CborLdEncoder} instance
      */
     public CborLdEncoder config(EncoderConfig config) {
+        this.provider = config.encoderMapping();
         this.compactArrays = config.isCompactArrays();
         this.valueEncoders = config.valueEncoders();
         return this;
@@ -210,7 +211,7 @@ public class CborLdEncoder implements EncoderConfig {
             // version 1 - 0x01
             baos.write(CborLdConstants.CBOR_LD_LEADING_BYTE);
             baos.write(CborLdConstants.CBOR_LD_VERSION_5_BYTE); // TODO
-//            baos.write(CborLd.COMPRESSED_V1);
+            baos.write(CborLdConstants.COMPRESSED);
 
             new CborEncoder(baos).encode(builder.build());
 
@@ -378,5 +379,10 @@ public class CborLdEncoder implements EncoderConfig {
     @Override
     public Collection<ValueEncoder> valueEncoders() {
         return valueEncoders;
+    }
+
+    @Override
+    public EncoderMappingProvider encoderMapping() {
+        return provider;
     }
 }

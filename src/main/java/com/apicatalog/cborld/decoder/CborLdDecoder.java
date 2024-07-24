@@ -16,7 +16,6 @@ import com.apicatalog.cborld.decoder.value.ValueDecoder;
 import com.apicatalog.cborld.dictionary.ContextDictionary;
 import com.apicatalog.cborld.dictionary.CustomDictionary;
 import com.apicatalog.cborld.dictionary.Dictionary;
-import com.apicatalog.cborld.encoder.Encoder;
 import com.apicatalog.cborld.hex.Hex;
 import com.apicatalog.cborld.loader.StaticContextLoader;
 import com.apicatalog.cborld.mapping.DecoderMappingProvider;

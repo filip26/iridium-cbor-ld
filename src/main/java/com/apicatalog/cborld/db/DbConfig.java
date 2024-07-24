@@ -27,7 +27,9 @@ import com.apicatalog.cborld.encoder.value.VocabValueEncoder;
 import com.apicatalog.cborld.encoder.value.XsdDateTimeValueEncoder;
 import com.apicatalog.cborld.encoder.value.XsdDateValueEncoder;
 import com.apicatalog.cborld.mapping.DecoderMappingProvider;
+import com.apicatalog.cborld.mapping.EncoderMappingProvider;
 
+@Deprecated
 public final class DbConfig implements EncoderConfig, DecoderConfig {
 
     public static final DbConfig INSTANCE = new DbConfig();
@@ -99,6 +101,12 @@ public final class DbConfig implements EncoderConfig, DecoderConfig {
 
     @Override
     public DecoderMappingProvider decoderMapping() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public EncoderMappingProvider encoderMapping() {
         // TODO Auto-generated method stub
         return null;
     }

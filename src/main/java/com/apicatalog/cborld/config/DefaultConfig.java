@@ -29,6 +29,7 @@ import com.apicatalog.cborld.encoder.value.VocabValueEncoder;
 import com.apicatalog.cborld.encoder.value.XsdDateTimeValueEncoder;
 import com.apicatalog.cborld.encoder.value.XsdDateValueEncoder;
 import com.apicatalog.cborld.mapping.DecoderMappingProvider;
+import com.apicatalog.cborld.mapping.EncoderMappingProvider;
 
 public final class DefaultConfig implements EncoderConfig, DecoderConfig {
 
@@ -36,8 +37,8 @@ public final class DefaultConfig implements EncoderConfig, DecoderConfig {
 
     static final ContextDictionary CONTEXT_DICTIONARY = new ContextDictionary();
 
-    static final DecoderMappingProvider DECODER = new ContextMappingProvider();
-    
+    static final ContextMappingProvider MAPPING = new ContextMappingProvider();
+
     static final Collection<ValueEncoder> VALUE_ENCODERS = new ArrayList<>();
 
     static {
@@ -45,7 +46,7 @@ public final class DefaultConfig implements EncoderConfig, DecoderConfig {
         VALUE_ENCODERS.add(new ContextValueEncoder(CONTEXT_DICTIONARY));
 
         // type driven
-        VALUE_ENCODERS.add(new IdValueEncoder());
+//        VALUE_ENCODERS.add(new IdValueEncoder());
         VALUE_ENCODERS.add(new TypeValueEncoder());
         VALUE_ENCODERS.add(new XsdDateTimeValueEncoder());
         VALUE_ENCODERS.add(new XsdDateValueEncoder());
@@ -71,13 +72,13 @@ public final class DefaultConfig implements EncoderConfig, DecoderConfig {
         VALUE_DECODERS.add(new MultibaseValueDecoder());
         VALUE_DECODERS.add(new VocabValueDecoder());
         VALUE_DECODERS.add(new CustomTypeValueDecoder());
-        
+
         // value driven
         VALUE_DECODERS.add(new UuidValueDecoder());
         VALUE_DECODERS.add(new DidKeyValueDecoder());
     }
 
-    static final boolean COMPACT_ARRAYS = true;
+    static final boolean COMPACT_ARRAYS = false;
 
     public static final boolean STATIC_CONTEXTS = true;
 
@@ -101,6 +102,11 @@ public final class DefaultConfig implements EncoderConfig, DecoderConfig {
 
     @Override
     public DecoderMappingProvider decoderMapping() {
-        return DECODER;
+        return MAPPING;
+    }
+
+    @Override
+    public EncoderMappingProvider encoderMapping() {
+        return MAPPING;
     }
 }
