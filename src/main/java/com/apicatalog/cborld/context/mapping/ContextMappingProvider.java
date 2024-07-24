@@ -1,7 +1,5 @@
 package com.apicatalog.cborld.context.mapping;
 
-import java.net.URI;
-
 import com.apicatalog.cborld.context.Context;
 import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.context.ContextError.Code;
@@ -15,19 +13,18 @@ import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.cursor.MapCursor;
 import com.apicatalog.cursor.cbor.CborCursor;
 import com.apicatalog.jsonld.JsonLdError;
-import com.apicatalog.jsonld.loader.DocumentLoader;
 
 import co.nstant.in.cbor.model.DataItem;
 
 public class ContextMappingProvider implements EncoderMappingProvider, DecoderMappingProvider {
 
     @Override
-    public Mapping getEncoderMapping(MapCursor document, URI base, DocumentLoader loader, EncoderConfig config) throws ContextError {
+    public Mapping getEncoderMapping(MapCursor document, EncoderConfig config) throws ContextError {
         try {
-            final Context context = Context.from(document, base, loader);
+            final Context context = Context.from(document, config.base(), config.loader());
 
             return new EncoderContextMapping(
-                    CodeTermMap.from(context.getContextKeySets(), loader),
+                    CodeTermMap.from(context.getContextKeySets(), config.loader()),
                     context.getTypeMapping());
 
         } catch (JsonLdError e) {
@@ -36,7 +33,7 @@ public class ContextMappingProvider implements EncoderMappingProvider, DecoderMa
     }
 
     @Override
-    public Mapping getDecoderMapping(DataItem document, URI base, DocumentLoader loader, CustomDictionary custom, DecoderConfig config) throws ContextError {
+    public Mapping getDecoderMapping(DataItem document, CustomDictionary custom, DecoderConfig config) throws ContextError {
         try {
             final DecoderContextMapping mapping = new DecoderContextMapping(custom.contexts(), custom.types(), config.valueDecoders());
 
@@ -46,7 +43,7 @@ public class ContextMappingProvider implements EncoderMappingProvider, DecoderMa
                     mapping::encodeKey,
                     mapping::decodeValue);
 
-            final Context context = Context.from(cursor, base, loader, mapping::add, mapping.typeKeyNameMap());
+            final Context context = Context.from(cursor, config.base(), config.loader(), mapping::add, mapping.typeKeyNameMap());
 
             mapping.typeMap(context.getTypeMapping());
 

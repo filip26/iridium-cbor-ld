@@ -17,7 +17,7 @@ import com.apicatalog.cbor.CborComparison;
 import com.apicatalog.cbor.CborWriter;
 import com.apicatalog.cborld.barcode.BarcodesDictionary;
 import com.apicatalog.cborld.context.ContextError;
-import com.apicatalog.cborld.decoder.CborLdDecoder;
+import com.apicatalog.cborld.decoder.Decoder;
 import com.apicatalog.cborld.decoder.DecoderError;
 import com.apicatalog.cborld.encoder.Encoder;
 import com.apicatalog.cborld.encoder.EncoderError;
@@ -48,22 +48,16 @@ public class CborLdTestRunnerJunit {
     static {
         StaticContextLoader.set("https://w3id.org/utopia/v2", CborLdTestRunnerJunit.class, "utopia-v2.jsonld");
     }
-    
-    public final static DocumentLoader LOADER =
-            new UriBaseRewriter(
-                    CborLdTest.BASE,
+
+    public final static DocumentLoader LOADER = new UriBaseRewriter(
+            CborLdTest.BASE,
+            "classpath:",
+            new UriBaseRewriter("https://raw.githubusercontent.com/filip26/iridium-cbor-ld/main/src/test/resources/com/apicatalog/cborld/",
                     "classpath:",
-                    new UriBaseRewriter("https://raw.githubusercontent.com/filip26/iridium-cbor-ld/main/src/test/resources/com/apicatalog/cborld/",
-                            "classpath:",
-                            new SchemeRouter()
-                                    .set("http", HttpLoader.defaultInstance())
-                                    .set("https", HttpLoader.defaultInstance())
-                                    .set("classpath", new ClasspathLoader())));
-
-    public final static Encoder ENCODER = new Encoder().loader(LOADER);
-
-    public final static CborLdDecoder DECODER = new CborLdDecoder().loader(LOADER)
-            .dictionary(BarcodesDictionary.INSTANCE);
+                    new SchemeRouter()
+                            .set("http", HttpLoader.defaultInstance())
+                            .set("https", HttpLoader.defaultInstance())
+                            .set("classpath", new ClasspathLoader())));
 
     public CborLdTestRunnerJunit(CborLdTestCase testCase) {
         this.testCase = testCase;
@@ -84,9 +78,12 @@ public class CborLdTestRunnerJunit {
 
                 JsonObject object = document.getJsonContent().orElseThrow(IllegalStateException::new).asJsonObject();
 
-                byte[] bytes = ENCODER
+                final Encoder encoder = CborLd.createEncoder()
+                        .loader(LOADER)
                         .compactArray(testCase.compactArrays)
-                        .encode(object);
+                        .build();
+
+                byte[] bytes = encoder.encode(object);
 
                 if (testCase.type.stream().noneMatch(o -> o.endsWith("PositiveEvaluationTest"))) {
                     fail("Expected error code [" + testCase.result + "].");
@@ -94,19 +91,6 @@ public class CborLdTestRunnerJunit {
                 }
 
                 assertNotNull(bytes);
-
-//                try (var is =  (new FileOutputStream("/home/filip/" + testCase.id.getFragment() + ".cborld"))) {
-//                    
-//                    is.write(bytes);
-//                    is.flush();
-//                    
-//                } catch (FileNotFoundException e) {
-//                    // TODO Auto-generated catch block
-//                    e.printStackTrace();
-//                } catch (IOException e) {
-//                    // TODO Auto-generated catch block
-//                    e.printStackTrace();
-//                }
 
                 Document expected = LOADER.loadDocument(testCase.result, new DocumentLoaderOptions());
 
@@ -127,9 +111,13 @@ public class CborLdTestRunnerJunit {
 
                 assertNotNull(document);
 
-                JsonValue result = DECODER
+                final Decoder decoder = CborLd.createDecoder()
+                        .loader(LOADER)
                         .compactArray(testCase.compactArrays)
-                        .decode(((CborLdDocument) document).getByteArray());
+                        .dictionary(BarcodesDictionary.INSTANCE)
+                        .build();
+                
+                final JsonValue result = decoder.decode(((CborLdDocument) document).getByteArray());
 
                 if (testCase.type.stream().noneMatch(o -> o.endsWith("PositiveEvaluationTest"))) {
                     fail("Expected error code [" + testCase.result + "].");

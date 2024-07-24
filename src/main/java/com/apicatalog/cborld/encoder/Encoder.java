@@ -3,17 +3,12 @@ package com.apicatalog.cborld.encoder;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.net.URI;
 import java.util.Collection;
 
-import com.apicatalog.cborld.CborLdConstants;
-import com.apicatalog.cborld.config.DefaultConfig;
+import com.apicatalog.cborld.CborLd;
 import com.apicatalog.cborld.context.ContextError;
-import com.apicatalog.cborld.dictionary.Dictionary;
 import com.apicatalog.cborld.encoder.EncoderError.Code;
 import com.apicatalog.cborld.encoder.value.ValueEncoder;
-import com.apicatalog.cborld.loader.StaticContextLoader;
-import com.apicatalog.cborld.mapping.EncoderMappingProvider;
 import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.cborld.mapping.TypeMap;
 import com.apicatalog.cursor.ArrayCursor;
@@ -23,11 +18,6 @@ import com.apicatalog.cursor.MapEntryCursor;
 import com.apicatalog.cursor.ValueCursor;
 import com.apicatalog.cursor.jakarta.JakartaJsonCursor;
 import com.apicatalog.jsonld.JsonLdError;
-import com.apicatalog.jsonld.JsonLdOptions;
-import com.apicatalog.jsonld.http.DefaultHttpClient;
-import com.apicatalog.jsonld.http.media.MediaType;
-import com.apicatalog.jsonld.loader.DocumentLoader;
-import com.apicatalog.jsonld.loader.HttpLoader;
 
 import co.nstant.in.cbor.CborBuilder;
 import co.nstant.in.cbor.CborEncoder;
@@ -42,90 +32,13 @@ import co.nstant.in.cbor.model.UnicodeString;
 import co.nstant.in.cbor.model.UnsignedInteger;
 import jakarta.json.JsonObject;
 
-public class Encoder implements EncoderConfig {
+public class Encoder {
 
-    protected EncoderMappingProvider provider;
-    protected Dictionary index;
-
-    // options
-    protected Collection<ValueEncoder> valueEncoders;
-    protected boolean compactArrays;
-    protected DocumentLoader loader;
-    protected boolean bundledContexts;
-    protected URI base;
-
+    protected final EncoderConfig config;
     protected byte version;
 
-    public Encoder() {
-        // default options
-        config(DefaultConfig.INSTANCE);
-
-        this.bundledContexts = DefaultConfig.STATIC_CONTEXTS;
-        this.version = DefaultConfig.VERSION;
-        this.base = null;
-        this.loader = null;
-    }
-
-    /**
-     * If set to true, the encoder replaces arrays with just one element with that
-     * element during encoding saving one byte. Enabled by default.
-     *
-     * @param enable <code>true</code> to enable arrays compaction
-     * @return {@link Encoder} instance
-     *
-     */
-    public Encoder compactArray(boolean enable) {
-        compactArrays = enable;
-        return this;
-    }
-
-    /**
-     * Override any existing configuration by the given configuration set.
-     * 
-     * @param config a configuration set
-     * @return {@link Encoder} instance
-     */
-    public Encoder config(EncoderConfig config) {
-        this.provider = config.encoderMapping();
-        this.compactArrays = config.isCompactArrays();
-        this.valueEncoders = config.valueEncoders();
-        return this;
-    }
-
-    /**
-     * Set {@link DocumentLoader} used to fetch referenced JSON-LD contexts. If not
-     * set then default document loader provided by {@link JsonLdOptions} is used.
-     * 
-     * @param loader a document loader to set
-     * @return {@link Encoder} instance
-     */
-    public Encoder loader(DocumentLoader loader) {
-        this.loader = loader;
-        return this;
-    }
-
-    /**
-     * Use well-known contexts that are bundled with the library instead of fetching
-     * it online. <code>true</code> by default. Disabling might cause slower
-     * processing.
-     *
-     * @param enable <code>true</code> to use static bundled contexts
-     * @return {@link Encoder} instance
-     */
-    public Encoder useBundledContexts(boolean enable) {
-        this.bundledContexts = enable;
-        return this;
-    }
-
-    /**
-     * If set, then is used as the input document's base IRI.
-     *
-     * @param base a document base
-     * @return {@link Encoder} instance
-     */
-    public Encoder base(URI base) {
-        this.base = base;
-        return this;
+    protected Encoder(EncoderConfig config) {
+        this.config = config;
     }
 
     /**
@@ -155,15 +68,6 @@ public class Encoder implements EncoderConfig {
      * @throws ContextError
      */
     byte[] encode(MapCursor document) throws EncoderError, ContextError {
-
-        if (loader == null) {
-            loader = new HttpLoader(DefaultHttpClient.defaultInstance());
-            ((HttpLoader) loader).fallbackContentType(MediaType.JSON);
-        }
-
-        if (bundledContexts) {
-            loader = new StaticContextLoader(loader);
-        }
 
         try {
 
@@ -200,18 +104,16 @@ public class Encoder implements EncoderConfig {
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
         try {
-            final Mapping mapping = provider.getEncoderMapping(document, base, loader, this);
-
-            index = mapping.terms();
+            final Mapping mapping = config.encoderMapping().getEncoderMapping(document, config);
 
             final CborBuilder builder = (CborBuilder) encode(document, new CborBuilder().addMap(), mapping.typeMap(), mapping).end();
 
             // 2.CBOR Tag - 0xD9, CBOR-LD - version, Compressed - CBOR-LD compression
             // algorithm
             // version 1 - 0x01
-            baos.write(CborLdConstants.LEADING);
+            baos.write(CborLd.LEADING_BYTE);
             baos.write(version);
-            baos.write(CborLdConstants.COMPRESSED);
+            baos.write(CborLd.COMPRESSED_BYTE);
 
             new CborEncoder(baos).encode(builder.build());
 
@@ -237,7 +139,7 @@ public class Encoder implements EncoderConfig {
 
             final String property = entry.mapKey();
 
-            final Integer encodedProperty = index.getCode(property);
+            final Integer encodedProperty = mapping.terms().getCode(property);
 
             if (entry.isArray()) {
 
@@ -245,7 +147,7 @@ public class Encoder implements EncoderConfig {
                         ? new UnsignedInteger(encodedProperty + 1)
                         : new UnicodeString(property);
 
-                if (compactArrays && object.asArray().size() == 1) {
+                if (config.isCompactArrays() && object.asArray().size() == 1) {
 
                     object.asArray().item(0);
 
@@ -308,7 +210,7 @@ public class Encoder implements EncoderConfig {
             if (typeMapping != null) {
                 final Collection<String> types = typeMapping.getType(term);
 
-                for (final ValueEncoder valueEncoder : valueEncoders) {
+                for (final ValueEncoder valueEncoder : config.valueEncoders()) {
                     final DataItem dataItem = valueEncoder.encode(mapping, value, term, types);
                     if (dataItem != null) {
                         return dataItem;
@@ -370,20 +272,5 @@ public class Encoder implements EncoderConfig {
         object.parent();
 
         return flow;
-    }
-
-    @Override
-    public boolean isCompactArrays() {
-        return compactArrays;
-    }
-
-    @Override
-    public Collection<ValueEncoder> valueEncoders() {
-        return valueEncoders;
-    }
-
-    @Override
-    public EncoderMappingProvider encoderMapping() {
-        return provider;
     }
 }

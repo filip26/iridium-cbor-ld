@@ -2,31 +2,19 @@ package com.apicatalog.cborld.decoder;
 
 import java.io.ByteArrayInputStream;
 import java.math.BigInteger;
-import java.net.URI;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
-import com.apicatalog.cborld.CborLdConstants;
-import com.apicatalog.cborld.config.DefaultConfig;
+import com.apicatalog.cborld.CborLd;
 import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.decoder.DecoderError.Code;
 import com.apicatalog.cborld.decoder.value.ValueDecoder;
-import com.apicatalog.cborld.dictionary.ContextDictionary;
 import com.apicatalog.cborld.dictionary.CustomDictionary;
-import com.apicatalog.cborld.dictionary.Dictionary;
 import com.apicatalog.cborld.hex.Hex;
-import com.apicatalog.cborld.loader.StaticContextLoader;
-import com.apicatalog.cborld.mapping.DecoderMappingProvider;
 import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.cborld.mapping.TypeMap;
-import com.apicatalog.jsonld.JsonLdOptions;
-import com.apicatalog.jsonld.http.DefaultHttpClient;
-import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.loader.DocumentLoader;
-import com.apicatalog.jsonld.loader.HttpLoader;
 
 import co.nstant.in.cbor.CborDecoder;
 import co.nstant.in.cbor.CborException;
@@ -49,120 +37,12 @@ import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 
-public class CborLdDecoder implements DecoderConfig {
+public class Decoder {
 
-    protected DecoderMappingProvider provider;
+    protected final DecoderConfig config;
 
-    protected Map<Integer, CustomDictionary> customDictionaries;
-
-    protected Collection<ValueDecoder> valueDecoders;
-
-    protected Dictionary contexts;
-    protected Map<String, Dictionary> types;
-
-    protected DocumentLoader loader;
-    protected boolean bundledContexts;
-    protected boolean compactArrays;
-    protected URI base;
-
-    public CborLdDecoder() {
-        this(DefaultConfig.INSTANCE);
-    }
-
-    public CborLdDecoder(DecoderConfig config) {
-        this.provider = config.decoderMapping();
-        this.compactArrays = config.isCompactArrays();
-        this.valueDecoders = config.valueDecoders();
-
-        this.customDictionaries = new LinkedHashMap<>();
-        this.customDictionaries.put(0x01, new CustomDictionary(0x01, ContextDictionary.INSTANCE, null));
-        this.bundledContexts = DefaultConfig.STATIC_CONTEXTS;
-        this.base = null;
-        this.loader = null;
-    }
-
-    /**
-     * If set to true, the encoder replaces arrays with just one element with that
-     * element during encoding saving one byte. Enabled by default.
-     *
-     * @param enable <code>true</code> to enable arrays compaction
-     * @return {@link CborLdDecoder} instance
-     *
-     */
-    public CborLdDecoder compactArray(boolean enable) {
-        compactArrays = enable;
-        return this;
-    }
-
-    /**
-     * Override any existing configuration by the given configuration set.
-     * 
-     * @param config a configuration set
-     * @return {@link Encoder} instance
-     */
-    public CborLdDecoder config(DecoderConfig config) {
-        this.provider = config.decoderMapping();
-        this.compactArrays = config.isCompactArrays();
-        this.valueDecoders = config.valueDecoders();
-        return this;
-    }
-
-    /**
-     * Set {@link DocumentLoader} used to fetch referenced JSON-LD contexts. If not
-     * set then default document loader provided by {@link JsonLdOptions} is used.
-     * 
-     * @param loader a document loader to set
-     * @return {@link CborLdDecoder} instance
-     */
-    public CborLdDecoder loader(DocumentLoader loader) {
-        this.loader = loader;
-        return this;
-    }
-
-    /**
-     * Use well-known contexts that are bundled with the library instead of fetching
-     * it online. <code>true</code> by default. Disabling might cause slower
-     * processing.
-     *
-     * @param enable <code>true</code> to use static bundled contexts
-     * @return {@link CborLdDecoder} instance
-     */
-    public CborLdDecoder useBundledContexts(boolean enable) {
-        this.bundledContexts = enable;
-        return this;
-    }
-
-    /**
-     * If set, then is used as the input document's base IRI.
-     *
-     * @param base a document base
-     * @return {@link CborLdDecoder} instance
-     */
-    public CborLdDecoder base(URI base) {
-        this.base = base;
-        return this;
-    }
-
-    /**
-     * Add new terms dictionary
-     * 
-     * @param dictionary a custom dictionary
-     * @return {@link CborLdDecoder} instance
-     */
-    public CborLdDecoder dictionary(CustomDictionary dictionary) {
-        return dictionary(dictionary.code(), dictionary);
-    }
-
-    /**
-     * Add new terms dictionary
-     * 
-     * @param code       CBOR-LD terms dictionary code
-     * @param dictionary a custom dictionary
-     * @return {@link CborLdDecoder} instance
-     */
-    public CborLdDecoder dictionary(int code, CustomDictionary dictionary) {
-        customDictionaries.put(code, dictionary);
-        return this;
+    protected Decoder(DecoderConfig config) {
+        this.config = config;
     }
 
     /**
@@ -186,30 +66,30 @@ public class CborLdDecoder implements DecoderConfig {
                     "The encoded document must be at least 4 bytes but is [" + encodedDocument.length + "].");
         }
 
-        if (encodedDocument[0] != CborLdConstants.LEADING) {
+        if (encodedDocument[0] != CborLd.LEADING_BYTE) {
             throw new DecoderError(Code.InvalidDocument, "The document is not CBOR-LD document. Must start with "
-                    + Hex.toString(CborLdConstants.LEADING)
+                    + Hex.toString(CborLd.LEADING_BYTE)
                     + ", but is "
                     + Hex.toString(encodedDocument[0])
                     + ".");
         }
 
-        if (encodedDocument[1] != CborLdConstants.VERSION_6
-                && encodedDocument[1] != CborLdConstants.VERSION_5) {
+        if (encodedDocument[1] != CborLd.VERSION_6_BYTE
+                && encodedDocument[1] != CborLd.VERSION_5_BYTE) {
             throw new DecoderError(Code.InvalidDocument, "The document is not CBOR-LD document. Must start with "
-                    + Hex.toString(CborLdConstants.VERSION_6)
+                    + Hex.toString(CborLd.VERSION_6_BYTE)
                     + ", or "
-                    + Hex.toString(CborLdConstants.VERSION_5)
+                    + Hex.toString(CborLd.VERSION_5_BYTE)
                     + ", but is "
                     + Hex.toString(encodedDocument[1])
                     + ".");
         }
 
-        if (encodedDocument[2] == CborLdConstants.UNCOMPRESSED) {
+        if (encodedDocument[2] == CborLd.UNCOMPRESSED_BYTE) {
             throw new DecoderError(Code.UnknownCompression, "Uncompressed CBOR-LD documents are not supported.");
         }
 
-        final CustomDictionary dictionaries = customDictionaries.get(Byte.toUnsignedInt(encodedDocument[2]));
+        final CustomDictionary dictionaries = config.dictionaries().get(Byte.toUnsignedInt(encodedDocument[2]));
 
         if (dictionaries == null) {
             throw new DecoderError(Code.UnknownCompression,
@@ -217,17 +97,10 @@ public class CborLdDecoder implements DecoderConfig {
                             + Hex.toString(encodedDocument[2]) + "].");
         }
 
-        if (loader == null) {
-            loader = new HttpLoader(DefaultHttpClient.defaultInstance());
-            ((HttpLoader) loader).fallbackContentType(MediaType.JSON);
-        }
-
-        return decode(encodedDocument, dictionaries, bundledContexts
-                ? new StaticContextLoader(loader)
-                : loader);
+        return decode(encodedDocument, dictionaries);
     }
 
-    protected JsonValue decode(byte[] encoded, final CustomDictionary provider, final DocumentLoader loader) throws ContextError, DecoderError {
+    protected JsonValue decode(byte[] encoded, final CustomDictionary provider) throws ContextError, DecoderError {
         try {
             final ByteArrayInputStream bais = new ByteArrayInputStream(encoded);
             final List<DataItem> dataItems = new CborDecoder(bais).decode();
@@ -239,14 +112,14 @@ public class CborLdDecoder implements DecoderConfig {
 
             // only one object
             if (dataItems.size() == 1) {
-                return decode(dataItems.iterator().next(), provider, loader);
+                return decode(dataItems.iterator().next(), provider, config.loader());
             }
 
             // decode as an array of objects
             final JsonArrayBuilder builder = Json.createArrayBuilder();
 
             for (final DataItem item : dataItems) {
-                builder.add(decode(item, provider, loader));
+                builder.add(decode(item, provider, config.loader()));
             }
 
             return builder.build();
@@ -257,7 +130,7 @@ public class CborLdDecoder implements DecoderConfig {
     }
 
     protected final JsonValue decode(final DataItem data, final CustomDictionary custom, final DocumentLoader loader) throws DecoderError, ContextError {
-        final Mapping mapping = provider.getDecoderMapping(data, base, loader, custom, this);
+        final Mapping mapping = config.decoderMapping().getDecoderMapping(data, custom, config);
         return decodeData(data, null, mapping.typeMap(), mapping);
     }
 
@@ -329,7 +202,7 @@ public class CborLdDecoder implements DecoderConfig {
                 json = decodeData(value, term, def, mapping);
 
                 if (isArray
-                        && compactArrays
+                        && config.isCompactArrays()
                         && (JsonUtils.isNotArray(json)
                                 || json.asJsonArray().size() == 1)) {
 
@@ -424,7 +297,7 @@ public class CborLdDecoder implements DecoderConfig {
         if (def != null) {
             final Collection<String> types = def.getType(term);
 
-            for (final ValueDecoder decoder : valueDecoders) {
+            for (final ValueDecoder decoder : config.valueDecoders()) {
                 final JsonValue decoded = decoder.decode(mapping, value, term, types);
 
                 if (decoded != null) {
@@ -472,20 +345,5 @@ public class CborLdDecoder implements DecoderConfig {
         }
 
         throw new IllegalStateException("Unsupported CBOR simple value type [" + value.getSimpleValueType() + "].");
-    }
-
-    @Override
-    public boolean isCompactArrays() {
-        return compactArrays;
-    }
-
-    @Override
-    public Collection<ValueDecoder> valueDecoders() {
-        return valueDecoders;
-    }
-
-    @Override
-    public DecoderMappingProvider decoderMapping() {
-        return provider;
     }
 }

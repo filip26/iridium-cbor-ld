@@ -2,8 +2,9 @@ package com.apicatalog.cborld.config;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 
-import com.apicatalog.cborld.CborLdConstants;
+import com.apicatalog.cborld.CborLd;
 import com.apicatalog.cborld.context.mapping.ContextMappingProvider;
 import com.apicatalog.cborld.decoder.DecoderConfig;
 import com.apicatalog.cborld.decoder.value.ContextValueDecoder;
@@ -17,7 +18,7 @@ import com.apicatalog.cborld.decoder.value.ValueDecoder;
 import com.apicatalog.cborld.decoder.value.VocabValueDecoder;
 import com.apicatalog.cborld.decoder.value.XsdDateTimeValueDecoder;
 import com.apicatalog.cborld.decoder.value.XsdDateValueDecoder;
-import com.apicatalog.cborld.dictionary.ContextDictionary;
+import com.apicatalog.cborld.dictionary.CustomDictionary;
 import com.apicatalog.cborld.encoder.EncoderConfig;
 import com.apicatalog.cborld.encoder.value.ContextValueEncoder;
 import com.apicatalog.cborld.encoder.value.DidKeyValueEncoder;
@@ -32,11 +33,9 @@ import com.apicatalog.cborld.encoder.value.XsdDateValueEncoder;
 import com.apicatalog.cborld.mapping.DecoderMappingProvider;
 import com.apicatalog.cborld.mapping.EncoderMappingProvider;
 
-public final class DefaultConfig implements EncoderConfig, DecoderConfig {
+public final class DefaultConfig extends BaseConfig implements EncoderConfig, DecoderConfig {
 
     public static final DefaultConfig INSTANCE = new DefaultConfig();
-
-    static final ContextDictionary CONTEXT_DICTIONARY = new ContextDictionary();
 
     static final ContextMappingProvider MAPPING = new ContextMappingProvider();
 
@@ -44,7 +43,7 @@ public final class DefaultConfig implements EncoderConfig, DecoderConfig {
 
     static {
         // term driven
-        VALUE_ENCODERS.add(new ContextValueEncoder(CONTEXT_DICTIONARY));
+        VALUE_ENCODERS.add(new ContextValueEncoder());
 
         // type driven
         VALUE_ENCODERS.add(new IdValueEncoder());
@@ -79,15 +78,16 @@ public final class DefaultConfig implements EncoderConfig, DecoderConfig {
         VALUE_DECODERS.add(new DidKeyValueDecoder());
     }
 
-    static final boolean COMPACT_ARRAYS = false;
+    public static final boolean COMPACT_ARRAYS = false;
 
     public static final boolean STATIC_CONTEXTS = true;
 
-    public static final byte VERSION = CborLdConstants.VERSION_6;
+    public static final byte VERSION = CborLd.VERSION_6_BYTE;
 
-    @Override
-    public boolean isCompactArrays() {
-        return COMPACT_ARRAYS;
+    DefaultConfig() {
+        super();
+        this.compactArrays = COMPACT_ARRAYS;
+//        this.dictionaries = new LinkedHashMap<>();
     }
 
     @Override
@@ -100,9 +100,6 @@ public final class DefaultConfig implements EncoderConfig, DecoderConfig {
         return VALUE_DECODERS;
     }
 
-    DefaultConfig() {
-    }
-
     @Override
     public DecoderMappingProvider decoderMapping() {
         return MAPPING;
@@ -111,5 +108,23 @@ public final class DefaultConfig implements EncoderConfig, DecoderConfig {
     @Override
     public EncoderMappingProvider encoderMapping() {
         return MAPPING;
+    }
+
+    @Override
+    public Map<Integer, CustomDictionary> dictionaries() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public CustomDictionary dictionary() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public byte version() {
+        // TODO Auto-generated method stub
+        return 0;
     }
 }
