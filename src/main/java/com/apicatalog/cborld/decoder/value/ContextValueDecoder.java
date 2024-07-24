@@ -22,7 +22,7 @@ public class ContextValueDecoder implements ValueDecoder {
                 && MajorType.UNSIGNED_INTEGER.equals(value.getMajorType())
                 ) {
             
-            final String decoded = mapping.context().getValue(((UnsignedInteger)value).getValue());
+            final String decoded = mapping.context().getValue(((UnsignedInteger)value).getValue().intValueExact());
     
             if (decoded != null) {
                 return Json.createValue(decoded);

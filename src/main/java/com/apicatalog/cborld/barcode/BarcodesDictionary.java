@@ -9,13 +9,15 @@ import com.apicatalog.cborld.dictionary.Dictionary;
 
 public class BarcodesDictionary extends CustomDictionary {
     
-    static final Map<String, Dictionary> types = new HashMap<>();
+    public static final BarcodesDictionary INSTANCE = new BarcodesDictionary();
+    
+    static final Map<String, Dictionary> TYPES = new HashMap<>();
     
     static {
-        types.put("https://w3id.org/security#cryptosuiteString", BarcodesTypeDictionary.INSTANCE);
+        TYPES.put("https://w3id.org/security#cryptosuiteString", BarcodesTypeDictionary.INSTANCE);
     }
     
-    public BarcodesDictionary() {
-        super(BarcodesContextDictionary.INSTANCE, types);
+    protected BarcodesDictionary() {
+        super(100, BarcodesContextDictionary.INSTANCE, TYPES);
     }
 }

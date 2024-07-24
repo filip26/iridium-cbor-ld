@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URI;
 import java.util.Collection;
-import java.util.Map;
 
 import com.apicatalog.cborld.CborLdConstants;
 import com.apicatalog.cborld.config.DefaultConfig;
@@ -230,12 +229,12 @@ public class Encoder implements EncoderConfig {
             
             final String property = entry.mapKey();
     
-            final BigInteger encodedProperty = index.getCode(property);
+            final Integer encodedProperty = index.getCode(property);
                 
             if (entry.isArray()) {
                     
                 final DataItem key = encodedProperty != null
-                            ? new UnsignedInteger(encodedProperty.add(BigInteger.ONE))
+                            ? new UnsignedInteger(encodedProperty + 1)
                             : new UnicodeString(property);
                 
                 if (compactArrays && object.asArray().size() == 1) {

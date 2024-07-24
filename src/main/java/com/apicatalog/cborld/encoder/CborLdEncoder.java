@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URI;
 import java.util.Collection;
-import java.util.Map;
 
 import com.apicatalog.cborld.CborLdConstants;
 import com.apicatalog.cborld.config.DefaultConfig;
@@ -54,20 +53,19 @@ public class CborLdEncoder implements EncoderConfig {
     protected DocumentLoader loader;
     protected boolean bundledContexts;
     protected URI base;
-    
-    public CborLdEncoder() {    
+
+    public CborLdEncoder() {
         // default options
         config(DefaultConfig.INSTANCE);
-        
+
         this.bundledContexts = DefaultConfig.STATIC_CONTEXTS;
         this.base = null;
         this.loader = null;
     }
 
     /**
-     * If set to true, the encoder replaces arrays with
-     * just one element with that element during encoding saving one byte.
-     * Enabled by default.
+     * If set to true, the encoder replaces arrays with just one element with that
+     * element during encoding saving one byte. Enabled by default.
      *
      * @param enable <code>true</code> to enable arrays compaction
      * @return {@link CborLdEncoder} instance
@@ -81,7 +79,7 @@ public class CborLdEncoder implements EncoderConfig {
     /**
      * Override any existing configuration by the given configuration set.
      * 
-     * @param config a configuration set 
+     * @param config a configuration set
      * @return {@link CborLdEncoder} instance
      */
     public CborLdEncoder config(EncoderConfig config) {
@@ -89,10 +87,10 @@ public class CborLdEncoder implements EncoderConfig {
         this.valueEncoders = config.valueEncoders();
         return this;
     }
-    
+
     /**
-     * Set {@link DocumentLoader} used to fetch referenced JSON-LD contexts. 
-     * If not set then default document loader provided by {@link JsonLdOptions} is used. 
+     * Set {@link DocumentLoader} used to fetch referenced JSON-LD contexts. If not
+     * set then default document loader provided by {@link JsonLdOptions} is used.
      * 
      * @param loader a document loader to set
      * @return {@link CborLdEncoder} instance
@@ -101,11 +99,11 @@ public class CborLdEncoder implements EncoderConfig {
         this.loader = loader;
         return this;
     }
-    
 
     /**
-     * Use well-known contexts that are bundled with the library instead of fetching it online.
-     * <code>true</code> by default. Disabling might cause slower processing.
+     * Use well-known contexts that are bundled with the library instead of fetching
+     * it online. <code>true</code> by default. Disabling might cause slower
+     * processing.
      *
      * @param enable <code>true</code> to use static bundled contexts
      * @return {@link CborLdEncoder} instance
@@ -114,7 +112,7 @@ public class CborLdEncoder implements EncoderConfig {
         this.bundledContexts = enable;
         return this;
     }
-    
+
     /**
      * If set, then is used as the input document's base IRI.
      *
@@ -122,18 +120,18 @@ public class CborLdEncoder implements EncoderConfig {
      * @return {@link CborLdEncoder} instance
      */
     public CborLdEncoder base(URI base) {
-       this.base = base;
-       return this;
+        this.base = base;
+        return this;
     }
-    
+
     /**
      * Encodes JSON-LD document as CBOR-LD document.
      * 
-     * @param document JSON-LD document to encode 
+     * @param document JSON-LD document to encode
      * @return a byte array representing the encoded CBOR-LD document.
      * 
      * @throws EncoderError
-     * @throws ContextError 
+     * @throws ContextError
      */
     public final byte[] encode(JsonObject document) throws EncoderError, ContextError {
 
@@ -153,31 +151,31 @@ public class CborLdEncoder implements EncoderConfig {
      * @throws ContextError
      */
     byte[] encode(MapCursor document) throws EncoderError, ContextError {
-    
+
         if (loader == null) {
             loader = new HttpLoader(DefaultHttpClient.defaultInstance());
-            ((HttpLoader)loader).fallbackContentType(MediaType.JSON);
+            ((HttpLoader) loader).fallbackContentType(MediaType.JSON);
         }
-        
+
         if (bundledContexts) {
             loader = new StaticContextLoader(loader);
         }
-        
+
         try {
-    
+
             final Collection<String> contexts = EncoderContext.get(document);
-    
+
             if (contexts.isEmpty()) { // is not JSON-LD document
                 throw new EncoderError(Code.InvalidDocument, "Not a valid JSON-LD document in a compacted form.");
             }
 
             return compress(document, contexts);
-    
-        // non compressable context
+
+            // non compressable context
         } catch (IllegalArgumentException e) {
             /* ignored, expected in a case of non compress-able documents */
         }
-    
+
         throw new EncoderError(Code.InvalidDocument, "Non compress-able document.");
     }
 
@@ -200,20 +198,20 @@ public class CborLdEncoder implements EncoderConfig {
     final byte[] compress(final MapCursor document, Collection<String> contextUrls) throws ContextError, EncoderError {
 
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    
-        try {             
+
+        try {
             final Mapping mapping = provider.getEncoderMapping(document, base, loader, this);
 
             index = mapping.terms();
-            
+
             final CborBuilder builder = (CborBuilder) encode(document, new CborBuilder().addMap(), mapping.typeMap()).end();
-            
+
             // 2.CBOR Tag - 0xD9, CBOR-LD - 0x05, Compressed - CBOR-LD compression algorithm
             // version 1 - 0x01
             baos.write(CborLdConstants.CBOR_LD_LEADING_BYTE);
-            baos.write(CborLdConstants.CBOR_LD_VERSION_5_BYTE);  //TODO
+            baos.write(CborLdConstants.CBOR_LD_VERSION_5_BYTE); // TODO
 //            baos.write(CborLd.COMPRESSED_V1);
-            
+
             new CborEncoder(baos).encode(builder.build());
 
             return baos.toByteArray();
@@ -225,92 +223,89 @@ public class CborLdEncoder implements EncoderConfig {
             throw new EncoderError(Code.Internal, e);
         }
     }
-    
+
     final MapBuilder<?> encode(final MapCursor object, final MapBuilder<?> builder, TypeMap typeMapping) throws EncoderError, JsonLdError {
 
         if (object.isEmpty()) {
             return builder;
         }
-        
+
         MapBuilder<?> flow = builder;
-    
-        for (final MapEntryCursor entry  : object) {
-            
+
+        for (final MapEntryCursor entry : object) {
+
             final String property = entry.mapKey();
-    
-            final BigInteger encodedProperty = index.getCode(property);
-                
+
+            final Integer encodedProperty = index.getCode(property);
+
             if (entry.isArray()) {
-                    
+
                 final DataItem key = encodedProperty != null
-                            ? new UnsignedInteger(encodedProperty.add(BigInteger.ONE))
-                            : new UnicodeString(property);
-                
+                        ? new UnsignedInteger(encodedProperty + 1)
+                        : new UnicodeString(property);
+
                 if (compactArrays && object.asArray().size() == 1) {
-        
+
                     object.asArray().item(0);
-        
+
                     if (object.isMap()) {
                         final TypeMap propertyTypeMapping = typeMapping.getMapping(property);
                         flow = (MapBuilder<?>) encode(object.asMap(), flow.putMap(key), propertyTypeMapping).end();
-        
+
                     } else if (object.isArray()) {
                         flow = (MapBuilder<?>) encode(
-                                                    object.asArray(), 
-                                                    flow.putArray(key),
-                                                    property,
-                                                    typeMapping
-                                                    ).end();
-        
+                                object.asArray(),
+                                flow.putArray(key),
+                                property,
+                                typeMapping).end();
+
                     } else {
                         final DataItem value = encode(object, property, typeMapping);
-        
+
                         flow = flow.put(key, value);
                     }
-        
+
                     object.parent();
-        
+
                 } else {
                     flow = (MapBuilder<?>) encode(object.asArray(), flow.putArray(key),
-                        property,
-                        typeMapping
-                        ).end();
+                            property,
+                            typeMapping).end();
                 }
                 continue;
             }
-    
+
             final DataItem key = encodedProperty != null
-                ? new UnsignedInteger(encodedProperty)
-                : new UnicodeString(property);
-    
+                    ? new UnsignedInteger(encodedProperty)
+                    : new UnicodeString(property);
+
             if (entry.isMap()) {
                 final TypeMap propertyTypeMapping = typeMapping.getMapping(property);
                 flow = (MapBuilder<?>) encode(entry.asMap(), flow.putMap(key),
-                    propertyTypeMapping
-                    ).end();
+                        propertyTypeMapping).end();
                 continue;
             }
-    
+
             final DataItem value = encode(entry, property, typeMapping);
-    
+
             flow = flow.put(key, value);
         }
 
         object.parent();
-        
+
         return flow;
     }
 
     final DataItem encode(final ValueCursor value, final String term, TypeMap typeMapping) throws EncoderError {
-    
+
         if (value.isBoolean()) {
             return value.booleanValue() ? SimpleValue.TRUE : SimpleValue.FALSE;
         }
 
         if (value.isString()) {
-            if (typeMapping != null) { 
+            if (typeMapping != null) {
                 final Collection<String> types = typeMapping.getType(term);
-                
+
                 for (final ValueEncoder valueEncoder : valueEncoders) {
                     final DataItem dataItem = valueEncoder.encode(index, value, term, types);
                     if (dataItem != null) {
@@ -320,10 +315,10 @@ public class CborLdEncoder implements EncoderConfig {
             }
             return new UnicodeString(value.stringValue());
         }
-    
+
         if (value.isInteger()) {
             BigInteger integer = value.integerValue();
-            
+
             switch (integer.signum()) {
             case -1:
                 return new NegativeInteger(integer);
@@ -331,13 +326,13 @@ public class CborLdEncoder implements EncoderConfig {
                 return new UnsignedInteger(BigInteger.ZERO);
             case 1:
                 return new UnsignedInteger(integer);
-            }            
+            }
         }
-        
+
         if (value.isDecimal()) {
             return new DoublePrecisionFloat(value.decimalValue().doubleValue());
         }
-        
+
         if (value.isNull()) {
             return SimpleValue.NULL;
         }
@@ -346,32 +341,32 @@ public class CborLdEncoder implements EncoderConfig {
     }
 
     final ArrayBuilder<?> encode(final ArrayCursor object, final ArrayBuilder<?> builder, String property, TypeMap typeMapping) throws EncoderError, JsonLdError {
-    
+
         if (object.isEmpty()) {
             return builder;
         }
-        
+
         ArrayBuilder<?> flow = builder;
-    
+
         for (final ArrayItemCursor item : object) {
-    
+
             if (item.isMap()) {
                 flow = (ArrayBuilder<?>) encode(item.asMap(), flow.startMap(), typeMapping).end();
                 continue;
             }
-    
+
             if (item.isArray()) {
                 flow = (ArrayBuilder<?>) encode(item.asArray(), flow.startArray(), property, typeMapping).end();
                 continue;
             }
 
             final DataItem value = encode(item, property, typeMapping);
-    
+
             flow = flow.add(value);
         }
-        
+
         object.parent();
-        
+
         return flow;
     }
 
@@ -385,4 +380,3 @@ public class CborLdEncoder implements EncoderConfig {
         return valueEncoders;
     }
 }
-

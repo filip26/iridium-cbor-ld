@@ -70,7 +70,7 @@ class DecoderContextMapping implements Mapping {
 
     final DataItem encodeKey(String key) {
 
-        final BigInteger encodedProperty = dictionary.getCode(key);
+        final Integer encodedProperty = dictionary.getCode(key);
 
         if (encodedProperty != null) {
             return new UnsignedInteger(encodedProperty);
@@ -103,11 +103,11 @@ class DecoderContextMapping implements Mapping {
     final String decodeKey(BigInteger key) {
 
         if (key.mod(BigInteger.ONE.add(BigInteger.ONE)).equals(BigInteger.ZERO)) {
-            String result = dictionary.getValue(key);
+            String result = dictionary.getValue(key.intValueExact());
             return result != null ? result : key.toString();
         }
 
-        String result = dictionary.getValue(key.subtract(BigInteger.ONE));
+        String result = dictionary.getValue(key.subtract(BigInteger.ONE).intValueExact());
 
         return result != null ? result : key.toString();
     }

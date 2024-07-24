@@ -22,11 +22,13 @@ public class CustomTypeValueDecoder implements ValueDecoder {
                 && MajorType.UNSIGNED_INTEGER.equals(value.getMajorType())) {
 
             for (final String type : types) {
+                
                 final Dictionary dictionary = mapping.type(type);
+                System.out.println("type " + type + ", " + value + " -> " + dictionary );
                 if (dictionary == null) {
                     continue;
                 }
-                final String decoded = dictionary.getValue(((UnsignedInteger) value).getValue());
+                final String decoded = dictionary.getValue(((UnsignedInteger) value).getValue().intValueExact());
                 if (decoded != null) {
                     return Json.createValue(decoded);
                 }

@@ -63,7 +63,7 @@ public class CborLdTestRunnerJunit {
     public final static CborLdEncoder ENCODER = new CborLdEncoder().loader(LOADER);
 
     public final static CborLdDecoder DECODER = new CborLdDecoder().loader(LOADER)
-            .dictionary(100, new BarcodesDictionary());
+            .dictionary(BarcodesDictionary.INSTANCE);
 
     public CborLdTestRunnerJunit(CborLdTestCase testCase) {
         this.testCase = testCase;

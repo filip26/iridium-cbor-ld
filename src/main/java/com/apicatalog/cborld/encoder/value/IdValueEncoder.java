@@ -1,6 +1,5 @@
 package com.apicatalog.cborld.encoder.value;
 
-import java.math.BigInteger;
 import java.util.Collection;
 
 import com.apicatalog.cborld.dictionary.Dictionary;
@@ -17,7 +16,7 @@ public class IdValueEncoder implements ValueEncoder {
 
         if (types != null && types.contains(Keywords.ID)) {
     
-            final BigInteger code = dictionary.getCode(value.stringValue());
+            final Integer code = dictionary.getCode(value.stringValue());
     
             if (code != null) {
                 return new UnsignedInteger(code);

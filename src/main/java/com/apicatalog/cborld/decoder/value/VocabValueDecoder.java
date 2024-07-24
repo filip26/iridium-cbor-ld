@@ -21,7 +21,7 @@ public class VocabValueDecoder implements ValueDecoder {
                 && MajorType.UNSIGNED_INTEGER.equals(value.getMajorType())
                 ) {
             
-            String termValue = mapping.terms().getValue(((UnsignedInteger)value).getValue());
+            String termValue = mapping.terms().getValue(((UnsignedInteger)value).getValue().intValueExact());
             
             if (termValue != null) {
                 return Json.createValue(termValue);

@@ -2,7 +2,6 @@ package com.apicatalog.cborld.config;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Map;
 
 import com.apicatalog.cborld.context.mapping.ContextMappingProvider;
 import com.apicatalog.cborld.decoder.DecoderConfig;
@@ -18,7 +17,6 @@ import com.apicatalog.cborld.decoder.value.VocabValueDecoder;
 import com.apicatalog.cborld.decoder.value.XsdDateTimeValueDecoder;
 import com.apicatalog.cborld.decoder.value.XsdDateValueDecoder;
 import com.apicatalog.cborld.dictionary.ContextDictionary;
-import com.apicatalog.cborld.dictionary.Dictionary;
 import com.apicatalog.cborld.encoder.EncoderConfig;
 import com.apicatalog.cborld.encoder.value.ContextValueEncoder;
 import com.apicatalog.cborld.encoder.value.DidKeyValueEncoder;

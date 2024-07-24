@@ -1,6 +1,5 @@
 package com.apicatalog.cborld.barcode;
 
-import java.math.BigInteger;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -9,8 +8,8 @@ import com.apicatalog.cborld.dictionary.Dictionary;
 
 class BarcodesContextDictionary implements Dictionary {
 
-    protected final static Map<String, BigInteger> INDEX = new LinkedHashMap<>();
-    protected final static Map<BigInteger, String> REVERSE = new LinkedHashMap<>();
+    protected final static Map<String, Integer> INDEX = new LinkedHashMap<>();
+    protected final static Map<Integer, String> REVERSE = new LinkedHashMap<>();
 
     final static BarcodesContextDictionary INSTANCE = new BarcodesContextDictionary();
     
@@ -21,17 +20,17 @@ class BarcodesContextDictionary implements Dictionary {
     }
 
     protected static void add(Integer code, String value) {
-        INDEX.put(value, BigInteger.valueOf(code));
-        REVERSE.put(BigInteger.valueOf(code), value);
+        INDEX.put(value, code);
+        REVERSE.put(code, value);
     }
     
     @Override
-    public BigInteger getCode(String value) {
+    public Integer getCode(String value) {
         return INDEX.get(value);
     }
 
     @Override
-    public String getValue(BigInteger code) {
+    public String getValue(Integer code) {
         return REVERSE.get(code);
     }
 }

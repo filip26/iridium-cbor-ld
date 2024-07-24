@@ -1,6 +1,5 @@
 package com.apicatalog.cborld.barcode;
 
-import java.math.BigInteger;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -27,12 +26,12 @@ class BarcodesTypeDictionary implements Dictionary {
     }
     
     @Override
-    public BigInteger getCode(String value) {
-        return INDEX.containsKey(value) ? BigInteger.valueOf(INDEX.get(value)) : null;
+    public Integer getCode(String value) {
+        return INDEX.get(value);
     }
 
     @Override
-    public String getValue(BigInteger code) {
-        return REVERSE.get(code.intValueExact());
+    public String getValue(Integer code) {
+        return REVERSE.get(code);
     }
 }

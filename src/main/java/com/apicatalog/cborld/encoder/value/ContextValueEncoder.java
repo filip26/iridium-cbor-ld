@@ -1,6 +1,5 @@
 package com.apicatalog.cborld.encoder.value;
 
-import java.math.BigInteger;
 import java.util.Collection;
 
 import com.apicatalog.cborld.dictionary.Dictionary;
@@ -22,7 +21,7 @@ public class ContextValueEncoder implements ValueEncoder {
     public DataItem encode(final Dictionary dictionary, final ValueCursor value, final String term, Collection<String> types) {
         if (Keywords.CONTEXT.equals(term)) {
     
-            final BigInteger code = contexts.getCode(value.stringValue());
+            final Integer code = contexts.getCode(value.stringValue());
     
             if (code != null) {
                 return new UnsignedInteger(code);

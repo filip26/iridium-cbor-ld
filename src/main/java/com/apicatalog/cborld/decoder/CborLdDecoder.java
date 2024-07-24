@@ -53,14 +53,14 @@ import jakarta.json.JsonValue;
 public class CborLdDecoder implements DecoderConfig {
 
     protected DecoderMappingProvider provider;
-    
+
     protected Map<Integer, CustomDictionary> customDictionaries;
 
     protected Collection<ValueDecoder> valueDecoders;
 
     protected Dictionary contexts;
     protected Map<String, Dictionary> types;
-    
+
     protected DocumentLoader loader;
     protected boolean bundledContexts;
     protected boolean compactArrays;
@@ -76,7 +76,7 @@ public class CborLdDecoder implements DecoderConfig {
         this.valueDecoders = config.valueDecoders();
 
         this.customDictionaries = new LinkedHashMap<>();
-        this.customDictionaries.put(0x01, new CustomDictionary(ContextDictionary.INSTANCE, null));
+        this.customDictionaries.put(0x01, new CustomDictionary(0x01, ContextDictionary.INSTANCE, null));
         this.bundledContexts = DefaultConfig.STATIC_CONTEXTS;
         this.base = null;
         this.loader = null;
@@ -145,7 +145,17 @@ public class CborLdDecoder implements DecoderConfig {
     }
 
     /**
-     * Associate new terms dictionary
+     * Add new terms dictionary
+     * 
+     * @param dictionary a custom dictionary
+     * @return {@link CborLdDecoder} instance
+     */
+    public CborLdDecoder dictionary(CustomDictionary dictionary) {
+        return dictionary(dictionary.code(), dictionary);
+    }
+
+    /**
+     * Add new terms dictionary
      * 
      * @param code       CBOR-LD terms dictionary code
      * @param dictionary a custom dictionary
@@ -199,7 +209,7 @@ public class CborLdDecoder implements DecoderConfig {
         if (encodedDocument[2] == CborLdConstants.UNCOMPRESSED) {
             throw new DecoderError(Code.UnknownCompression, "Uncompressed CBOR-LD documents are not supported.");
         }
-        
+
         final CustomDictionary dictionaries = customDictionaries.get(Byte.toUnsignedInt(encodedDocument[2]));
 
         if (dictionaries == null) {
@@ -359,11 +369,11 @@ public class CborLdDecoder implements DecoderConfig {
     protected static final String decodeKey(final BigInteger key, final Mapping mapping) {
 
         if (key.mod(BigInteger.ONE.add(BigInteger.ONE)).equals(BigInteger.ZERO)) {
-            String result = mapping.terms().getValue(key);
+            String result = mapping.terms().getValue(key.intValueExact());
             return result != null ? result : key.toString();
         }
 
-        String result = mapping.terms().getValue(key.subtract(BigInteger.ONE));
+        String result = mapping.terms().getValue(key.subtract(BigInteger.ONE).intValueExact());
 
         return result != null ? result : key.toString();
     }
