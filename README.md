@@ -16,7 +16,8 @@ An implementation of the [CBOR-LD 1.0](https://json-ld.github.io/cbor-ld-spec/) 
 ## Features
 
 * Semantic compression / decompression
-* Custom dictionaries
+* Configurable
+* Custom dictionaries 
 * Verifiable Credential Barcodes
 
 ## CLI
@@ -74,7 +75,7 @@ implementation("org.glassfish:jakarta.json:2.0.1")
 ```java
   var encoder = CborLdEncoder.newInstance()
                    // custom terms dictionary (optional)
-                   .dictionary(customDictionary); // e.g. BarcodesDictionary
+                   .dictionary(customDictionary); // e.g. BarcodesDictionary.INSTANCE)
                    
   byte[] encoded = encoder.encode(document);
 ```

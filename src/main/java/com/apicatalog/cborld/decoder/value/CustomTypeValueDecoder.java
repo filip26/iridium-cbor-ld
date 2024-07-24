@@ -24,7 +24,7 @@ public class CustomTypeValueDecoder implements ValueDecoder {
             for (final String type : types) {
                 
                 final Dictionary dictionary = mapping.type(type);
-                System.out.println("type " + type + ", " + value + " -> " + dictionary );
+
                 if (dictionary == null) {
                     continue;
                 }
