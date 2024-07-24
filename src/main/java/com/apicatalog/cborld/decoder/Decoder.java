@@ -9,7 +9,7 @@ import com.apicatalog.cborld.CborLd;
 import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.decoder.DecoderError.Code;
 import com.apicatalog.cborld.decoder.value.ValueDecoder;
-import com.apicatalog.cborld.dictionary.DocumentDictionary;
+import com.apicatalog.cborld.document.DocumentDictionary;
 import com.apicatalog.cborld.hex.Hex;
 import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.cborld.mapping.TypeMap;

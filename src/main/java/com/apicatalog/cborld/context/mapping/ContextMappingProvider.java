@@ -5,7 +5,7 @@ import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.context.ContextError.Code;
 import com.apicatalog.cborld.decoder.DecoderConfig;
 import com.apicatalog.cborld.dictionary.CodeTermMap;
-import com.apicatalog.cborld.dictionary.DocumentDictionary;
+import com.apicatalog.cborld.document.DocumentDictionary;
 import com.apicatalog.cborld.encoder.EncoderConfig;
 import com.apicatalog.cborld.mapping.DecoderMappingProvider;
 import com.apicatalog.cborld.mapping.EncoderMappingProvider;

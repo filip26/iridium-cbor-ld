@@ -1,6 +1,8 @@
-package com.apicatalog.cborld.dictionary;
+package com.apicatalog.cborld.document;
 
 import java.util.Map;
+
+import com.apicatalog.cborld.dictionary.Dictionary;
 
 public class DocumentDictionary {
 

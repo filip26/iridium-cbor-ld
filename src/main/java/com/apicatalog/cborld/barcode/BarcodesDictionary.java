@@ -5,7 +5,7 @@ import java.util.Map;
 
 import com.apicatalog.cborld.dictionary.Dictionary;
 import com.apicatalog.cborld.dictionary.DictionaryBuilder;
-import com.apicatalog.cborld.dictionary.DocumentDictionary;
+import com.apicatalog.cborld.document.DocumentDictionary;
 
 
 public class BarcodesDictionary extends DocumentDictionary {

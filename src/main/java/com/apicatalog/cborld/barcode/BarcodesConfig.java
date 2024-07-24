@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.apicatalog.cborld.config.DefaultConfig;
-import com.apicatalog.cborld.dictionary.ContextDictionary;
-import com.apicatalog.cborld.dictionary.DocumentDictionary;
+import com.apicatalog.cborld.document.CompressedDocument;
+import com.apicatalog.cborld.document.DocumentDictionary;
 
 public class BarcodesConfig extends DefaultConfig {
 
@@ -13,11 +13,9 @@ public class BarcodesConfig extends DefaultConfig {
     
     static final Map<Integer, DocumentDictionary> DICTIONARIES;
 
-    static final DocumentDictionary DICTIONARY = new DocumentDictionary(0x01, ContextDictionary.INSTANCE, null);
-
     static {
         DICTIONARIES = new HashMap<>();
-        DICTIONARIES.put(0x01, DICTIONARY);
+        DICTIONARIES.put(CompressedDocument.DICTIONARY.code(), CompressedDocument.DICTIONARY);
         DICTIONARIES.put(BarcodesDictionary.INSTANCE.code(), BarcodesDictionary.INSTANCE);
     }
 

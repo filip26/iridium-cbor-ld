@@ -19,8 +19,8 @@ import com.apicatalog.cborld.decoder.value.ValueDecoder;
 import com.apicatalog.cborld.decoder.value.VocabValueDecoder;
 import com.apicatalog.cborld.decoder.value.XsdDateTimeValueDecoder;
 import com.apicatalog.cborld.decoder.value.XsdDateValueDecoder;
-import com.apicatalog.cborld.dictionary.ContextDictionary;
-import com.apicatalog.cborld.dictionary.DocumentDictionary;
+import com.apicatalog.cborld.document.CompressedDocument;
+import com.apicatalog.cborld.document.DocumentDictionary;
 import com.apicatalog.cborld.encoder.EncoderConfig;
 import com.apicatalog.cborld.encoder.value.ContextValueEncoder;
 import com.apicatalog.cborld.encoder.value.CustomTypeValueEncoder;
@@ -88,13 +88,11 @@ public class DefaultConfig extends BaseConfig implements EncoderConfig, DecoderC
 
     public static final byte VERSION = CborLd.VERSION_6_BYTE;
 
-    static final DocumentDictionary DICTIONARY = new DocumentDictionary(0x01, ContextDictionary.INSTANCE, null);
-
     static final Map<Integer, DocumentDictionary> DICTIONARIES;
 
     static {
         DICTIONARIES = new HashMap<>();
-        DICTIONARIES.put(0x01, DICTIONARY);
+        DICTIONARIES.put(CompressedDocument.DICTIONARY.code(), CompressedDocument.DICTIONARY);
     }
 
     protected DefaultConfig() {
@@ -128,7 +126,7 @@ public class DefaultConfig extends BaseConfig implements EncoderConfig, DecoderC
 
     @Override
     public DocumentDictionary dictionary() {
-        return DICTIONARY;
+        return CompressedDocument.DICTIONARY;
     }
 
     @Override

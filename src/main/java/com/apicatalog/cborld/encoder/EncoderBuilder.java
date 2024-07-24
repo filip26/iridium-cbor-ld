@@ -4,7 +4,7 @@ import java.net.URI;
 import java.util.Collection;
 
 import com.apicatalog.cborld.config.DefaultConfig;
-import com.apicatalog.cborld.dictionary.DocumentDictionary;
+import com.apicatalog.cborld.document.DocumentDictionary;
 import com.apicatalog.cborld.encoder.value.ValueEncoder;
 import com.apicatalog.cborld.loader.StaticContextLoader;
 import com.apicatalog.cborld.mapping.EncoderMappingProvider;
