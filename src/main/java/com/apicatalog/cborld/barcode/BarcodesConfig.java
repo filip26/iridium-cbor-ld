@@ -5,15 +5,15 @@ import java.util.Map;
 
 import com.apicatalog.cborld.config.DefaultConfig;
 import com.apicatalog.cborld.dictionary.ContextDictionary;
-import com.apicatalog.cborld.dictionary.CustomDictionary;
+import com.apicatalog.cborld.dictionary.DocumentDictionary;
 
 public class BarcodesConfig extends DefaultConfig {
 
     public static final BarcodesConfig INSTANCE = new BarcodesConfig();
     
-    static final Map<Integer, CustomDictionary> DICTIONARIES;
+    static final Map<Integer, DocumentDictionary> DICTIONARIES;
 
-    static final CustomDictionary DICTIONARY = new CustomDictionary(0x01, ContextDictionary.INSTANCE, null);
+    static final DocumentDictionary DICTIONARY = new DocumentDictionary(0x01, ContextDictionary.INSTANCE, null);
 
     static {
         DICTIONARIES = new HashMap<>();
@@ -22,12 +22,12 @@ public class BarcodesConfig extends DefaultConfig {
     }
 
     @Override
-    public CustomDictionary dictionary() {
+    public DocumentDictionary dictionary() {
         return BarcodesDictionary.INSTANCE;
     }
     
     @Override
-    public Map<Integer, CustomDictionary> dictionaries() {
+    public Map<Integer, DocumentDictionary> dictionaries() {
         return DICTIONARIES;
     }
 }

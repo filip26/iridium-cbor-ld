@@ -7,7 +7,7 @@ import java.util.Map;
 
 import com.apicatalog.cborld.config.DefaultConfig;
 import com.apicatalog.cborld.decoder.value.ValueDecoder;
-import com.apicatalog.cborld.dictionary.CustomDictionary;
+import com.apicatalog.cborld.dictionary.DocumentDictionary;
 import com.apicatalog.cborld.loader.StaticContextLoader;
 import com.apicatalog.cborld.mapping.DecoderMappingProvider;
 import com.apicatalog.jsonld.JsonLdOptions;
@@ -20,7 +20,7 @@ public class DecoderBuilder implements DecoderConfig {
 
     protected DecoderMappingProvider provider;
 
-    protected Map<Integer, CustomDictionary> dictionaries;
+    protected Map<Integer, DocumentDictionary> dictionaries;
 
     protected Collection<ValueDecoder> valueDecoders;
 
@@ -96,7 +96,7 @@ public class DecoderBuilder implements DecoderConfig {
      * @param dictionary a custom dictionary
      * @return {@link DecoderBuilder} instance
      */
-    public DecoderBuilder dictionary(CustomDictionary dictionary) {
+    public DecoderBuilder dictionary(DocumentDictionary dictionary) {
         return dictionary(dictionary.code(), dictionary);
     }
 
@@ -107,7 +107,7 @@ public class DecoderBuilder implements DecoderConfig {
      * @param dictionary a custom dictionary
      * @return {@link DecoderBuilder} instance
      */
-    public DecoderBuilder dictionary(int code, CustomDictionary dictionary) {
+    public DecoderBuilder dictionary(int code, DocumentDictionary dictionary) {
         if (dictionaries == null) {
             dictionaries = new HashMap<>();
         }
@@ -131,7 +131,7 @@ public class DecoderBuilder implements DecoderConfig {
     }
 
     @Override
-    public Map<Integer, CustomDictionary> dictionaries() {
+    public Map<Integer, DocumentDictionary> dictionaries() {
         return dictionaries;
     }
 

@@ -9,7 +9,7 @@ import com.apicatalog.cborld.CborLd;
 import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.decoder.DecoderError.Code;
 import com.apicatalog.cborld.decoder.value.ValueDecoder;
-import com.apicatalog.cborld.dictionary.CustomDictionary;
+import com.apicatalog.cborld.dictionary.DocumentDictionary;
 import com.apicatalog.cborld.hex.Hex;
 import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.cborld.mapping.TypeMap;
@@ -89,7 +89,7 @@ public class Decoder {
             throw new DecoderError(Code.UnknownCompression, "Uncompressed CBOR-LD documents are not supported.");
         }
 
-        final CustomDictionary dictionaries = config.dictionaries().get(Byte.toUnsignedInt(encodedDocument[2]));
+        final DocumentDictionary dictionaries = config.dictionaries().get(Byte.toUnsignedInt(encodedDocument[2]));
 
         if (dictionaries == null) {
             throw new DecoderError(Code.UnknownCompression,
@@ -100,7 +100,7 @@ public class Decoder {
         return decode(encodedDocument, dictionaries);
     }
 
-    protected JsonValue decode(byte[] encoded, final CustomDictionary provider) throws ContextError, DecoderError {
+    protected JsonValue decode(byte[] encoded, final DocumentDictionary provider) throws ContextError, DecoderError {
         try {
             final ByteArrayInputStream bais = new ByteArrayInputStream(encoded);
             final List<DataItem> dataItems = new CborDecoder(bais).decode();
@@ -129,7 +129,7 @@ public class Decoder {
         }
     }
 
-    protected final JsonValue decode(final DataItem data, final CustomDictionary custom, final DocumentLoader loader) throws DecoderError, ContextError {
+    protected final JsonValue decode(final DataItem data, final DocumentDictionary custom, final DocumentLoader loader) throws DecoderError, ContextError {
         final Mapping mapping = config.decoderMapping().getDecoderMapping(data, custom, config);
         return decodeData(data, null, mapping.typeMap(), mapping);
     }

@@ -4,7 +4,7 @@ import java.net.URI;
 import java.util.Collection;
 
 import com.apicatalog.cborld.config.DefaultConfig;
-import com.apicatalog.cborld.dictionary.CustomDictionary;
+import com.apicatalog.cborld.dictionary.DocumentDictionary;
 import com.apicatalog.cborld.encoder.value.ValueEncoder;
 import com.apicatalog.cborld.loader.StaticContextLoader;
 import com.apicatalog.cborld.mapping.EncoderMappingProvider;
@@ -18,7 +18,7 @@ public class EncoderBuilder implements EncoderConfig {
 
     protected EncoderMappingProvider provider;
 
-    protected CustomDictionary dictionary;
+    protected DocumentDictionary dictionary;
 
     protected Collection<ValueEncoder> valueEncoders;
 
@@ -95,7 +95,7 @@ public class EncoderBuilder implements EncoderConfig {
      * @param dictionary
      * @return {@link EncoderBuilder} instance
      */
-    public EncoderBuilder dictionary(CustomDictionary dictionary) {
+    public EncoderBuilder dictionary(DocumentDictionary dictionary) {
         this.dictionary = dictionary;
         return this;
     }
@@ -137,7 +137,7 @@ public class EncoderBuilder implements EncoderConfig {
     }
 
     @Override
-    public CustomDictionary dictionary() {
+    public DocumentDictionary dictionary() {
         return dictionary;
     }
 

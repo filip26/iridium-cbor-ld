@@ -1,17 +1,18 @@
-package com.apicatalog.cborld.mapping;
+package com.apicatalog.cborld.context;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.apicatalog.cborld.mapping.TypeMap;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 
-public class DynamicTypeMap implements TypeMap {
+class DynamicTypeMap implements TypeMap {
 
     private final JsonValue mapping;
 

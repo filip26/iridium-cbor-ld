@@ -17,7 +17,7 @@ An implementation of the [CBOR-LD 1.0](https://json-ld.github.io/cbor-ld-spec/) 
 
 * Semantic compression / decompression
 * Configurable
-* Custom dictionaries 
+* Custom document dictionaries 
 * Verifiable Credential Barcodes
 
 ## CLI

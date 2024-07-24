@@ -20,7 +20,7 @@ import com.apicatalog.cborld.decoder.value.VocabValueDecoder;
 import com.apicatalog.cborld.decoder.value.XsdDateTimeValueDecoder;
 import com.apicatalog.cborld.decoder.value.XsdDateValueDecoder;
 import com.apicatalog.cborld.dictionary.ContextDictionary;
-import com.apicatalog.cborld.dictionary.CustomDictionary;
+import com.apicatalog.cborld.dictionary.DocumentDictionary;
 import com.apicatalog.cborld.encoder.EncoderConfig;
 import com.apicatalog.cborld.encoder.value.ContextValueEncoder;
 import com.apicatalog.cborld.encoder.value.CustomTypeValueEncoder;
@@ -88,9 +88,9 @@ public class DefaultConfig extends BaseConfig implements EncoderConfig, DecoderC
 
     public static final byte VERSION = CborLd.VERSION_6_BYTE;
 
-    static final CustomDictionary DICTIONARY = new CustomDictionary(0x01, ContextDictionary.INSTANCE, null);
+    static final DocumentDictionary DICTIONARY = new DocumentDictionary(0x01, ContextDictionary.INSTANCE, null);
 
-    static final Map<Integer, CustomDictionary> DICTIONARIES;
+    static final Map<Integer, DocumentDictionary> DICTIONARIES;
 
     static {
         DICTIONARIES = new HashMap<>();
@@ -122,12 +122,12 @@ public class DefaultConfig extends BaseConfig implements EncoderConfig, DecoderC
     }
 
     @Override
-    public Map<Integer, CustomDictionary> dictionaries() {
+    public Map<Integer, DocumentDictionary> dictionaries() {
         return DICTIONARIES;
     }
 
     @Override
-    public CustomDictionary dictionary() {
+    public DocumentDictionary dictionary() {
         return DICTIONARY;
     }
 

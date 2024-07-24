@@ -5,7 +5,7 @@ import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.context.ContextError.Code;
 import com.apicatalog.cborld.decoder.DecoderConfig;
 import com.apicatalog.cborld.dictionary.CodeTermMap;
-import com.apicatalog.cborld.dictionary.CustomDictionary;
+import com.apicatalog.cborld.dictionary.DocumentDictionary;
 import com.apicatalog.cborld.encoder.EncoderConfig;
 import com.apicatalog.cborld.mapping.DecoderMappingProvider;
 import com.apicatalog.cborld.mapping.EncoderMappingProvider;
@@ -26,7 +26,7 @@ public class ContextMappingProvider implements EncoderMappingProvider, DecoderMa
             return new EncoderContextMapping(
                     config.dictionary().contexts(),
                     config.dictionary().types(),
-                    CodeTermMap.from(context.getContextKeySets(), config.loader()),
+                    CodeTermMap.of(context.getContextKeySets(), config.loader()),
                     context.getTypeMapping());
 
         } catch (JsonLdError e) {
@@ -35,7 +35,7 @@ public class ContextMappingProvider implements EncoderMappingProvider, DecoderMa
     }
 
     @Override
-    public Mapping getDecoderMapping(DataItem document, CustomDictionary custom, DecoderConfig config) throws ContextError {
+    public Mapping getDecoderMapping(DataItem document, DocumentDictionary custom, DecoderConfig config) throws ContextError {
         try {
             final DecoderContextMapping mapping = new DecoderContextMapping(custom.contexts(), custom.types(), config.valueDecoders());
 

@@ -6,12 +6,7 @@ import java.util.Map;
 import com.apicatalog.cborld.hex.Hex;
 
 /**
- * A registry of well-know term values as defined by the specification.
- *
- * @see <a href=
- *      "https://digitalbazaar.github.io/cbor-ld-spec/#term-codec-registry">Term
- *      Codec Registry</a>
- *
+ * A registry of well-know term values.
  */
 public class ContextDictionary implements Dictionary {
 

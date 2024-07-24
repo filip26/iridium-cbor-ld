@@ -3,11 +3,11 @@ package com.apicatalog.cborld.barcode;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.apicatalog.cborld.dictionary.CustomDictionary;
+import com.apicatalog.cborld.dictionary.DocumentDictionary;
 import com.apicatalog.cborld.dictionary.Dictionary;
 
 
-public class BarcodesDictionary extends CustomDictionary {
+public class BarcodesDictionary extends DocumentDictionary {
 
     public static final BarcodesDictionary INSTANCE;
     static final Map<String, Dictionary> TYPES;

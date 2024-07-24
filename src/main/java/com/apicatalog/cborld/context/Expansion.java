@@ -19,7 +19,6 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.function.Consumer;
 
-import com.apicatalog.cborld.mapping.DynamicTypeMap;
 import com.apicatalog.cborld.mapping.TypeKeyNameMapper;
 import com.apicatalog.cborld.mapping.TypeMap;
 import com.apicatalog.cursor.ValueCursor;
