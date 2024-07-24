@@ -24,6 +24,8 @@ public class ContextMappingProvider implements EncoderMappingProvider, DecoderMa
             final Context context = Context.from(document, config.base(), config.loader());
 
             return new EncoderContextMapping(
+                    config.dictionary().contexts(),
+                    config.dictionary().types(),
                     CodeTermMap.from(context.getContextKeySets(), config.loader()),
                     context.getTypeMapping());
 

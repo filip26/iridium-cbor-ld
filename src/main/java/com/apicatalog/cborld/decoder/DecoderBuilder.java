@@ -36,10 +36,9 @@ public class DecoderBuilder implements DecoderConfig {
         this.dictionaries = config.dictionaries() != null
                 ? new HashMap<>(config.dictionaries())
                 : new HashMap<>();
-
+        this.base = config.base();
+        this.loader = config.loader();
         this.bundledContexts = DefaultConfig.STATIC_CONTEXTS;
-        this.base = null;
-        this.loader = null;
     }
 
     /**
@@ -52,22 +51,6 @@ public class DecoderBuilder implements DecoderConfig {
      */
     public DecoderBuilder compactArray(boolean enable) {
         compactArrays = enable;
-        return this;
-    }
-
-    /**
-     * Override any existing configuration by the given configuration set.
-     * 
-     * @param config a configuration set
-     * @return {@link DecoderBuilder} instance
-     */
-    public DecoderBuilder config(DecoderConfig config) {
-        this.provider = config.decoderMapping();
-        this.compactArrays = config.isCompactArrays();
-        this.valueDecoders = config.valueDecoders();
-        if (config.dictionaries() != null) {
-            this.dictionaries = new HashMap<>(config.dictionaries());
-        }
         return this;
     }
 

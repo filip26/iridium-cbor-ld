@@ -3,7 +3,7 @@ package com.apicatalog.cborld.encoder;
 import java.net.URI;
 import java.util.Collection;
 
-import com.apicatalog.cborld.config.Config;
+import com.apicatalog.cborld.config.DefaultConfig;
 import com.apicatalog.cborld.dictionary.CustomDictionary;
 import com.apicatalog.cborld.encoder.value.ValueEncoder;
 import com.apicatalog.cborld.loader.StaticContextLoader;
@@ -16,7 +16,12 @@ import com.apicatalog.jsonld.loader.HttpLoader;
 
 public class EncoderBuilder implements EncoderConfig {
 
-    protected final EncoderConfig config;
+    protected EncoderMappingProvider provider;
+
+    protected CustomDictionary dictionary;
+
+    protected Collection<ValueEncoder> valueEncoders;
+
     protected byte version;
 
     protected DocumentLoader loader;
@@ -25,14 +30,14 @@ public class EncoderBuilder implements EncoderConfig {
     protected URI base;
 
     public EncoderBuilder(EncoderConfig config) {
-        this.config = config;
-//        // default options
-//        config(DefaultConfig.INSTANCE);
-//
-//        this.bundledContexts = DefaultConfig.STATIC_CONTEXTS;
-//        this.version = DefaultConfig.VERSION;
-//        this.base = null;
-//        this.loader = null;
+        this.provider = config.encoderMapping();
+        this.compactArrays = config.isCompactArrays();
+        this.valueEncoders = config.valueEncoders();
+        this.dictionary = config.dictionary();
+        this.version = config.version();
+        this.base = config.base();
+        this.loader = config.loader();
+        this.bundledContexts = DefaultConfig.STATIC_CONTEXTS;
     }
 
     /**
@@ -45,19 +50,6 @@ public class EncoderBuilder implements EncoderConfig {
      */
     public EncoderBuilder compactArray(boolean enable) {
         this.compactArrays = enable;
-        return this;
-    }
-
-    /**
-     * Override any existing configuration by the given configuration set.
-     * 
-     * @param config a configuration set
-     * @return {@link Encoder} instance
-     */
-    public EncoderBuilder config(Config config) {
-        this.compactArrays = config.isCompactArrays();
-        this.base = config.base();
-        this.loader = config.loader();
         return this;
     }
 
@@ -97,6 +89,28 @@ public class EncoderBuilder implements EncoderConfig {
         return this;
     }
 
+    /**
+     * Set a custom dictionary
+     * 
+     * @param dictionary
+     * @return {@link EncoderBuilder} instance
+     */
+    public EncoderBuilder dictionary(CustomDictionary dictionary) {
+        this.dictionary = dictionary;
+        return this;
+    }
+
+    /**
+     * Set encoding version
+     * 
+     * @param dictionary
+     * @return {@link EncoderBuilder} instance
+     */
+    public EncoderBuilder version(byte version) {
+        this.version = version;
+        return this;
+    }
+
     @Override
     public boolean isCompactArrays() {
         return compactArrays;
@@ -114,26 +128,22 @@ public class EncoderBuilder implements EncoderConfig {
 
     @Override
     public Collection<ValueEncoder> valueEncoders() {
-//        return valueEncoders;
-        return null;
+        return valueEncoders;
     }
 
     @Override
     public EncoderMappingProvider encoderMapping() {
-//        return provider;
-        return null;
+        return provider;
     }
 
     @Override
     public CustomDictionary dictionary() {
-        // TODO Auto-generated method stub
-        return null;
+        return dictionary;
     }
 
     @Override
     public byte version() {
-        // TODO Auto-generated method stub
-        return 0;
+        return version;
     }
 
     public Encoder build() {
@@ -145,7 +155,6 @@ public class EncoderBuilder implements EncoderConfig {
         if (bundledContexts) {
             loader = new StaticContextLoader(loader);
         }
-        return null;
+        return new Encoder(this);
     }
-
 }

@@ -35,7 +35,7 @@ import com.apicatalog.cborld.encoder.value.XsdDateValueEncoder;
 import com.apicatalog.cborld.mapping.DecoderMappingProvider;
 import com.apicatalog.cborld.mapping.EncoderMappingProvider;
 
-public final class DefaultConfig extends BaseConfig implements EncoderConfig, DecoderConfig {
+public class DefaultConfig extends BaseConfig implements EncoderConfig, DecoderConfig {
 
     public static final DefaultConfig INSTANCE = new DefaultConfig();
 
@@ -84,13 +84,14 @@ public final class DefaultConfig extends BaseConfig implements EncoderConfig, De
 
     public static final boolean STATIC_CONTEXTS = true;
 
-    static final byte VERSION = CborLd.VERSION_6_BYTE;
+    public static final byte VERSION = CborLd.VERSION_6_BYTE;
 
     static final Map<Integer, CustomDictionary> DICTIONARIES;
     
+    static final CustomDictionary DICTIONARY = new CustomDictionary(0x01, ContextDictionary.INSTANCE, null);
     static {
         DICTIONARIES = new HashMap<>();
-        DICTIONARIES.put(0x01, new CustomDictionary(0x01, ContextDictionary.INSTANCE, null));
+        DICTIONARIES.put(0x01, DICTIONARY);
     }
     
     protected DefaultConfig() {
@@ -124,8 +125,7 @@ public final class DefaultConfig extends BaseConfig implements EncoderConfig, De
 
     @Override
     public CustomDictionary dictionary() {
-        // TODO Auto-generated method stub
-        return null;
+        return DICTIONARY;
     }
 
     @Override
