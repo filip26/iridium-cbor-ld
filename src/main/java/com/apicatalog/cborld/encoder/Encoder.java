@@ -42,7 +42,7 @@ import co.nstant.in.cbor.model.UnicodeString;
 import co.nstant.in.cbor.model.UnsignedInteger;
 import jakarta.json.JsonObject;
 
-public class CborLdEncoder implements EncoderConfig {
+public class Encoder implements EncoderConfig {
 
     protected EncoderMappingProvider provider;
     protected Dictionary index;
@@ -54,11 +54,14 @@ public class CborLdEncoder implements EncoderConfig {
     protected boolean bundledContexts;
     protected URI base;
 
-    public CborLdEncoder() {
+    protected byte version;
+
+    public Encoder() {
         // default options
         config(DefaultConfig.INSTANCE);
 
         this.bundledContexts = DefaultConfig.STATIC_CONTEXTS;
+        this.version = DefaultConfig.VERSION;
         this.base = null;
         this.loader = null;
     }
@@ -68,10 +71,10 @@ public class CborLdEncoder implements EncoderConfig {
      * element during encoding saving one byte. Enabled by default.
      *
      * @param enable <code>true</code> to enable arrays compaction
-     * @return {@link CborLdEncoder} instance
+     * @return {@link Encoder} instance
      *
      */
-    public CborLdEncoder compactArray(boolean enable) {
+    public Encoder compactArray(boolean enable) {
         compactArrays = enable;
         return this;
     }
@@ -80,9 +83,9 @@ public class CborLdEncoder implements EncoderConfig {
      * Override any existing configuration by the given configuration set.
      * 
      * @param config a configuration set
-     * @return {@link CborLdEncoder} instance
+     * @return {@link Encoder} instance
      */
-    public CborLdEncoder config(EncoderConfig config) {
+    public Encoder config(EncoderConfig config) {
         this.provider = config.encoderMapping();
         this.compactArrays = config.isCompactArrays();
         this.valueEncoders = config.valueEncoders();
@@ -94,9 +97,9 @@ public class CborLdEncoder implements EncoderConfig {
      * set then default document loader provided by {@link JsonLdOptions} is used.
      * 
      * @param loader a document loader to set
-     * @return {@link CborLdEncoder} instance
+     * @return {@link Encoder} instance
      */
-    public CborLdEncoder loader(DocumentLoader loader) {
+    public Encoder loader(DocumentLoader loader) {
         this.loader = loader;
         return this;
     }
@@ -107,9 +110,9 @@ public class CborLdEncoder implements EncoderConfig {
      * processing.
      *
      * @param enable <code>true</code> to use static bundled contexts
-     * @return {@link CborLdEncoder} instance
+     * @return {@link Encoder} instance
      */
-    public CborLdEncoder useBundledContexts(boolean enable) {
+    public Encoder useBundledContexts(boolean enable) {
         this.bundledContexts = enable;
         return this;
     }
@@ -118,9 +121,9 @@ public class CborLdEncoder implements EncoderConfig {
      * If set, then is used as the input document's base IRI.
      *
      * @param base a document base
-     * @return {@link CborLdEncoder} instance
+     * @return {@link Encoder} instance
      */
-    public CborLdEncoder base(URI base) {
+    public Encoder base(URI base) {
         this.base = base;
         return this;
     }
@@ -183,10 +186,6 @@ public class CborLdEncoder implements EncoderConfig {
     /**
      * Compress the given JSON-LD document into CBOR-LD byte array.
      *
-     * @see <a href=
-     *      "https://digitalbazaar.github.io/cbor-ld-spec/#compressed-cbor-ld-buffer-algorithm">Compressed
-     *      CBOR-LD Buffer Algorithm</a>
-     *
      * @param document    the document to compress
      * @param contextUrls a set of URLs of <code>@context</code> referenced by the
      *                    document
@@ -205,12 +204,13 @@ public class CborLdEncoder implements EncoderConfig {
 
             index = mapping.terms();
 
-            final CborBuilder builder = (CborBuilder) encode(document, new CborBuilder().addMap(), mapping.typeMap()).end();
+            final CborBuilder builder = (CborBuilder) encode(document, new CborBuilder().addMap(), mapping.typeMap(), mapping).end();
 
-            // 2.CBOR Tag - 0xD9, CBOR-LD - 0x05, Compressed - CBOR-LD compression algorithm
+            // 2.CBOR Tag - 0xD9, CBOR-LD - version, Compressed - CBOR-LD compression
+            // algorithm
             // version 1 - 0x01
-            baos.write(CborLdConstants.CBOR_LD_LEADING_BYTE);
-            baos.write(CborLdConstants.CBOR_LD_VERSION_5_BYTE); // TODO
+            baos.write(CborLdConstants.LEADING);
+            baos.write(version);
             baos.write(CborLdConstants.COMPRESSED);
 
             new CborEncoder(baos).encode(builder.build());
@@ -225,7 +225,7 @@ public class CborLdEncoder implements EncoderConfig {
         }
     }
 
-    final MapBuilder<?> encode(final MapCursor object, final MapBuilder<?> builder, TypeMap typeMapping) throws EncoderError, JsonLdError {
+    final MapBuilder<?> encode(final MapCursor object, final MapBuilder<?> builder, TypeMap typeMapping, Mapping mapping) throws EncoderError, JsonLdError {
 
         if (object.isEmpty()) {
             return builder;
@@ -251,17 +251,18 @@ public class CborLdEncoder implements EncoderConfig {
 
                     if (object.isMap()) {
                         final TypeMap propertyTypeMapping = typeMapping.getMapping(property);
-                        flow = (MapBuilder<?>) encode(object.asMap(), flow.putMap(key), propertyTypeMapping).end();
+                        flow = (MapBuilder<?>) encode(object.asMap(), flow.putMap(key), propertyTypeMapping, mapping).end();
 
                     } else if (object.isArray()) {
                         flow = (MapBuilder<?>) encode(
                                 object.asArray(),
                                 flow.putArray(key),
                                 property,
-                                typeMapping).end();
+                                typeMapping,
+                                mapping).end();
 
                     } else {
-                        final DataItem value = encode(object, property, typeMapping);
+                        final DataItem value = encode(object, property, typeMapping, mapping);
 
                         flow = flow.put(key, value);
                     }
@@ -271,7 +272,7 @@ public class CborLdEncoder implements EncoderConfig {
                 } else {
                     flow = (MapBuilder<?>) encode(object.asArray(), flow.putArray(key),
                             property,
-                            typeMapping).end();
+                            typeMapping, mapping).end();
                 }
                 continue;
             }
@@ -283,11 +284,11 @@ public class CborLdEncoder implements EncoderConfig {
             if (entry.isMap()) {
                 final TypeMap propertyTypeMapping = typeMapping.getMapping(property);
                 flow = (MapBuilder<?>) encode(entry.asMap(), flow.putMap(key),
-                        propertyTypeMapping).end();
+                        propertyTypeMapping, mapping).end();
                 continue;
             }
 
-            final DataItem value = encode(entry, property, typeMapping);
+            final DataItem value = encode(entry, property, typeMapping, mapping);
 
             flow = flow.put(key, value);
         }
@@ -297,7 +298,7 @@ public class CborLdEncoder implements EncoderConfig {
         return flow;
     }
 
-    final DataItem encode(final ValueCursor value, final String term, TypeMap typeMapping) throws EncoderError {
+    final DataItem encode(final ValueCursor value, final String term, TypeMap typeMapping, Mapping mapping) throws EncoderError {
 
         if (value.isBoolean()) {
             return value.booleanValue() ? SimpleValue.TRUE : SimpleValue.FALSE;
@@ -308,7 +309,7 @@ public class CborLdEncoder implements EncoderConfig {
                 final Collection<String> types = typeMapping.getType(term);
 
                 for (final ValueEncoder valueEncoder : valueEncoders) {
-                    final DataItem dataItem = valueEncoder.encode(index, value, term, types);
+                    final DataItem dataItem = valueEncoder.encode(mapping, value, term, types);
                     if (dataItem != null) {
                         return dataItem;
                     }
@@ -341,7 +342,7 @@ public class CborLdEncoder implements EncoderConfig {
         throw new IllegalStateException();
     }
 
-    final ArrayBuilder<?> encode(final ArrayCursor object, final ArrayBuilder<?> builder, String property, TypeMap typeMapping) throws EncoderError, JsonLdError {
+    final ArrayBuilder<?> encode(final ArrayCursor object, final ArrayBuilder<?> builder, String property, TypeMap typeMapping, Mapping mapping) throws EncoderError, JsonLdError {
 
         if (object.isEmpty()) {
             return builder;
@@ -352,16 +353,16 @@ public class CborLdEncoder implements EncoderConfig {
         for (final ArrayItemCursor item : object) {
 
             if (item.isMap()) {
-                flow = (ArrayBuilder<?>) encode(item.asMap(), flow.startMap(), typeMapping).end();
+                flow = (ArrayBuilder<?>) encode(item.asMap(), flow.startMap(), typeMapping, mapping).end();
                 continue;
             }
 
             if (item.isArray()) {
-                flow = (ArrayBuilder<?>) encode(item.asArray(), flow.startArray(), property, typeMapping).end();
+                flow = (ArrayBuilder<?>) encode(item.asArray(), flow.startArray(), property, typeMapping, mapping).end();
                 continue;
             }
 
-            final DataItem value = encode(item, property, typeMapping);
+            final DataItem value = encode(item, property, typeMapping, mapping);
 
             flow = flow.add(value);
         }

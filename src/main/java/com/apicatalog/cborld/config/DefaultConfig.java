@@ -3,6 +3,7 @@ package com.apicatalog.cborld.config;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import com.apicatalog.cborld.CborLdConstants;
 import com.apicatalog.cborld.context.mapping.ContextMappingProvider;
 import com.apicatalog.cborld.decoder.DecoderConfig;
 import com.apicatalog.cborld.decoder.value.ContextValueDecoder;
@@ -46,7 +47,7 @@ public final class DefaultConfig implements EncoderConfig, DecoderConfig {
         VALUE_ENCODERS.add(new ContextValueEncoder(CONTEXT_DICTIONARY));
 
         // type driven
-//        VALUE_ENCODERS.add(new IdValueEncoder());
+        VALUE_ENCODERS.add(new IdValueEncoder());
         VALUE_ENCODERS.add(new TypeValueEncoder());
         VALUE_ENCODERS.add(new XsdDateTimeValueEncoder());
         VALUE_ENCODERS.add(new XsdDateValueEncoder());
@@ -81,6 +82,8 @@ public final class DefaultConfig implements EncoderConfig, DecoderConfig {
     static final boolean COMPACT_ARRAYS = false;
 
     public static final boolean STATIC_CONTEXTS = true;
+
+    public static final byte VERSION = CborLdConstants.VERSION_6;
 
     @Override
     public boolean isCompactArrays() {

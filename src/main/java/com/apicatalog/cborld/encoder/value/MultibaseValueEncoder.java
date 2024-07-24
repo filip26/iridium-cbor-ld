@@ -2,7 +2,7 @@ package com.apicatalog.cborld.encoder.value;
 
 import java.util.Collection;
 
-import com.apicatalog.cborld.dictionary.Dictionary;
+import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.cursor.ValueCursor;
 import com.apicatalog.multibase.MultibaseDecoder;
 
@@ -16,7 +16,7 @@ public class MultibaseValueEncoder implements ValueEncoder {
     static final MultibaseDecoder MULTIBASE = MultibaseDecoder.getInstance();
 
     @Override
-    public DataItem encode(Dictionary dictionary, ValueCursor value, String term, Collection<String> types) {
+    public DataItem encode(Mapping mapping, ValueCursor value, String term, Collection<String> types) {
         if (value.isString() && types != null && types.contains(TYPE)) {
 
             final String based = value.stringValue();

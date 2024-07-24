@@ -3,7 +3,7 @@ package com.apicatalog.cborld.encoder.value;
 import java.util.Collection;
 import java.util.UUID;
 
-import com.apicatalog.cborld.dictionary.Dictionary;
+import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.cursor.ValueCursor;
 import com.apicatalog.uuid.Uuid;
 
@@ -18,7 +18,7 @@ public class UuidValueEncoder implements ValueEncoder {
     public final static int CODE = 3;
     
     @Override
-    public DataItem encode(Dictionary dictionary, ValueCursor value, String term, Collection<String> types) {
+    public DataItem encode(Mapping mapping, ValueCursor value, String term, Collection<String> types) {
 
         if (value.isString() && value.stringValue().toLowerCase().startsWith(PREFIX)) {
             

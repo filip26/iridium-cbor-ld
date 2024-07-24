@@ -186,20 +186,20 @@ public class CborLdDecoder implements DecoderConfig {
                     "The encoded document must be at least 4 bytes but is [" + encodedDocument.length + "].");
         }
 
-        if (encodedDocument[0] != CborLdConstants.CBOR_LD_LEADING_BYTE) {
+        if (encodedDocument[0] != CborLdConstants.LEADING) {
             throw new DecoderError(Code.InvalidDocument, "The document is not CBOR-LD document. Must start with "
-                    + Hex.toString(CborLdConstants.CBOR_LD_LEADING_BYTE)
+                    + Hex.toString(CborLdConstants.LEADING)
                     + ", but is "
                     + Hex.toString(encodedDocument[0])
                     + ".");
         }
 
-        if (encodedDocument[1] != CborLdConstants.CBOR_LD_VERSION_6_BYTE
-                && encodedDocument[1] != CborLdConstants.CBOR_LD_VERSION_5_BYTE) {
+        if (encodedDocument[1] != CborLdConstants.VERSION_6
+                && encodedDocument[1] != CborLdConstants.VERSION_5) {
             throw new DecoderError(Code.InvalidDocument, "The document is not CBOR-LD document. Must start with "
-                    + Hex.toString(CborLdConstants.CBOR_LD_VERSION_6_BYTE)
+                    + Hex.toString(CborLdConstants.VERSION_6)
                     + ", or "
-                    + Hex.toString(CborLdConstants.CBOR_LD_VERSION_5_BYTE)
+                    + Hex.toString(CborLdConstants.VERSION_5)
                     + ", but is "
                     + Hex.toString(encodedDocument[1])
                     + ".");

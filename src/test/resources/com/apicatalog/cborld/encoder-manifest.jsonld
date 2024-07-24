@@ -293,6 +293,26 @@
       "option": {
         
       }
-    }
+    },
+    {
+      "@id": "#t0100",
+      "@type": [
+        "PositiveEvaluationTest",
+        "EncoderTest"
+      ],
+      "name": "barcode ex. #10",
+      "input": "decoder/barcode-ex-10.jsonld",
+      "expect": "decoder/barcode-ex-10.cborld"
+    },
+    {
+      "@id": "#t0101",
+      "@type": [
+        "PositiveEvaluationTest",
+        "EncoderTest"
+      ],
+      "name": "barcode ex. #14",
+      "input": "decoder/barcode-ex-14.jsonld",
+      "expect": "decoder/barcode-ex-14.cborld"
+    }    
   ]
 }

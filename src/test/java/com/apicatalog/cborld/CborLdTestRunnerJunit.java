@@ -19,7 +19,7 @@ import com.apicatalog.cborld.barcode.BarcodesDictionary;
 import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.decoder.CborLdDecoder;
 import com.apicatalog.cborld.decoder.DecoderError;
-import com.apicatalog.cborld.encoder.CborLdEncoder;
+import com.apicatalog.cborld.encoder.Encoder;
 import com.apicatalog.cborld.encoder.EncoderError;
 import com.apicatalog.cborld.loader.StaticContextLoader;
 import com.apicatalog.jsonld.JsonLdError;
@@ -60,7 +60,7 @@ public class CborLdTestRunnerJunit {
                                     .set("https", HttpLoader.defaultInstance())
                                     .set("classpath", new ClasspathLoader())));
 
-    public final static CborLdEncoder ENCODER = new CborLdEncoder().loader(LOADER);
+    public final static Encoder ENCODER = new Encoder().loader(LOADER);
 
     public final static CborLdDecoder DECODER = new CborLdDecoder().loader(LOADER)
             .dictionary(BarcodesDictionary.INSTANCE);
