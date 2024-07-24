@@ -7,17 +7,17 @@ class KeywordDictionary implements Dictionary {
 
     public static final byte CONTEXT_CODE = 0;
 
-    public static final byte CUSTOM_OFFSET = 0x64;    // 100 decimal
+    public static final byte CUSTOM_OFFSET = 0x64; // 100 decimal
 
     protected static final Map<String, Integer> TERM_TO_CODE = new HashMap<>();
     protected static final Map<Integer, String> CODE_TO_TERM = new HashMap<>();
 
     static {
-        add("@context", (int)CONTEXT_CODE);
+        add("@context", (int) CONTEXT_CODE);
         add("@type", 2);
         add("@id", 4);
         add("@value", 6);
-    
+
         add("@direction", 8);
         add("@graph", 10);
         add("@included", 12);
@@ -27,7 +27,7 @@ class KeywordDictionary implements Dictionary {
         add("@list", 20);
         add("@nest", 22);
         add("@reverse", 24);
-        
+
         add("@base", 26);
         add("@container", 28);
         add("@default", 30);
