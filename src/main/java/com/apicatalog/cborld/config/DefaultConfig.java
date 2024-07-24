@@ -23,6 +23,7 @@ import com.apicatalog.cborld.dictionary.ContextDictionary;
 import com.apicatalog.cborld.dictionary.CustomDictionary;
 import com.apicatalog.cborld.encoder.EncoderConfig;
 import com.apicatalog.cborld.encoder.value.ContextValueEncoder;
+import com.apicatalog.cborld.encoder.value.CustomTypeValueEncoder;
 import com.apicatalog.cborld.encoder.value.DidKeyValueEncoder;
 import com.apicatalog.cborld.encoder.value.IdValueEncoder;
 import com.apicatalog.cborld.encoder.value.MultibaseValueEncoder;
@@ -54,6 +55,7 @@ public class DefaultConfig extends BaseConfig implements EncoderConfig, DecoderC
         VALUE_ENCODERS.add(new XsdDateValueEncoder());
         VALUE_ENCODERS.add(new MultibaseValueEncoder());
         VALUE_ENCODERS.add(new VocabValueEncoder());
+        VALUE_ENCODERS.add(new CustomTypeValueEncoder());
 
         // value driven
         VALUE_ENCODERS.add(new UuidValueEncoder());
@@ -85,7 +87,7 @@ public class DefaultConfig extends BaseConfig implements EncoderConfig, DecoderC
     public static final boolean STATIC_CONTEXTS = true;
 
     public static final byte VERSION = CborLd.VERSION_6_BYTE;
-    
+
     static final CustomDictionary DICTIONARY = new CustomDictionary(0x01, ContextDictionary.INSTANCE, null);
 
     static final Map<Integer, CustomDictionary> DICTIONARIES;
@@ -94,7 +96,7 @@ public class DefaultConfig extends BaseConfig implements EncoderConfig, DecoderC
         DICTIONARIES = new HashMap<>();
         DICTIONARIES.put(0x01, DICTIONARY);
     }
-    
+
     protected DefaultConfig() {
         super(STATIC_CONTEXTS, COMPACT_ARRAYS);
     }
