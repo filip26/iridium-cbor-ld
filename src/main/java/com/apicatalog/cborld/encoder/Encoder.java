@@ -35,7 +35,6 @@ import jakarta.json.JsonObject;
 public class Encoder {
 
     protected final EncoderConfig config;
-    protected byte version;
 
     protected Encoder(EncoderConfig config) {
         this.config = config;
@@ -110,10 +109,9 @@ public class Encoder {
 
             // 2.CBOR Tag - 0xD9, CBOR-LD - version, Compressed - CBOR-LD compression
             // algorithm
-            // version 1 - 0x01
             baos.write(CborLd.LEADING_BYTE);
-            baos.write(version);
-            baos.write(CborLd.COMPRESSED_BYTE);
+            baos.write(config.version());
+            baos.write(config.dictionary().code());
 
             new CborEncoder(baos).encode(builder.build());
 

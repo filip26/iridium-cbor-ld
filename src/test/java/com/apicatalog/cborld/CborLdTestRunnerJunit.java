@@ -15,12 +15,17 @@ import java.util.Objects;
 
 import com.apicatalog.cbor.CborComparison;
 import com.apicatalog.cbor.CborWriter;
+import com.apicatalog.cborld.barcode.BarcodesConfig;
 import com.apicatalog.cborld.barcode.BarcodesDictionary;
+import com.apicatalog.cborld.config.DefaultConfig;
+import com.apicatalog.cborld.config.V05Config;
 import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.decoder.Decoder;
 import com.apicatalog.cborld.decoder.DecoderError;
 import com.apicatalog.cborld.encoder.Encoder;
+import com.apicatalog.cborld.encoder.EncoderConfig;
 import com.apicatalog.cborld.encoder.EncoderError;
+import com.apicatalog.cborld.hex.Hex;
 import com.apicatalog.cborld.loader.StaticContextLoader;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.document.Document;
@@ -78,7 +83,7 @@ public class CborLdTestRunnerJunit {
 
                 JsonObject object = document.getJsonContent().orElseThrow(IllegalStateException::new).asJsonObject();
 
-                final Encoder encoder = CborLd.createEncoder()
+                final Encoder encoder = CborLd.createEncoder(getEncoderConfig(testCase.config))
                         .loader(LOADER)
                         .compactArray(testCase.compactArrays)
                         .build();
@@ -97,7 +102,9 @@ public class CborLdTestRunnerJunit {
                 assertNotNull(expected);
                 assertEquals(CborLdDocument.MEDIA_TYPE, expected.getContentType());
 
-                final boolean match = CborComparison.equals(((CborLdDocument) expected).getByteArray(), bytes);
+                final byte[] expectedBytes = ((CborLdDocument) expected).getByteArray();
+
+                final boolean match = equalCborLdHeader(expectedBytes, bytes) && CborComparison.equals(expectedBytes, bytes);
 
                 if (!match) {
                     write(testCase, bytes, ((CborLdDocument) expected).getByteArray());
@@ -116,7 +123,7 @@ public class CborLdTestRunnerJunit {
                         .compactArray(testCase.compactArrays)
                         .dictionary(BarcodesDictionary.INSTANCE)
                         .build();
-                
+
                 final JsonValue result = decoder.decode(((CborLdDocument) document).getByteArray());
 
                 if (testCase.type.stream().noneMatch(o -> o.endsWith("PositiveEvaluationTest"))) {
@@ -209,6 +216,7 @@ public class CborLdTestRunnerJunit {
             writer.println("Test " + testCase.id.getFragment() + ": " + testCase.name);
 
             writer.println("Expected");
+            writer.println("header = " + Hex.toString(expected, 3));
 
             CborWriter cborWriter = new CborWriter(writer);
 
@@ -222,7 +230,7 @@ public class CborLdTestRunnerJunit {
             writer.println();
 
             writer.println("Actual");
-
+            writer.println("header = " + Hex.toString(result, 3));
             List<DataItem> decodedResult = CborDecoder.decode(result);
             assertNotNull(decodedResult);
 
@@ -253,5 +261,30 @@ public class CborLdTestRunnerJunit {
 
         writer.write(out.toString());
         writer.println();
+    }
+
+    static final boolean equalCborLdHeader(byte[] expected, byte[] actual) {
+        if (expected == null || actual == null) {
+            return actual == expected;
+        }
+        if (expected.length != actual.length) {
+            return false;
+        }
+        for (int i = 0; i < 3; i++) {
+            if (expected[i] != actual[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    static final EncoderConfig getEncoderConfig(String name) {
+        if ("v5".equals(name)) {
+            return V05Config.INSTANCE;
+        }
+        if ("barcodes".equals(name)) {
+            return BarcodesConfig.INSTANCE;
+        }
+        return DefaultConfig.INSTANCE;
     }
 }

@@ -80,15 +80,16 @@ public class DefaultConfig extends BaseConfig implements EncoderConfig, DecoderC
         VALUE_DECODERS.add(new DidKeyValueDecoder());
     }
 
-    static final boolean COMPACT_ARRAYS = false;
+    protected static final boolean COMPACT_ARRAYS = false;
 
     public static final boolean STATIC_CONTEXTS = true;
 
     public static final byte VERSION = CborLd.VERSION_6_BYTE;
-
-    static final Map<Integer, CustomDictionary> DICTIONARIES;
     
     static final CustomDictionary DICTIONARY = new CustomDictionary(0x01, ContextDictionary.INSTANCE, null);
+
+    static final Map<Integer, CustomDictionary> DICTIONARIES;
+
     static {
         DICTIONARIES = new HashMap<>();
         DICTIONARIES.put(0x01, DICTIONARY);

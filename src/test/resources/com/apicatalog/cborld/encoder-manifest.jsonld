@@ -37,7 +37,10 @@
       ],
       "name": "simple term value",
       "input": "encoder/0003-in.jsonld",
-      "expect": "encoder/0003-out.cborld"
+      "expect": "encoder/0003-out.cborld",
+      "option": {
+        "config": "v5"
+      }
     },
     {
       "@id": "#t0004",
@@ -49,6 +52,7 @@
       "input": "encoder/0004-in.jsonld",
       "expect": "encoder/0004-out.cborld",
       "option": {
+        "config": "v5",
         "compactArrays": true
       }
     },
@@ -60,7 +64,10 @@
       ],
       "name": "two items array term value",
       "input": "encoder/0005-in.jsonld",
-      "expect": "encoder/0005-out.cborld"
+      "expect": "encoder/0005-out.cborld",
+      "option": {
+        "config": "v5"
+      }
     },
     {
       "@id": "#t0006",
@@ -70,7 +77,10 @@
       ],
       "name": "compactArrays: false - single item array term value",
       "input": "encoder/0006-in.jsonld",
-      "expect": "encoder/0006-out.cborld"
+      "expect": "encoder/0006-out.cborld",
+      "option": {
+        "config": "v5"
+      }
     },
     {
       "@id": "#t0007",
@@ -82,6 +92,7 @@
       "input": "encoder/0007-in.jsonld",
       "expect": "encoder/0007-out.cborld",
       "option": {
+        "config": "v5",
         "compactArrays": true
       }
     },
@@ -93,7 +104,10 @@
       ],
       "name": "xsd:dateTime @type",
       "input": "encoder/0008-in.jsonld",
-      "expect": "encoder/0008-out.cborld"
+      "expect": "encoder/0008-out.cborld",
+      "option": {
+        "config": "v5"
+      }
     },
     {
       "@id": "#t0009",
@@ -103,7 +117,10 @@
       ],
       "name": "xsd:date @type",
       "input": "encoder/0009-in.jsonld",
-      "expect": "encoder/0009-out.cborld"
+      "expect": "encoder/0009-out.cborld",
+      "option": {
+        "config": "v5"
+      }
     },
     {
       "@id": "#t0010",
@@ -113,7 +130,10 @@
       ],
       "name": "UUID term value",
       "input": "encoder/0010-in.jsonld",
-      "expect": "encoder/0010-out.cborld"
+      "expect": "encoder/0010-out.cborld",
+      "option": {
+        "config": "v5"
+      }
     },
     {
       "@id": "#t0011",
@@ -123,7 +143,10 @@
       ],
       "name": "@vocab term value",
       "input": "encoder/0011-in.jsonld",
-      "expect": "encoder/0011-out.cborld"
+      "expect": "encoder/0011-out.cborld",
+      "option": {
+        "config": "v5"
+      }
     },
     {
       "@id": "#t0012",
@@ -133,7 +156,10 @@
       ],
       "name": "multibase term value",
       "input": "encoder/0012-in.jsonld",
-      "expect": "encoder/0012-out.cborld"
+      "expect": "encoder/0012-out.cborld",
+      "option": {
+        "config": "v5"
+      }
     },
     {
       "@id": "#t0013",
@@ -143,7 +169,10 @@
       ],
       "name": "did:key term value",
       "input": "encoder/0013-in.jsonld",
-      "expect": "encoder/0013-out.cborld"
+      "expect": "encoder/0013-out.cborld",
+      "option": {
+        "config": "v5"
+      }
     },
     {
       "@id": "#t0014",
@@ -153,7 +182,10 @@
       ],
       "name": "@type selector",
       "input": "encoder/0014-in.jsonld",
-      "expect": "encoder/0014-out.cborld"
+      "expect": "encoder/0014-out.cborld",
+      "option": {
+        "config": "v5"
+      }
     },
     {
       "@id": "#t0015",
@@ -163,7 +195,10 @@
       ],
       "name": "double scoped context",
       "input": "encoder/0015-in.jsonld",
-      "expect": "encoder/0015-out.cborld"
+      "expect": "encoder/0015-out.cborld",
+      "option": {
+        "config": "v5"
+      }
     },
     {
       "@id": "#t0020",
@@ -173,7 +208,10 @@
       ],
       "name": "@type - activity streams context",
       "input": "encoder/0020-in.jsonld",
-      "expect": "encoder/0020-out.cborld"
+      "expect": "encoder/0020-out.cborld",
+      "option": {
+        "config": "v5"
+      }
     },
     {
       "@id": "#t0021",
@@ -183,7 +221,10 @@
       ],
       "name": "@id - activity streams context",
       "input": "encoder/0021-in.jsonld",
-      "expect": "encoder/0021-out.cborld"
+      "expect": "encoder/0021-out.cborld",
+      "option": {
+        "config": "v5"
+      }
     },
     {
       "@id": "#t0022",
@@ -193,7 +234,10 @@
       ],
       "name": "@type - custom context",
       "input": "encoder/0022-in.jsonld",
-      "expect": "encoder/0022-out.cborld"
+      "expect": "encoder/0022-out.cborld",
+      "option": {
+        "config": "v5"
+      }
     },
     {
       "@id": "#t0023",
@@ -203,7 +247,10 @@
       ],
       "name": "scoped context",
       "input": "encoder/0023-in.jsonld",
-      "expect": "encoder/0023-out.cborld"
+      "expect": "encoder/0023-out.cborld",
+      "option": {
+        "config": "v5"
+      }
     },
     {
       "@id": "#t0024",
@@ -213,7 +260,10 @@
       ],
       "name": "scoped context: @type redefinition",
       "input": "encoder/0024-in.jsonld",
-      "expect": "encoder/0024-out.cborld"
+      "expect": "encoder/0024-out.cborld",
+      "option": {
+        "config": "v5"
+      }
     },
     {
       "@id": "#t0025",
@@ -223,7 +273,10 @@
       ],
       "name": "two scoped context: same props",
       "input": "encoder/0025-in.jsonld",
-      "expect": "encoder/0025-out.cborld"
+      "expect": "encoder/0025-out.cborld",
+      "option": {
+        "config": "v5"
+      }
     },
     {
       "@id": "#t0026",
@@ -233,7 +286,10 @@
       ],
       "name": "an array of scoped contexts",
       "input": "encoder/0026-in.jsonld",
-      "expect": "encoder/0026-out.cborld"
+      "expect": "encoder/0026-out.cborld",
+      "option": {
+        "config": "v5"
+      }
     },
     {
       "@id": "#t0052",
@@ -243,7 +299,10 @@
       ],
       "name": "verifiable credentials",
       "input": "encoder/0052-in.jsonld",
-      "expect": "encoder/0052-out.cborld"
+      "expect": "encoder/0052-out.cborld",
+      "option": {
+        "config": "v5"
+      }
     },
     {
       "@id": "#t0053",
@@ -255,7 +314,7 @@
       "input": "encoder/0053-in.jsonld",
       "expect": "encoder/0053-out.cborld",
       "option": {
-        "compactArrays": false
+        "config": "v5"
       }
     },
     {
@@ -268,7 +327,7 @@
       "input": "encoder/0060-in.jsonld",
       "expect": "encoder/0060-out.cborld",
       "option": {
-        
+        "config": "v5"
       }
     },
     {
@@ -279,7 +338,10 @@
       ],
       "name": "non compress-able document",
       "input": "encoder/0061-in.jsonld",
-      "expectErrorCode": "InvalidDocument"
+      "expectErrorCode": "InvalidDocument",
+      "option": {
+        "config": "v5"
+      }
     },
     {
       "@id": "#t0062",
@@ -291,7 +353,7 @@
       "input": "encoder/0062-in.jsonld",
       "expect": "encoder/0062-out.cborld",
       "option": {
-        
+        "config": "v5"
       }
     },
     {
@@ -302,7 +364,10 @@
       ],
       "name": "barcode ex. #10",
       "input": "decoder/barcode-ex-10.jsonld",
-      "expect": "decoder/barcode-ex-10.cborld"
+      "expect": "decoder/barcode-ex-10.cborld",
+      "option": {
+        "config": "barcodes"
+      }
     },
     {
       "@id": "#t0101",
@@ -312,7 +377,10 @@
       ],
       "name": "barcode ex. #14",
       "input": "decoder/barcode-ex-14.jsonld",
-      "expect": "decoder/barcode-ex-14.cborld"
-    }    
+      "expect": "decoder/barcode-ex-14.cborld",
+      "option": {
+        "config": "barcodes"
+      }
+    }
   ]
 }

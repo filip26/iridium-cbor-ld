@@ -15,10 +15,10 @@ public class BarcodesDictionary extends CustomDictionary {
     static {
         TYPES = new HashMap<>();
         TYPES.put("https://w3id.org/security#cryptosuiteString", BarcodesTypeDictionary.INSTANCE);
-        INSTANCE = new BarcodesDictionary();
+        INSTANCE = new BarcodesDictionary(TYPES);
     }
     
-    protected BarcodesDictionary() {
-        super(100, BarcodesContextDictionary.INSTANCE, TYPES);
+    protected BarcodesDictionary(Map<String, Dictionary> types) {
+        super(100, BarcodesContextDictionary.INSTANCE, types);
     }
 }
