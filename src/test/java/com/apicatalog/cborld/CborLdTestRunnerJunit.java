@@ -21,6 +21,7 @@ import com.apicatalog.cborld.config.DefaultConfig;
 import com.apicatalog.cborld.config.V05Config;
 import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.decoder.Decoder;
+import com.apicatalog.cborld.decoder.DecoderConfig;
 import com.apicatalog.cborld.decoder.DecoderError;
 import com.apicatalog.cborld.encoder.Encoder;
 import com.apicatalog.cborld.encoder.EncoderConfig;
@@ -118,7 +119,7 @@ public class CborLdTestRunnerJunit {
 
                 assertNotNull(document);
 
-                final Decoder decoder = CborLd.createDecoder()
+                final Decoder decoder = CborLd.createDecoder(getDecoderConfig(testCase.config))
                         .loader(LOADER)
                         .compactArray(testCase.compactArrays)
                         .dictionary(BarcodesDictionary.INSTANCE)
@@ -279,6 +280,16 @@ public class CborLdTestRunnerJunit {
     }
 
     static final EncoderConfig getEncoderConfig(String name) {
+        if ("v5".equals(name)) {
+            return V05Config.INSTANCE;
+        }
+        if ("barcodes".equals(name)) {
+            return BarcodesConfig.INSTANCE;
+        }
+        return DefaultConfig.INSTANCE;
+    }
+    
+    static final DecoderConfig getDecoderConfig(String name) {
         if ("v5".equals(name)) {
             return V05Config.INSTANCE;
         }

@@ -323,7 +323,10 @@
       ],
       "name": "barcode ex. #10",
       "input": "decoder/barcode-ex-10.cborld",
-      "expect": "decoder/barcode-ex-10.jsonld"
+      "expect": "decoder/barcode-ex-10.jsonld",
+      "option": {
+        "config": "barcodes"
+      }
     },
     {
       "@id": "#t0101",
