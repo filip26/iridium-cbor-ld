@@ -88,7 +88,7 @@ var encoder = CborLd.createEncoder()
 var encoder = CborLd.createEncoder(BarcodesConfig.INSTANCE)
                // ... customize
                .build()
-  
+
 // encode a document
 byte[] encoded = encoder.encode(document);
 ```
@@ -114,6 +114,18 @@ var decoder = CborLd.createDecoder(BarcodesConfig.INSTANCE)
   
 // decode
 document = decoder.decode(encoded);
+```
+
+### Backward Compatibility
+
+```javascript
+// Iridium version < 0.2.0
+CborLd.create[Encoder|Decoder](V05Config.INSTANCE).build();
+      
+//Iridium version < 0.2.0, DB compatibility
+CborLd.create[Encoder|Decoder](V05Config.INSTANCE)
+      .compactArrays(false)
+      .build();
 ```
 
 ## Documentation
