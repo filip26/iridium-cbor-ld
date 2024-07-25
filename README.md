@@ -72,7 +72,7 @@ implementation("org.glassfish:jakarta.json:2.0.1")
 
 ### Encoding
 
-```java
+```javascript
 // create an encoder builder initialized with default values
 var encoder = CborLd.createEncoder()
                // use bundled static contexts (true by default)
@@ -95,7 +95,7 @@ byte[] encoded = encoder.encode(document);
 
 ### Decoding
 
-```java
+```javascript
 // create a decoder builder initialized with default values
 var decoder = CborLd.createDecoder()
                // use bundled static contexts (true by default)
@@ -120,11 +120,14 @@ document = decoder.decode(encoded);
 
 ```javascript
 // Iridium version < 0.2.0
-CborLd.create[Encoder|Decoder](V05Config.INSTANCE).build();
+CborLd.create[Encoder|Decoder](V05Config.INSTANCE)
+      // ... customize      
+      .build();
       
-//Iridium version < 0.2.0, DB compatibility
+// Iridium version < 0.2.0, DB compatibility
 CborLd.create[Encoder|Decoder](V05Config.INSTANCE)
       .compactArrays(false)
+      // ... customize      
       .build();
 ```
 
