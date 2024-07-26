@@ -74,12 +74,12 @@ document = decoder.decode(encoded);
 ### Backward Compatibility
 
 ```javascript
-// Iridium version < 0.2.0
+// Iridium < v0.2.0
 CborLd.create[Encoder|Decoder](V05Config.INSTANCE)
       // ... customize      
       .build();
       
-// Iridium version < 0.2.0, DB compatibility
+// Iridium < v0.2.0, @digitalbazaar/cborld compatibility
 CborLd.create[Encoder|Decoder](V05Config.INSTANCE)
       .compactArrays(false)
       // ... customize      
