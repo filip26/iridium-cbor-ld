@@ -18,7 +18,7 @@ An implementation of the [CBOR-LD 1.0](https://json-ld.github.io/cbor-ld-spec/) 
 * Semantic compression / decompression
 * Configurable
 * Custom document dictionaries 
-* Verifiable Credential Barcodes
+* [Verifiable Credential Barcodes](https://w3c-ccg.github.io/vc-barcodes/)
 
 ## CLI
 [LD-CLI](https://github.com/filip26/ld-cli) is a command line utility for Ubuntu, Mac and Windows.
