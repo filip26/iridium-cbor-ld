@@ -1,8 +1,10 @@
 package com.apicatalog.cborld.dictionary;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -72,5 +74,10 @@ public class CodeTermMap implements Dictionary {
     @Override
     public Integer getCode(String term) {
         return reverse.get(term);
+    }
+
+    @Override
+    public Iterator<Entry<Integer, String>> iterator() {
+        return index.entrySet().iterator();
     }
 }

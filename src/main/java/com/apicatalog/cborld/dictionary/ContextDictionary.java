@@ -1,7 +1,11 @@
 package com.apicatalog.cborld.dictionary;
 
+import java.util.AbstractMap;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.IntStream;
 
 import com.apicatalog.cborld.hex.Hex;
 
@@ -10,8 +14,8 @@ import com.apicatalog.cborld.hex.Hex;
  */
 public class ContextDictionary implements Dictionary {
 
-    public static final ContextDictionary INSTANCE = new ContextDictionary();
-    
+    public static final Dictionary INSTANCE = new ContextDictionary();
+
     private static final byte OFFSET = 0x10;
 
     private static final String[] TERMS = new String[] {
@@ -67,5 +71,12 @@ public class ContextDictionary implements Dictionary {
 
     public String getTerm(Integer code) {
         return TERMS[code - OFFSET];
+    }
+
+    @Override
+    public Iterator<Entry<Integer, String>> iterator() {
+        return IntStream.range(0, TERMS.length)
+                .mapToObj(i -> (Entry<Integer, String>) new AbstractMap.SimpleEntry<Integer, String>(i + OFFSET, TERMS[i]))
+                .iterator();
     }
 }

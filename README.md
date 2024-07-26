@@ -21,52 +21,7 @@ An implementation of the [CBOR-LD 1.0](https://json-ld.github.io/cbor-ld-spec/) 
 * Verifiable Credential Barcodes
 
 ## CLI
-[LD-CLI](https://github.com/filip26/ld-cli) ia a command line utility for Ubuntu, Mac and Windows.
-
-
-## Installation
-
-### Maven
-
-Java 17+
-
-```xml
-<dependency>
-    <groupId>com.apicatalog</groupId>
-    <artifactId>iridium-cbor-ld</artifactId>
-    <version>0.2.0</version>
-</dependency>
-
-```
-
-### Gradle
-Android 12+ (API Level >=32)
-
-```gradle
-implementation("com.apicatalog:iridium-cbor-ld-jre8:0.2.0")
-```
-
-Do you need to support an older Android version? [Contact me](mailto:filip26@gmail.com)
-
-#### JSON-P Provider
-
-Add JSON-P provider, if it is not on the classpath already.
-
-##### Maven
-
-```xml
-<dependency>
-    <groupId>org.glassfish</groupId>
-    <artifactId>jakarta.json</artifactId>
-    <version>2.0.1</version>
-</dependency>
-```
-
-##### Gradle
-
-```gradle
-implementation("org.glassfish:jakarta.json:2.0.1")
-```
+[LD-CLI](https://github.com/filip26/ld-cli) is a command line utility for Ubuntu, Mac and Windows.
 
 ## Usage
 
@@ -129,6 +84,51 @@ CborLd.create[Encoder|Decoder](V05Config.INSTANCE)
       .compactArrays(false)
       // ... customize      
       .build();
+```
+
+
+## Installation
+
+### Maven
+
+Java 17+
+
+```xml
+<dependency>
+    <groupId>com.apicatalog</groupId>
+    <artifactId>iridium-cbor-ld</artifactId>
+    <version>0.2.0</version>
+</dependency>
+
+```
+
+### Gradle
+Android 12+ (API Level >=32)
+
+```gradle
+implementation("com.apicatalog:iridium-cbor-ld-jre8:0.2.0")
+```
+
+Do you need to support an older Android version? [Contact me](mailto:filip26@gmail.com)
+
+#### JSON-P Provider
+
+Add JSON-P provider, if it is not on the classpath already.
+
+##### Maven
+
+```xml
+<dependency>
+    <groupId>org.glassfish</groupId>
+    <artifactId>jakarta.json</artifactId>
+    <version>2.0.1</version>
+</dependency>
+```
+
+##### Gradle
+
+```gradle
+implementation("org.glassfish:jakarta.json:2.0.1")
 ```
 
 ## Documentation

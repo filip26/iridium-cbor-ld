@@ -1,7 +1,9 @@
 package com.apicatalog.cborld.dictionary;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 class KeywordDictionary implements Dictionary {
 
@@ -57,5 +59,10 @@ class KeywordDictionary implements Dictionary {
     @Override
     public String getValue(Integer code) {
         return CODE_TO_TERM.get(code);
+    }
+
+    @Override
+    public Iterator<Entry<Integer, String>> iterator() {
+        return CODE_TO_TERM.entrySet().iterator();
     }
 }
