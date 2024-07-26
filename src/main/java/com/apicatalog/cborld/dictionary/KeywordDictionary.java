@@ -1,24 +1,25 @@
 package com.apicatalog.cborld.dictionary;
 
-import java.math.BigInteger;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
-public class KeywordDictionary implements Dictionary {
+class KeywordDictionary implements Dictionary {
 
     public static final byte CONTEXT_CODE = 0;
 
-    public static final byte CUSTOM_OFFSET = 0x64;    // 100 decimal
+    public static final byte CUSTOM_OFFSET = 0x64; // 100 decimal
 
     protected static final Map<String, Integer> TERM_TO_CODE = new HashMap<>();
     protected static final Map<Integer, String> CODE_TO_TERM = new HashMap<>();
 
     static {
-        add("@context", (int)CONTEXT_CODE);
+        add("@context", (int) CONTEXT_CODE);
         add("@type", 2);
         add("@id", 4);
         add("@value", 6);
-    
+
         add("@direction", 8);
         add("@graph", 10);
         add("@included", 12);
@@ -28,7 +29,7 @@ public class KeywordDictionary implements Dictionary {
         add("@list", 20);
         add("@nest", 22);
         add("@reverse", 24);
-        
+
         add("@base", 26);
         add("@container", 28);
         add("@default", 30);
@@ -51,15 +52,17 @@ public class KeywordDictionary implements Dictionary {
     }
 
     @Override
-    public BigInteger getCode(String term) {
-        return TERM_TO_CODE.containsKey(term)
-            ? BigInteger.valueOf(TERM_TO_CODE.get(term))
-            : null
-            ;
+    public Integer getCode(String term) {
+        return TERM_TO_CODE.get(term);
     }
 
     @Override
-    public String getValue(BigInteger code) {
-        return CODE_TO_TERM.get(code.intValueExact());
+    public String getValue(Integer code) {
+        return CODE_TO_TERM.get(code);
+    }
+
+    @Override
+    public Iterator<Entry<Integer, String>> iterator() {
+        return CODE_TO_TERM.entrySet().iterator();
     }
 }

@@ -19,8 +19,8 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.function.Consumer;
 
-import com.apicatalog.cborld.db.TypeKeyNameMapper;
-import com.apicatalog.cborld.mapper.TypeMap;
+import com.apicatalog.cborld.mapping.TypeKeyNameMapper;
+import com.apicatalog.cborld.mapping.TypeMap;
 import com.apicatalog.cursor.ValueCursor;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
@@ -36,22 +36,21 @@ final class Expansion {
     private ValueCursor element;
     private String activeProperty;
     private URI baseUrl;
-    
+
     // optional
     private boolean ordered;
     private boolean fromMap;
-    
+
     private Consumer<Collection<String>> appliedContexts;
     private TypeKeyNameMapper typeMapper;
 
     private Expansion(final ActiveContext activeContext, final ValueCursor element, final String activeProperty,
-            final URI baseUrl, Consumer<Collection<String>> appliedContexts, TypeKeyNameMapper typeMapper
-            ) {
+            final URI baseUrl, Consumer<Collection<String>> appliedContexts, TypeKeyNameMapper typeMapper) {
         this.activeContext = activeContext;
         this.element = element;
         this.activeProperty = activeProperty;
         this.baseUrl = baseUrl;
-        
+
         this.appliedContexts = appliedContexts;
         this.typeMapper = typeMapper;
 
@@ -60,7 +59,8 @@ final class Expansion {
         this.fromMap = false;
     }
 
-    public static final Expansion with(final ActiveContext activeContext, final ValueCursor element, final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts, TypeKeyNameMapper typeMapper) {
+    public static final Expansion with(final ActiveContext activeContext, final ValueCursor element, final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts,
+            TypeKeyNameMapper typeMapper) {
         return new Expansion(activeContext, element, activeProperty, baseUrl, appliedContexts, typeMapper);
     }
 
@@ -85,42 +85,42 @@ final class Expansion {
         if (element.isArray()) {
 
             return ArrayExpansion
-                        .with(activeContext, element.asArray(), activeProperty, baseUrl, appliedContexts, typeMapper)
-                        .ordered(ordered)
-                        .fromMap(fromMap)
-                        .expand();
+                    .with(activeContext, element.asArray(), activeProperty, baseUrl, appliedContexts, typeMapper)
+                    .ordered(ordered)
+                    .fromMap(fromMap)
+                    .expand();
         }
 
         // 3. If active property has a term definition in active context with a local
         // context, initialize property-scoped context to that local context.
         final JsonValue propertyContext = activeContext
-                                            .getTerm(activeProperty)
-                                            .map(TermDefinition::getLocalContext)
-                                            .orElse(null);
+                .getTerm(activeProperty)
+                .map(TermDefinition::getLocalContext)
+                .orElse(null);
 
         if (JsonUtils.isNotNull(propertyContext)) {
             if (JsonUtils.isObject(propertyContext)) {
                 appliedContexts.accept(propertyContext.asJsonObject().keySet());
             }
         }
-        
+
         // 4. If element is a scalar
         if (element.isScalar()) {
 
             return ScalarExpansion
-                        .with(activeContext, propertyContext, element, activeProperty, appliedContexts)
-                        .expand();
+                    .with(activeContext, propertyContext, element, activeProperty, appliedContexts)
+                    .expand();
         }
 
         // 6. Otherwise element is a map
         return ObjectExpansion
-                    .with(activeContext, propertyContext, element.asMap(), activeProperty, baseUrl, appliedContexts, typeMapper)
-                    .ordered(ordered)
-                    .fromMap(fromMap)
-                    .expand();
+                .with(activeContext, propertyContext, element.asMap(), activeProperty, baseUrl, appliedContexts, typeMapper)
+                .ordered(ordered)
+                .fromMap(fromMap)
+                .expand();
     }
 
     public TypeMap typeMapping() throws JsonLdError {
-        return new TypeMap(compute());
+        return new DynamicTypeMap(compute());
     }
 }

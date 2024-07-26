@@ -1,14 +1,12 @@
 package com.apicatalog.cborld.dictionary;
 
-import java.math.BigInteger;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import com.apicatalog.cborld.context.ContextError;
-import com.apicatalog.jsonld.loader.DocumentLoader;
 
 public class CodeTermMap implements Dictionary {
 
@@ -21,59 +19,62 @@ public class CodeTermMap implements Dictionary {
         this.index = index;
         this.reverse = index
                 .entrySet()
-                       .stream()
-                       .collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
-    
+                .stream()
+                .collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
+
         this.lastCustomIndex = lastCustomIndex;
     }
 
-    public static CodeTermMap from(Collection<Collection<String>> contextKeys, DocumentLoader loader) throws ContextError {
-    
-        final CodeTermMap map = new CodeTermMap(
-                                  new LinkedHashMap<>(KeywordDictionary.CODE_TO_TERM),
-                                  KeywordDictionary.CUSTOM_OFFSET
-                                  );
-        contextKeys
-            .stream()
-            .map(c -> c.stream().sorted())
-            .flatMap(Function.identity())
-            .forEach(map::add);
-            
-            return map;
-    }
-    
-    public static CodeTermMap create() {
-        
+    public static CodeTermMap of(Collection<Collection<String>> contextKeys) {
+
         final CodeTermMap map = new CodeTermMap(
                 new LinkedHashMap<>(KeywordDictionary.CODE_TO_TERM),
-                KeywordDictionary.CUSTOM_OFFSET
-                );
-        
+                KeywordDictionary.CUSTOM_OFFSET);
+        contextKeys
+                .stream()
+                .map(c -> c.stream().sorted())
+                .flatMap(Function.identity())
+                .forEach(map::add);
+
         return map;
     }
-    
+
+    public static CodeTermMap create() {
+
+        final CodeTermMap map = new CodeTermMap(
+                new LinkedHashMap<>(KeywordDictionary.CODE_TO_TERM),
+                KeywordDictionary.CUSTOM_OFFSET);
+
+        return map;
+    }
+
     public void add(Collection<String> keys) {
         keys
-        .stream()
-        .sorted()
-        .forEach(this::add);
+                .stream()
+                .sorted()
+                .forEach(this::add);
     }
-    
+
     public void add(String key) {
         if (!reverse.containsKey(key)) {
-                index.put(lastCustomIndex, key);
-                reverse.put(key,  lastCustomIndex);
-                lastCustomIndex += 2;
+            index.put(lastCustomIndex, key);
+            reverse.put(key, lastCustomIndex);
+            lastCustomIndex += 2;
         }
     }
 
     @Override
-    public String getValue(BigInteger code) {
-        return index.get(code.intValueExact());
+    public String getValue(Integer code) {
+        return index.get(code);
     }
 
     @Override
-    public BigInteger getCode(String term) {
-        return reverse.containsKey(term) ? BigInteger.valueOf(reverse.get(term)) : null;
-    }    
+    public Integer getCode(String term) {
+        return reverse.get(term);
+    }
+
+    @Override
+    public Iterator<Entry<Integer, String>> iterator() {
+        return index.entrySet().iterator();
+    }
 }

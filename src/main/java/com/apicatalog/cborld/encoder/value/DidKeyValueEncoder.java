@@ -3,7 +3,7 @@ package com.apicatalog.cborld.encoder.value;
 import java.net.URI;
 import java.util.Collection;
 
-import com.apicatalog.cborld.dictionary.Dictionary;
+import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.cursor.ValueCursor;
 import com.apicatalog.did.Did;
 import com.apicatalog.did.DidUrl;
@@ -24,7 +24,7 @@ public class DidKeyValueEncoder implements ValueEncoder {
     protected static MultibaseDecoder BASES = MultibaseDecoder.getInstance();
     
     @Override
-    public DataItem encode(Dictionary dictionary, ValueCursor value, String term, Collection<String> types) {
+    public DataItem encode(Mapping mapping, ValueCursor value, String term, Collection<String> types) {
 
         if (value.isString() && value.stringValue().toLowerCase().startsWith(PREFIX)) {
 

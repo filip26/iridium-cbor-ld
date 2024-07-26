@@ -7,7 +7,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 
 import com.apicatalog.cborld.decoder.DecoderError;
-import com.apicatalog.cborld.dictionary.Dictionary;
+import com.apicatalog.cborld.mapping.Mapping;
 
 import co.nstant.in.cbor.model.DataItem;
 import co.nstant.in.cbor.model.MajorType;
@@ -18,18 +18,17 @@ import jakarta.json.JsonValue;
 public class XsdDateValueDecoder implements ValueDecoder {
 
     @Override
-    public JsonValue decode(Dictionary dictionary, DataItem value, String term, Collection<String> types) throws DecoderError {
+    public JsonValue decode(Mapping mapping, DataItem value, String term, Collection<String> types) throws DecoderError {
         if (types != null && types.contains("http://www.w3.org/2001/XMLSchema#date")
-                && MajorType.UNSIGNED_INTEGER.equals(value.getMajorType())
-                ) {
-            
-            long epochSeconds = ((UnsignedInteger)value).getValue().longValueExact();
-            
+                && MajorType.UNSIGNED_INTEGER.equals(value.getMajorType())) {
+
+            long epochSeconds = ((UnsignedInteger) value).getValue().longValueExact();
+
             final Instant date = Instant.ofEpochSecond(epochSeconds);
-            
+
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            
-            return Json.createValue(formatter.format(LocalDate.ofInstant(date, ZoneOffset.UTC)));            
+
+            return Json.createValue(formatter.format(LocalDate.ofInstant(date, ZoneOffset.UTC)));
         }
         return null;
     }

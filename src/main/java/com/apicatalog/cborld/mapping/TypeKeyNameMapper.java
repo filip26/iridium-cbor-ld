@@ -1,4 +1,4 @@
-package com.apicatalog.cborld.db;
+package com.apicatalog.cborld.mapping;
 
 import java.util.Collection;
 

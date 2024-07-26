@@ -55,7 +55,6 @@ final class ValueExpasion {
         definition = activeContext.getTerm(activeProperty);
 
         final Optional<String> typeMapping = definition.map(TermDefinition::getTypeMapping);
-
         if (typeMapping.isPresent()) {
 
             // 1.
@@ -76,6 +75,10 @@ final class ValueExpasion {
 
                     return Json.createObjectBuilder().add(Keywords.ID, expandedValue)
                             .add(Keywords.TYPE,  Keywords.ID).build();
+                    
+                } else if (value.isNumber()) {
+                    return Json.createObjectBuilder()
+                            .add(Keywords.TYPE,  Keywords.ID).build();                    
                 }
 
             // 2.
@@ -90,11 +93,9 @@ final class ValueExpasion {
                 return Json.createObjectBuilder().add(Keywords.ID, expandedValue)
                         .add(Keywords.TYPE,  Keywords.VOCAB).build();
                 
-            //FIXME hack
             } else if (Keywords.VOCAB.equals(typeMapping.get()) && value.isNumber()) {
                 return Json.createObjectBuilder()
-                        .add(Keywords.TYPE,  Keywords.VOCAB).build();
-                
+                        .add(Keywords.TYPE,  Keywords.VOCAB).build();                
             }
         }
 

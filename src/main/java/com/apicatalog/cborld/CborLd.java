@@ -1,44 +1,68 @@
 package com.apicatalog.cborld;
 
-import com.apicatalog.cborld.decoder.Decoder;
-import com.apicatalog.cborld.decoder.DecoderError;
-import com.apicatalog.cborld.encoder.Encoder;
-import com.apicatalog.cborld.encoder.EncoderError;
-import com.apicatalog.cursor.jakarta.JakartaJsonCursor;
-
-import jakarta.json.JsonObject;
+import com.apicatalog.cborld.config.DefaultConfig;
+import com.apicatalog.cborld.decoder.DecoderBuilder;
+import com.apicatalog.cborld.decoder.DecoderConfig;
+import com.apicatalog.cborld.encoder.EncoderBuilder;
+import com.apicatalog.cborld.encoder.EncoderConfig;
 
 /**
  * High level API to process CBOR-LD.
  */
-public final class CborLd {
+public class CborLd {
 
-    public static final byte[] CBOR_LD_BYTE_PREFIX = new byte[] { (byte)0xD9, 0x05 };
-    
-    public static final byte UNCOMPRESSED = 0x00;
-    public static final byte COMPRESSED_V1 =  0x01;
+    public static final byte LEADING_BYTE = (byte) 0xD9;
+
+    public static final byte VERSION_5_BYTE = (byte) 0x05;
+    public static final byte VERSION_6_BYTE = (byte) 0x06;
+
+    public static final byte UNCOMPRESSED_BYTE = 0x00;
+    public static final byte COMPRESSED_BYTE = 0x01;
+
+    private CborLd() {
+        /* protected */ }
 
     /**
-     * Encodes JSON-LD document as CBOR-LD document.
+     * Create a new {@link DecoderBuilder} allowing to configure a decoder. The
+     * builder is initialized by {@link DefaultConfig}.
      * 
-     * @param document JSON-LD document to encode 
-     * @return a new {@link Encoder} instance allowing to encode the given document
+     * @return a new {@link DecoderBuilder} instance
      * 
-     * @throws EncoderError
      */
-    public static final Encoder encoder(JsonObject document) throws EncoderError {
-        return Encoder.create(JakartaJsonCursor.from(document));
+    public static DecoderBuilder createDecoder() {
+        return createDecoder(DefaultConfig.INSTANCE);
     }
 
     /**
-     * Decodes CBOR-LD document as JSON-LD document.
+     * Create a new {@link DecoderBuilder} allowing to configure a decoder.
      * 
-     * @param document CBOR-LD document to decode
-     * @return a new {@link Decoder} instance allowing to decode the given document
+     * @param config an initial configuration
+     * @return a new {@link DecoderBuilder} instance
      * 
-     * @throws DecoderError
      */
-    public static final Decoder decoder(byte[] document) throws DecoderError {
-        return Decoder.create(document);
+    public static DecoderBuilder createDecoder(DecoderConfig config) {
+        return new DecoderBuilder(config);
+    }
+
+    /**
+     * Create a new {@link EncoderBuilder} allowing to configure an encoder. The
+     * builder is initialized by {@link DefaultConfig}.
+     * 
+     * @return a new {@link EncoderBuilder} instance
+     * 
+     */
+    public static EncoderBuilder createEncoder() {
+        return createEncoder(DefaultConfig.INSTANCE);
+    }
+
+    /**
+     * Create a new {@link EncoderBuilder} allowing to configure an encoder.
+     * 
+     * @param config an initial configuration
+     * @return a new {@link EncoderBuilder} instance
+     * 
+     */
+    public static EncoderBuilder createEncoder(EncoderConfig config) {
+        return new EncoderBuilder(config);
     }
 }

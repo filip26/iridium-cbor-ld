@@ -1,16 +1,11 @@
 package com.apicatalog.cborld.dictionary;
 
-import java.math.BigInteger;
+import java.util.Map;
 
-/**
- *
- *
- *
- */
-public interface Dictionary {
+public interface Dictionary extends Iterable<Map.Entry<Integer, String>> {
 
-    BigInteger getCode(String value);
+    Integer getCode(String value);
 
-    String getValue(BigInteger code);
+    String getValue(Integer code);
 
 }

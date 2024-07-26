@@ -3,31 +3,21 @@ package com.apicatalog.cborld.encoder;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.net.URI;
 import java.util.Collection;
 
 import com.apicatalog.cborld.CborLd;
-import com.apicatalog.cborld.config.DefaultConfig;
-import com.apicatalog.cborld.config.DictionaryAlgorithm;
 import com.apicatalog.cborld.context.ContextError;
-import com.apicatalog.cborld.dictionary.Dictionary;
 import com.apicatalog.cborld.encoder.EncoderError.Code;
 import com.apicatalog.cborld.encoder.value.ValueEncoder;
-import com.apicatalog.cborld.loader.StaticContextLoader;
-import com.apicatalog.cborld.mapper.Mapping;
-import com.apicatalog.cborld.mapper.MappingProvider;
-import com.apicatalog.cborld.mapper.TypeMap;
+import com.apicatalog.cborld.mapping.Mapping;
+import com.apicatalog.cborld.mapping.TypeMap;
 import com.apicatalog.cursor.ArrayCursor;
 import com.apicatalog.cursor.ArrayItemCursor;
 import com.apicatalog.cursor.MapCursor;
 import com.apicatalog.cursor.MapEntryCursor;
 import com.apicatalog.cursor.ValueCursor;
+import com.apicatalog.cursor.jakarta.JakartaJsonCursor;
 import com.apicatalog.jsonld.JsonLdError;
-import com.apicatalog.jsonld.JsonLdOptions;
-import com.apicatalog.jsonld.http.DefaultHttpClient;
-import com.apicatalog.jsonld.http.media.MediaType;
-import com.apicatalog.jsonld.loader.DocumentLoader;
-import com.apicatalog.jsonld.loader.HttpLoader;
 
 import co.nstant.in.cbor.CborBuilder;
 import co.nstant.in.cbor.CborEncoder;
@@ -40,101 +30,32 @@ import co.nstant.in.cbor.model.NegativeInteger;
 import co.nstant.in.cbor.model.SimpleValue;
 import co.nstant.in.cbor.model.UnicodeString;
 import co.nstant.in.cbor.model.UnsignedInteger;
+import jakarta.json.JsonObject;
 
-public class Encoder implements EncoderConfig {
+public class Encoder {
 
-    protected final MapCursor document;
+    protected final EncoderConfig config;
 
-    protected MappingProvider provider;
-    protected Dictionary index;
-
-    // options
-    protected Collection<ValueEncoder> valueEncoders;
-    protected boolean compactArrays;
-    protected DocumentLoader loader;
-    protected boolean bundledContexts;
-    protected URI base;
-    
-    protected Encoder(MapCursor document) {
-        this.document = document;
-    
-        // default options
-        config(DefaultConfig.INSTANCE);
-        
-        this.bundledContexts = DefaultConfig.STATIC_CONTEXTS;
-        this.base = null;
-        this.loader = null;
+    protected Encoder(EncoderConfig config) {
+        this.config = config;
     }
 
-    public static final Encoder create(MapCursor document) throws EncoderError {
+    /**
+     * Encodes JSON-LD document as CBOR-LD document.
+     * 
+     * @param document JSON-LD document to encode
+     * @return a byte array representing the encoded CBOR-LD document.
+     * 
+     * @throws EncoderError
+     * @throws ContextError
+     */
+    public final byte[] encode(JsonObject document) throws EncoderError, ContextError {
+
         if (document == null) {
             throw new IllegalArgumentException("The 'document' parameter must not be null.");
         }
-    
-        return new Encoder(document);
-    }
 
-    /**
-     * If set to true, the encoder replaces arrays with
-     * just one element with that element during encoding saving one byte.
-     * Enabled by default.
-     *
-     * @param enable <code>true</code> to enable arrays compaction
-     * @return {@link Encoder} instance
-     *
-     */
-    public Encoder compactArray(boolean enable) {
-        compactArrays = enable;
-        return this;
-    }
-
-    /**
-     * Override any existing configuration by the given configuration set.
-     * 
-     * @param config a configuration set 
-     * @return {@link Encoder} instance
-     */
-    public Encoder config(EncoderConfig config) {
-        this.compactArrays = config.isCompactArrays();
-        this.valueEncoders = config.valueEncoders();
-        this.provider = config.provider();
-        return this;
-    }
-    
-    /**
-     * Set {@link DocumentLoader} used to fetch referenced JSON-LD contexts. 
-     * If not set then default document loader provided by {@link JsonLdOptions} is used. 
-     * 
-     * @param loader a document loader to set
-     * @return {@link Encoder} instance
-     */
-    public Encoder loader(DocumentLoader loader) {
-        this.loader = loader;
-        return this;
-    }
-    
-
-    /**
-     * Use well-known contexts that are bundled with the library instead of fetching it online.
-     * <code>true</code> by default. Disabling might cause slower processing.
-     *
-     * @param enable <code>true</code> to use static bundled contexts
-     * @return {@link Encoder} instance
-     */
-    public Encoder useBundledContexts(boolean enable) {
-        this.bundledContexts = enable;
-        return this;
-    }
-    
-    /**
-     * If set, then is used as the input document's base IRI.
-     *
-     * @param base a document base
-     * @return {@link Encoder} instance
-     */
-    public Encoder base(URI base) {
-       this.base = base;
-       return this;
+        return encode(JakartaJsonCursor.from(document));
     }
 
     /**
@@ -145,41 +66,28 @@ public class Encoder implements EncoderConfig {
      * @throws EncoderError
      * @throws ContextError
      */
-    public byte[] encode() throws EncoderError, ContextError {
-    
-        if (loader == null) {
-            loader = new HttpLoader(DefaultHttpClient.defaultInstance());
-            ((HttpLoader)loader).setFallbackContentType(MediaType.JSON);
-        }
-        
-        if (bundledContexts) {
-            loader = new StaticContextLoader(loader);
-        }
-        
+    byte[] encode(MapCursor document) throws EncoderError, ContextError {
+
         try {
-    
+
             final Collection<String> contexts = EncoderContext.get(document);
-    
+
             if (contexts.isEmpty()) { // is not JSON-LD document
                 throw new EncoderError(Code.InvalidDocument, "Not a valid JSON-LD document in a compacted form.");
             }
 
             return compress(document, contexts);
-    
-        // non compressable context
+
+            // non compressable context
         } catch (IllegalArgumentException e) {
             /* ignored, expected in a case of non compress-able documents */
         }
-    
+
         throw new EncoderError(Code.InvalidDocument, "Non compress-able document.");
     }
 
     /**
      * Compress the given JSON-LD document into CBOR-LD byte array.
-     *
-     * @see <a href=
-     *      "https://digitalbazaar.github.io/cbor-ld-spec/#compressed-cbor-ld-buffer-algorithm">Compressed
-     *      CBOR-LD Buffer Algorithm</a>
      *
      * @param document    the document to compress
      * @param contextUrls a set of URLs of <code>@context</code> referenced by the
@@ -193,19 +101,18 @@ public class Encoder implements EncoderConfig {
     final byte[] compress(final MapCursor document, Collection<String> contextUrls) throws ContextError, EncoderError {
 
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    
-        try {             
-            final Mapping mapping = provider.getEncoderMapping(document, base, loader, this);
 
-            index = mapping.dictionary();
-            
-            final CborBuilder builder = (CborBuilder) encode(document, new CborBuilder().addMap(), mapping.typeMap()).end();
-            
-            // 2.CBOR Tag - 0xD9, CBOR-LD - 0x05, Compressed - CBOR-LD compression algorithm
-            // version 1 - 0x01
-            baos.write(CborLd.CBOR_LD_BYTE_PREFIX);
-            baos.write(CborLd.COMPRESSED_V1);
-            
+        try {
+            final Mapping mapping = config.encoderMapping().getEncoderMapping(document, config);
+
+            final CborBuilder builder = (CborBuilder) encode(document, new CborBuilder().addMap(), mapping.typeMap(), mapping).end();
+
+            // 2.CBOR Tag - 0xD9, CBOR-LD - version, Compressed - CBOR-LD compression
+            // algorithm
+            baos.write(CborLd.LEADING_BYTE);
+            baos.write(config.version());
+            baos.write(config.dictionary().code());
+
             new CborEncoder(baos).encode(builder.build());
 
             return baos.toByteArray();
@@ -213,98 +120,96 @@ public class Encoder implements EncoderConfig {
         } catch (CborException e) {
             throw new EncoderError(Code.InvalidDocument, e);
 
-        } catch (IOException | JsonLdError e) {
+        } catch (JsonLdError e) {
             throw new EncoderError(Code.Internal, e);
         }
     }
-    
-    final MapBuilder<?> encode(final MapCursor object, final MapBuilder<?> builder, TypeMap typeMapping) throws EncoderError, JsonLdError {
+
+    final MapBuilder<?> encode(final MapCursor object, final MapBuilder<?> builder, TypeMap typeMapping, Mapping mapping) throws EncoderError, JsonLdError {
 
         if (object.isEmpty()) {
             return builder;
         }
-        
+
         MapBuilder<?> flow = builder;
-    
-        for (final MapEntryCursor entry  : object) {
-            
+
+        for (final MapEntryCursor entry : object) {
+
             final String property = entry.mapKey();
-    
-            final BigInteger encodedProperty = index.getCode(property);
-                
+
+            final Integer encodedProperty = mapping.terms().getCode(property);
+
             if (entry.isArray()) {
-                    
+
                 final DataItem key = encodedProperty != null
-                            ? new UnsignedInteger(encodedProperty.add(BigInteger.ONE))
-                            : new UnicodeString(property);
-                
-                if (compactArrays && object.asArray().size() == 1) {
-        
+                        ? new UnsignedInteger(encodedProperty + 1)
+                        : new UnicodeString(property);
+
+                if (config.isCompactArrays() && object.asArray().size() == 1) {
+
                     object.asArray().item(0);
-        
+
                     if (object.isMap()) {
                         final TypeMap propertyTypeMapping = typeMapping.getMapping(property);
-                        flow = (MapBuilder<?>) encode(object.asMap(), flow.putMap(key), propertyTypeMapping).end();
-        
+                        flow = (MapBuilder<?>) encode(object.asMap(), flow.putMap(key), propertyTypeMapping, mapping).end();
+
                     } else if (object.isArray()) {
                         flow = (MapBuilder<?>) encode(
-                                                    object.asArray(), 
-                                                    flow.putArray(key),
-                                                    property,
-                                                    typeMapping
-                                                    ).end();
-        
+                                object.asArray(),
+                                flow.putArray(key),
+                                property,
+                                typeMapping,
+                                mapping).end();
+
                     } else {
-                        final DataItem value = encode(object, property, typeMapping);
-        
+                        final DataItem value = encode(object, property, typeMapping, mapping);
+
                         flow = flow.put(key, value);
                     }
-        
+
                     object.parent();
-        
+
                 } else {
                     flow = (MapBuilder<?>) encode(object.asArray(), flow.putArray(key),
-                        property,
-                        typeMapping
-                        ).end();
+                            property,
+                            typeMapping, mapping).end();
                 }
                 continue;
             }
-    
+
             final DataItem key = encodedProperty != null
-                ? new UnsignedInteger(encodedProperty)
-                : new UnicodeString(property);
-    
+                    ? new UnsignedInteger(encodedProperty)
+                    : new UnicodeString(property);
+
             if (entry.isMap()) {
                 final TypeMap propertyTypeMapping = typeMapping.getMapping(property);
                 flow = (MapBuilder<?>) encode(entry.asMap(), flow.putMap(key),
-                    propertyTypeMapping
-                    ).end();
+                        propertyTypeMapping, mapping).end();
                 continue;
             }
-    
-            final DataItem value = encode(entry, property, typeMapping);
-    
+
+            final DataItem value = encode(entry, property, typeMapping, mapping);
+
             flow = flow.put(key, value);
         }
 
         object.parent();
-        
+
         return flow;
     }
 
-    final DataItem encode(final ValueCursor value, final String term, TypeMap typeMapping) throws EncoderError {
-    
+    final DataItem encode(final ValueCursor value, final String term, TypeMap typeMapping, Mapping mapping) throws EncoderError {
+
         if (value.isBoolean()) {
             return value.booleanValue() ? SimpleValue.TRUE : SimpleValue.FALSE;
         }
 
         if (value.isString()) {
-            if (typeMapping != null) { 
+            if (typeMapping != null) {
                 final Collection<String> types = typeMapping.getType(term);
-                
-                for (final ValueEncoder valueEncoder : valueEncoders) {
-                    final DataItem dataItem = valueEncoder.encode(index, value, term, types);
+
+                for (final ValueEncoder valueEncoder : config.valueEncoders()) {
+                    final DataItem dataItem = valueEncoder.encode(mapping, value, term, types);
                     if (dataItem != null) {
                         return dataItem;
                     }
@@ -312,10 +217,10 @@ public class Encoder implements EncoderConfig {
             }
             return new UnicodeString(value.stringValue());
         }
-    
+
         if (value.isInteger()) {
             BigInteger integer = value.integerValue();
-            
+
             switch (integer.signum()) {
             case -1:
                 return new NegativeInteger(integer);
@@ -323,13 +228,13 @@ public class Encoder implements EncoderConfig {
                 return new UnsignedInteger(BigInteger.ZERO);
             case 1:
                 return new UnsignedInteger(integer);
-            }            
+            }
         }
-        
+
         if (value.isDecimal()) {
             return new DoublePrecisionFloat(value.decimalValue().doubleValue());
         }
-        
+
         if (value.isNull()) {
             return SimpleValue.NULL;
         }
@@ -337,54 +242,33 @@ public class Encoder implements EncoderConfig {
         throw new IllegalStateException();
     }
 
-    final ArrayBuilder<?> encode(final ArrayCursor object, final ArrayBuilder<?> builder, String property, TypeMap typeMapping) throws EncoderError, JsonLdError {
-    
+    final ArrayBuilder<?> encode(final ArrayCursor object, final ArrayBuilder<?> builder, String property, TypeMap typeMapping, Mapping mapping) throws EncoderError, JsonLdError {
+
         if (object.isEmpty()) {
             return builder;
         }
-        
+
         ArrayBuilder<?> flow = builder;
-    
+
         for (final ArrayItemCursor item : object) {
-    
+
             if (item.isMap()) {
-                flow = (ArrayBuilder<?>) encode(item.asMap(), flow.startMap(), typeMapping).end();
-                continue;
-            }
-    
-            if (item.isArray()) {
-                flow = (ArrayBuilder<?>) encode(item.asArray(), flow.startArray(), property, typeMapping).end();
+                flow = (ArrayBuilder<?>) encode(item.asMap(), flow.startMap(), typeMapping, mapping).end();
                 continue;
             }
 
-            final DataItem value = encode(item, property, typeMapping);
-    
+            if (item.isArray()) {
+                flow = (ArrayBuilder<?>) encode(item.asArray(), flow.startArray(), property, typeMapping, mapping).end();
+                continue;
+            }
+
+            final DataItem value = encode(item, property, typeMapping, mapping);
+
             flow = flow.add(value);
         }
-        
+
         object.parent();
-        
+
         return flow;
     }
-
-    @Override
-    public boolean isCompactArrays() {
-        return compactArrays;
-    }
-
-    @Override
-    public DictionaryAlgorithm dictonaryAlgorithm() {
-        return DictionaryAlgorithm.ProcessingOrderAppliedContexts;
-    }
-
-    @Override
-    public Collection<ValueEncoder> valueEncoders() {
-        return valueEncoders;
-    }
-
-    @Override
-    public MappingProvider provider() {
-        return provider;
-    }
 }
-

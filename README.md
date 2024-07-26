@@ -13,8 +13,78 @@ An implementation of the [CBOR-LD 1.0](https://json-ld.github.io/cbor-ld-spec/) 
 [![Maven Central](https://img.shields.io/maven-central/v/com.apicatalog/iridium-cbor-ld.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:com.apicatalog%20AND%20a:iridium-cbor-ld)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
+## Features
+
+* Semantic compression / decompression
+* Configurable
+* Custom document dictionaries 
+* [Verifiable Credential Barcodes](https://w3c-ccg.github.io/vc-barcodes/)
+
 ## CLI
-[LD-CLI](https://github.com/filip26/ld-cli) ia a command line utility for Ubuntu, Mac and Windows.
+[LD-CLI](https://github.com/filip26/ld-cli) is a command line utility for Ubuntu, Mac and Windows.
+
+## Usage
+
+### Encoding
+
+```javascript
+// create an encoder builder initialized with default values
+var encoder = CborLd.createEncoder()
+               // use bundled static contexts (true by default)
+               .useBundledContexts(true)
+               // loader (optional)
+               .loader(...)
+               // custom terms dictionary (optional)
+               .dictionary(customDictionary)
+               // create a new encoder instance
+               .build(); 
+                   
+// create barcodes encoder builder 
+var encoder = CborLd.createEncoder(BarcodesConfig.INSTANCE)
+               // ... customize
+               .build()
+
+// encode a document
+byte[] encoded = encoder.encode(document);
+```
+
+### Decoding
+
+```javascript
+// create a decoder builder initialized with default values
+var decoder = CborLd.createDecoder()
+               // use bundled static contexts (true by default)
+               .useBundledContexts(true)
+               // loader (optional)
+               .loader(...)
+               // add custom terms dictionary (optional)
+               .dictionary(customDictionary);
+               // create a new decoder instance
+               .build(); 
+                   
+// create barcodes decoder builder
+var decoder = CborLd.createDecoder(BarcodesConfig.INSTANCE)
+               // ... customize
+               .build()
+  
+// decode
+document = decoder.decode(encoded);
+```
+
+### Backward Compatibility
+
+```javascript
+// Iridium < v0.2.0
+CborLd.create[Encoder|Decoder](V05Config.INSTANCE)
+      // ... customize      
+      .build();
+      
+// Iridium < v0.2.0, @digitalbazaar/cborld compatibility
+CborLd.create[Encoder|Decoder](V05Config.INSTANCE)
+      .compactArrays(false)
+      // ... customize      
+      .build();
+```
 
 
 ## Installation
@@ -27,16 +97,16 @@ Java 17+
 <dependency>
     <groupId>com.apicatalog</groupId>
     <artifactId>iridium-cbor-ld</artifactId>
-    <version>0.1.3</version>
+    <version>0.2.0</version>
 </dependency>
 
 ```
 
 ### Gradle
-Android 12+ (API Level >=32)
+Android 12+ (API Level >=32), Java 11
 
 ```gradle
-implementation("com.apicatalog:iridium-cbor-ld-jre8:0.1.3")
+implementation("com.apicatalog:iridium-cbor-ld-jre11:0.2.0")
 ```
 
 Do you need to support an older Android version? [Contact me](mailto:filip26@gmail.com)
@@ -61,41 +131,9 @@ Add JSON-P provider, if it is not on the classpath already.
 implementation("org.glassfish:jakarta.json:2.0.1")
 ```
 
-## Usage
-
-### Encoding
-
-```java
-  byte[] encoded = CborLd.encoder(document).encode();
-```
-
-### Decoding
-
-```java
-  document = CborLd.decoder(encoded).decode();
-```
-
-### @digitalbazaar/cborld compatibility
-
-Set `DbConfig` as a configuration option to an encoder or decoder API.
-
-e.g.
-
-```java
-  CborLd.encoder(document)
-        .config(DbConfig.INSTANCE)
-        .encode();
-        
-  CborLd.decoder(document)
-        .config(DbConfig.INSTANCE)
-        .decode();
-        
-```
-
 ## Documentation
 
 [![javadoc](https://javadoc.io/badge2/com.apicatalog/iridium-cbor-ld/javadoc.svg)](https://javadoc.io/doc/com.apicatalog/iridium-cbor-ld)
-
 
 ## Contributing
 

@@ -1,12 +1,14 @@
 package com.apicatalog.cborld.config;
 
-import com.apicatalog.cborld.mapper.MappingProvider;
+import java.net.URI;
+
+import com.apicatalog.jsonld.loader.DocumentLoader;
 
 public interface Config {
-
+    
     boolean isCompactArrays();
+        
+    DocumentLoader loader();
     
-    DictionaryAlgorithm dictonaryAlgorithm();
-    
-    MappingProvider provider();
+    URI base();
 }

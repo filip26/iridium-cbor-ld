@@ -27,6 +27,8 @@ public class CborLdTestCase {
     
     public boolean compactArrays = DefaultConfig.INSTANCE.isCompactArrays();
 
+    public String config;
+    
     public static CborLdTestCase of(JsonObject test, JsonObject manifest, DocumentLoader loader) {
 
         final CborLdTestCase testCase = new CborLdTestCase();
@@ -64,6 +66,9 @@ public class CborLdTestCase {
 
             if (options.containsKey("https://github.com/filip26/iridium-cbor-ld/tests/vocab#compactArrays")) {
                 testCase.compactArrays = options.getJsonArray("https://github.com/filip26/iridium-cbor-ld/tests/vocab#compactArrays").getJsonObject(0).getBoolean("@value", DefaultConfig.INSTANCE.isCompactArrays());                
+            }
+            if (options.containsKey("https://github.com/filip26/iridium-cbor-ld/tests/vocab#config")) {
+                testCase.config = options.getJsonArray("https://github.com/filip26/iridium-cbor-ld/tests/vocab#config").getJsonObject(0).getString("@value", null);                
             }
         }
 
