@@ -3,7 +3,6 @@ package com.apicatalog.cborld;
 import com.apicatalog.cborld.config.DefaultConfig;
 import com.apicatalog.cborld.decoder.DecoderBuilder;
 import com.apicatalog.cborld.decoder.DecoderConfig;
-import com.apicatalog.cborld.dictionary.DictionaryBuilder;
 import com.apicatalog.cborld.encoder.EncoderBuilder;
 import com.apicatalog.cborld.encoder.EncoderConfig;
 
@@ -48,7 +47,7 @@ public class CborLd {
      * 
      * @return a new {@link EncoderBuilder} instance
      * 
-     */    
+     */
     public static EncoderBuilder createEncoder() {
         return createEncoder(DefaultConfig.INSTANCE);
     }
@@ -62,13 +61,5 @@ public class CborLd {
      */
     public static EncoderBuilder createEncoder(EncoderConfig config) {
         return new EncoderBuilder(config);
-    }
-    
-    public static DictionaryBuilder createDictionary() {
-        return DictionaryBuilder.create();
-    }
-    
-    public static Object createDocumentDictionary(int code) {
-        return null;    //FIXME
     }
 }

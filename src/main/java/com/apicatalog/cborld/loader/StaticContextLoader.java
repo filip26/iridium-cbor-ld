@@ -24,6 +24,9 @@ public class StaticContextLoader implements DocumentLoader {
         set("https://www.w3.org/ns/did/v1", "did-v1.jsonld");
         set("https://www.w3.org/ns/credentials/v2", "credentials-v2.jsonld");
         set("https://w3id.org/vc-barcodes/v1", "vc-barcodes-v1.jsonld");
+        set("https://w3id.org/security/data-integrity/v1", "data-integrity-v1.jsonld");
+        set("https://w3id.org/security/multikey/v1", "multikey-v1.jsonld");
+        set("https://w3id.org/security/data-integrity/v2", "data-integrity-v2.jsonld");
     }
 
     protected final DocumentLoader defaultLoader;

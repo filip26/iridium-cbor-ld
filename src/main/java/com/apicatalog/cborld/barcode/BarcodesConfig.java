@@ -35,7 +35,6 @@ public class BarcodesConfig extends DefaultConfig {
         DICTIONARIES = new HashMap<>();
         DICTIONARIES.put(CompressedDocument.DICTIONARY.code(), CompressedDocument.DICTIONARY);
         DICTIONARIES.put(DICTIONARY.code(), DICTIONARY);
-
     }
 
     @Override
