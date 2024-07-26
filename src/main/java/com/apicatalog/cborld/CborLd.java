@@ -19,6 +19,9 @@ public class CborLd {
     public static final byte UNCOMPRESSED_BYTE = 0x00;
     public static final byte COMPRESSED_BYTE = 0x01;
 
+    private CborLd() {
+        /* protected */ }
+
     /**
      * Create a new {@link DecoderBuilder} allowing to configure a decoder. The
      * builder is initialized by {@link DefaultConfig}.

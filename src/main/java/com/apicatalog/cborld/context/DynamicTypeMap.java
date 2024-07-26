@@ -2,6 +2,7 @@ package com.apicatalog.cborld.context;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -48,7 +49,7 @@ class DynamicTypeMap implements TypeMap {
                         .collect(Collectors.toSet());
             }
         }
-        return null;
+        return Collections.emptyList();
     }
 
     public DynamicTypeMap getMapping(String term) {

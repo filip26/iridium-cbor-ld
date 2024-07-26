@@ -41,4 +41,8 @@ public class CompressedDocument {
     public static final DocumentDictionary DICTIONARY = DocumentDictionaryBuilder.create(CODE)
             .context(CONTEXTS)
             .build();
+
+    private CompressedDocument() {
+        /* protected */}
+
 }

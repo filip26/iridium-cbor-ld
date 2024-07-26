@@ -14,7 +14,6 @@ import com.apicatalog.cborld.hex.Hex;
 import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.cborld.mapping.TypeMap;
 import com.apicatalog.jsonld.json.JsonUtils;
-import com.apicatalog.jsonld.loader.DocumentLoader;
 
 import co.nstant.in.cbor.CborDecoder;
 import co.nstant.in.cbor.CborException;
@@ -112,14 +111,14 @@ public class Decoder {
 
             // only one object
             if (dataItems.size() == 1) {
-                return decode(dataItems.iterator().next(), provider, config.loader());
+                return decode(dataItems.iterator().next(), provider);
             }
 
             // decode as an array of objects
             final JsonArrayBuilder builder = Json.createArrayBuilder();
 
             for (final DataItem item : dataItems) {
-                builder.add(decode(item, provider, config.loader()));
+                builder.add(decode(item, provider));
             }
 
             return builder.build();
@@ -129,7 +128,7 @@ public class Decoder {
         }
     }
 
-    protected final JsonValue decode(final DataItem data, final DocumentDictionary custom, final DocumentLoader loader) throws DecoderError, ContextError {
+    protected final JsonValue decode(final DataItem data, final DocumentDictionary custom) throws DecoderError, ContextError {
         final Mapping mapping = config.decoderMapping().getDecoderMapping(data, custom, config);
         return decodeData(data, null, mapping.typeMap(), mapping);
     }
@@ -148,7 +147,7 @@ public class Decoder {
             return decodeArray(((Array) data).getDataItems(), term, def, mapping);
 
         case UNICODE_STRING:
-            return decodeString((UnicodeString) data, term);
+            return decodeString((UnicodeString) data);
 
         case UNSIGNED_INTEGER:
             return decodeInteger(data, term, def, mapping);
@@ -269,7 +268,7 @@ public class Decoder {
         return builder.build();
     }
 
-    protected static final JsonString decodeString(final UnicodeString string, final String key) {
+    protected static final JsonString decodeString(final UnicodeString string) {
 
         if (string == null) {
             throw new IllegalArgumentException("The string parameter must not be null.");

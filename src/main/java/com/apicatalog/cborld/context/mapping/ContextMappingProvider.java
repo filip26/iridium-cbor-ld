@@ -26,7 +26,7 @@ public class ContextMappingProvider implements EncoderMappingProvider, DecoderMa
             return new EncoderContextMapping(
                     config.dictionary().contexts(),
                     config.dictionary().types(),
-                    CodeTermMap.of(context.getContextKeySets(), config.loader()),
+                    CodeTermMap.of(context.getContextKeySets()),
                     context.getTypeMapping());
 
         } catch (JsonLdError e) {

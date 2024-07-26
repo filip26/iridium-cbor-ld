@@ -8,9 +8,6 @@ import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.apicatalog.cborld.context.ContextError;
-import com.apicatalog.jsonld.loader.DocumentLoader;
-
 public class CodeTermMap implements Dictionary {
 
     final Map<Integer, String> index;
@@ -28,7 +25,7 @@ public class CodeTermMap implements Dictionary {
         this.lastCustomIndex = lastCustomIndex;
     }
 
-    public static CodeTermMap of(Collection<Collection<String>> contextKeys, DocumentLoader loader) throws ContextError {
+    public static CodeTermMap of(Collection<Collection<String>> contextKeys) {
 
         final CodeTermMap map = new CodeTermMap(
                 new LinkedHashMap<>(KeywordDictionary.CODE_TO_TERM),

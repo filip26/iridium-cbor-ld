@@ -17,7 +17,7 @@ public class BarcodesConfig extends DefaultConfig {
 
     static final Map<Integer, DocumentDictionary> DICTIONARIES;
 
-    public static byte DICTIONARY_CODE = 100;
+    public static final byte DICTIONARY_CODE = 100;
 
     static {
         DICTIONARY = DocumentDictionaryBuilder.create(DICTIONARY_CODE)
