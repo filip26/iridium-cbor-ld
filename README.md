@@ -109,7 +109,7 @@ Java 17+
 Android 12+ (API Level >=32), Java 11
 
 ```gradle
-implementation("com.apicatalog:iridium-cbor-ld-jre11:0.2.0")
+implementation("com.apicatalog:iridium-cbor-ld-jre11:0.2.1")
 ```
 
 Do you need to support an older Android version? [Contact me](mailto:filip26@gmail.com)
