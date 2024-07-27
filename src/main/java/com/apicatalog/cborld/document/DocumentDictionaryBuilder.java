@@ -19,9 +19,22 @@ public class DocumentDictionaryBuilder {
         this.contexts = contexts;
         this.types = types;
     }
-    
+
     public static DocumentDictionaryBuilder create(int code) {
         return new DocumentDictionaryBuilder(code, DictionaryBuilder.create(), new HashMap<>());
+    }
+
+    public static DocumentDictionaryBuilder of(DocumentDictionary dictionary) {
+        return new DocumentDictionaryBuilder(
+                dictionary.code(),
+                DictionaryBuilder.of(dictionary.contexts()),
+                dictionary.types()
+                        .entrySet()
+                        .stream()
+                        .map(e -> new AbstractMap.SimpleEntry<>(e.getKey(), DictionaryBuilder.of(e.getValue())))
+                        .collect(Collectors.toMap(
+                                Map.Entry::getKey,
+                                Map.Entry::getValue)));
     }
 
     public DocumentDictionary build() {
@@ -37,6 +50,11 @@ public class DocumentDictionaryBuilder {
     }
 
     public DocumentDictionaryBuilder context(int code, String value) {
+        contexts.set(code, value);
+        return this;
+    }
+
+    public DocumentDictionaryBuilder context(String value, int code) {
         contexts.set(code, value);
         return this;
     }

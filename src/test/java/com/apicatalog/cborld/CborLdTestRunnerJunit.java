@@ -283,7 +283,7 @@ public class CborLdTestRunnerJunit {
             return V05Config.INSTANCE;
         }
         if ("barcodes".equals(name)) {
-            return BarcodesConfig.INSTANCE;
+            return UtopiaBarcodesConfig.INSTANCE;
         }
         return DefaultConfig.INSTANCE;
     }
@@ -293,7 +293,7 @@ public class CborLdTestRunnerJunit {
             return V05Config.INSTANCE;
         }
         if ("barcodes".equals(name)) {
-            return BarcodesConfig.INSTANCE;
+            return UtopiaBarcodesConfig.INSTANCE;
         }
         return DefaultConfig.INSTANCE;
     }

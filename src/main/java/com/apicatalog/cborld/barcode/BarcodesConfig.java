@@ -23,7 +23,6 @@ public class BarcodesConfig extends DefaultConfig {
         DICTIONARY = DocumentDictionaryBuilder.create(DICTIONARY_CODE)
                 .context(32768, "https://www.w3.org/ns/credentials/v2")
                 .context(32769, "https://w3id.org/vc-barcodes/v1")
-                .context(32770, "https://w3id.org/utopia/v2")
                 .type("https://w3id.org/security#cryptosuiteString",
                         DictionaryBuilder.create()
                                 .set(1, "ecdsa-rdfc-2019")
