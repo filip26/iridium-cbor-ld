@@ -15,7 +15,6 @@ import java.util.Objects;
 
 import com.apicatalog.cbor.CborComparison;
 import com.apicatalog.cbor.CborWriter;
-import com.apicatalog.cborld.barcode.BarcodesConfig;
 import com.apicatalog.cborld.config.DefaultConfig;
 import com.apicatalog.cborld.config.V05Config;
 import com.apicatalog.cborld.context.ContextError;
@@ -122,7 +121,7 @@ public class CborLdTestRunnerJunit {
                 final Decoder decoder = CborLd.createDecoder(getDecoderConfig(testCase.config))
                         .loader(LOADER)
                         .compactArray(testCase.compactArrays)
-                        .dictionary(BarcodesConfig.DICTIONARY)
+                        .dictionary(UtopiaBarcodesConfig.DICTIONARY)
                         .build();
 
                 final JsonValue result = decoder.decode(((CborLdDocument) document).getByteArray());

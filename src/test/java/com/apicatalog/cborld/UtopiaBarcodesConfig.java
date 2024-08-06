@@ -10,7 +10,7 @@ import com.apicatalog.cborld.document.DocumentDictionaryBuilder;
 
 public class UtopiaBarcodesConfig extends BarcodesConfig {
 
-    public static final UtopiaBarcodesConfig INSTANCE = new UtopiaBarcodesConfig();
+    public static final UtopiaBarcodesConfig INSTANCE;
 
     public static final DocumentDictionary DICTIONARY;
 
@@ -24,15 +24,17 @@ public class UtopiaBarcodesConfig extends BarcodesConfig {
         DICTIONARIES = new HashMap<>();
         DICTIONARIES.put(CompressedDocument.DICTIONARY.code(), CompressedDocument.DICTIONARY);
         DICTIONARIES.put(DICTIONARY.code(), DICTIONARY);
+
+        INSTANCE = new UtopiaBarcodesConfig();
     }
 
     @Override
     public DocumentDictionary dictionary() {
-        return DICTIONARY;
+        return UtopiaBarcodesConfig.DICTIONARY;
     }
 
     @Override
     public Map<Integer, DocumentDictionary> dictionaries() {
-        return DICTIONARIES;
+        return UtopiaBarcodesConfig.DICTIONARIES;
     }
 }

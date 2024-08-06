@@ -1,8 +1,3 @@
-> [!IMPORTANT]
-> Please consider a donation to keep the project available and maintained as an open-source.
-> 
-> The common experience with open-source is that no one wants to pay for it, but they will happily use it for free.
-
 # Iridium CBOR-LD
 An implementation of the [CBOR-LD 1.0](https://json-ld.github.io/cbor-ld-spec/) in Java.
 
@@ -102,7 +97,7 @@ Java 17+
 
 ```
 
-Iridium CBOR-LD Android SDK is distributed under a commercial license. [Contact me](mailto:filip26@gmail.com)
+Iridium CBOR-LD for Android is distributed under a commercial license. [Contact](mailto:filip26@gmail.com)
 
 #### JSON-P Provider
 
