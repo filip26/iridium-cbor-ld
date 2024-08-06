@@ -5,6 +5,8 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.document.Document;
@@ -14,6 +16,8 @@ import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
 
 public class StaticContextLoader implements DocumentLoader {
 
+    private static final Logger LOGGER = Logger.getLogger(StaticContextLoader.class.getName());
+    
     protected static Map<String, Document> staticCache = new HashMap<>();
 
     static {
@@ -61,7 +65,7 @@ public class StaticContextLoader implements DocumentLoader {
             return JsonDocument.of(is);
 
         } catch (IOException | JsonLdError e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "An error [{0}] during loading static context [{1}]", new Object[] {e.getMessage(), name});
         }
         return null;
     }
