@@ -52,6 +52,7 @@ public class CborLdTestRunnerJunit {
 
     static {
         StaticContextLoader.set("https://w3id.org/utopia/v2", CborLdTestRunnerJunit.class, "utopia-v2.jsonld");
+        StaticContextLoader.set("https://w3id.org/age/v1", CborLdTestRunnerJunit.class, "age-v1.jsonld");
     }
 
     public final static DocumentLoader LOADER = new UriBaseRewriter(
