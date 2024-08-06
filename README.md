@@ -1,8 +1,3 @@
-> [!IMPORTANT]
-> Please consider a donation to keep the project available and maintained as an open-source.
-> 
-> The common experience with open-source is that no one wants to pay for it, but they will happily use it for free.
-
 # Iridium CBOR-LD
 An implementation of the [CBOR-LD 1.0](https://json-ld.github.io/cbor-ld-spec/) in Java.
 
@@ -15,8 +10,7 @@ An implementation of the [CBOR-LD 1.0](https://json-ld.github.io/cbor-ld-spec/) 
 
 ### Status
 
-[![Java 17 CI](https://github.com/filip26/iridium-cbor-ld/actions/workflows/java17-build.yml/badge.svg)](https://github.com/filip26/iridium-cbor-ld/actions/workflows/java17-build.yml)
-[![Java 11 CI](https://github.com/filip26/iridium-cbor-ld/actions/workflows/java11-build.yml/badge.svg)](https://github.com/filip26/iridium-cbor-ld/actions/workflows/java11-build.yml)
+[![Java 17 CI](https://github.com/filip26/iridium-cbor-ld/actions/workflows/java17-push.yml/badge.svg)](https://github.com/filip26/iridium-cbor-ld/actions/workflows/java17-push.yml)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/07fd47ee8fa64d68a47cc83365fa07d6)](https://app.codacy.com/gh/filip26/iridium-cbor-ld/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 [![Codacy Badge](https://app.codacy.com/project/badge/Coverage/07fd47ee8fa64d68a47cc83365fa07d6)](https://app.codacy.com/gh/filip26/iridium-cbor-ld/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_coverage)
 [![Maven Central](https://img.shields.io/maven-central/v/com.apicatalog/iridium-cbor-ld.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:com.apicatalog%20AND%20a:iridium-cbor-ld)
@@ -92,8 +86,6 @@ CborLd.create[Encoder|Decoder](V05Config.INSTANCE)
 
 ## Installation
 
-### Maven
-
 Java 17+
 
 ```xml
@@ -105,20 +97,11 @@ Java 17+
 
 ```
 
-### Gradle
-Android 12+ (API Level >=32), Java 11
-
-```gradle
-implementation("com.apicatalog:iridium-cbor-ld-jre11:0.2.2")
-```
-
-Do you need to support an older Android version? [Contact me](mailto:filip26@gmail.com)
+Iridium CBOR-LD for Android is distributed under a commercial license. [Contact](mailto:filip26@gmail.com)
 
 #### JSON-P Provider
 
 Add JSON-P provider, if it is not on the classpath already.
-
-##### Maven
 
 ```xml
 <dependency>
@@ -126,12 +109,6 @@ Add JSON-P provider, if it is not on the classpath already.
     <artifactId>jakarta.json</artifactId>
     <version>2.0.1</version>
 </dependency>
-```
-
-##### Gradle
-
-```gradle
-implementation("org.glassfish:jakarta.json:2.0.1")
 ```
 
 ## Documentation
@@ -147,16 +124,9 @@ All PR's welcome!
 
 Fork and clone the project repository.
 
-#### Java 17
 ```bash
 > cd iridium-cbor-ld
 > mvn clean package
-```
-
-#### Java 11
-```bash
-> cd iridium-cbor-ld
-> mvn -f pom_jre11.xml clean package
 ```
 
 ## Resources

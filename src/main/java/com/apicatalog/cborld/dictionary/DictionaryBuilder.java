@@ -1,5 +1,6 @@
 package com.apicatalog.cborld.dictionary;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -7,14 +8,17 @@ import java.util.Map.Entry;
 
 public class DictionaryBuilder {
 
-    protected DoubleIndexDictionary dictionary;
+    protected final Map<String, Integer> index;
+    protected final Map<Integer, String> reverse;
 
     protected DictionaryBuilder() {
-        this.dictionary = new DoubleIndexDictionary();
+        this.index = new LinkedHashMap<>();
+        this.reverse = new LinkedHashMap<>();
     }
 
     protected DictionaryBuilder(DoubleIndexDictionary dictionary) {
-        this.dictionary = dictionary;
+        this.index = new LinkedHashMap<>(dictionary.index);
+        this.reverse = new LinkedHashMap<>(dictionary.reverse);
     }
 
     public static DictionaryBuilder create() {
@@ -27,36 +31,38 @@ public class DictionaryBuilder {
         }
         return new DictionaryBuilder().merge(dictionary);
     }
-    
+
     public DictionaryBuilder merge(Dictionary dictionary) {
-        for (Map.Entry<Integer, String> entry : dictionary) {
-            set(entry.getKey(), entry.getValue());
-        }
+        dictionary.forEach(entry -> set(entry.getKey(), entry.getValue()));
         return this;
     }
 
     public DictionaryBuilder set(Integer code, String value) {
-        dictionary.set(code, value);
+        index.put(value, code);
+        reverse.put(code, value);
         return this;
     }
 
     public DictionaryBuilder set(String value, Integer code) {
-        dictionary.set(code, value);
+        index.put(value, code);
+        reverse.put(code, value);
         return this;
     }
 
     public Dictionary build() {
-        return dictionary;
+        return new DoubleIndexDictionary(
+                Collections.unmodifiableMap(index),
+                Collections.unmodifiableMap(reverse));
     }
 
     class DoubleIndexDictionary implements Dictionary {
 
-        protected final Map<String, Integer> index = new LinkedHashMap<>();
-        protected final Map<Integer, String> reverse = new LinkedHashMap<>();
+        protected final Map<String, Integer> index;
+        protected final Map<Integer, String> reverse;
 
-        protected void set(Integer code, String value) {
-            index.put(value, code);
-            reverse.put(code, value);
+        public DoubleIndexDictionary(Map<String, Integer> index, Map<Integer, String> reverse) {
+            this.index = index;
+            this.reverse = reverse;
         }
 
         @Override
