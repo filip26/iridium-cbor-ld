@@ -54,7 +54,7 @@ public class CborLdTestRunnerJunit {
         StaticContextLoader.set("https://w3id.org/age/v1", CborLdTestRunnerJunit.class, "age-v1.jsonld");
     }
 
-    public final static DocumentLoader LOADER = new UriBaseRewriter(
+    public static final DocumentLoader LOADER = new UriBaseRewriter(
             CborLdTest.BASE,
             "classpath:",
             new UriBaseRewriter("https://raw.githubusercontent.com/filip26/iridium-cbor-ld/main/src/test/resources/com/apicatalog/cborld/",
