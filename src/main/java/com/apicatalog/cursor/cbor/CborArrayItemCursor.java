@@ -16,7 +16,7 @@ public class CborArrayItemCursor extends CborValueCursor implements ArrayItemCur
         if (!isArrayItem()) {
             throw new ClassCastException();    
         }        
-        return (Integer)cursor.index();
+        return cursor.index();
     }
 
     @Override

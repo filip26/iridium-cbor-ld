@@ -52,7 +52,7 @@ public class DidKeyValueDecoder implements ValueDecoder {
         return null;
     }
 
-    private static final String decode(ByteString dataItem) throws DecoderError {
+    private static final String decode(ByteString dataItem) {
         return Multibase.BASE_58_BTC.encode(dataItem.getBytes());
     }
 }
