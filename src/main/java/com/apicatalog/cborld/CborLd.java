@@ -19,7 +19,7 @@ public class CborLd {
     public static final byte UNCOMPRESSED_BYTE = 0x00;
     public static final byte COMPRESSED_BYTE = 0x01;
 
-    private CborLd() {
+    protected CborLd() {
         /* protected */ }
 
     /**

@@ -200,6 +200,10 @@ public class Encoder {
 
     final DataItem encode(final ValueCursor value, final String term, TypeMap typeMapping, Mapping mapping) throws EncoderError {
 
+        if (value.isNull()) {
+            return SimpleValue.NULL;
+        }
+
         if (value.isBoolean()) {
             return value.booleanValue() ? SimpleValue.TRUE : SimpleValue.FALSE;
         }
@@ -233,10 +237,6 @@ public class Encoder {
 
         if (value.isDecimal()) {
             return new DoublePrecisionFloat(value.decimalValue().doubleValue());
-        }
-
-        if (value.isNull()) {
-            return SimpleValue.NULL;
         }
 
         throw new IllegalStateException();
