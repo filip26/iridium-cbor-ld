@@ -92,7 +92,7 @@ Java 17+
 <dependency>
     <groupId>com.apicatalog</groupId>
     <artifactId>iridium-cbor-ld</artifactId>
-    <version>0.2.2</version>
+    <version>0.3.0</version>
 </dependency>
 
 ```
