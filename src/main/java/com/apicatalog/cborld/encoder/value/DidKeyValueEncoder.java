@@ -37,11 +37,11 @@ public class DidKeyValueEncoder implements ValueEncoder {
                 final Array result = new Array();
                 
                 result.add(new UnsignedInteger(CODE));
-                result.add(new ByteString(key.codec().encode(key.raw())));
+                result.add(new ByteString(key.codec().encode(key.rawBytes())));
 
                 if (StringUtils.isNotBlank(did.getFragment())) {
                     final DidKey fragment = DidKey.of(Did.of(PREFIX + did.getFragment()), CODECS);                    
-                    result.add(new ByteString(fragment.codec().encode(fragment.raw())));
+                    result.add(new ByteString(fragment.codec().encode(fragment.rawBytes())));
                 }
 
                 return result;
