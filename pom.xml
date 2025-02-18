@@ -7,7 +7,7 @@
 
     <groupId>com.apicatalog</groupId>
     <artifactId>iridium-cbor-ld</artifactId>
-    <version>0.3.0</version>
+    <version>0.4.0-SNAPSHOT</version>
 
     <packaging>jar</packaging>
     <name>Iridium CBOR-LD</name>
@@ -59,7 +59,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <jakarta.json.version>2.0.1</jakarta.json.version>
-        <titanium.version>1.4.1</titanium.version>
+        <titanium.version>1.5.0</titanium.version>
         <carbon.version>0.6.0</carbon.version>
 
         <copper.version>1.0.0</copper.version>
