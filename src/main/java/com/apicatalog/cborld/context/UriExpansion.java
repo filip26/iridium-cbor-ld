@@ -31,6 +31,7 @@ import com.apicatalog.jsonld.lang.BlankNode;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.uri.UriResolver;
 import com.apicatalog.jsonld.uri.UriUtils;
+import com.apicatalog.jsonld.uri.UriValidationPolicy;
 
 import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
@@ -46,7 +47,7 @@ final class UriExpansion {
     // optional
     private boolean documentRelative;
     private boolean vocab;
-    private boolean uriValidation;
+    private UriValidationPolicy uriValidation;
 
     private JsonObject localContext;
     private Map<String, Boolean> defined;
@@ -206,6 +207,11 @@ final class UriExpansion {
     }
 
     public UriExpansion uriValidation(boolean uriValidation) {
+        this.uriValidation = uriValidation ? UriValidationPolicy.Full : UriValidationPolicy.SchemeOnly;
+        return this;
+    }
+    
+    public UriExpansion uriValidation(UriValidationPolicy uriValidation) {
         this.uriValidation = uriValidation;
         return this;
     }
