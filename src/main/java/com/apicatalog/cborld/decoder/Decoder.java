@@ -191,7 +191,7 @@ public class Decoder {
                     && !((UnsignedInteger) key).getValue().mod(BigInteger.ONE.add(BigInteger.ONE)).equals(BigInteger.ZERO);
 
             JsonValue json = null;
-            String term = decodeKey(key, mapping);
+            final String term = decodeKey(key, mapping);
 
             if (!isArray && MajorType.ARRAY.equals(value.getMajorType())) {
                 json = decodeValue(value, term, def, mapping);
@@ -209,7 +209,7 @@ public class Decoder {
                 }
             }
 
-            builder.add(decodeKey(key, mapping), json);
+            builder.add(term, json);
         }
 
         return builder.build();
@@ -239,12 +239,9 @@ public class Decoder {
 
     protected static final String decodeKey(final BigInteger key, final Mapping mapping) {
 
-        if (key.mod(BigInteger.ONE.add(BigInteger.ONE)).equals(BigInteger.ZERO)) {
-            String result = mapping.terms().getValue(key.intValueExact());
-            return result != null ? result : key.toString();
-        }
-
-        String result = mapping.terms().getValue(key.subtract(BigInteger.ONE).intValueExact());
+        final String result = key.mod(BigInteger.ONE.add(BigInteger.ONE)).equals(BigInteger.ZERO)
+                ? mapping.terms().getValue(key.intValueExact())
+                : mapping.terms().getValue(key.subtract(BigInteger.ONE).intValueExact());
 
         return result != null ? result : key.toString();
     }

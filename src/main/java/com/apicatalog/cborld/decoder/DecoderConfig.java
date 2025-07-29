@@ -15,4 +15,6 @@ public interface DecoderConfig  extends Config {
     Collection<ValueDecoder> valueDecoders();
     
     DecoderMappingProvider decoderMapping();
+    
+    
 }
