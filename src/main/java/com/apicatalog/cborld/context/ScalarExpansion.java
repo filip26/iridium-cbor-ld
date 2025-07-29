@@ -31,13 +31,13 @@ final class ScalarExpansion {
     // mandatory
     private ActiveContext activeContext;
     private JsonValue propertyContext;
-    private ValueCursor element;
+    private JsonValue element;
     private String activeProperty;
     
     private final Consumer<Collection<String>> appliedContexts;
 
     private ScalarExpansion(final ActiveContext activeContext, final JsonValue propertyContext,
-            final ValueCursor element, final String activeProperty, Consumer<Collection<String>> appliedContexts) {
+            final JsonValue element, final String activeProperty, Consumer<Collection<String>> appliedContexts) {
         this.activeContext = activeContext;
         this.propertyContext = propertyContext;
         this.element = element;
@@ -46,7 +46,7 @@ final class ScalarExpansion {
     }
 
     public static final ScalarExpansion with(final ActiveContext activeContext, final JsonValue propertyContext,
-            final ValueCursor element, final String activeProperty, Consumer<Collection<String>> appliedContexts) {
+            final JsonValue element, final String activeProperty, Consumer<Collection<String>> appliedContexts) {
         return new ScalarExpansion(activeContext, propertyContext, element, activeProperty, appliedContexts);
     }
 

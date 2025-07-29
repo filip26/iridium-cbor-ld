@@ -27,13 +27,14 @@ import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.json.JsonUtils;
 
+import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
 
 final class Expansion {
 
     // mandatory
     private ActiveContext activeContext;
-    private ValueCursor element;
+    private JsonValue element;
     private String activeProperty;
     private URI baseUrl;
 
@@ -44,7 +45,7 @@ final class Expansion {
     private Consumer<Collection<String>> appliedContexts;
     private TypeKeyNameMapper typeMapper;
 
-    private Expansion(final ActiveContext activeContext, final ValueCursor element, final String activeProperty,
+    private Expansion(final ActiveContext activeContext, final JsonValue element, final String activeProperty,
             final URI baseUrl, Consumer<Collection<String>> appliedContexts, TypeKeyNameMapper typeMapper) {
         this.activeContext = activeContext;
         this.element = element;
@@ -59,7 +60,7 @@ final class Expansion {
         this.fromMap = false;
     }
 
-    public static final Expansion with(final ActiveContext activeContext, final ValueCursor element, final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts,
+    public static final Expansion with(final ActiveContext activeContext, final JsonValue element, final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts,
             TypeKeyNameMapper typeMapper) {
         return new Expansion(activeContext, element, activeProperty, baseUrl, appliedContexts, typeMapper);
     }
@@ -77,15 +78,15 @@ final class Expansion {
     protected JsonValue compute() throws JsonLdError {
 
         // 1. If element is null, return null
-        if (element.isNull()) {
+        if (JsonUtils.isNull(element)) {
             return JsonValue.NULL;
         }
 
         // 5. If element is an array,
-        if (element.isArray()) {
+        if (JsonUtils.isArray(element)) {
 
             return ArrayExpansion
-                    .with(activeContext, element.asArray(), activeProperty, baseUrl, appliedContexts, typeMapper)
+                    .with(activeContext, element.asJsonArray(), activeProperty, baseUrl, appliedContexts, typeMapper)
                     .ordered(ordered)
                     .fromMap(fromMap)
                     .expand();
@@ -105,7 +106,7 @@ final class Expansion {
         }
 
         // 4. If element is a scalar
-        if (element.isScalar()) {
+        if (JsonUtils.isScalar(element)) {
 
             return ScalarExpansion
                     .with(activeContext, propertyContext, element, activeProperty, appliedContexts)
@@ -114,7 +115,7 @@ final class Expansion {
 
         // 6. Otherwise element is a map
         return ObjectExpansion
-                .with(activeContext, propertyContext, element.asMap(), activeProperty, baseUrl, appliedContexts, typeMapper)
+                .with(activeContext, propertyContext, element.asJsonObject(), activeProperty, baseUrl, appliedContexts, typeMapper)
                 .ordered(ordered)
                 .fromMap(fromMap)
                 .expand();

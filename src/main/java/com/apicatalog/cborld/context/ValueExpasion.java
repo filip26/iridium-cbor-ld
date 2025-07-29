@@ -19,7 +19,6 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import com.apicatalog.cursor.ValueCursor;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
@@ -29,6 +28,7 @@ import com.apicatalog.jsonld.lang.Keywords;
 
 import jakarta.json.Json;
 import jakarta.json.JsonObjectBuilder;
+import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 
 final class ValueExpasion {
@@ -50,7 +50,7 @@ final class ValueExpasion {
         return new ValueExpasion(activeContext, appliedContexts);
     }
 
-    public JsonValue expand(final ValueCursor value, final String activeProperty) throws JsonLdError {
+    public JsonValue expand(final JsonValue value, final String activeProperty) throws JsonLdError {
         
         definition = activeContext.getTerm(activeProperty);
 
@@ -62,8 +62,8 @@ final class ValueExpasion {
 
                 String idValue = null;
 
-                if (value.isString()) {
-                    idValue = value.stringValue();
+                if (JsonUtils.isString(value)) {
+                    idValue = ((JsonString)value).getString();
                 }
 
                 if (idValue != null) {
@@ -76,24 +76,24 @@ final class ValueExpasion {
                     return Json.createObjectBuilder().add(Keywords.ID, expandedValue)
                             .add(Keywords.TYPE,  Keywords.ID).build();
                     
-                } else if (value.isNumber()) {
+                } else if (JsonUtils.isNumber(value)) {
                     return Json.createObjectBuilder()
                             .add(Keywords.TYPE,  Keywords.ID).build();                    
                 }
 
             // 2.
-            } else if (Keywords.VOCAB.equals(typeMapping.get()) && value.isString()) {
+            } else if (Keywords.VOCAB.equals(typeMapping.get()) && JsonUtils.isString(value)) {
 
                 String expandedValue = UriExpansion
                                             .with(activeContext, appliedContexts)
                                             .documentRelative(true)
                                             .vocab(true)
-                                            .expand(value.stringValue());
+                                            .expand(((JsonString)value).getString());
 
                 return Json.createObjectBuilder().add(Keywords.ID, expandedValue)
                         .add(Keywords.TYPE,  Keywords.VOCAB).build();
                 
-            } else if (Keywords.VOCAB.equals(typeMapping.get()) && value.isNumber()) {
+            } else if (Keywords.VOCAB.equals(typeMapping.get()) && JsonUtils.isNumber(value)) {
                 return Json.createObjectBuilder()
                         .add(Keywords.TYPE,  Keywords.VOCAB).build();                
             }
@@ -110,7 +110,7 @@ final class ValueExpasion {
             result.add(Keywords.TYPE, typeMapping.get());
             return result.build();
 
-        } else if (value.isString()) {
+        } else if (JsonUtils.isString(value)) {
             buildStringValue(result);
             return result.build();
         }

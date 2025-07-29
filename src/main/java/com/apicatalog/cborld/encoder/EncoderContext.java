@@ -2,58 +2,58 @@ package com.apicatalog.cborld.encoder;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.Map.Entry;
 
-import com.apicatalog.cursor.ValueCursor;
-import com.apicatalog.cursor.ArrayItemCursor;
-import com.apicatalog.cursor.MapCursor;
-import com.apicatalog.cursor.MapEntryCursor;
+import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.uri.UriUtils;
 
+import jakarta.json.JsonObject;
+import jakarta.json.JsonString;
+import jakarta.json.JsonValue;
+
 public class EncoderContext {
 
-    public final static Collection<String> get(final MapCursor document) {
+    public final static Collection<String> get(final JsonObject document) {
         return get(document, new LinkedHashSet<>());
     }
 
-    static final Collection<String> get(final MapCursor document, Collection<String> contexts) {
+    static final Collection<String> get(final JsonObject document, Collection<String> contexts) {
 
-        for (final MapEntryCursor entry : document) {
+        for (final Entry<String, JsonValue> entry : document.entrySet()) {
     
-            if (Keywords.CONTEXT.equals(entry.mapKey())) {
-                processContextValue(entry, contexts);
+            if (Keywords.CONTEXT.equals(entry.getKey())) {
+                processContextValue(entry.getValue(), contexts);
 
-            } else if (entry.isMap()) {
-                get(entry.asMap(), contexts);
+            } else if (JsonUtils.isObject(entry.getValue())) {
+                get(entry.getValue().asJsonObject(), contexts);
             }
-        }
-        document.parent();    
+        }    
         return contexts;
     }
 
-    static final void processContextValue(final ValueCursor value, final Collection<String> result) {
+    static final void processContextValue(final JsonValue jsonValue, final Collection<String> result) {
     
-        if (value.isString()) {
-            final String uri = value.stringValue();
+        if (JsonUtils.isString(jsonValue)) {
+            final String uri = ((JsonString)jsonValue).getString();
     
             if (UriUtils.isAbsoluteUri(uri, true)) {
                 result.add(uri);
                 return;
             }
     
-        } else if (value.isNonEmptyArray()) {
+        } else if (JsonUtils.isNonEmptyArray(jsonValue)) {
     
-            for (final ArrayItemCursor item : value.asArray()) {
+            for (final JsonValue item : jsonValue.asJsonArray()) {
                 processContextValue(item, result);                
             }            
-            value.parent();
             return;
     
-        } else if (value.isMap()) {
+        } else if (JsonUtils.isObject(jsonValue)) {
     
-            if (value.asMap().size() == 1 && value.asMap().isString(Keywords.ID)) {
+            if (jsonValue.asJsonObject().size() == 1 && JsonUtils.isString(jsonValue.asJsonObject().get(Keywords.ID))) {
     
-                final String id = value.asMap().stringValue(Keywords.ID);
+                final String id = ((JsonString)jsonValue.asJsonObject().get(Keywords.ID)).getString();
         
                 if (UriUtils.isAbsoluteUri(id, true)) {
                     result.add(id);

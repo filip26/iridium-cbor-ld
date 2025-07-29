@@ -15,11 +15,12 @@ import com.apicatalog.cursor.cbor.CborCursor;
 import com.apicatalog.jsonld.JsonLdError;
 
 import co.nstant.in.cbor.model.DataItem;
+import jakarta.json.JsonObject;
 
 public class ContextMappingProvider implements EncoderMappingProvider, DecoderMappingProvider {
 
     @Override
-    public Mapping getEncoderMapping(MapCursor document, EncoderConfig config) throws ContextError {
+    public Mapping getEncoderMapping(JsonObject document, EncoderConfig config) throws ContextError {
         try {
             final Context context = Context.from(document, config.base(), config.loader());
 
@@ -36,24 +37,25 @@ public class ContextMappingProvider implements EncoderMappingProvider, DecoderMa
 
     @Override
     public Mapping getDecoderMapping(DataItem document, DocumentDictionary custom, DecoderConfig config) throws ContextError {
-        try {
+//        try {
             final DecoderContextMapping mapping = new DecoderContextMapping(custom.contexts(), custom.types(), config.valueDecoders());
 
-            final MapCursor cursor = CborCursor.from(
-                    document,
-                    mapping::decodeKey,
-                    mapping::encodeKey,
-                    mapping::decodeValue);
+            //FIXME
+//            final MapCursor cursor = CborCursor.from(
+//                    document,
+//                    mapping::decodeKey,
+//                    mapping::encodeKey,
+//                    mapping::decodeValue);
 
-            final Context context = Context.from(cursor, config.base(), config.loader(), mapping::add, mapping.typeKeyNameMap());
+//            final Context context = Context.from(cursor, config.base(), config.loader(), mapping::add, mapping.typeKeyNameMap());
 
-            mapping.typeMap(context.getTypeMapping());
+//            mapping.typeMap(context.getTypeMapping());
 
             return mapping;
 
-        } catch (JsonLdError e) {
-            throw new ContextError(Code.InvalidContext, e);
-        }
+//        } catch (JsonLdError e) {
+//            throw new ContextError(Code.InvalidContext, e);
+//        }
     }
 
 }
