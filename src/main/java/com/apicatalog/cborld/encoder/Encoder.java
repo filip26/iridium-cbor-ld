@@ -134,7 +134,6 @@ public class Encoder {
         MapBuilder<?> flow = builder;
 
         for (final Entry<String, JsonValue> entry : object.entrySet()) {
-
             final String property = entry.getKey();
 
             final Integer encodedProperty = mapping.terms().getCode(property);
@@ -147,7 +146,7 @@ public class Encoder {
 
                 if (config.isCompactArrays() && entry.getValue().asJsonArray().size() == 1) {
 
-                    final JsonValue value = entry.getValue();
+                    final JsonValue value = entry.getValue().asJsonArray().iterator().next();
 
                     if (JsonUtils.isObject(value)) {
                         final TypeMap propertyTypeMapping = typeMapping.getMapping(property);

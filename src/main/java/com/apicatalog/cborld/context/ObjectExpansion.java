@@ -235,10 +235,10 @@ final class ObjectExpansion {
 
                 if (localContext.isPresent()) {
 
-                    final JsonValue lc = localContext.get();
+                    final JsonValue contextValue = localContext.get();
 
-                    if (JsonUtils.isObject(lc)) {
-                        appliedContexts.accept(lc.asJsonObject().keySet());
+                    if (JsonUtils.isObject(contextValue)) {
+                        appliedContexts.accept(contextValue.asJsonObject().keySet());
                     }
 
                     Optional<TermDefinition> valueDefinition = activeContext.getTerm(term);
@@ -246,7 +246,7 @@ final class ObjectExpansion {
                     activeContext = activeContext
                             .newContext()
                             .propagate(false)
-                            .create(lc,
+                            .create(contextValue,
                                     valueDefinition
                                             .map(TermDefinition::getBaseUrl)
                                             .orElse(null));
