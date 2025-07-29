@@ -4,10 +4,12 @@ import java.util.Collection;
 
 import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.cursor.ValueCursor;
+import com.apicatalog.multibase.Multibase;
 import com.apicatalog.multicodec.Multicodec.Tag;
 import com.apicatalog.multicodec.MulticodecDecoder;
 
 import co.nstant.in.cbor.model.Array;
+import co.nstant.in.cbor.model.ByteString;
 import co.nstant.in.cbor.model.DataItem;
 import co.nstant.in.cbor.model.UnsignedInteger;
 
@@ -25,20 +27,26 @@ public class DidKeyValueEncoder implements ValueEncoder {
 
             try {
                 
-//                final DidUrl did = DidUrl.of(value.stringValue());
-//                
-//                final DidKey key = DidKey.of(did, CODECS);
+                String encoded = value.stringValue().substring(PREFIX.length());
+                
+                String fragment = null;
+                
+                final int fragmentIndex = encoded.indexOf('#');
+                if (fragmentIndex != -1) {
+                    fragment = encoded.substring(fragmentIndex + 1);
+                    encoded = encoded.substring(0, fragmentIndex);
+                }
+                
                 
                 final Array result = new Array();
                 
                 result.add(new UnsignedInteger(CODE));
-//                result.add(new ByteString(key.codec().encode(key.rawBytes())));
+                result.add(encode(encoded));
 
-//                if (StringUtils.isNotBlank(did.getFragment())) {
-//                    final DidKey fragment = DidKey.of(Did.of(PREFIX + did.getFragment()), CODECS);                    
-//                    result.add(new ByteString(fragment.codec().encode(fragment.rawBytes())));
-//                }
-
+                if (fragment != null) {
+                    result.add(encode(fragment));
+                }
+                
                 return result;
 
             } catch (IllegalArgumentException e) {
@@ -46,5 +54,9 @@ public class DidKeyValueEncoder implements ValueEncoder {
             }
         }
         return null;
+    }
+    
+    static final ByteString encode(String value) {
+        return new ByteString(Multibase.BASE_58_BTC.decode(value));
     }
 }
