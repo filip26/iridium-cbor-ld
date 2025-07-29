@@ -1,3 +1,7 @@
+
+> [!IMPORTANT]
+> Your feedback is essential to the improvement of this library. Please share any concerns, primary use cases, areas for enhancement, or challenges you have encountered. Your insights help refine and optimize the library to better meet user needs. Thank you for your time and contributions.
+
 # Iridium CBOR-LD
 An implementation of the [CBOR-LD 1.0](https://json-ld.github.io/cbor-ld-spec/) in Java.
 

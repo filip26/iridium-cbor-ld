@@ -7,7 +7,7 @@
 
     <groupId>com.apicatalog</groupId>
     <artifactId>iridium-cbor-ld</artifactId>
-    <version>0.4.0-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
 
     <packaging>jar</packaging>
     <name>Iridium CBOR-LD</name>
@@ -57,15 +57,18 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <jakarta.json.version>2.0.1</jakarta.json.version>
-        <titanium.version>1.4.1</titanium.version>
-        <carbon.version>0.9.0-SNAPSHOT</carbon.version>
+        <titanium.version>1.6.0</titanium.version>
+        <carbon.version>0.6.0</carbon.version>
+
+        <copper-multibase>1.0.0</copper-multibase>
+        <copper-multicodec>1.0.0</copper-multicodec>        
 
         <cbor-java.version>0.9</cbor-java.version>
 
         <argLine>-Dfile.encoding=UTF-8</argLine>
 
         <!-- test resources -->
-        <junit.version>5.11.2</junit.version>
+        <junit.version>5.13.4</junit.version>
         <jakarta.json.version>2.0.1</jakarta.json.version>
     </properties>
 
@@ -95,6 +98,18 @@
             <version>${carbon.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.apicatalog</groupId>
+            <artifactId>copper-multibase</artifactId>
+            <version>${copper-multibase}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.apicatalog</groupId>
+            <artifactId>copper-multicodec</artifactId>
+            <version>${copper-multicodec}</version>
+        </dependency>
+
         <!-- Tests -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -118,6 +133,24 @@
                 <version>3.4.2</version>
             </plugin>
             <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.6.1</version>
+                <executions>
+                     <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+<!--                        <configuration>
+                            <sources>
+                                <source>${envSources}</source>
+                            </sources>
+                        </configuration>-->
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
                 <version>3.3.1</version>
@@ -133,7 +166,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.10.1</version>
+                <version>3.11.2</version>
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
@@ -153,7 +186,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.12</version>
+                <version>0.8.13</version>
                 <executions>
                     <execution>
                         <id>default-prepare-agent</id>
@@ -172,11 +205,11 @@
             </plugin>
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.5.1</version>
+                <version>3.5.3</version>
             </plugin>
             <plugin>
                 <artifactId>maven-failsafe-plugin</artifactId>
-                <version>3.5.1</version>
+                <version>3.5.3</version>
             </plugin>
         </plugins>
     </build>
@@ -191,7 +224,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>3.2.7</version>
+                        <version>3.2.8</version>
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>

@@ -4,15 +4,10 @@ import java.util.Collection;
 
 import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.cursor.ValueCursor;
-import com.apicatalog.did.Did;
-import com.apicatalog.did.DidUrl;
-import com.apicatalog.did.key.DidKey;
-import com.apicatalog.jsonld.StringUtils;
 import com.apicatalog.multicodec.Multicodec.Tag;
 import com.apicatalog.multicodec.MulticodecDecoder;
 
 import co.nstant.in.cbor.model.Array;
-import co.nstant.in.cbor.model.ByteString;
 import co.nstant.in.cbor.model.DataItem;
 import co.nstant.in.cbor.model.UnsignedInteger;
 
@@ -30,19 +25,19 @@ public class DidKeyValueEncoder implements ValueEncoder {
 
             try {
                 
-                final DidUrl did = DidUrl.of(value.stringValue());
-                
-                final DidKey key = DidKey.of(did, CODECS);
+//                final DidUrl did = DidUrl.of(value.stringValue());
+//                
+//                final DidKey key = DidKey.of(did, CODECS);
                 
                 final Array result = new Array();
                 
                 result.add(new UnsignedInteger(CODE));
-                result.add(new ByteString(key.codec().encode(key.rawBytes())));
+//                result.add(new ByteString(key.codec().encode(key.rawBytes())));
 
-                if (StringUtils.isNotBlank(did.getFragment())) {
-                    final DidKey fragment = DidKey.of(Did.of(PREFIX + did.getFragment()), CODECS);                    
-                    result.add(new ByteString(fragment.codec().encode(fragment.rawBytes())));
-                }
+//                if (StringUtils.isNotBlank(did.getFragment())) {
+//                    final DidKey fragment = DidKey.of(Did.of(PREFIX + did.getFragment()), CODECS);                    
+//                    result.add(new ByteString(fragment.codec().encode(fragment.rawBytes())));
+//                }
 
                 return result;
 

@@ -8,17 +8,18 @@ import java.util.Collection;
 
 import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.cursor.ValueCursor;
-import com.apicatalog.linkedtree.xsd.XsdVocab;
 
 import co.nstant.in.cbor.model.DataItem;
 import co.nstant.in.cbor.model.UnsignedInteger;
 
 public class XsdDateValueEncoder implements ValueEncoder {
 
+    public static final String DATE = "http://www.w3.org/2001/XMLSchema#date";
+    
     @Override
     public DataItem encode(Mapping mapping, ValueCursor value, String term, Collection<String> types) {
 
-        if (types != null && types.contains(XsdVocab.DATE) && value.isString()) {
+        if (types != null && types.contains(DATE) && value.isString()) {
 
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             LocalDate date = LocalDate.parse(value.stringValue(), formatter);

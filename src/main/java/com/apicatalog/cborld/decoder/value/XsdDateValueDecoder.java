@@ -8,7 +8,6 @@ import java.util.Collection;
 
 import com.apicatalog.cborld.decoder.DecoderError;
 import com.apicatalog.cborld.mapping.Mapping;
-import com.apicatalog.linkedtree.xsd.XsdVocab;
 
 import co.nstant.in.cbor.model.DataItem;
 import co.nstant.in.cbor.model.MajorType;
@@ -18,10 +17,12 @@ import jakarta.json.JsonValue;
 
 public class XsdDateValueDecoder implements ValueDecoder {
 
+    public static final String DATE = "http://www.w3.org/2001/XMLSchema#date";
+
     @Override
     public JsonValue decode(Mapping mapping, DataItem value, String term, Collection<String> types) throws DecoderError {
         if (types != null
-                && types.contains(XsdVocab.DATE)
+                && types.contains(DATE)
                 && MajorType.UNSIGNED_INTEGER.equals(value.getMajorType())) {
 
             long epochSeconds = ((UnsignedInteger) value).getValue().longValueExact();
