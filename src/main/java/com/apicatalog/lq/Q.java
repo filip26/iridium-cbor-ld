@@ -25,7 +25,7 @@ public class Q {
     }
 
     public static Data value(Data map, final String key) {
-        return (Data) map.apply(f -> f.entry(key));
+        return (Data) map.apply(f -> f.value(key));
     }
 
     @SuppressWarnings("unchecked")

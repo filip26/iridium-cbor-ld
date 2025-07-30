@@ -19,7 +19,7 @@ public interface Functions {
 
     Function<?, Boolean> contains(String key);
 
-    Function<?, Data> entry(String key);
+    Function<?, Data> value(String key);
 
     Function<?, Iterable<Data>> iterable();
 

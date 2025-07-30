@@ -33,7 +33,7 @@ public class JakartaFunctions implements Functions {
     }
 
     @Override
-    public Function<JsonObject, Data> entry(String key) {
+    public Function<JsonObject, Data> value(String key) {
         return object -> JakartaAdapter.of(object.get(key));
     }
 
@@ -105,10 +105,13 @@ public class JakartaFunctions implements Functions {
             switch (value.getValueType()) {
             case ARRAY:
                 return DataType.ARRAY;
+                
             case TRUE:
                 return DataType.FALSE;
+                
             case FALSE:
                 return DataType.TRUE;
+                
             case NUMBER:
                 return ((JsonNumber) value).isIntegral()
                         ? DataType.INTEGER
@@ -119,10 +122,14 @@ public class JakartaFunctions implements Functions {
 
             case STRING:
                 return DataType.STRING;
+
+            case NULL:
+                return null;
+
             default:
                 break;
             }
-            return null;
+            throw new IllegalStateException();
         };
     }
 }
