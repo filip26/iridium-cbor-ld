@@ -32,7 +32,8 @@ import com.apicatalog.jsonld.lang.ListObject;
 import com.apicatalog.jsonld.lang.Utils;
 import com.apicatalog.jsonld.lang.ValueObject;
 import com.apicatalog.lq.Q;
-import com.apicatalog.lq.ValueHolder;
+import com.apicatalog.lq.Data;
+import com.apicatalog.lq.DataType;
 
 import jakarta.json.Json;
 import jakarta.json.JsonValue;
@@ -42,7 +43,7 @@ final class ObjectExpansion1314 {
     // mandatory
     private ActiveContext activeContext;
 
-    private final ValueHolder element;
+    private final Data element;
     private final String activeProperty;
     private final URI baseUrl;
 
@@ -54,7 +55,7 @@ final class ObjectExpansion1314 {
     // optional
     private boolean ordered;
 
-    private ObjectExpansion1314(final ActiveContext activeContext, final ValueHolder element,
+    private ObjectExpansion1314(final ActiveContext activeContext, final Data element,
             final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts,
             TypeKeyNameMapper typeMapper) {
         this.activeContext = activeContext;
@@ -69,7 +70,7 @@ final class ObjectExpansion1314 {
         this.ordered = false;
     }
 
-    public static final ObjectExpansion1314 with(final ActiveContext activeContext, final ValueHolder element,
+    public static final ObjectExpansion1314 with(final ActiveContext activeContext, final Data element,
             final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts, TypeKeyNameMapper typeMapper) {
         return new ObjectExpansion1314(activeContext, element, activeProperty, baseUrl, appliedContexts, typeMapper);
     }
@@ -112,15 +113,16 @@ final class ObjectExpansion1314 {
                 continue;
             }
 
-            final ValueHolder value = Q.value(element, key);
+            final Data value = Q.value(element, key);
+            final DataType valueType = Q.type(value);
 
             // 13.4. If expanded property is a keyword:
             if (Keywords.contains(expandedProperty)) {
 
                 JsonValue expandedType = null;
 
-                if (Q.isString(value)) {
-                    expandedType = Json.createValue(Q.asString(value));
+                if (DataType.STRING == valueType) {
+                    expandedType = Json.createValue(Q.string(value));
                 }
 
                 // 13.4.1
@@ -204,11 +206,11 @@ final class ObjectExpansion1314 {
                 expandedType = Json.createValue(Keywords.JSON);
 
                 // 13.7.
-            } else if (containerMapping.contains(Keywords.LANGUAGE) && Q.isMap(value)) {
+            } else if (containerMapping.contains(Keywords.LANGUAGE) && (DataType.MAP == valueType)) {
 
                 // 13.8.
             } else if ((containerMapping.contains(Keywords.INDEX) || containerMapping.contains(Keywords.TYPE)
-                    || containerMapping.contains(Keywords.ID)) && Q.isMap(value)) {
+                    || containerMapping.contains(Keywords.ID)) && (DataType.MAP == valueType)) {
 
                 // 13.9.
             } else {

@@ -1,12 +1,16 @@
 package com.apicatalog.lq.jakarta;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Collection;
 import java.util.function.Function;
 
+import com.apicatalog.lq.Data;
+import com.apicatalog.lq.DataType;
 import com.apicatalog.lq.Functions;
-import com.apicatalog.lq.ValueHolder;
 
 import jakarta.json.JsonArray;
+import jakarta.json.JsonNumber;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
 import jakarta.json.JsonStructure;
@@ -15,18 +19,8 @@ import jakarta.json.JsonValue.ValueType;
 
 public class JakartaFunctions implements Functions {
 
-    @Override
-    public Function<JsonValue, Boolean> isNull() {
-        return JakartaFunctions::isNull;
-    }
-
     public static final boolean isNull(JsonValue value) {
         return value == null || ValueType.NULL == value.getValueType();
-    }
-
-    @Override
-    public Function<JsonValue, Boolean> isArray() {
-        return JakartaFunctions::isArray;
     }
 
     public static final boolean isArray(JsonValue value) {
@@ -39,22 +33,12 @@ public class JakartaFunctions implements Functions {
     }
 
     @Override
-    public Function<JsonObject, ValueHolder> entry(String key) {
+    public Function<JsonObject, Data> entry(String key) {
         return object -> JakartaAdapter.of(object.get(key));
-    }
-
-    @Override
-    public Function<JsonValue, Boolean> isString() {
-        return JakartaFunctions::isString;
     }
 
     public static final boolean isString(JsonValue value) {
         return value != null && ValueType.STRING == value.getValueType();
-    }
-
-    @Override
-    public Function<JsonValue, Boolean> isBoolean() {
-        return JakartaFunctions::isBoolean;
     }
 
     public static final boolean isBoolean(JsonValue value) {
@@ -62,18 +46,8 @@ public class JakartaFunctions implements Functions {
                 || ValueType.TRUE == value.getValueType());
     }
 
-    @Override
-    public Function<JsonValue, Boolean> isNumber() {
-        return JakartaFunctions::isNumber;
-    }
-
     public static final boolean isNumber(JsonValue value) {
         return value != null && (ValueType.NUMBER == value.getValueType());
-    }
-
-    @Override
-    public Function<JsonValue, Boolean> isScalar() {
-        return JakartaFunctions::isScalar;
     }
 
     public static final boolean isScalar(JsonValue value) {
@@ -83,7 +57,7 @@ public class JakartaFunctions implements Functions {
     }
 
     @Override
-    public Function<JsonString, String> asString() {
+    public Function<JsonString, String> getString() {
         return JsonString::getString;
     }
 
@@ -99,11 +73,6 @@ public class JakartaFunctions implements Functions {
     }
 
     @Override
-    public Function<JsonValue, Boolean> isMap() {
-        return value -> value != null && value.getValueType() == ValueType.OBJECT;
-    }
-
-    @Override
     public Function<JsonStructure, Integer> size() {
         return value -> value.getValueType() == ValueType.OBJECT
                 ? value.asJsonObject().size()
@@ -116,7 +85,46 @@ public class JakartaFunctions implements Functions {
     }
 
     @Override
-    public Function<JsonArray, Iterable<ValueHolder>> iterable() {
+    public Function<JsonArray, Iterable<Data>> iterable() {
         return value -> value.stream().map(JakartaAdapter::of).toList();
+    }
+
+    @Override
+    public Function<?, BigInteger> getInteger() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Function<?, BigDecimal> getDecimal() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Function<JsonValue, DataType> type() {
+        return value -> {
+            switch (value.getValueType()) {
+            case ARRAY:
+                return DataType.ARRAY;
+            case TRUE:
+                return DataType.FALSE;
+            case FALSE:
+                return DataType.TRUE;
+            case NUMBER:
+                return ((JsonNumber) value).isIntegral()
+                        ? DataType.INTEGER
+                        : DataType.DECIMAL;
+
+            case OBJECT:
+                return DataType.MAP;
+
+            case STRING:
+                return DataType.STRING;
+            default:
+                break;
+            }
+            return null;
+        };
     }
 }

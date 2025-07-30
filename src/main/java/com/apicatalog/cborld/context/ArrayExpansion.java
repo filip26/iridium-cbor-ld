@@ -24,7 +24,7 @@ import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.lq.Q;
-import com.apicatalog.lq.ValueHolder;
+import com.apicatalog.lq.Data;
 
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
@@ -35,7 +35,7 @@ final class ArrayExpansion {
 
     // mandatory
     private ActiveContext activeContext;
-    private ValueHolder element;
+    private Data element;
     private String activeProperty;
     private URI baseUrl;
     
@@ -46,7 +46,7 @@ final class ArrayExpansion {
     private boolean ordered;
     private boolean fromMap;
 
-    private ArrayExpansion(final ActiveContext activeContext, final ValueHolder element, final String activeProperty,
+    private ArrayExpansion(final ActiveContext activeContext, final Data element, final String activeProperty,
             final URI baseUrl, Consumer<Collection<String>> appliedContexts, TypeKeyNameMapper typeMapper) {
         this.activeContext = activeContext;
         this.element = element;
@@ -61,7 +61,7 @@ final class ArrayExpansion {
         this.fromMap = false;
     }
 
-    public static final ArrayExpansion with(final ActiveContext activeContext, final ValueHolder element,
+    public static final ArrayExpansion with(final ActiveContext activeContext, final Data element,
             final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts, TypeKeyNameMapper typeMapper) {
         return new ArrayExpansion(activeContext, element, activeProperty, baseUrl, appliedContexts, typeMapper);
     }
@@ -85,7 +85,7 @@ final class ArrayExpansion {
         final JsonArrayBuilder result = Json.createArrayBuilder();
         
         // 5.2.
-        for (final ValueHolder item : Q.iterable(element)) {
+        for (final Data item : Q.iterable(element)) {
 
             // 5.2.1
             JsonValue expanded =

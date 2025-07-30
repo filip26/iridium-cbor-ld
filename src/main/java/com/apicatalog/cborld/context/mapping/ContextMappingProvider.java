@@ -11,7 +11,7 @@ import com.apicatalog.cborld.mapping.DecoderMappingProvider;
 import com.apicatalog.cborld.mapping.EncoderMappingProvider;
 import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.jsonld.JsonLdError;
-import com.apicatalog.lq.ValueHolder;
+import com.apicatalog.lq.Data;
 import com.apicatalog.lq.jakarta.JakartaAdapter;
 
 import co.nstant.in.cbor.model.DataItem;
@@ -23,7 +23,7 @@ public class ContextMappingProvider implements EncoderMappingProvider, DecoderMa
     public Mapping getEncoderMapping(JsonObject document, EncoderConfig config) throws ContextError {
         try {
 
-            final ValueHolder value = JakartaAdapter.of(document);
+            final Data value = JakartaAdapter.of(document);
 
             final Context context = Context.from(value, config.base(), config.loader());
 

@@ -30,7 +30,7 @@ import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.Utils;
 import com.apicatalog.lq.Q;
-import com.apicatalog.lq.ValueHolder;
+import com.apicatalog.lq.Data;
 import com.apicatalog.lq.jakarta.JakartaAdapter;
 
 import jakarta.json.JsonString;
@@ -41,7 +41,7 @@ final class ObjectExpansion {
     // mandatory
     private ActiveContext activeContext;
     private JsonValue propertyContext;
-    private ValueHolder element;
+    private Data element;
     private String activeProperty;
     private URI baseUrl;
 
@@ -52,7 +52,7 @@ final class ObjectExpansion {
     private boolean ordered;
     private boolean fromMap;
 
-    private ObjectExpansion(final ActiveContext activeContext, final JsonValue propertyContext, final ValueHolder element,
+    private ObjectExpansion(final ActiveContext activeContext, final JsonValue propertyContext, final Data element,
             final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts, TypeKeyNameMapper typeMapper) {
         this.activeContext = activeContext;
         this.propertyContext = propertyContext;
@@ -69,7 +69,7 @@ final class ObjectExpansion {
     }
 
     public static final ObjectExpansion with(final ActiveContext activeContext, final JsonValue propertyContext,
-            final ValueHolder element, final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts, TypeKeyNameMapper typeMapper) {
+            final Data element, final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts, TypeKeyNameMapper typeMapper) {
         return new ObjectExpansion(activeContext, propertyContext, element, activeProperty, baseUrl, appliedContexts, typeMapper);
     }
 
@@ -212,7 +212,7 @@ final class ObjectExpansion {
                 typeMapper.typeKeyName(key);
             }
 
-            final ValueHolder entry = Q.value(element, key);
+            final Data entry = Q.value(element, key);
 
             final JsonValue entryValue = JakartaAdapter.toJson(entry);
 
