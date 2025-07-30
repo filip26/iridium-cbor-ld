@@ -2,6 +2,7 @@ package com.apicatalog.lq.cbor;
 
 import java.util.function.Function;
 
+import com.apicatalog.cursor.cbor.CborCursor.ValueDecoder;
 import com.apicatalog.lq.Data;
 import com.apicatalog.lq.Functions;
 
@@ -11,8 +12,9 @@ public class CborAdapter {
 
     public static final Data of(DataItem value,
             Function<DataItem, String> dataToKey,
-            Function<String, DataItem> keyToData) {
-        return of(value, new CborFunctions(dataToKey, keyToData));
+            Function<String, DataItem> keyToData,
+            ValueDecoder decodeValue) {
+        return of(value, new CborFunctions(dataToKey, keyToData, decodeValue));
     }
 
     @SuppressWarnings("unchecked")

@@ -96,7 +96,7 @@ public class CborCursor implements Cursor<DataItem> {
                     .filter(ss -> ss.key() != null)
                     .map(ss -> ss.key())
                     .collect(Collectors.toList());
-    System.out.println("... " + path);
+
             if ((!arrayCode && MajorType.ARRAY.equals(value.getMajorType()))
                     ) {
     

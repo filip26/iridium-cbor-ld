@@ -44,12 +44,11 @@ public class ContextMappingProvider implements EncoderMappingProvider, DecoderMa
         try {
             final DecoderContextMapping mapping = new DecoderContextMapping(custom.contexts(), custom.types(), config.valueDecoders());
 
-            final Data data = CborAdapter.of(document,
+            final Data data = CborAdapter.of(
+                    document,
                     mapping::decodeKey,
-                  mapping::encodeKey
-//                  mapping::decodeValue
-                    );
-                    
+                    mapping::encodeKey,
+                    mapping::decodeValue);
 
             final Context context = Context.from(data, config.base(), config.loader(), mapping::add, mapping.typeKeyNameMap());
 

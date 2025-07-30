@@ -3,9 +3,11 @@ package com.apicatalog.lq.cbor;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.apicatalog.cursor.cbor.CborCursor.ValueDecoder;
 import com.apicatalog.lq.Data;
 import com.apicatalog.lq.DataType;
 import com.apicatalog.lq.Functions;
@@ -26,12 +28,15 @@ public class CborFunctions implements Functions {
 
     final Function<DataItem, String> dataToKey;
     final Function<String, DataItem> keyToData;
+    final ValueDecoder decodeValue;
 
     public CborFunctions(
             Function<DataItem, String> dataToKey,
-            Function<String, DataItem> keyToData) {
+            Function<String, DataItem> keyToData,
+            ValueDecoder decodeValue) {
         this.dataToKey = dataToKey;
         this.keyToData = keyToData;
+        this.decodeValue = decodeValue;
     }
 
     @Override
@@ -52,14 +57,57 @@ public class CborFunctions implements Functions {
     }
 
     @Override
-    public Function<Map, Data> value(String key) {
+    public Function<Map, Data> value(String mapKey) {
         return object -> {
-            DataItem item = keyToData.apply(key);
+//            DataItem item = keyToData.apply(key);
+//
+//            if (MajorType.UNSIGNED_INTEGER.equals(item.getMajorType())) {
+//                item = new UnsignedInteger(((UnsignedInteger) item).getValue().add(BigInteger.ONE));
+//            }
+//            return CborAdapter.of(object.get(item), this);
+            
+            DataItem key = keyToData.apply(mapKey);
+            DataItem value = object.get(key);
+            Boolean arrayCode = Boolean.FALSE;
 
-            if (MajorType.UNSIGNED_INTEGER.equals(item.getMajorType())) {
-                item = new UnsignedInteger(((UnsignedInteger) item).getValue().add(BigInteger.ONE));
+            if (value == null && MajorType.UNSIGNED_INTEGER.equals(key.getMajorType())) {
+                key = new UnsignedInteger(((UnsignedInteger)key).getValue().add(BigInteger.ONE));
+                value = object.get(key);        
+                if (value != null) {
+                    arrayCode = Boolean.TRUE;
+                }   
             }
-            return CborAdapter.of(object.get(item), this);
+            
+            if (value != null) {
+//FIXME                
+//                final Collection<String> path = stack.stream()
+//                        .filter(ss -> ss.key() != null)
+//                        .map(ss -> ss.key())
+//                        .collect(Collectors.toList());
+                final Collection<String> path  = Collections.emptyList();
+                if ((!arrayCode && MajorType.ARRAY.equals(value.getMajorType()))
+                        ) {
+        
+                    value = decodeValue.decode(value, mapKey, path);
+                    
+                } else if (MajorType.ARRAY.equals(value.getMajorType())) {
+                    
+                    Collection<DataItem> items = ((Array)value).getDataItems();
+                    
+                    Array newValues = new Array(items.size());
+                    
+                    for (DataItem item : items) {
+                        newValues.add(decodeValue.decode(item, mapKey, path));
+                    }
+                    
+                    value = newValues;
+                    
+                } else {
+                    value = decodeValue.decode(value, mapKey, path);
+                }
+            }
+            
+            return CborAdapter.of(value, this);
         };
     }
 
