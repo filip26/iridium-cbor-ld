@@ -10,10 +10,9 @@ import com.apicatalog.cborld.encoder.EncoderConfig;
 import com.apicatalog.cborld.mapping.DecoderMappingProvider;
 import com.apicatalog.cborld.mapping.EncoderMappingProvider;
 import com.apicatalog.cborld.mapping.Mapping;
-import com.apicatalog.cursor.MapCursor;
-import com.apicatalog.cursor.cbor.CborCursor;
-import com.apicatalog.cursor.jakarta.JakartaJsonCursor;
 import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.lq.ValueHolder;
+import com.apicatalog.lq.jakarta.JakartaAdapter;
 
 import co.nstant.in.cbor.model.DataItem;
 import jakarta.json.JsonObject;
@@ -24,9 +23,9 @@ public class ContextMappingProvider implements EncoderMappingProvider, DecoderMa
     public Mapping getEncoderMapping(JsonObject document, EncoderConfig config) throws ContextError {
         try {
 
-            final MapCursor cursor = JakartaJsonCursor.from(document);
+            final ValueHolder value = JakartaAdapter.of(document);
 
-            final Context context = Context.from(cursor, config.base(), config.loader());
+            final Context context = Context.from(value, config.base(), config.loader());
 
             return new EncoderContextMapping(
                     config.dictionary().contexts(),
@@ -41,23 +40,23 @@ public class ContextMappingProvider implements EncoderMappingProvider, DecoderMa
 
     @Override
     public Mapping getDecoderMapping(DataItem document, DocumentDictionary custom, DecoderConfig config) throws ContextError {
-        try {
+//        try {
             final DecoderContextMapping mapping = new DecoderContextMapping(custom.contexts(), custom.types(), config.valueDecoders());
 
-            final MapCursor cursor = CborCursor.from(
-                    document,
-                    mapping::decodeKey,
-                    mapping::encodeKey,
-                    mapping::decodeValue);
-
-            final Context context = Context.from(cursor, config.base(), config.loader(), mapping::add, mapping.typeKeyNameMap());
-
-            mapping.typeMap(context.getTypeMapping());
+//            final MapCursor cursor = CborCursor.from(
+//                    document,
+//                    mapping::decodeKey,
+//                    mapping::encodeKey,
+//                    mapping::decodeValue);
+//
+//            final Context context = Context.from(cursor, config.base(), config.loader(), mapping::add, mapping.typeKeyNameMap());
+//
+//            mapping.typeMap(context.getTypeMapping());
 
             return mapping;
 
-        } catch (JsonLdError e) {
-            throw new ContextError(Code.InvalidContext, e);
-        }
+//        } catch (JsonLdError e) {
+//            throw new ContextError(Code.InvalidContext, e);
+//        }
     }
 }

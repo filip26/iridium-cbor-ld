@@ -19,13 +19,14 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import com.apicatalog.cursor.ValueCursor;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.DirectionType;
 import com.apicatalog.jsonld.lang.Keywords;
+import com.apicatalog.lq.Q;
+import com.apicatalog.lq.ValueHolder;
 
 import jakarta.json.Json;
 import jakarta.json.JsonObjectBuilder;
@@ -38,7 +39,7 @@ final class ValueExpasion {
 
     // runtime
     private Optional<TermDefinition> definition;
-    
+
     private final Consumer<Collection<String>> appliedContexts;
 
     private ValueExpasion(final ActiveContext activeContext, Consumer<Collection<String>> appliedContexts) {
@@ -50,8 +51,8 @@ final class ValueExpasion {
         return new ValueExpasion(activeContext, appliedContexts);
     }
 
-    public JsonValue expand(final ValueCursor value, final String activeProperty) throws JsonLdError {
-        
+    public JsonValue expand(final ValueHolder value, final String activeProperty) throws JsonLdError {
+
         definition = activeContext.getTerm(activeProperty);
 
         final Optional<String> typeMapping = definition.map(TermDefinition::getTypeMapping);
@@ -62,74 +63,74 @@ final class ValueExpasion {
 
                 String idValue = null;
 
-                if (value.isString()) {
-                    idValue = value.stringValue();
+                if (Q.isString(value)) {
+                    idValue = Q.asString(value);
                 }
 
                 if (idValue != null) {
                     final String expandedValue = UriExpansion
-                                                    .with(activeContext, appliedContexts)
-                                                    .documentRelative(true)
-                                                    .vocab(false)
-                                                    .expand(idValue);
+                            .with(activeContext, appliedContexts)
+                            .documentRelative(true)
+                            .vocab(false)
+                            .expand(idValue);
 
                     return Json.createObjectBuilder().add(Keywords.ID, expandedValue)
-                            .add(Keywords.TYPE,  Keywords.ID).build();
-                    
-                } else if (value.isNumber()) {
+                            .add(Keywords.TYPE, Keywords.ID).build();
+
+                } else if (Q.isNumber(value)) {
                     return Json.createObjectBuilder()
-                            .add(Keywords.TYPE,  Keywords.ID).build();                    
+                            .add(Keywords.TYPE, Keywords.ID).build();
                 }
 
-            // 2.
-            } else if (Keywords.VOCAB.equals(typeMapping.get()) && value.isString()) {
+                // 2.
+            } else if (Keywords.VOCAB.equals(typeMapping.get()) && Q.isString(value)) {
 
                 String expandedValue = UriExpansion
-                                            .with(activeContext, appliedContexts)
-                                            .documentRelative(true)
-                                            .vocab(true)
-                                            .expand(value.stringValue());
+                        .with(activeContext, appliedContexts)
+                        .documentRelative(true)
+                        .vocab(true)
+                        .expand(Q.asString(value));
 
                 return Json.createObjectBuilder().add(Keywords.ID, expandedValue)
-                        .add(Keywords.TYPE,  Keywords.VOCAB).build();
-                
-            } else if (Keywords.VOCAB.equals(typeMapping.get()) && value.isNumber()) {
+                        .add(Keywords.TYPE, Keywords.VOCAB).build();
+
+            } else if (Keywords.VOCAB.equals(typeMapping.get()) && Q.isNumber(value)) {
                 return Json.createObjectBuilder()
-                        .add(Keywords.TYPE,  Keywords.VOCAB).build();                
+                        .add(Keywords.TYPE, Keywords.VOCAB).build();
             }
         }
 
         // 3.
-        final JsonObjectBuilder result = Json.createObjectBuilder()/*.add(Keywords.VALUE, value)*/;
+        final JsonObjectBuilder result = Json.createObjectBuilder()/* .add(Keywords.VALUE, value) */;
 
         // 4.
         if (typeMapping
-                    .filter(t -> !Keywords.ID.equals(t) && !Keywords.VOCAB.equals(t) && !Keywords.NONE.equals(t))
-                    .isPresent()) {
+                .filter(t -> !Keywords.ID.equals(t) && !Keywords.VOCAB.equals(t) && !Keywords.NONE.equals(t))
+                .isPresent()) {
 
             result.add(Keywords.TYPE, typeMapping.get());
             return result.build();
 
-        } else if (value.isString()) {
+        } else if (Q.isString(value)) {
             buildStringValue(result);
             return result.build();
         }
 
         return null;
     }
-    
+
     private void buildStringValue(final JsonObjectBuilder result) {
 
         // 5.1.
         final JsonValue language = definition
-                                            .map(TermDefinition::getLanguageMapping)
-                                            .orElseGet(() -> activeContext.getDefaultLanguage() != null
-                                                                ? Json.createValue(activeContext.getDefaultLanguage())
-                                                                : null);
+                .map(TermDefinition::getLanguageMapping)
+                .orElseGet(() -> activeContext.getDefaultLanguage() != null
+                        ? Json.createValue(activeContext.getDefaultLanguage())
+                        : null);
         // 5.2.
         final DirectionType direction = definition
-                                            .map(TermDefinition::getDirectionMapping)
-                                            .orElseGet(() -> activeContext.getDefaultBaseDirection());
+                .map(TermDefinition::getDirectionMapping)
+                .orElseGet(() -> activeContext.getDefaultBaseDirection());
 
         // 5.3.
         if (JsonUtils.isNotNull(language)) {
