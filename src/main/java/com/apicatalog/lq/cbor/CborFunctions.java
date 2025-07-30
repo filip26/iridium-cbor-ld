@@ -106,7 +106,7 @@ public class CborFunctions implements Functions {
                     value = decodeValue.decode(value, mapKey, path);
                 }
             }
-            
+            System.out.println(">>> " + mapKey + ", " + key + " -> " + value);
             return CborAdapter.of(value, this);
         };
     }
@@ -129,18 +129,16 @@ public class CborFunctions implements Functions {
     }
 
     public static final boolean isEmpty(DataItem value) {
-//        return value.getValueType() == ValueType.OBJECT
-//                ? value.asJsonObject().isEmpty()
-//                : value.asJsonArray().isEmpty();
-        return true;
+        return MajorType.MAP.equals(value.getMajorType())
+                ? ((Map)value).getKeys().isEmpty()
+                : ((Array)value).getDataItems().isEmpty();
     }
 
     @Override
     public Function<DataItem, Integer> size() {
-        return (x) -> -1;
-//        return value -> value.getValueType() == ValueType.OBJECT
-//                ? value.asJsonObject().size()
-//                : value.asJsonArray().size();
+        return value -> MajorType.MAP.equals(value.getMajorType())
+                ? ((Map)value).getKeys().size()
+                : ((Array)value).getDataItems().size();
     }
 
     @Override
@@ -196,6 +194,9 @@ public class CborFunctions implements Functions {
             case NEGATIVE_INTEGER:
                 return DataType.INTEGER;
 
+                
+            case BYTE_STRING:
+                return DataType.STRING;
             default:
                 break;
             }
