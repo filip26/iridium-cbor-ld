@@ -42,7 +42,7 @@ class DecoderContextMapping implements Mapping {
     }
 
     final DataItem decodeValue(final DataItem value, String term, Collection<String> path) {
-System.out.println("DECODE " + term + " -> " + value + ", ");
+
         Collection<String> TYPE = Arrays.asList(Keywords.TYPE);
 
         for (final ValueDecoder decoder : valueDecoders) {

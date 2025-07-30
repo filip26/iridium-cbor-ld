@@ -2,9 +2,9 @@ package com.apicatalog.lq.cbor;
 
 import java.util.function.Function;
 
-import com.apicatalog.cursor.cbor.CborCursor.ValueDecoder;
 import com.apicatalog.lq.Data;
 import com.apicatalog.lq.Functions;
+import com.apicatalog.lq.cbor.CborFunctions.ValueDecoder;
 
 import co.nstant.in.cbor.model.DataItem;
 

@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.apicatalog.cursor.cbor.CborCursor.ValueDecoder;
 import com.apicatalog.lq.Data;
 import com.apicatalog.lq.DataType;
 import com.apicatalog.lq.Functions;
@@ -25,7 +24,13 @@ import co.nstant.in.cbor.model.UnicodeString;
 import co.nstant.in.cbor.model.UnsignedInteger;
 
 public class CborFunctions implements Functions {
+    
+    @FunctionalInterface
+    public interface ValueDecoder {
+        DataItem decode(DataItem value, String term, Collection<String> path);
+    }
 
+    
     final Function<DataItem, String> dataToKey;
     final Function<String, DataItem> keyToData;
     final ValueDecoder decodeValue;
