@@ -25,9 +25,9 @@ import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.DirectionType;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.lq.Q;
 import com.apicatalog.lq.Data;
 import com.apicatalog.lq.DataType;
+import com.apicatalog.lq.Q;
 
 import jakarta.json.Json;
 import jakarta.json.JsonObjectBuilder;

@@ -29,8 +29,8 @@ import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.Utils;
-import com.apicatalog.lq.Q;
 import com.apicatalog.lq.Data;
+import com.apicatalog.lq.Q;
 import com.apicatalog.lq.jakarta.JakartaAdapter;
 
 import jakarta.json.JsonString;

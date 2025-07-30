@@ -1,5 +1,7 @@
 package com.apicatalog.lq;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Collection;
 
 public class Q {
@@ -39,6 +41,14 @@ public class Q {
     public static Collection<String> keys(Data map) {
         return (Collection<String>) map.apply(Functions::keys);
     }
+    
+    public static BigInteger integer(Data value) {
+        return (BigInteger) value.apply(Functions::getInteger);
+    }
+
+    public static BigDecimal decimal(Data value) {
+        return (BigDecimal) value.apply(Functions::getDecimal);
+    }
 
     public static boolean isScalar(DataType dataType) {
         return dataType == DataType.STRING
@@ -52,5 +62,4 @@ public class Q {
         return dataType == DataType.INTEGER
                 || dataType == DataType.DECIMAL;
     }
-
 }

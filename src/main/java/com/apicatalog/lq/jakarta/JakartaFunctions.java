@@ -90,15 +90,13 @@ public class JakartaFunctions implements Functions {
     }
 
     @Override
-    public Function<?, BigInteger> getInteger() {
-        // TODO Auto-generated method stub
-        return null;
+    public Function<JsonNumber, BigInteger> getInteger() {
+        return JsonNumber::bigIntegerValueExact;
     }
 
     @Override
-    public Function<?, BigDecimal> getDecimal() {
-        // TODO Auto-generated method stub
-        return null;
+    public Function<JsonNumber, BigDecimal> getDecimal() {
+        return JsonNumber::bigDecimalValue;
     }
 
     @Override

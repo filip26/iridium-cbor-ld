@@ -31,9 +31,9 @@ import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.ListObject;
 import com.apicatalog.jsonld.lang.Utils;
 import com.apicatalog.jsonld.lang.ValueObject;
-import com.apicatalog.lq.Q;
 import com.apicatalog.lq.Data;
 import com.apicatalog.lq.DataType;
+import com.apicatalog.lq.Q;
 
 import jakarta.json.Json;
 import jakarta.json.JsonValue;

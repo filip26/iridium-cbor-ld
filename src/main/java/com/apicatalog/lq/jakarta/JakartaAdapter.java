@@ -30,12 +30,24 @@ public class JakartaAdapter {
         }
 
         final DataType dataType = Q.type(value);
-        
-        if (dataType == null) {
-            throw new IllegalStateException();
-        }
-        
+
         switch (dataType) {
+
+        case STRING:
+            return Json.createValue(Q.string(value));
+
+        case INTEGER:
+            return Json.createValue(Q.integer(value));
+
+        case DECIMAL:
+            return Json.createValue(Q.decimal(value));
+
+        case TRUE:
+            return JsonValue.TRUE;
+
+        case FALSE:
+            return JsonValue.FALSE;
+
         case ARRAY:
             if (Q.isEmpty(value)) {
                 return JsonValue.EMPTY_JSON_ARRAY;
@@ -49,14 +61,7 @@ public class JakartaAdapter {
 
             return array.build();
 
-        case TRUE:
-            return JsonValue.TRUE;
-
-        case FALSE:
-            return JsonValue.FALSE;
-
         case MAP:
-
             if (Q.isEmpty(value)) {
                 return JsonValue.EMPTY_JSON_OBJECT;
             }
@@ -71,18 +76,7 @@ public class JakartaAdapter {
             }
 
             return map.build();
-
-        case STRING:
-            return Json.createValue(Q.string(value));
-
         }
-
-//        } else if (cursor.isInteger()) {
-//            return Json.createValue(cursor.integerValue());
-//            
-//        } else if (cursor.isDecimal()) {
-//            return Json.createValue(cursor.decimalValue());
-//            
 
         throw new IllegalStateException();
     }

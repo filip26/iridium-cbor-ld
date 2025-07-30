@@ -25,9 +25,9 @@ import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.json.JsonUtils;
-import com.apicatalog.lq.Q;
 import com.apicatalog.lq.Data;
 import com.apicatalog.lq.DataType;
+import com.apicatalog.lq.Q;
 
 import jakarta.json.JsonValue;
 
