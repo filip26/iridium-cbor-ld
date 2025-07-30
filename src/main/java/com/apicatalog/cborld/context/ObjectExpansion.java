@@ -23,6 +23,9 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import com.apicatalog.cborld.mapping.TypeKeyNameMapper;
+import com.apicatalog.cursor.MapCursor;
+import com.apicatalog.cursor.MapEntryCursor;
+import com.apicatalog.cursor.jakarta.JakartaValueCursor;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
@@ -30,7 +33,6 @@ import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.Utils;
 
-import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 
@@ -39,10 +41,10 @@ final class ObjectExpansion {
     // mandatory
     private ActiveContext activeContext;
     private JsonValue propertyContext;
-    private JsonObject element;
+    private MapCursor element;
     private String activeProperty;
     private URI baseUrl;
-
+    
     private Consumer<Collection<String>> appliedContexts;
     private TypeKeyNameMapper typeMapper;
 
@@ -50,14 +52,14 @@ final class ObjectExpansion {
     private boolean ordered;
     private boolean fromMap;
 
-    private ObjectExpansion(final ActiveContext activeContext, final JsonValue propertyContext, final JsonObject element,
-            final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts, TypeKeyNameMapper typeMapper) {
+    private ObjectExpansion(final ActiveContext activeContext, final JsonValue propertyContext, final MapCursor element,
+            final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts,TypeKeyNameMapper typeMapper) {
         this.activeContext = activeContext;
         this.propertyContext = propertyContext;
         this.element = element;
         this.activeProperty = activeProperty;
         this.baseUrl = baseUrl;
-
+        
         this.appliedContexts = appliedContexts;
         this.typeMapper = typeMapper;
 
@@ -67,7 +69,7 @@ final class ObjectExpansion {
     }
 
     public static final ObjectExpansion with(final ActiveContext activeContext, final JsonValue propertyContext,
-            final JsonObject element, final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts, TypeKeyNameMapper typeMapper) {
+            final MapCursor element, final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts,  TypeKeyNameMapper typeMapper) {
         return new ObjectExpansion(activeContext, propertyContext, element, activeProperty, baseUrl, appliedContexts, typeMapper);
     }
 
@@ -83,10 +85,10 @@ final class ObjectExpansion {
 
     public JsonValue expand() throws JsonLdError {
 
-        if (activeProperty != null && typeMapper != null) {
+        if (activeProperty != null && typeMapper != null)  {
             typeMapper.beginMap(activeProperty);
         }
-
+        
         initPreviousContext();
 
         initPropertyContext();
@@ -101,12 +103,12 @@ final class ObjectExpansion {
         final JsonMapBuilder result = JsonMapBuilder.create();
 
         ObjectExpansion1314
-                .with(activeContext, element, activeProperty, baseUrl, appliedContexts, typeMapper)
-                .result(result)
-                .ordered(ordered)
-                .expand();
+                    .with(activeContext, element, activeProperty, baseUrl, appliedContexts, typeMapper)
+                    .result(result)
+                    .ordered(ordered)
+                    .expand();
 
-        if (activeProperty != null && typeMapper != null) {
+        if (activeProperty != null && typeMapper != null)  {
             typeMapper.end();
         }
 
@@ -117,14 +119,15 @@ final class ObjectExpansion {
         // 8.
         if (propertyContext != null) {
             activeContext = activeContext
-                    .newContext()
-                    .overrideProtected(true)
-                    .create(
-                            propertyContext,
-                            activeContext
-                                    .getTerm(activeProperty)
-                                    .map(TermDefinition::getBaseUrl)
-                                    .orElse(null));
+                                .newContext()
+                                .overrideProtected(true)
+                                .create(
+                                    propertyContext,
+                                    activeContext
+                                            .getTerm(activeProperty)
+                                            .map(TermDefinition::getBaseUrl)
+                                            .orElse(null)
+                                        );
         }
     }
 
@@ -143,12 +146,12 @@ final class ObjectExpansion {
 
             boolean revert = true;
 
-            for (final String key : Utils.index(element.keySet(), true)) {
+            for (final String key : Utils.index(element.keys(), true)) {
 
                 final String expandedKey = UriExpansion
-                        .with(activeContext, appliedContexts)
-                        .vocab(true)
-                        .expand(key);
+                                                .with(activeContext, appliedContexts)
+                                                .vocab(true)
+                                                .expand(key);
 
                 if (Keywords.VALUE.equals(expandedKey) || (Keywords.ID.equals(expandedKey) && (element.size() == 1))) {
                     revert = false;
@@ -165,14 +168,15 @@ final class ObjectExpansion {
     private void initLocalContext() throws JsonLdError {
 
         // 9.
-        if (element.containsKey(Keywords.CONTEXT)) {
-
-            final JsonValue jsonContext = element.get(Keywords.CONTEXT);
+        if (element.contains(Keywords.CONTEXT)) {
+            
+            final JsonValue jsonContext = JakartaValueCursor.toJson(element.entry(Keywords.CONTEXT));
+            element.parent();
 
             for (final JsonValue context : JsonUtils.toJsonArray(jsonContext)) {
                 final ActiveContext ac = new ActiveContext(activeContext.getBaseUri(), activeContext.getBaseUrl(), activeContext.runtime())
-                        .newContext()
-                        .create(context, baseUrl);
+                                        .newContext()
+                                        .create(context, baseUrl);
                 appliedContexts.accept(ac.getTerms());
             }
 
@@ -190,14 +194,16 @@ final class ObjectExpansion {
 
         String typeKey = null;
 
-        final Collection<String> keys = element.keySet();
+        final Collection<String> keys = element.keys();
+                
+        final MapEntryCursor entry = element.entry();
 
         for (final String key : Utils.index(keys, true)) {
 
             final String expandedKey = UriExpansion
-                    .with(activeContext, appliedContexts)
-                    .vocab(true)
-                    .expand(key);
+                                            .with(activeContext, appliedContexts)
+                                            .vocab(true)
+                                            .expand(key);
 
             if (!Keywords.TYPE.equals(expandedKey)) {
                 continue;
@@ -209,16 +215,16 @@ final class ObjectExpansion {
             if (typeMapper != null) {
                 typeMapper.typeKeyName(key);
             }
-
-            final JsonValue entryValue = element.get(key);
-
+            
+            final JsonValue entryValue = JakartaValueCursor.toJson(entry.mapKey(key));
+            
             // 11.2
             final List<String> terms = JsonUtils.toStream(entryValue)
-                    .filter(JsonUtils::isString)
-                    .map(JsonString.class::cast)
-                    .map(JsonString::getString)
-                    .sorted()
-                    .collect(Collectors.toList());
+                                            .filter(JsonUtils::isString)
+                                            .map(JsonString.class::cast)
+                                            .map(JsonString::getString)
+                                            .sorted()
+                                            .collect(Collectors.toList());
 //            entry.save();
 //            final List<String> terms = ValueCursor
 //                                            .toStream(entry.mapKey(key))
@@ -228,31 +234,36 @@ final class ObjectExpansion {
 //                                            .collect(Collectors.toList());
 
 //            entry.restore();
-
+           
             for (final String term : terms) {
 
                 Optional<JsonValue> localContext = typeContext.getTerm(term).map(TermDefinition::getLocalContext);
 
                 if (localContext.isPresent()) {
-
-                    final JsonValue contextValue = localContext.get();
-
-                    if (JsonUtils.isObject(contextValue)) {
-                        appliedContexts.accept(contextValue.asJsonObject().keySet());
+                    
+                    final JsonValue lc = localContext.get();
+                    
+                    if (JsonUtils.isObject(lc)) {
+                        appliedContexts.accept(lc.asJsonObject().keySet());
                     }
 
                     Optional<TermDefinition> valueDefinition = activeContext.getTerm(term);
 
-                    activeContext = activeContext
-                            .newContext()
-                            .propagate(false)
-                            .create(contextValue,
-                                    valueDefinition
-                                            .map(TermDefinition::getBaseUrl)
-                                            .orElse(null));
+                    activeContext =
+                            activeContext
+                                .newContext()
+                                .propagate(false)
+                                .create(lc,
+                                        valueDefinition
+                                                .map(TermDefinition::getBaseUrl)
+                                                .orElse(null)
+                                        );
                 }
             }
         }
+        
+        element.parent();
+
         return typeKey;
     }
 }

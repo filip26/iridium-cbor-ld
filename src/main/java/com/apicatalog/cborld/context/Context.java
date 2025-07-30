@@ -7,13 +7,12 @@ import java.util.function.Consumer;
 
 import com.apicatalog.cborld.mapping.TypeKeyNameMapper;
 import com.apicatalog.cborld.mapping.TypeMap;
+import com.apicatalog.cursor.MapCursor;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.processor.ProcessingRuntime;
-
-import jakarta.json.JsonValue;
 
 public class Context {
 
@@ -25,7 +24,7 @@ public class Context {
         this.appliedContextKeys = appliedContextKeys;
     }
     
-    public static Context from(JsonValue document, URI base, DocumentLoader loader) throws JsonLdError {
+    public static Context from(MapCursor document, URI base, DocumentLoader loader) throws JsonLdError {
 
         final JsonLdOptions options = new JsonLdOptions();
         options.setOrdered(false);
@@ -49,7 +48,7 @@ public class Context {
 
     }
 
-    public static Context from(JsonValue document, URI base,  DocumentLoader loader, Consumer<Collection<String>> appliedContexts, TypeKeyNameMapper typeMapper) throws JsonLdError {
+    public static Context from(MapCursor document, URI base,  DocumentLoader loader, Consumer<Collection<String>> appliedContexts, TypeKeyNameMapper typeMapper) throws JsonLdError {
 
         final JsonLdOptions options = new JsonLdOptions();
         options.setOrdered(false);
