@@ -49,6 +49,10 @@ public class Q {
     public static BigDecimal decimal(Data value) {
         return (BigDecimal) value.apply(Functions::getDecimal);
     }
+    
+    public static byte[] binary(Data value) {
+        return (byte[]) value.apply(Functions::getBinary);
+    }
 
     public static boolean isScalar(DataType dataType) {
         return dataType == DataType.STRING

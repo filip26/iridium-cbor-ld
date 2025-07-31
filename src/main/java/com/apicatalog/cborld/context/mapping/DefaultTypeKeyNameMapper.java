@@ -32,7 +32,7 @@ class DefaultTypeKeyNameMapper implements TypeKeyNameMapper {
             index = type;
 
         } else {
-            index = pointer(type, path);
+            index = pointer(type);
         }
 
         paths.add(index);
@@ -44,11 +44,11 @@ class DefaultTypeKeyNameMapper implements TypeKeyNameMapper {
     }
 
     @Override
-    public boolean isTypeKey(String term, Collection<String> termPath) {
-        return paths.contains(pointer(term, termPath));
+    public boolean isTypeKey(String term) {
+        return paths.contains(term);
     }
 
-    static final String pointer(String term, Collection<String> path) {
+    final String pointer(String term) {
         return term + ((path == null || path.isEmpty()) ? "" : "." + String.join(".", path));
     }
 

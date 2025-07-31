@@ -3,7 +3,6 @@ package com.apicatalog.lq.cbor;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -12,6 +11,7 @@ import com.apicatalog.lq.DataType;
 import com.apicatalog.lq.Functions;
 
 import co.nstant.in.cbor.model.Array;
+import co.nstant.in.cbor.model.ByteString;
 import co.nstant.in.cbor.model.DataItem;
 import co.nstant.in.cbor.model.DoublePrecisionFloat;
 import co.nstant.in.cbor.model.MajorType;
@@ -24,12 +24,12 @@ import co.nstant.in.cbor.model.UnicodeString;
 import co.nstant.in.cbor.model.UnsignedInteger;
 
 public class CborFunctions implements Functions {
-    
+
     @FunctionalInterface
     public interface ValueDecoder {
-        DataItem decode(DataItem value, String term, Collection<String> path);
+        DataItem decode(DataItem value, String term);
     }
-    
+
     protected final Function<DataItem, String> dataToKey;
     protected final Function<String, DataItem> keyToData;
     protected final ValueDecoder decodeValue;
@@ -63,54 +63,45 @@ public class CborFunctions implements Functions {
     @Override
     public Function<Map, Data> value(String mapKey) {
         return object -> {
-//            DataItem item = keyToData.apply(key);
-//
-//            if (MajorType.UNSIGNED_INTEGER.equals(item.getMajorType())) {
-//                item = new UnsignedInteger(((UnsignedInteger) item).getValue().add(BigInteger.ONE));
-//            }
-//            return CborAdapter.of(object.get(item), this);
-            
             DataItem key = keyToData.apply(mapKey);
             DataItem value = object.get(key);
             Boolean arrayCode = Boolean.FALSE;
 
             if (value == null && MajorType.UNSIGNED_INTEGER.equals(key.getMajorType())) {
-                key = new UnsignedInteger(((UnsignedInteger)key).getValue().add(BigInteger.ONE));
-                value = object.get(key);        
+                key = new UnsignedInteger(((UnsignedInteger) key).getValue().add(BigInteger.ONE));
+                value = object.get(key);
                 if (value != null) {
                     arrayCode = Boolean.TRUE;
-                }   
+                }
             }
-            
+
             if (value != null) {
 //FIXME                
 //                final Collection<String> path = stack.stream()
 //                        .filter(ss -> ss.key() != null)
 //                        .map(ss -> ss.key())
 //                        .collect(Collectors.toList());
-                final Collection<String> path  = Collections.emptyList();
-                if ((!arrayCode && MajorType.ARRAY.equals(value.getMajorType()))
-                        ) {
-        
-                    value = decodeValue.decode(value, mapKey, path);
-                    
+
+                if ((!arrayCode && MajorType.ARRAY.equals(value.getMajorType()))) {
+
+                    value = decodeValue.decode(value, mapKey);
+
                 } else if (MajorType.ARRAY.equals(value.getMajorType())) {
-                    
-                    Collection<DataItem> items = ((Array)value).getDataItems();
-                    
+
+                    Collection<DataItem> items = ((Array) value).getDataItems();
+
                     Array newValues = new Array(items.size());
-                    
+
                     for (DataItem item : items) {
-                        newValues.add(decodeValue.decode(item, mapKey, path));
+                        newValues.add(decodeValue.decode(item, mapKey));
                     }
-                    
+
                     value = newValues;
-                    
+
                 } else {
-                    value = decodeValue.decode(value, mapKey, path);
+                    value = decodeValue.decode(value, mapKey);
                 }
             }
-            System.out.println(">>> " + mapKey + ", " + key + " -> " + value);
             return CborAdapter.of(value, this);
         };
     }
@@ -118,6 +109,11 @@ public class CborFunctions implements Functions {
     @Override
     public Function<UnicodeString, String> getString() {
         return UnicodeString::getString;
+    }
+
+    @Override
+    public Function<ByteString, byte[]> getBinary() {
+        return ByteString::getBytes;
     }
 
     @Override
@@ -134,15 +130,15 @@ public class CborFunctions implements Functions {
 
     public static final boolean isEmpty(DataItem value) {
         return MajorType.MAP.equals(value.getMajorType())
-                ? ((Map)value).getKeys().isEmpty()
-                : ((Array)value).getDataItems().isEmpty();
+                ? ((Map) value).getKeys().isEmpty()
+                : ((Array) value).getDataItems().isEmpty();
     }
 
     @Override
     public Function<DataItem, Integer> size() {
         return value -> MajorType.MAP.equals(value.getMajorType())
-                ? ((Map)value).getKeys().size()
-                : ((Array)value).getDataItems().size();
+                ? ((Map) value).getKeys().size()
+                : ((Array) value).getDataItems().size();
     }
 
     @Override
@@ -198,7 +194,6 @@ public class CborFunctions implements Functions {
             case NEGATIVE_INTEGER:
                 return DataType.INTEGER;
 
-                
             case BYTE_STRING:
                 return DataType.BINARY;
 
@@ -209,5 +204,4 @@ public class CborFunctions implements Functions {
             throw new IllegalStateException("An unprocessed data item type " + value);
         };
     }
-
 }

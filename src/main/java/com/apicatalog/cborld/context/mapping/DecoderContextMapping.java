@@ -41,14 +41,14 @@ class DecoderContextMapping implements Mapping {
         this.typeMap = null;
     }
 
-    final DataItem decodeValue(final DataItem value, String term, Collection<String> path) {
+    final DataItem decodeValue(final DataItem value, String term) {
 
         Collection<String> TYPE = Arrays.asList(Keywords.TYPE);
 
         for (final ValueDecoder decoder : valueDecoders) {
             try {
                 final JsonValue decoded = decoder.decode(this, value, term,
-                        typeKeyNameMap.isTypeKey(term, path)
+                        typeKeyNameMap.isTypeKey(term)
                                 ? TYPE
                                 : Collections.emptySet());
 
@@ -86,7 +86,7 @@ class DecoderContextMapping implements Mapping {
 
         switch (data.getMajorType()) {
         case UNICODE_STRING:
-            return decodeKey(((UnicodeString) data).getString());
+            return ((UnicodeString) data).getString();
 
         case UNSIGNED_INTEGER:
             return decodeKey(((UnsignedInteger) data).getValue());
@@ -96,11 +96,7 @@ class DecoderContextMapping implements Mapping {
         }
     }
 
-    final String decodeKey(String key) {
-        return key;
-    }
-
-    final String decodeKey(BigInteger key) {
+    final String decodeKey(final BigInteger key) {
 
         if (key.mod(BigInteger.ONE.add(BigInteger.ONE)).equals(BigInteger.ZERO)) {
             String result = dictionary.getValue(key.intValueExact());

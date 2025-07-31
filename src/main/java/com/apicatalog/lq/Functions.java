@@ -16,6 +16,8 @@ public interface Functions {
     Function<?, BigInteger> getInteger();
 
     Function<?, BigDecimal> getDecimal();
+    
+    Function<?, byte[]> getBinary();
 
     Function<?, Boolean> contains(String key);
 

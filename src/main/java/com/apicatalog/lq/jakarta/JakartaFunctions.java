@@ -134,4 +134,9 @@ public class JakartaFunctions implements Functions {
             throw new IllegalStateException("Unprocessed type '" + value.getValueType() + "'.");
         };
     }
+
+    @Override
+    public Function<?, byte[]> getBinary() {
+        throw new UnsupportedOperationException();
+    }
 }

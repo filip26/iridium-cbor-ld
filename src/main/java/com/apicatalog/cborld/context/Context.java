@@ -47,7 +47,8 @@ public class Context {
 
     }
 
-    public static Context from(Data document, URI base, DocumentLoader loader, Consumer<Collection<String>> appliedContexts, TypeKeyNameMapper typeMapper) throws JsonLdError {
+    public static Context from(Data document, URI base, DocumentLoader loader, Consumer<Collection<String>> appliedContexts, 
+            TypeKeyNameMapper typeMapper) throws JsonLdError {
 
         final JsonLdOptions options = new JsonLdOptions();
         options.setOrdered(false);
