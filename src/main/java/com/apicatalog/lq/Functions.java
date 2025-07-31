@@ -8,7 +8,7 @@ import java.util.function.Function;
 public interface Functions {
 
     Function<?, DataType> type();
-    
+
     Function<?, Boolean> isEmpty();
 
     Function<?, String> getString();
@@ -16,7 +16,7 @@ public interface Functions {
     Function<?, BigInteger> getInteger();
 
     Function<?, BigDecimal> getDecimal();
-    
+
     Function<?, byte[]> getBinary();
 
     Function<?, Boolean> contains(String key);

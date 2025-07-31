@@ -20,7 +20,7 @@ public class XsdDateTimeValueEncoder implements ValueEncoder {
 
         if (types != null && types.contains(DATE_TIME) && JsonUtils.isString(jsonValue)) {
 
-            final Instant instant = Instant.parse(((JsonString)jsonValue).getString());
+            final Instant instant = Instant.parse(((JsonString) jsonValue).getString());
 
             return new UnsignedInteger(instant.getEpochSecond());
         }

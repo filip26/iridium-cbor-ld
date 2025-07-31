@@ -1,6 +1,5 @@
 package com.apicatalog.cborld;
 
-
 import java.net.URI;
 
 import com.apicatalog.jsonld.JsonLdError;

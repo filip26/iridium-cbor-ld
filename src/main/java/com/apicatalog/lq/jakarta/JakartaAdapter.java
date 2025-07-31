@@ -76,9 +76,12 @@ public class JakartaAdapter {
             }
 
             return map.build();
+            
+        default:
+            break;
         }
 
-        throw new IllegalStateException();
+        throw new IllegalStateException("An unsupported data type '" + dataType + "'.");
     }
 
 }

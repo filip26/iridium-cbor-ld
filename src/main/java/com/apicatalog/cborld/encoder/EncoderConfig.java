@@ -10,9 +10,9 @@ import com.apicatalog.cborld.mapping.EncoderMappingProvider;
 public interface EncoderConfig extends Config {
 
     DocumentDictionary dictionary();
-    
+
     byte version();
-    
+
     Collection<ValueEncoder> valueEncoders();
 
     EncoderMappingProvider encoderMapping();

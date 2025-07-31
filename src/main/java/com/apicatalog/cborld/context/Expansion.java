@@ -83,9 +83,8 @@ final class Expansion {
             return JsonValue.NULL;
         }
 
-        
         final DataType dataType = Q.type(element);
-        
+
         // 5. If element is an array,
         if (DataType.ARRAY == dataType) {
 

@@ -9,6 +9,6 @@ public interface DocumentDictionary {
     int code();
 
     Dictionary contexts();
-    
+
     Map<String, Dictionary> types();
 }

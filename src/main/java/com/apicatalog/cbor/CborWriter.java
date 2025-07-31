@@ -14,15 +14,15 @@ import co.nstant.in.cbor.model.Map;
 public class CborWriter {
 
     final Writer writer;
-    
+
     public CborWriter(Writer writer) {
         this.writer = writer;
     }
-    
+
     public void write(List<DataItem> value) throws IOException {
-        
+
         writer.write('[');
-        
+
         boolean first = true;
 
         for (final DataItem item : value) {
@@ -32,36 +32,36 @@ public class CborWriter {
             write(item);
             first = false;
         }
-        
-        writer.write(']');        
+
+        writer.write(']');
     }
-    
+
     public void write(DataItem value) throws IOException {
-        
+
         switch (value.getMajorType()) {
         case ARRAY:
-            write(((Array)value).getDataItems());
+            write(((Array) value).getDataItems());
             break;
-            
+
         case MAP:
-            write((Map)value);
+            write((Map) value);
             break;
-            
+
         case BYTE_STRING:
-            write((ByteString)value);
+            write((ByteString) value);
             break;
-            
+
         default:
             writer.write(value.toString());
         }
     }
-    
+
     protected void write(Map value) throws IOException {
-        
+
         writer.write('{');
-        
+
         boolean first = true;
-        
+
         for (final DataItem key : value.getKeys()) {
             if (!first) {
                 writer.write(',');

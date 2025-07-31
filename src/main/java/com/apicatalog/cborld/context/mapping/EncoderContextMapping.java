@@ -9,10 +9,10 @@ import com.apicatalog.cborld.mapping.TypeMap;
 class EncoderContextMapping implements Mapping {
 
     private final Dictionary contexts;
-    private final Map<String, Dictionary> types; 
+    private final Map<String, Dictionary> types;
     private final Dictionary dictionary;
     private final TypeMap typeMap;
-        
+
     EncoderContextMapping(Dictionary contexts, Map<String, Dictionary> types, Dictionary dictionary, TypeMap typeMap) {
         this.contexts = contexts;
         this.types = types;

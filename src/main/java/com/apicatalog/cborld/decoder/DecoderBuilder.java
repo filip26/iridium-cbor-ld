@@ -114,7 +114,7 @@ public class DecoderBuilder implements DecoderConfig {
         dictionaries.put(code, dictionary);
         return this;
     }
-    
+
     @Override
     public boolean isCompactArrays() {
         return compactArrays;

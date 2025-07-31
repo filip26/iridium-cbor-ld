@@ -10,5 +10,5 @@ import jakarta.json.JsonValue;
 
 public interface ValueDecoder {
 
-    JsonValue decode(Mapping mapping, DataItem value, String term, Collection<String> types) throws DecoderError; 
+    JsonValue decode(Mapping mapping, DataItem value, String term, Collection<String> types) throws DecoderError;
 }

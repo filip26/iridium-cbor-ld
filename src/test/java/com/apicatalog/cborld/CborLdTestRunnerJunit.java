@@ -287,7 +287,7 @@ public class CborLdTestRunnerJunit {
         }
         return DefaultConfig.INSTANCE;
     }
-    
+
     static final DecoderConfig getDecoderConfig(String name) {
         if ("v5".equals(name)) {
             return V05Config.INSTANCE;

@@ -38,7 +38,7 @@ final class ArrayExpansion {
     private Data element;
     private String activeProperty;
     private URI baseUrl;
-    
+
     private final Consumer<Collection<String>> appliedContexts;
     private final TypeKeyNameMapper typeMapper;
 
@@ -52,7 +52,7 @@ final class ArrayExpansion {
         this.element = element;
         this.activeProperty = activeProperty;
         this.baseUrl = baseUrl;
-        
+
         this.appliedContexts = appliedContexts;
         this.typeMapper = typeMapper;
 
@@ -79,33 +79,32 @@ final class ArrayExpansion {
     public JsonArray expand() throws JsonLdError {
 
         if (Q.isEmpty(element)) {
-            return JsonValue.EMPTY_JSON_ARRAY; 
+            return JsonValue.EMPTY_JSON_ARRAY;
         }
-        
+
         final JsonArrayBuilder result = Json.createArrayBuilder();
-        
+
         // 5.2.
         for (final Data item : Q.iterable(element)) {
 
             // 5.2.1
-            JsonValue expanded =
-                            Expansion
-                                .with(activeContext, item, activeProperty, baseUrl, appliedContexts, typeMapper)
-                                .ordered(ordered)
-                                .fromMap(fromMap)
-                                .compute();
+            JsonValue expanded = Expansion
+                    .with(activeContext, item, activeProperty, baseUrl, appliedContexts, typeMapper)
+                    .ordered(ordered)
+                    .fromMap(fromMap)
+                    .compute();
 
             // 5.2.3
             if (JsonUtils.isArray(expanded)) {
 
                 // append array
                 expanded
-                    .asJsonArray()
-                    .stream()
-                    .filter(JsonUtils::isNotNull)
-                    .forEach(result::add);
+                        .asJsonArray()
+                        .stream()
+                        .filter(JsonUtils::isNotNull)
+                        .forEach(result::add);
 
-            // append non-null element
+                // append non-null element
             } else if (JsonUtils.isNotNull(expanded)) {
                 result.add(expanded);
             }

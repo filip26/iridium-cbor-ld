@@ -24,11 +24,11 @@ public class CborLdTestCase {
     public Set<String> type;
 
     public URI result;
-    
+
     public boolean compactArrays = DefaultConfig.INSTANCE.isCompactArrays();
 
     public String config;
-    
+
     public static CborLdTestCase of(JsonObject test, JsonObject manifest, DocumentLoader loader) {
 
         final CborLdTestCase testCase = new CborLdTestCase();
@@ -51,10 +51,11 @@ public class CborLdTestCase {
             JsonValue resultValue = result.getOrDefault(Keywords.ID, result.getOrDefault(Keywords.VALUE, null));
 
             if (JsonUtils.isString(resultValue)) {
-                testCase.result = URI.create( ((JsonString) resultValue).getString());
+                testCase.result = URI.create(((JsonString) resultValue).getString());
 
             } else {
-           //     testCase.result = !JsonValue.ValueType.FALSE.equals(resultValue.getValueType());
+                // testCase.result =
+                // !JsonValue.ValueType.FALSE.equals(resultValue.getValueType());
             }
         }
 
@@ -65,10 +66,11 @@ public class CborLdTestCase {
                     .getJsonObject(0);
 
             if (options.containsKey("https://github.com/filip26/iridium-cbor-ld/tests/vocab#compactArrays")) {
-                testCase.compactArrays = options.getJsonArray("https://github.com/filip26/iridium-cbor-ld/tests/vocab#compactArrays").getJsonObject(0).getBoolean("@value", DefaultConfig.INSTANCE.isCompactArrays());                
+                testCase.compactArrays = options.getJsonArray("https://github.com/filip26/iridium-cbor-ld/tests/vocab#compactArrays").getJsonObject(0).getBoolean("@value",
+                        DefaultConfig.INSTANCE.isCompactArrays());
             }
             if (options.containsKey("https://github.com/filip26/iridium-cbor-ld/tests/vocab#config")) {
-                testCase.config = options.getJsonArray("https://github.com/filip26/iridium-cbor-ld/tests/vocab#config").getJsonObject(0).getString("@value", null);                
+                testCase.config = options.getJsonArray("https://github.com/filip26/iridium-cbor-ld/tests/vocab#config").getJsonObject(0).getString("@value", null);
             }
         }
 

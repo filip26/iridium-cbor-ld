@@ -19,11 +19,10 @@ public class ContextValueDecoder implements ValueDecoder {
         if (mapping != null
                 && mapping.context() != null
                 && Keywords.CONTEXT.equals(term)
-                && MajorType.UNSIGNED_INTEGER.equals(value.getMajorType())
-                ) {
-            
-            final String decoded = mapping.context().getValue(((UnsignedInteger)value).getValue().intValueExact());
-    
+                && MajorType.UNSIGNED_INTEGER.equals(value.getMajorType())) {
+
+            final String decoded = mapping.context().getValue(((UnsignedInteger) value).getValue().intValueExact());
+
             if (decoded != null) {
                 return Json.createValue(decoded);
             }
