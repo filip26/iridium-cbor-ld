@@ -29,13 +29,12 @@ public class CborFunctions implements Functions {
     public interface ValueDecoder {
         DataItem decode(DataItem value, String term, Collection<String> path);
     }
-
     
-    final Function<DataItem, String> dataToKey;
-    final Function<String, DataItem> keyToData;
-    final ValueDecoder decodeValue;
+    protected final Function<DataItem, String> dataToKey;
+    protected final Function<String, DataItem> keyToData;
+    protected final ValueDecoder decodeValue;
 
-    public CborFunctions(
+    protected CborFunctions(
             Function<DataItem, String> dataToKey,
             Function<String, DataItem> keyToData,
             ValueDecoder decodeValue) {
@@ -201,12 +200,13 @@ public class CborFunctions implements Functions {
 
                 
             case BYTE_STRING:
-                return DataType.STRING;
+                return DataType.BINARY;
+
             default:
                 break;
             }
 
-            throw new IllegalStateException();
+            throw new IllegalStateException("An unprocessed data item type " + value);
         };
     }
 

@@ -19,6 +19,10 @@ import jakarta.json.JsonValue.ValueType;
 
 public class JakartaFunctions implements Functions {
 
+    protected JakartaFunctions() {
+        /* protected */
+    }
+
     public static final boolean isNull(JsonValue value) {
         return value == null || ValueType.NULL == value.getValueType();
     }
@@ -105,13 +109,13 @@ public class JakartaFunctions implements Functions {
             switch (value.getValueType()) {
             case ARRAY:
                 return DataType.ARRAY;
-                
+
             case TRUE:
                 return DataType.FALSE;
-                
+
             case FALSE:
                 return DataType.TRUE;
-                
+
             case NUMBER:
                 return ((JsonNumber) value).isIntegral()
                         ? DataType.INTEGER
@@ -123,13 +127,11 @@ public class JakartaFunctions implements Functions {
             case STRING:
                 return DataType.STRING;
 
-            case NULL:
-                return null;
-
             default:
                 break;
             }
-            throw new IllegalStateException();
+
+            throw new IllegalStateException("Unprocessed type '" + value.getValueType() + "'.");
         };
     }
 }

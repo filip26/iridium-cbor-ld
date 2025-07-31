@@ -41,7 +41,7 @@ public class Q {
     public static Collection<String> keys(Data map) {
         return (Collection<String>) map.apply(Functions::keys);
     }
-    
+
     public static BigInteger integer(Data value) {
         return (BigInteger) value.apply(Functions::getInteger);
     }
@@ -55,11 +55,20 @@ public class Q {
                 || dataType == DataType.TRUE
                 || dataType == DataType.FALSE
                 || dataType == DataType.INTEGER
-                || dataType == DataType.DECIMAL;
+                || dataType == DataType.DECIMAL
+                || dataType == DataType.BINARY;
     }
 
     public static boolean isNumber(DataType dataType) {
         return dataType == DataType.INTEGER
                 || dataType == DataType.DECIMAL;
+    }
+
+    public static boolean isTrue(DataType dataType) {
+        return dataType == DataType.TRUE;
+    }
+
+    public static boolean isFalse(DataType dataType) {
+        return dataType == DataType.FALSE;
     }
 }

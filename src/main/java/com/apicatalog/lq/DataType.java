@@ -9,5 +9,6 @@ public enum DataType {
     DECIMAL,
     TRUE,
     FALSE,
+    BINARY,
 
 }
