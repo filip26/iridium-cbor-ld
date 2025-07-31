@@ -3,7 +3,6 @@ package com.apicatalog.cborld;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.apicatalog.cborld.barcode.BarcodesConfig;
 import com.apicatalog.cborld.document.CompressedDocument;
 import com.apicatalog.cborld.document.DocumentDictionary;
 import com.apicatalog.cborld.document.DocumentDictionaryBuilder;
@@ -18,7 +17,7 @@ public class UtopiaBarcodesConfig extends BarcodesConfig {
 
     static {
         DICTIONARY = DocumentDictionaryBuilder.of(BarcodesConfig.DICTIONARY)
-                .context(32770, "https://w3id.org/utopia/v2")
+                .context("https://w3id.org/utopia/v2", 32770)
                 .build();
 
         DICTIONARIES = new HashMap<>();

@@ -4,12 +4,12 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 
 import com.apicatalog.cborld.decoder.DecoderError;
 import com.apicatalog.cborld.decoder.value.ValueDecoder;
 import com.apicatalog.cborld.dictionary.CodeTermMap;
 import com.apicatalog.cborld.dictionary.Dictionary;
+import com.apicatalog.cborld.document.DocumentDictionary;
 import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.cborld.mapping.TypeKeyNameMapper;
 import com.apicatalog.cborld.mapping.TypeMap;
@@ -24,17 +24,15 @@ import jakarta.json.JsonValue;
 
 class DecoderContextMapping implements Mapping {
 
-    private final Dictionary contexts;
-    private final Map<String, Dictionary> types;
+    private final DocumentDictionary custom;
     private final CodeTermMap dictionary;
     private final TypeKeyNameMapper typeKeyNameMap;
     private TypeMap typeMap;
 
     private final Collection<ValueDecoder> valueDecoders;
 
-    DecoderContextMapping(Dictionary contexts, Map<String, Dictionary> types, Collection<ValueDecoder> valueDecoders) {
-        this.contexts = contexts;
-        this.types = types;
+    DecoderContextMapping(DocumentDictionary custom, Collection<ValueDecoder> valueDecoders) {
+        this.custom = custom;
         this.valueDecoders = valueDecoders;
         this.dictionary = CodeTermMap.create();
         this.typeKeyNameMap = new DefaultTypeKeyNameMapper();
@@ -131,12 +129,17 @@ class DecoderContextMapping implements Mapping {
     }
 
     @Override
-    public Dictionary context() {
-        return contexts;
+    public Dictionary contexts() {
+        return custom != null ? custom.contexts() : null;
     }
 
     @Override
     public Dictionary type(String type) {
-        return types != null ? types.get(type) : null;
+        return custom != null && custom.types() != null ? custom.types().get(type) : null;
+    }
+
+    @Override
+    public Dictionary uris() {
+        return custom != null ? custom.uris() : null;
     }
 }

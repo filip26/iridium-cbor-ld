@@ -2,6 +2,7 @@ package com.apicatalog.cborld.decoder;
 
 import java.io.ByteArrayInputStream;
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -73,30 +74,42 @@ public class Decoder {
                     + ".");
         }
 
-        if (encodedDocument[1] != CborLd.VERSION_6_BYTE
-                && encodedDocument[1] != CborLd.VERSION_5_BYTE) {
-            throw new DecoderError(Code.InvalidDocument, "The document is not CBOR-LD document. Must start with "
-                    + Hex.toString(CborLd.VERSION_6_BYTE)
-                    + ", or "
-                    + Hex.toString(CborLd.VERSION_5_BYTE)
+        DocumentDictionary dictionary = null;
+
+        // version 1.0
+        if (encodedDocument[1] == CborLd.VERSION_10_BYTES[0]
+                && encodedDocument[2] == CborLd.VERSION_10_BYTES[1]) {
+
+            // version 0.6, 0.5
+        } else if (encodedDocument[1] == CborLd.VERSION_06_BYTE
+                || encodedDocument[1] == CborLd.VERSION_05_BYTE) {
+
+            if (encodedDocument[2] == CborLd.UNCOMPRESSED_BYTE) {
+                throw new DecoderError(Code.UnknownCompression, "Uncompressed CBOR-LD documents are not supported.");
+            }
+
+            dictionary = config.dictionaries().get(Byte.toUnsignedInt(encodedDocument[2]));
+
+            if (dictionary == null) {
+                throw new DecoderError(Code.UnknownCompression,
+                        "Unkknown CBOR-LD document terms dictionary type id, found ["
+                                + Hex.toString(encodedDocument[2]) + "].");
+            }
+
+        } else {
+            throw new DecoderError(Code.InvalidDocument, "The document is not CBOR-LD document. A tag must start with: "
+                    + "v1.0 = "
+                    + Hex.toString(CborLd.VERSION_10_BYTES)
+                    + ", or v0.6 = "
+                    + Hex.toString(CborLd.VERSION_06_BYTE)
+                    + ", or v0.5 = "
+                    + Hex.toString(CborLd.VERSION_05_BYTE)
                     + ", but is "
-                    + Hex.toString(encodedDocument[1])
+                    + Hex.toString(Arrays.copyOfRange(encodedDocument, 1, 3))
                     + ".");
         }
 
-        if (encodedDocument[2] == CborLd.UNCOMPRESSED_BYTE) {
-            throw new DecoderError(Code.UnknownCompression, "Uncompressed CBOR-LD documents are not supported.");
-        }
-
-        final DocumentDictionary dictionaries = config.dictionaries().get(Byte.toUnsignedInt(encodedDocument[2]));
-
-        if (dictionaries == null) {
-            throw new DecoderError(Code.UnknownCompression,
-                    "Unkknown CBOR-LD document terms dictionary type id, found ["
-                            + Hex.toString(encodedDocument[2]) + "].");
-        }
-
-        return decode(encodedDocument, dictionaries);
+        return decode(encodedDocument, dictionary);
     }
 
     protected JsonValue decode(byte[] encoded, final DocumentDictionary provider) throws ContextError, DecoderError {
@@ -129,6 +142,9 @@ public class Decoder {
     }
 
     protected final JsonValue decode(final DataItem data, final DocumentDictionary custom) throws DecoderError, ContextError {
+
+        System.out.println(data.getTag().getValue() + ", " + data.getMajorType() + ", " + Hex.toString(data.getTag().getValue()));
+
         final Mapping mapping = config.decoderMapping().getDecoderMapping(data, custom, config);
         return decodeData(data, null, mapping.typeMap(), mapping);
     }

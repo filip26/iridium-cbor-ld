@@ -1,4 +1,4 @@
-package com.apicatalog.cborld.barcode;
+package com.apicatalog.cborld;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,14 +21,14 @@ public class BarcodesConfig extends DefaultConfig {
 
     static {
         DICTIONARY = DocumentDictionaryBuilder.create(DICTIONARY_CODE)
-                .context(32768, "https://www.w3.org/ns/credentials/v2")
-                .context(32769, "https://w3id.org/vc-barcodes/v1")
+                .context("https://www.w3.org/ns/credentials/v2", 32768)
+                .context("https://w3id.org/vc-barcodes/v1", 32769)
                 .type("https://w3id.org/security#cryptosuiteString",
                         DictionaryBuilder.create()
-                                .set(1, "ecdsa-rdfc-2019")
-                                .set(2, "ecdsa-sd-2023")
-                                .set(3, "eddsa-rdfc-2022")
-                                .set(4, "ecdsa-xi-2023"))
+                                .set("ecdsa-rdfc-2019", 1)
+                                .set("ecdsa-sd-2023", 2)
+                                .set("eddsa-rdfc-2022", 3)
+                                .set("ecdsa-xi-2023", 4))
                 .build();
 
         DICTIONARIES = new HashMap<>();

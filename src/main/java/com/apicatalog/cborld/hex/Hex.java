@@ -39,4 +39,8 @@ public class Hex {
                 (byte) value
         };
     }
+
+    public static final String toString(long value) {
+        return String.format("0x%02X", value);
+    }
 }

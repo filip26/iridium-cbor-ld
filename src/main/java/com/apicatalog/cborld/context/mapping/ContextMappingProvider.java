@@ -42,7 +42,7 @@ public class ContextMappingProvider implements EncoderMappingProvider, DecoderMa
     @Override
     public Mapping getDecoderMapping(DataItem document, DocumentDictionary custom, DecoderConfig config) throws ContextError {
         try {
-            final DecoderContextMapping mapping = new DecoderContextMapping(custom.contexts(), custom.types(), config.valueDecoders());
+            final DecoderContextMapping mapping = new DecoderContextMapping(custom, config.valueDecoders());
 
             final Data data = CborAdapter.of(
                     document,

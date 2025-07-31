@@ -24,6 +24,7 @@ import com.apicatalog.cborld.document.DocumentDictionary;
 import com.apicatalog.cborld.encoder.EncoderConfig;
 import com.apicatalog.cborld.encoder.value.ContextValueEncoder;
 import com.apicatalog.cborld.encoder.value.CustomTypeValueEncoder;
+import com.apicatalog.cborld.encoder.value.CustomUriValueEncoder;
 import com.apicatalog.cborld.encoder.value.DidKeyValueEncoder;
 import com.apicatalog.cborld.encoder.value.IdValueEncoder;
 import com.apicatalog.cborld.encoder.value.MultibaseValueEncoder;
@@ -58,6 +59,7 @@ public class DefaultConfig extends BaseConfig implements EncoderConfig, DecoderC
         VALUE_ENCODERS.add(new CustomTypeValueEncoder());
 
         // value driven
+        VALUE_ENCODERS.add(new CustomUriValueEncoder());
         VALUE_ENCODERS.add(new UuidValueEncoder());
         VALUE_ENCODERS.add(new DidKeyValueEncoder());
     }
@@ -86,7 +88,7 @@ public class DefaultConfig extends BaseConfig implements EncoderConfig, DecoderC
 
     public static final boolean STATIC_CONTEXTS = true;
 
-    public static final byte VERSION = CborLd.VERSION_6_BYTE;
+    public static final byte VERSION = CborLd.VERSION_06_BYTE;
 
     static final Map<Integer, DocumentDictionary> DICTIONARIES;
 

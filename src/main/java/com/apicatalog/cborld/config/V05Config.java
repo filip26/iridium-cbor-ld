@@ -78,7 +78,7 @@ public class V05Config extends BaseConfig implements EncoderConfig, DecoderConfi
 
     public static final boolean STATIC_CONTEXTS = true;
 
-    public static final byte VERSION = CborLd.VERSION_5_BYTE;
+    public static final byte VERSION = CborLd.VERSION_05_BYTE;
 
     static final Map<Integer, DocumentDictionary> DICTIONARIES;
 

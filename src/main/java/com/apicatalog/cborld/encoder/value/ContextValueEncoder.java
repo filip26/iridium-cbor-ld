@@ -17,7 +17,7 @@ public class ContextValueEncoder implements ValueEncoder {
     public DataItem encode(final Mapping mapping, final JsonValue jsonValue, final String term, Collection<String> types) {
         if (Keywords.CONTEXT.equals(term) && JsonUtils.isString(jsonValue)) {
 
-            final Integer code = mapping.context().getCode(((JsonString) jsonValue).getString());
+            final Integer code = mapping.contexts().getCode(((JsonString) jsonValue).getString());
 
             if (code != null) {
                 return new UnsignedInteger(code);

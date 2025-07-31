@@ -31,12 +31,18 @@ class EncoderContextMapping implements Mapping {
     }
 
     @Override
-    public Dictionary context() {
+    public Dictionary contexts() {
         return contexts;
     }
 
     @Override
     public Dictionary type(String type) {
         return types != null ? types.get(type) : null;
+    }
+
+    @Override
+    public Dictionary uris() {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

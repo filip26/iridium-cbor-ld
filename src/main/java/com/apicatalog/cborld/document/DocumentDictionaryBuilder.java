@@ -13,15 +13,17 @@ public class DocumentDictionaryBuilder {
     protected final int code;
     protected final DictionaryBuilder contexts;
     protected final Map<String, DictionaryBuilder> types;
+    protected final DictionaryBuilder uris;
 
-    protected DocumentDictionaryBuilder(int code, DictionaryBuilder contexts, Map<String, DictionaryBuilder> types) {
+    protected DocumentDictionaryBuilder(int code, DictionaryBuilder contexts, Map<String, DictionaryBuilder> types, final DictionaryBuilder uris) {
         this.code = code;
         this.contexts = contexts;
         this.types = types;
+        this.uris = uris;
     }
 
     public static DocumentDictionaryBuilder create(int code) {
-        return new DocumentDictionaryBuilder(code, DictionaryBuilder.create(), new HashMap<>());
+        return new DocumentDictionaryBuilder(code, DictionaryBuilder.create(), new HashMap<>(), DictionaryBuilder.create());
     }
 
     public static DocumentDictionaryBuilder of(DocumentDictionary dictionary) {
@@ -34,7 +36,8 @@ public class DocumentDictionaryBuilder {
                         .map(e -> new AbstractMap.SimpleEntry<>(e.getKey(), DictionaryBuilder.of(e.getValue())))
                         .collect(Collectors.toMap(
                                 Map.Entry::getKey,
-                                Map.Entry::getValue)));
+                                Map.Entry::getValue)),
+                DictionaryBuilder.of(dictionary.uris()));
     }
 
     public DocumentDictionary build() {
@@ -46,12 +49,8 @@ public class DocumentDictionaryBuilder {
                         .map(e -> new AbstractMap.SimpleEntry<>(e.getKey(), e.getValue().build()))
                         .collect(Collectors.toUnmodifiableMap(
                                 Map.Entry::getKey,
-                                Map.Entry::getValue)));
-    }
-
-    public DocumentDictionaryBuilder context(int code, String value) {
-        contexts.set(code, value);
-        return this;
+                                Map.Entry::getValue)),
+                uris.build());
     }
 
     public DocumentDictionaryBuilder context(String value, int code) {
@@ -79,16 +78,29 @@ public class DocumentDictionaryBuilder {
         return this;
     }
 
+    public DocumentDictionaryBuilder uri(String value, int code) {
+        uris.set(code, value);
+        return this;
+    }
+
+    public DocumentDictionaryBuilder uri(Dictionary dictionary) {
+        uris.merge(dictionary);
+        return this;
+    }
+
+    
     class DocumentDictionaryImpl implements DocumentDictionary {
 
         protected final int code;
         protected final Dictionary contexts;
         protected final Map<String, Dictionary> types;
+        protected final Dictionary uris;
 
-        public DocumentDictionaryImpl(final int code, Dictionary contexts, Map<String, Dictionary> types) {
+        public DocumentDictionaryImpl(final int code, Dictionary contexts, Map<String, Dictionary> types, Dictionary uris) {
             this.code = code;
             this.contexts = contexts;
             this.types = types;
+            this.uris = uris;
         }
 
         public int code() {
@@ -101,6 +113,11 @@ public class DocumentDictionaryBuilder {
 
         public Map<String, Dictionary> types() {
             return types;
+        }
+
+        @Override
+        public Dictionary uris() {
+            return uris;
         }
     }
 }
