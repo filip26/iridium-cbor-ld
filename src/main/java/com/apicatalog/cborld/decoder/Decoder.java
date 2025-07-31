@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import com.apicatalog.cborld.CborLd;
@@ -74,8 +75,6 @@ public class Decoder {
                     + ".");
         }
 
-        DocumentDictionary dictionary = null;
-
         // version 1.0
         if (encodedDocument[1] == CborLd.VERSION_10_BYTES[0]
                 && encodedDocument[2] == CborLd.VERSION_10_BYTES[1]) {
@@ -88,7 +87,7 @@ public class Decoder {
                 throw new DecoderError(Code.UnknownCompression, "Uncompressed CBOR-LD documents are not supported.");
             }
 
-            dictionary = config.registry().get(Byte.toUnsignedInt(encodedDocument[2]));
+            final DocumentDictionary dictionary = config.registry().get(Byte.toUnsignedInt(encodedDocument[2]));
 
             if (dictionary == null) {
                 throw new DecoderError(Code.UnknownCompression,
@@ -96,7 +95,7 @@ public class Decoder {
                                 + Hex.toString(encodedDocument[2]) + "].");
             }
 
-            return decode(encodedDocument, dictionary);
+            return decodeV0506(encodedDocument, dictionary);
         }
 
         throw new DecoderError(Code.InvalidDocument, "The document is not CBOR-LD document. A tag must start with: "
@@ -111,7 +110,34 @@ public class Decoder {
                 + ".");
     }
 
-    protected JsonValue decode(byte[] encoded, final DocumentDictionary provider) throws ContextError, DecoderError {
+    protected JsonValue decodeV10(byte[] encoded) throws ContextError, DecoderError {
+        try {
+            final ByteArrayInputStream bais = new ByteArrayInputStream(encoded);
+            final List<DataItem> dataItems = new CborDecoder(bais).decode();
+
+            if (dataItems.size() != 2) {
+                throw new DecoderError(Code.InvalidDocument, "The document is not CBOR-LD v1.0 document. Must start with array of two items but size = " + dataItems.size() + ".");
+            }
+
+            final Iterator<DataItem> it = dataItems.iterator();
+
+            final DataItem registryId = it.next();
+
+            if (registryId == null || registryId.getMajorType() != MajorType.UNSIGNED_INTEGER) {
+                throw new DecoderError(Code.InvalidDocument, "The document is not CBOR-LD v1.0 document. Registry Entry ID is not and unsigned integer but " + registryId + ".");
+            }
+
+            final DocumentDictionary provider = config.registry().get(
+                    ((UnsignedInteger) registryId).getValue().intValueExact());
+
+            return decode(it.next(), provider);
+
+        } catch (final CborException e) {
+            throw new DecoderError(Code.InvalidDocument, e);
+        }
+    }
+
+    protected JsonValue decodeV0506(byte[] encoded, final DocumentDictionary provider) throws ContextError, DecoderError {
         try {
             final ByteArrayInputStream bais = new ByteArrayInputStream(encoded);
             final List<DataItem> dataItems = new CborDecoder(bais).decode();
