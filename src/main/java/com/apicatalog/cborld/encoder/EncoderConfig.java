@@ -2,16 +2,17 @@ package com.apicatalog.cborld.encoder;
 
 import java.util.Collection;
 
+import com.apicatalog.cborld.CborLdVersion;
 import com.apicatalog.cborld.config.Config;
-import com.apicatalog.cborld.document.DocumentDictionary;
 import com.apicatalog.cborld.encoder.value.ValueEncoder;
 import com.apicatalog.cborld.mapping.EncoderMappingProvider;
+import com.apicatalog.cborld.registry.DocumentDictionary;
 
 public interface EncoderConfig extends Config {
 
     DocumentDictionary dictionary();
 
-    byte version();
+    CborLdVersion version();
 
     Collection<ValueEncoder> valueEncoders();
 

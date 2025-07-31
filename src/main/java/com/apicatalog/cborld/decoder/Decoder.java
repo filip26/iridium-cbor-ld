@@ -10,10 +10,10 @@ import com.apicatalog.cborld.CborLd;
 import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.decoder.DecoderError.Code;
 import com.apicatalog.cborld.decoder.value.ValueDecoder;
-import com.apicatalog.cborld.document.DocumentDictionary;
 import com.apicatalog.cborld.hex.Hex;
 import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.cborld.mapping.TypeMap;
+import com.apicatalog.cborld.registry.DocumentDictionary;
 import com.apicatalog.jsonld.json.JsonUtils;
 
 import co.nstant.in.cbor.CborDecoder;
@@ -88,7 +88,7 @@ public class Decoder {
                 throw new DecoderError(Code.UnknownCompression, "Uncompressed CBOR-LD documents are not supported.");
             }
 
-            dictionary = config.dictionaries().get(Byte.toUnsignedInt(encodedDocument[2]));
+            dictionary = config.registry().get(Byte.toUnsignedInt(encodedDocument[2]));
 
             if (dictionary == null) {
                 throw new DecoderError(Code.UnknownCompression,
@@ -96,20 +96,19 @@ public class Decoder {
                                 + Hex.toString(encodedDocument[2]) + "].");
             }
 
-        } else {
-            throw new DecoderError(Code.InvalidDocument, "The document is not CBOR-LD document. A tag must start with: "
-                    + "v1.0 = "
-                    + Hex.toString(CborLd.VERSION_10_BYTES)
-                    + ", or v0.6 = "
-                    + Hex.toString(CborLd.VERSION_06_BYTE)
-                    + ", or v0.5 = "
-                    + Hex.toString(CborLd.VERSION_05_BYTE)
-                    + ", but is "
-                    + Hex.toString(Arrays.copyOfRange(encodedDocument, 1, 3))
-                    + ".");
+            return decode(encodedDocument, dictionary);
         }
 
-        return decode(encodedDocument, dictionary);
+        throw new DecoderError(Code.InvalidDocument, "The document is not CBOR-LD document. A tag must start with: "
+                + "v1.0 = "
+                + Hex.toString(CborLd.VERSION_10_BYTES)
+                + ", or v0.6 = "
+                + Hex.toString(CborLd.VERSION_06_BYTE)
+                + ", or v0.5 = "
+                + Hex.toString(CborLd.VERSION_05_BYTE)
+                + ", but is "
+                + Hex.toString(Arrays.copyOfRange(encodedDocument, 1, 3))
+                + ".");
     }
 
     protected JsonValue decode(byte[] encoded, final DocumentDictionary provider) throws ContextError, DecoderError {
@@ -142,9 +141,6 @@ public class Decoder {
     }
 
     protected final JsonValue decode(final DataItem data, final DocumentDictionary custom) throws DecoderError, ContextError {
-
-        System.out.println(data.getTag().getValue() + ", " + data.getMajorType() + ", " + Hex.toString(data.getTag().getValue()));
-
         final Mapping mapping = config.decoderMapping().getDecoderMapping(data, custom, config);
         return decodeData(data, null, mapping.typeMap(), mapping);
     }

@@ -3,13 +3,13 @@ package com.apicatalog.cborld;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.apicatalog.cborld.config.DefaultConfig;
+import com.apicatalog.cborld.config.V06Config;
 import com.apicatalog.cborld.dictionary.DictionaryBuilder;
-import com.apicatalog.cborld.document.CompressedDocument;
-import com.apicatalog.cborld.document.DocumentDictionary;
-import com.apicatalog.cborld.document.DocumentDictionaryBuilder;
+import com.apicatalog.cborld.registry.DocumentDictionary;
+import com.apicatalog.cborld.registry.DocumentDictionaryBuilder;
+import com.apicatalog.cborld.registry.LegacyDictionary;
 
-public class BarcodesConfig extends DefaultConfig {
+public class BarcodesConfig extends V06Config {
 
     public static final BarcodesConfig INSTANCE = new BarcodesConfig();
 
@@ -32,7 +32,7 @@ public class BarcodesConfig extends DefaultConfig {
                 .build();
 
         DICTIONARIES = new HashMap<>();
-        DICTIONARIES.put(CompressedDocument.DICTIONARY.code(), CompressedDocument.DICTIONARY);
+        DICTIONARIES.put(LegacyDictionary.DICTIONARY.code(), LegacyDictionary.DICTIONARY);
         DICTIONARIES.put(DICTIONARY.code(), DICTIONARY);
     }
 
@@ -42,7 +42,7 @@ public class BarcodesConfig extends DefaultConfig {
     }
 
     @Override
-    public Map<Integer, DocumentDictionary> dictionaries() {
+    public Map<Integer, DocumentDictionary> registry() {
         return DICTIONARIES;
     }
 }

@@ -1,4 +1,4 @@
-package com.apicatalog.cborld.document;
+package com.apicatalog.cborld.registry;
 
 import java.util.AbstractMap;
 import java.util.HashMap;

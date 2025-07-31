@@ -1,9 +1,12 @@
-package com.apicatalog.cborld.document;
+package com.apicatalog.cborld.registry;
 
 import com.apicatalog.cborld.dictionary.Dictionary;
 import com.apicatalog.cborld.dictionary.DictionaryBuilder;
 
-public class CompressedDocument {
+/**
+ * Used with format version v0.5 and v0.6. Replaced with registry by v1.0.
+ */
+public class LegacyDictionary {
 
     public static final int CODE = 0x01;
 
@@ -42,7 +45,7 @@ public class CompressedDocument {
             .context(CONTEXTS)
             .build();
 
-    private CompressedDocument() {
+    private LegacyDictionary() {
         /* protected */}
 
 }

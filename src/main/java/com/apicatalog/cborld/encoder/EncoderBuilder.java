@@ -3,11 +3,12 @@ package com.apicatalog.cborld.encoder;
 import java.net.URI;
 import java.util.Collection;
 
+import com.apicatalog.cborld.CborLdVersion;
 import com.apicatalog.cborld.config.DefaultConfig;
-import com.apicatalog.cborld.document.DocumentDictionary;
 import com.apicatalog.cborld.encoder.value.ValueEncoder;
 import com.apicatalog.cborld.loader.StaticContextLoader;
 import com.apicatalog.cborld.mapping.EncoderMappingProvider;
+import com.apicatalog.cborld.registry.DocumentDictionary;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.http.DefaultHttpClient;
 import com.apicatalog.jsonld.http.media.MediaType;
@@ -22,7 +23,7 @@ public class EncoderBuilder implements EncoderConfig {
 
     protected Collection<ValueEncoder> valueEncoders;
 
-    protected byte version;
+    protected CborLdVersion version;
 
     protected DocumentLoader loader;
     protected boolean bundledContexts;
@@ -103,10 +104,10 @@ public class EncoderBuilder implements EncoderConfig {
     /**
      * Set encoding version
      * 
-     * @param dictionary
+     * @param version
      * @return {@link EncoderBuilder} instance
      */
-    public EncoderBuilder version(byte version) {
+    public EncoderBuilder version(CborLdVersion version) {
         this.version = version;
         return this;
     }
@@ -142,7 +143,7 @@ public class EncoderBuilder implements EncoderConfig {
     }
 
     @Override
-    public byte version() {
+    public CborLdVersion version() {
         return version;
     }
 

@@ -3,9 +3,9 @@ package com.apicatalog.cborld;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.apicatalog.cborld.document.CompressedDocument;
-import com.apicatalog.cborld.document.DocumentDictionary;
-import com.apicatalog.cborld.document.DocumentDictionaryBuilder;
+import com.apicatalog.cborld.registry.DocumentDictionary;
+import com.apicatalog.cborld.registry.DocumentDictionaryBuilder;
+import com.apicatalog.cborld.registry.LegacyDictionary;
 
 public class UtopiaBarcodesConfig extends BarcodesConfig {
 
@@ -21,7 +21,7 @@ public class UtopiaBarcodesConfig extends BarcodesConfig {
                 .build();
 
         DICTIONARIES = new HashMap<>();
-        DICTIONARIES.put(CompressedDocument.DICTIONARY.code(), CompressedDocument.DICTIONARY);
+        DICTIONARIES.put(LegacyDictionary.DICTIONARY.code(), LegacyDictionary.DICTIONARY);
         DICTIONARIES.put(DICTIONARY.code(), DICTIONARY);
 
         INSTANCE = new UtopiaBarcodesConfig();
@@ -33,7 +33,7 @@ public class UtopiaBarcodesConfig extends BarcodesConfig {
     }
 
     @Override
-    public Map<Integer, DocumentDictionary> dictionaries() {
+    public Map<Integer, DocumentDictionary> registry() {
         return UtopiaBarcodesConfig.DICTIONARIES;
     }
 }

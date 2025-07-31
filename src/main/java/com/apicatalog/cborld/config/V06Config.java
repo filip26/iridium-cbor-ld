@@ -9,7 +9,9 @@ import com.apicatalog.cborld.CborLdVersion;
 import com.apicatalog.cborld.context.mapping.ContextMappingProvider;
 import com.apicatalog.cborld.decoder.DecoderConfig;
 import com.apicatalog.cborld.decoder.value.ContextValueDecoder;
+import com.apicatalog.cborld.decoder.value.CustomTypeValueDecoder;
 import com.apicatalog.cborld.decoder.value.DidKeyValueDecoder;
+import com.apicatalog.cborld.decoder.value.IdValueDecoder;
 import com.apicatalog.cborld.decoder.value.MultibaseValueDecoder;
 import com.apicatalog.cborld.decoder.value.TypeValueDecoder;
 import com.apicatalog.cborld.decoder.value.UuidValueDecoder;
@@ -19,7 +21,10 @@ import com.apicatalog.cborld.decoder.value.XsdDateTimeValueDecoder;
 import com.apicatalog.cborld.decoder.value.XsdDateValueDecoder;
 import com.apicatalog.cborld.encoder.EncoderConfig;
 import com.apicatalog.cborld.encoder.value.ContextValueEncoder;
+import com.apicatalog.cborld.encoder.value.CustomTypeValueEncoder;
+import com.apicatalog.cborld.encoder.value.CustomUriValueEncoder;
 import com.apicatalog.cborld.encoder.value.DidKeyValueEncoder;
+import com.apicatalog.cborld.encoder.value.IdValueEncoder;
 import com.apicatalog.cborld.encoder.value.MultibaseValueEncoder;
 import com.apicatalog.cborld.encoder.value.TypeValueEncoder;
 import com.apicatalog.cborld.encoder.value.UuidValueEncoder;
@@ -32,9 +37,9 @@ import com.apicatalog.cborld.mapping.EncoderMappingProvider;
 import com.apicatalog.cborld.registry.DocumentDictionary;
 import com.apicatalog.cborld.registry.LegacyDictionary;
 
-public class V05Config extends BaseConfig implements EncoderConfig, DecoderConfig {
+public class V06Config extends BaseConfig implements EncoderConfig, DecoderConfig {
 
-    public static final V05Config INSTANCE = new V05Config();
+    public static final V06Config INSTANCE = new V06Config();
 
     static final ContextMappingProvider MAPPING = new ContextMappingProvider();
 
@@ -45,13 +50,16 @@ public class V05Config extends BaseConfig implements EncoderConfig, DecoderConfi
         VALUE_ENCODERS.add(new ContextValueEncoder());
 
         // type driven
+        VALUE_ENCODERS.add(new IdValueEncoder());
         VALUE_ENCODERS.add(new TypeValueEncoder());
         VALUE_ENCODERS.add(new XsdDateTimeValueEncoder());
         VALUE_ENCODERS.add(new XsdDateValueEncoder());
         VALUE_ENCODERS.add(new MultibaseValueEncoder());
         VALUE_ENCODERS.add(new VocabValueEncoder());
+        VALUE_ENCODERS.add(new CustomTypeValueEncoder());
 
         // value driven
+        VALUE_ENCODERS.add(new CustomUriValueEncoder());
         VALUE_ENCODERS.add(new UuidValueEncoder());
         VALUE_ENCODERS.add(new DidKeyValueEncoder());
     }
@@ -63,18 +71,20 @@ public class V05Config extends BaseConfig implements EncoderConfig, DecoderConfi
         VALUE_DECODERS.add(new ContextValueDecoder());
 
         // type driven
+        VALUE_DECODERS.add(new IdValueDecoder());
         VALUE_DECODERS.add(new TypeValueDecoder());
         VALUE_DECODERS.add(new XsdDateTimeValueDecoder());
         VALUE_DECODERS.add(new XsdDateValueDecoder());
         VALUE_DECODERS.add(new MultibaseValueDecoder());
         VALUE_DECODERS.add(new VocabValueDecoder());
+        VALUE_DECODERS.add(new CustomTypeValueDecoder());
 
         // value driven
         VALUE_DECODERS.add(new UuidValueDecoder());
         VALUE_DECODERS.add(new DidKeyValueDecoder());
     }
 
-    static final boolean COMPACT_ARRAYS = true;
+    protected static final boolean COMPACT_ARRAYS = false;
 
     public static final boolean STATIC_CONTEXTS = true;
 
@@ -85,7 +95,7 @@ public class V05Config extends BaseConfig implements EncoderConfig, DecoderConfi
         DICTIONARIES.put(LegacyDictionary.DICTIONARY.code(), LegacyDictionary.DICTIONARY);
     }
 
-    protected V05Config() {
+    protected V06Config() {
         super(STATIC_CONTEXTS, COMPACT_ARRAYS);
     }
 
@@ -121,6 +131,6 @@ public class V05Config extends BaseConfig implements EncoderConfig, DecoderConfi
 
     @Override
     public CborLdVersion version() {
-        return CborLdVersion.V05;
+        return CborLdVersion.V06;
     }
 }

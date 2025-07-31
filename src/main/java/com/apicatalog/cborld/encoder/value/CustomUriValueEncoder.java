@@ -20,7 +20,6 @@ public class CustomUriValueEncoder implements ValueEncoder {
     public DataItem encode(Mapping mapping, JsonValue jsonValue, String term, Collection<String> types) throws EncoderError {
         if (JsonUtils.isString(jsonValue)) {
             final String value = ((JsonString) jsonValue).getString();
-            System.out.println(">> " + term + ", " + jsonValue + ", " + types);
             if (UriUtils.isAbsoluteUri(value, UriValidationPolicy.SchemeOnly)) {
 
                 final Dictionary dictionary = mapping.uris();

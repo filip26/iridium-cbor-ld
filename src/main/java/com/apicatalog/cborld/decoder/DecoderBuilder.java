@@ -7,9 +7,9 @@ import java.util.Map;
 
 import com.apicatalog.cborld.config.DefaultConfig;
 import com.apicatalog.cborld.decoder.value.ValueDecoder;
-import com.apicatalog.cborld.document.DocumentDictionary;
 import com.apicatalog.cborld.loader.StaticContextLoader;
 import com.apicatalog.cborld.mapping.DecoderMappingProvider;
+import com.apicatalog.cborld.registry.DocumentDictionary;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.http.DefaultHttpClient;
 import com.apicatalog.jsonld.http.media.MediaType;
@@ -33,8 +33,8 @@ public class DecoderBuilder implements DecoderConfig {
         this.provider = config.decoderMapping();
         this.compactArrays = config.isCompactArrays();
         this.valueDecoders = config.valueDecoders();
-        this.dictionaries = config.dictionaries() != null
-                ? new HashMap<>(config.dictionaries())
+        this.dictionaries = config.registry() != null
+                ? new HashMap<>(config.registry())
                 : new HashMap<>();
         this.base = config.base();
         this.loader = config.loader();
@@ -131,7 +131,7 @@ public class DecoderBuilder implements DecoderConfig {
     }
 
     @Override
-    public Map<Integer, DocumentDictionary> dictionaries() {
+    public Map<Integer, DocumentDictionary> registry() {
         return dictionaries;
     }
 

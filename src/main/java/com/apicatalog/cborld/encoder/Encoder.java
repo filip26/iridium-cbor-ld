@@ -105,13 +105,27 @@ public class Encoder {
         try {
             final Mapping mapping = config.encoderMapping().getEncoderMapping(document, config);
 
-            final CborBuilder builder = (CborBuilder) encode(document, new CborBuilder().addMap(), mapping.typeMap(), mapping).end();
+            CborBuilder builder = (CborBuilder) encode(document, new CborBuilder().addMap(), mapping.typeMap(), mapping).end();
 
-            // 2.CBOR Tag - 0xD9, CBOR-LD - version, Compressed - CBOR-LD compression
-            // algorithm
+            // 2.CBOR Tag - 0xD9
             baos.write(CborLd.LEADING_BYTE);
-            baos.write(config.version());
-            baos.write(config.dictionary().code());
+            
+            switch (config.version()) {
+            case V10:
+                baos.write(CborLd.VERSION_10_BYTES[0]);
+                baos.write(CborLd.VERSION_10_BYTES[1]);                
+                break;
+
+            case V06:
+                baos.write(CborLd.VERSION_06_BYTE);
+                baos.write(config.dictionary().code());
+                break;
+                
+            case V05:
+                baos.write(CborLd.VERSION_05_BYTE);
+                baos.write(config.dictionary().code());
+                break;
+            }
 
             new CborEncoder(baos).encode(builder.build());
 

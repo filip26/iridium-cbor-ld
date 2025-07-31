@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.apicatalog.cborld.CborLd;
+import com.apicatalog.cborld.CborLdVersion;
 import com.apicatalog.cborld.context.mapping.ContextMappingProvider;
 import com.apicatalog.cborld.decoder.DecoderConfig;
 import com.apicatalog.cborld.decoder.value.ContextValueDecoder;
@@ -19,8 +19,6 @@ import com.apicatalog.cborld.decoder.value.ValueDecoder;
 import com.apicatalog.cborld.decoder.value.VocabValueDecoder;
 import com.apicatalog.cborld.decoder.value.XsdDateTimeValueDecoder;
 import com.apicatalog.cborld.decoder.value.XsdDateValueDecoder;
-import com.apicatalog.cborld.document.CompressedDocument;
-import com.apicatalog.cborld.document.DocumentDictionary;
 import com.apicatalog.cborld.encoder.EncoderConfig;
 import com.apicatalog.cborld.encoder.value.ContextValueEncoder;
 import com.apicatalog.cborld.encoder.value.CustomTypeValueEncoder;
@@ -36,6 +34,8 @@ import com.apicatalog.cborld.encoder.value.XsdDateTimeValueEncoder;
 import com.apicatalog.cborld.encoder.value.XsdDateValueEncoder;
 import com.apicatalog.cborld.mapping.DecoderMappingProvider;
 import com.apicatalog.cborld.mapping.EncoderMappingProvider;
+import com.apicatalog.cborld.registry.DocumentDictionary;
+import com.apicatalog.cborld.registry.LegacyDictionary;
 
 public class DefaultConfig extends BaseConfig implements EncoderConfig, DecoderConfig {
 
@@ -88,13 +88,11 @@ public class DefaultConfig extends BaseConfig implements EncoderConfig, DecoderC
 
     public static final boolean STATIC_CONTEXTS = true;
 
-    public static final byte VERSION = CborLd.VERSION_06_BYTE;
-
-    static final Map<Integer, DocumentDictionary> DICTIONARIES;
+    static final Map<Integer, DocumentDictionary> REGISTRY;
 
     static {
-        DICTIONARIES = new HashMap<>();
-        DICTIONARIES.put(CompressedDocument.DICTIONARY.code(), CompressedDocument.DICTIONARY);
+        REGISTRY = new HashMap<>();
+        REGISTRY.put(LegacyDictionary.DICTIONARY.code(), LegacyDictionary.DICTIONARY);
     }
 
     protected DefaultConfig() {
@@ -122,17 +120,17 @@ public class DefaultConfig extends BaseConfig implements EncoderConfig, DecoderC
     }
 
     @Override
-    public Map<Integer, DocumentDictionary> dictionaries() {
-        return DICTIONARIES;
+    public Map<Integer, DocumentDictionary> registry() {
+        return REGISTRY;
     }
 
     @Override
     public DocumentDictionary dictionary() {
-        return CompressedDocument.DICTIONARY;
+        return LegacyDictionary.DICTIONARY;
     }
 
     @Override
-    public byte version() {
-        return VERSION;
+    public CborLdVersion version() {
+        return CborLdVersion.V10;
     }
 }
