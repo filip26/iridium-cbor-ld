@@ -116,7 +116,7 @@ public class Encoder {
                 baos.write(CborLd.VERSION_10_BYTES[1]);                
                 break;
 
-            case V06_COMPRESSED:
+            case V06:
                 baos.write(CborLd.VERSION_06_BYTE);
                 baos.write(config.dictionary().code());
                 break;
@@ -125,6 +125,8 @@ public class Encoder {
                 baos.write(CborLd.VERSION_05_BYTE);
                 baos.write(config.dictionary().code());
                 break;
+            default:
+                throw new EncoderError(Code.Unsupported, "Unsupported CBOR-LD version " + config.version() + ".");
             }
 
             new CborEncoder(baos).encode(builder.build());

@@ -7,9 +7,8 @@ public enum CborLdVersion {
     V10(CborLd.VERSION_10_BYTES),
     
     // legacy
-    V06_COMPRESSED(new byte[] { CborLd.VERSION_06_BYTE, CborLd.COMPRESSED_BYTE }),
+    V06(new byte[] { CborLd.VERSION_06_BYTE }),
     V05_COMPRESSED(new byte[] { CborLd.VERSION_05_BYTE, CborLd.COMPRESSED_BYTE }),
-    V06_UNCOMPRESSED(new byte[] { CborLd.VERSION_06_BYTE, CborLd.UNCOMPRESSED_BYTE }),
     V05_UNCOMPRESSED(new byte[] { CborLd.VERSION_05_BYTE, CborLd.UNCOMPRESSED_BYTE });
 
     private final byte[] bytes;
@@ -24,7 +23,7 @@ public enum CborLdVersion {
 
     public static CborLdVersion of(byte[] bytes) {
         for (CborLdVersion version : CborLdVersion.values()) {
-            if (Arrays.equals(version.bytes, 0, version.bytes.length, bytes, 0, version.bytes.length)) {
+            if (Arrays.equals(version.bytes, 0, version.bytes.length, bytes, 0, Math.min(bytes.length, version.bytes.length))) {
                 return version;
             }
         }

@@ -7,6 +7,7 @@ public class EncoderError extends Exception {
     public enum Code {
         Internal, // internal - an unexpected error
         InvalidDocument, // invalid JSON-LD document
+        Unsupported,
     }
 
     protected final Code code;

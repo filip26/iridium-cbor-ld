@@ -134,7 +134,7 @@ public class V06Config extends BaseConfig implements EncoderConfig, DecoderConfi
 
     @Override
     public CborLdVersion version() {
-        return CborLdVersion.V06_COMPRESSED;
+        return CborLdVersion.V06;
     }
     
     @Override

@@ -25,7 +25,7 @@ public class DecoderV1 extends BaseDecoder {
     @Override
     public JsonValue decode(byte[] encoded) throws ContextError, DecoderError {
 
-        final CborLdVersion version = BaseDecoder.assertVersion(encoded);
+        final CborLdVersion version = BaseDecoder.assertCborLd(encoded);
 
         if (version != CborLdVersion.V10) {
             throw new DecoderError(Code.Unsupported, "The decoder does support " + version + " but " + CborLdVersion.V10 + " .");

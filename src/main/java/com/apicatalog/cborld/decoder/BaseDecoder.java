@@ -1,8 +1,10 @@
 package com.apicatalog.cborld.decoder;
 
+import java.io.ByteArrayInputStream;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import com.apicatalog.cborld.CborLd;
 import com.apicatalog.cborld.CborLdVersion;
@@ -15,6 +17,8 @@ import com.apicatalog.cborld.mapping.TypeMap;
 import com.apicatalog.cborld.registry.DocumentDictionary;
 import com.apicatalog.jsonld.json.JsonUtils;
 
+import co.nstant.in.cbor.CborDecoder;
+import co.nstant.in.cbor.CborException;
 import co.nstant.in.cbor.model.Array;
 import co.nstant.in.cbor.model.DataItem;
 import co.nstant.in.cbor.model.DoublePrecisionFloat;
@@ -257,7 +261,7 @@ public abstract class BaseDecoder implements Decoder {
         throw new IllegalStateException("Unsupported CBOR simple value type [" + value.getSimpleValueType() + "].");
     }
 
-    protected static final CborLdVersion assertVersion(byte[] encoded) throws DecoderError {
+    protected static final CborLdVersion assertCborLd(byte[] encoded) throws DecoderError {
         if (encoded == null) {
             throw new IllegalArgumentException("The encoded document paramenter must not be null but byte array.");
         }
@@ -283,7 +287,7 @@ public abstract class BaseDecoder implements Decoder {
                     + "v1.0 = "
                     + Hex.toString(CborLd.VERSION_10_BYTES)
                     + ", or v0.6 = "
-                    + Hex.toString(new byte[] { CborLd.VERSION_06_BYTE, CborLd.COMPRESSED_BYTE })
+                    + Hex.toString(new byte[] { CborLd.VERSION_06_BYTE })
                     + ", or v0.5 = "
                     + Hex.toString(new byte[] { CborLd.VERSION_05_BYTE, CborLd.COMPRESSED_BYTE })
                     + ", but is "
@@ -293,4 +297,35 @@ public abstract class BaseDecoder implements Decoder {
         
         return version;
     }
+
+    // legacy support
+    protected JsonValue decode(byte[] encoded, final DocumentDictionary provider) throws ContextError, DecoderError {
+        try {
+            final ByteArrayInputStream bais = new ByteArrayInputStream(encoded);
+            final List<DataItem> dataItems = new CborDecoder(bais).decode();
+
+            // nothing do de-compress
+            if (dataItems.isEmpty()) {
+                return null;
+            }
+
+            // only one object
+            if (dataItems.size() == 1) {
+                return decode(dataItems.iterator().next(), provider);
+            }
+
+            // decode as an array of objects
+            final JsonArrayBuilder builder = Json.createArrayBuilder();
+
+            for (final DataItem item : dataItems) {
+                builder.add(decode(item, provider));
+            }
+
+            return builder.build();
+
+        } catch (final CborException e) {
+            throw new DecoderError(Code.InvalidDocument, e);
+        }
+    }
+
 }

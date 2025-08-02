@@ -28,7 +28,7 @@ public class MultiDecoder implements Decoder {
      */
     @Override
     public JsonValue decode(byte[] encoded) throws ContextError, DecoderError {
-        return decode(BaseDecoder.assertVersion(encoded), encoded);
+        return decode(BaseDecoder.assertCborLd(encoded), encoded);
     }
 
     @Override

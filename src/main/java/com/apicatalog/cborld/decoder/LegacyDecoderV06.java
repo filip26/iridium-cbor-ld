@@ -1,9 +1,9 @@
 package com.apicatalog.cborld.decoder;
 
 import java.io.ByteArrayInputStream;
-import java.util.Arrays;
 import java.util.List;
 
+import com.apicatalog.cborld.CborLd;
 import com.apicatalog.cborld.CborLdVersion;
 import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.decoder.DecoderError.Code;
@@ -17,29 +17,30 @@ import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonValue;
 
-public class LegacyDecoder extends BaseDecoder {
+public class LegacyDecoderV06 extends BaseDecoder {
 
-    public LegacyDecoder(DecoderConfig config) {
+    public LegacyDecoderV06(DecoderConfig config) {
         super(config);
     }
 
     @Override
-    public JsonValue decode(byte[] encoded) throws ContextError, DecoderError {        
-        CborLdVersion version = BaseDecoder.assertVersion(encoded);
-        
-        if (version == CborLdVersion.V06_COMPRESSED
-                || version == CborLdVersion.V05_COMPRESSED
-                ) {
-            
-            return decode(version, encoded);
-            
+    public JsonValue decode(byte[] encoded) throws ContextError, DecoderError {
+        CborLdVersion version = BaseDecoder.assertCborLd(encoded);
+
+        if (version != CborLdVersion.V06) {
+            throw new DecoderError(Code.Unsupported, "The decoder does support " + version + " but " + CborLdVersion.V06 + " .");
         }
-        
-        throw new DecoderError(Code.Unsupported, "The decoder does support " + version + " but " + Arrays.toString(new CborLdVersion[] {CborLdVersion.V06_COMPRESSED, CborLdVersion.V05_COMPRESSED}) + " .");
+
+        return decode(version, encoded);
     }
 
     @Override
     public JsonValue decode(CborLdVersion version, byte[] encoded) throws ContextError, DecoderError {
+
+        if (encoded[2] == CborLd.UNCOMPRESSED_BYTE) {
+            throw new DecoderError(Code.Unsupported, "Uncompressed CBOR-LD v0.6 is not supported.");            
+        }
+        
         final DocumentDictionary dictionary = config.registry().get(Byte.toUnsignedInt(encoded[2]));
 
         if (dictionary == null) {
@@ -49,7 +50,6 @@ public class LegacyDecoder extends BaseDecoder {
         }
 
         return decode(encoded, dictionary);
-
     }
 
     protected JsonValue decode(byte[] encoded, final DocumentDictionary provider) throws ContextError, DecoderError {

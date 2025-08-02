@@ -3,11 +3,8 @@ package com.apicatalog.cborld;
 import com.apicatalog.cborld.config.DefaultConfig;
 import com.apicatalog.cborld.decoder.DecoderBuilder;
 import com.apicatalog.cborld.decoder.DecoderConfig;
-import com.apicatalog.cborld.decoder.DecoderError;
-import com.apicatalog.cborld.decoder.DecoderError.Code;
 import com.apicatalog.cborld.encoder.EncoderBuilder;
 import com.apicatalog.cborld.encoder.EncoderConfig;
-import com.apicatalog.cborld.hex.Hex;
 
 /**
  * High level API to process CBOR-LD.
