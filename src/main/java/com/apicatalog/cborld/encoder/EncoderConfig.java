@@ -10,10 +10,12 @@ import com.apicatalog.cborld.registry.DocumentDictionary;
 
 public interface EncoderConfig extends Config {
 
-    DocumentDictionary dictionary();
-
     CborLdVersion version();
 
+    DocumentDictionary dictionary();
+
+    boolean isCompactArrays();
+    
     Collection<ValueEncoder> valueEncoders();
 
     EncoderMappingProvider encoderMapping();

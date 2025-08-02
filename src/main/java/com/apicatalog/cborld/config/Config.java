@@ -6,8 +6,6 @@ import com.apicatalog.jsonld.loader.DocumentLoader;
 
 public interface Config {
 
-    boolean isCompactArrays();
-
     DocumentLoader loader();
 
     URI base();

@@ -74,7 +74,7 @@ public class V05Config extends BaseConfig implements EncoderConfig, DecoderConfi
         VALUE_DECODERS.add(new DidKeyValueDecoder());
     }
 
-    static final boolean COMPACT_ARRAYS = true;
+    public static final boolean COMPACT_ARRAYS = true;
 
     public static final boolean STATIC_CONTEXTS = true;
 
@@ -84,9 +84,12 @@ public class V05Config extends BaseConfig implements EncoderConfig, DecoderConfi
         DICTIONARIES = new HashMap<>();
         DICTIONARIES.put(LegacyDictionary.DICTIONARY.code(), LegacyDictionary.DICTIONARY);
     }
+    
+    boolean compactArrays;
 
     protected V05Config() {
-        super(STATIC_CONTEXTS, COMPACT_ARRAYS);
+        super(STATIC_CONTEXTS);
+        this.compactArrays = COMPACT_ARRAYS;
     }
 
     @Override
@@ -121,6 +124,11 @@ public class V05Config extends BaseConfig implements EncoderConfig, DecoderConfi
 
     @Override
     public CborLdVersion version() {
-        return CborLdVersion.V05;
+        return CborLdVersion.V05_COMPRESSED;
+    }
+    
+    @Override
+    public boolean isCompactArrays() {
+        return compactArrays;
     }
 }

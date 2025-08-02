@@ -18,10 +18,11 @@ import com.apicatalog.cbor.CborWriter;
 import com.apicatalog.cborld.config.DefaultConfig;
 import com.apicatalog.cborld.config.V05Config;
 import com.apicatalog.cborld.context.ContextError;
-import com.apicatalog.cborld.decoder.Decoder;
+import com.apicatalog.cborld.decoder.MultiDecoder;
 import com.apicatalog.cborld.decoder.DecoderConfig;
 import com.apicatalog.cborld.decoder.DecoderError;
 import com.apicatalog.cborld.encoder.Encoder;
+import com.apicatalog.cborld.encoder.EncoderBuilder;
 import com.apicatalog.cborld.encoder.EncoderConfig;
 import com.apicatalog.cborld.encoder.EncoderError;
 import com.apicatalog.cborld.hex.Hex;
@@ -45,7 +46,7 @@ import jakarta.json.JsonWriter;
 import jakarta.json.JsonWriterFactory;
 import jakarta.json.stream.JsonGenerator;
 
-public class CborLdTestRunnerJunit {
+class CborLdTestRunnerJunit {
 
     private final CborLdTestCase testCase;
 
@@ -118,10 +119,10 @@ public class CborLdTestRunnerJunit {
 
                 assertNotNull(document);
 
-                final Decoder decoder = CborLd.createDecoder(getDecoderConfig(testCase.config))
+                final MultiDecoder decoder = CborLd.createDecoder(getDecoderConfig(testCase.config))
                         .loader(LOADER)
                         .compactArray(testCase.compactArrays)
-                        .dictionary(UtopiaBarcodesConfig.DICTIONARY)
+//                        .dictionary(Barcodes.DICTIONARY)
                         .build();
 
                 final JsonValue result = decoder.decode(((CborLdDocument) document).getByteArray());
@@ -283,7 +284,7 @@ public class CborLdTestRunnerJunit {
             return V05Config.INSTANCE;
         }
         if ("barcodes".equals(name)) {
-            return UtopiaBarcodesConfig.INSTANCE;
+//FIXME            return Barcodes.INSTANCE;
         }
         return DefaultConfig.INSTANCE;
     }
@@ -293,7 +294,7 @@ public class CborLdTestRunnerJunit {
             return V05Config.INSTANCE;
         }
         if ("barcodes".equals(name)) {
-            return UtopiaBarcodesConfig.INSTANCE;
+//FIXME            return Barcodes.INSTANCE;
         }
         return DefaultConfig.INSTANCE;
     }

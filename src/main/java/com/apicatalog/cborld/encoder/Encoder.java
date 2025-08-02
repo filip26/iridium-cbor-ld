@@ -116,12 +116,12 @@ public class Encoder {
                 baos.write(CborLd.VERSION_10_BYTES[1]);                
                 break;
 
-            case V06:
+            case V06_COMPRESSED:
                 baos.write(CborLd.VERSION_06_BYTE);
                 baos.write(config.dictionary().code());
                 break;
                 
-            case V05:
+            case V05_COMPRESSED:
                 baos.write(CborLd.VERSION_05_BYTE);
                 baos.write(config.dictionary().code());
                 break;

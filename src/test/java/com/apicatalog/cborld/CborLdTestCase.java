@@ -13,7 +13,7 @@ import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 
-public class CborLdTestCase {
+class CborLdTestCase {
 
     public URI id;
 

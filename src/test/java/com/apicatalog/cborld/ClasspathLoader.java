@@ -12,7 +12,7 @@ import com.apicatalog.jsonld.document.RdfDocument;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
 
-public class ClasspathLoader implements DocumentLoader {
+class ClasspathLoader implements DocumentLoader {
 
     @Override
     public Document loadDocument(URI url, DocumentLoaderOptions options) throws JsonLdError {

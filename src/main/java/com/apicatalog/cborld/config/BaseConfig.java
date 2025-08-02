@@ -8,19 +8,12 @@ public class BaseConfig implements Config {
 
     protected DocumentLoader loader;
     protected boolean bundledContexts;
-    protected boolean compactArrays;
     protected URI base;
 
-    protected BaseConfig(boolean bundledContexts, boolean compactArrays) {
+    protected BaseConfig(boolean bundledContexts) {
         this.bundledContexts = bundledContexts;
-        this.compactArrays = compactArrays;
         this.loader = null;
         this.base = null;
-    }
-
-    @Override
-    public boolean isCompactArrays() {
-        return compactArrays;
     }
 
     @Override

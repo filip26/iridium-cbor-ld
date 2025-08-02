@@ -9,7 +9,7 @@ import java.util.Optional;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.http.media.MediaType;
 
-public class CborLdDocument implements Document {
+class CborLdDocument implements Document {
 
     public static final MediaType MEDIA_TYPE = MediaType.of("application", "cbor");
 

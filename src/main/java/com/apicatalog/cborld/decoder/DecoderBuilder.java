@@ -1,57 +1,27 @@
 package com.apicatalog.cborld.decoder;
 
 import java.net.URI;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
+import com.apicatalog.cborld.config.Config;
 import com.apicatalog.cborld.config.DefaultConfig;
-import com.apicatalog.cborld.decoder.value.ValueDecoder;
 import com.apicatalog.cborld.loader.StaticContextLoader;
-import com.apicatalog.cborld.mapping.DecoderMappingProvider;
-import com.apicatalog.cborld.registry.DocumentDictionary;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.http.DefaultHttpClient;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.HttpLoader;
 
-public class DecoderBuilder implements DecoderConfig {
+public class DecoderBuilder implements Config {
 
-    protected DecoderMappingProvider provider;
-
-    protected Map<Integer, DocumentDictionary> dictionaries;
-
-    protected Collection<ValueDecoder> valueDecoders;
 
     protected DocumentLoader loader;
     protected boolean bundledContexts;
-    protected boolean compactArrays;
     protected URI base;
 
-    public DecoderBuilder(DecoderConfig config) {
-        this.provider = config.decoderMapping();
-        this.compactArrays = config.isCompactArrays();
-        this.valueDecoders = config.valueDecoders();
-        this.dictionaries = config.registry() != null
-                ? new HashMap<>(config.registry())
-                : new HashMap<>();
+    public DecoderBuilder(Config config) {
         this.base = config.base();
         this.loader = config.loader();
         this.bundledContexts = DefaultConfig.STATIC_CONTEXTS;
-    }
-
-    /**
-     * If set to true, the encoder replaces arrays with just one element with that
-     * element during encoding saving one byte. Enabled by default.
-     *
-     * @param enable <code>true</code> to enable arrays compaction
-     * @return {@link DecoderBuilder} instance
-     *
-     */
-    public DecoderBuilder compactArray(boolean enable) {
-        compactArrays = enable;
-        return this;
     }
 
     /**
@@ -90,51 +60,6 @@ public class DecoderBuilder implements DecoderConfig {
         return this;
     }
 
-    /**
-     * Add new terms dictionary
-     * 
-     * @param dictionary a custom dictionary
-     * @return {@link DecoderBuilder} instance
-     */
-    public DecoderBuilder dictionary(DocumentDictionary dictionary) {
-        return dictionary(dictionary.code(), dictionary);
-    }
-
-    /**
-     * Add new terms dictionary
-     * 
-     * @param code       CBOR-LD terms dictionary code
-     * @param dictionary a custom dictionary
-     * @return {@link DecoderBuilder} instance
-     */
-    public DecoderBuilder dictionary(int code, DocumentDictionary dictionary) {
-        if (dictionaries == null) {
-            dictionaries = new HashMap<>();
-        }
-        dictionaries.put(code, dictionary);
-        return this;
-    }
-
-    @Override
-    public boolean isCompactArrays() {
-        return compactArrays;
-    }
-
-    @Override
-    public Collection<ValueDecoder> valueDecoders() {
-        return valueDecoders;
-    }
-
-    @Override
-    public DecoderMappingProvider decoderMapping() {
-        return provider;
-    }
-
-    @Override
-    public Map<Integer, DocumentDictionary> registry() {
-        return dictionaries;
-    }
-
     @Override
     public DocumentLoader loader() {
         return loader;
@@ -144,8 +69,21 @@ public class DecoderBuilder implements DecoderConfig {
     public URI base() {
         return base;
     }
+    
+    /**
+     * If set to true, the encoder replaces arrays with just one element with that
+     * element during encoding saving one byte. Enabled by default.
+     *
+     * @param enable <code>true</code> to enable arrays compaction
+     * @return {@link DecoderConfig} instance
+     *
+     */
+    public DecoderBuilder compactArray(boolean enable) {
+//FIXME        this.compactArrays = enable;
+        return this;
+    }
 
-    public Decoder build() {
+    public MultiDecoder build() {
 
         if (loader == null) {
             loader = new HttpLoader(DefaultHttpClient.defaultInstance());
@@ -156,6 +94,6 @@ public class DecoderBuilder implements DecoderConfig {
             loader = new StaticContextLoader(loader);
         }
 
-        return new Decoder(this);
+        return new MultiDecoder(null);  //FIXME
     }
 }
