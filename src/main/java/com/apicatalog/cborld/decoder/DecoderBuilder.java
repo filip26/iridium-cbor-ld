@@ -159,7 +159,7 @@ public class DecoderBuilder {
 
         // only one?
         if (decoders.size() == 1) {
-            return newInstance(decoders.values().iterator().next(), loader);
+            return newInstance(decoders.values().iterator().next(), loader, base);
         }
         
         return new MultiDecoder(null); // FIXME
@@ -179,14 +179,14 @@ public class DecoderBuilder {
         }
     }
     
-    protected static final Decoder newInstance(DecoderConfig config, DocumentLoader loader) {
+    protected static final Decoder newInstance(DecoderConfig config, DocumentLoader loader, URI base) {
         switch (config.version()) {
         case V1:
-            return new DecoderV1(config, loader);
+            return new DecoderV1(config, loader, base);
         case V06:
-            return new LegacyDecoderV06(config, loader);
+            return new LegacyDecoderV06(config, loader, base);
         case V05:
-            return new LegacyDecoderV05(config, loader);
+            return new LegacyDecoderV05(config, loader, base);
         }
         throw new IllegalStateException();
     }

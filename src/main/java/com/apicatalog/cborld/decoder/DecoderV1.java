@@ -1,6 +1,7 @@
 package com.apicatalog.cborld.decoder;
 
 import java.io.ByteArrayInputStream;
+import java.net.URI;
 import java.util.Iterator;
 import java.util.List;
 
@@ -19,8 +20,8 @@ import jakarta.json.JsonValue;
 
 public class DecoderV1 extends BaseDecoder {
 
-    public DecoderV1(DecoderConfig config, DocumentLoader loader) {
-        super(config, loader);
+    public DecoderV1(DecoderConfig config, DocumentLoader loader, URI base) {
+        super(config, loader, base);
     }
 
     @Override

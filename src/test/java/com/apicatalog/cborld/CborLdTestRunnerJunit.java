@@ -55,6 +55,8 @@ class CborLdTestRunnerJunit {
     public static final Encoder ENCODER_V06;
 
     public static final Encoder ENCODER_V05;
+    
+    public static final Encoder ENCODER_V05_NOCA;
 
     static {
         StaticContextLoader.set("https://w3id.org/utopia/v2", CborLdTestRunnerJunit.class, "utopia-v2.jsonld");
@@ -72,7 +74,6 @@ class CborLdTestRunnerJunit {
 
         ENCODER_V1 = CborLd.createEncoder()
                 .loader(LOADER)
-//              .compactArray(testCase.compactArrays)
                 .build();
 
         ENCODER_V06 = CborLd.createEncoder(CborLdVersion.V06)
@@ -83,6 +84,12 @@ class CborLdTestRunnerJunit {
         ENCODER_V05 = CborLd.createEncoder(CborLdVersion.V05)
                 .loader(LOADER)
                 .build();
+        
+        ENCODER_V05_NOCA = CborLd.createEncoder(CborLdVersion.V05)
+                .loader(LOADER)
+                .compactArray(false)
+                .build();
+        
     }
 
     public CborLdTestRunnerJunit(CborLdTestCase testCase) {
@@ -104,7 +111,7 @@ class CborLdTestRunnerJunit {
 
                 JsonObject object = document.getJsonContent().orElseThrow(IllegalStateException::new).asJsonObject();
 
-                Encoder encoder = getEncoder(testCase.config);
+                Encoder encoder = getEncoder(testCase.config, testCase.compactArrays);
 
                 byte[] bytes = encoder.encode(object);
 
@@ -295,9 +302,9 @@ class CborLdTestRunnerJunit {
         return true;
     }
 
-    static final Encoder getEncoder(String name) {
+    static final Encoder getEncoder(String name, boolean compactArrays) {
         if ("v5".equals(name)) {
-            return ENCODER_V05;
+            return compactArrays ? ENCODER_V05 : ENCODER_V05_NOCA;
         }
         if ("barcodes".equals(name)) {
             return ENCODER_V06;

@@ -38,11 +38,12 @@ public class LegacyEncoder implements Encoder {
 
     protected final EncoderConfig config;
     protected DocumentLoader loader;
-    protected boolean bundledContexts;
     protected URI base;
 
-    protected LegacyEncoder(EncoderConfig config) {
+    protected LegacyEncoder(EncoderConfig config, DocumentLoader loader, URI base) {
         this.config = config;
+        this.loader = loader;
+        this.base = base;
     }
 
     /**
@@ -306,10 +307,5 @@ public class LegacyEncoder implements Encoder {
 
     public EncoderConfig config() {
         return config;
-    }
-
-    public LegacyEncoder loader(DocumentLoader loader) {
-        this.loader = loader;
-        return this;
     }
 }

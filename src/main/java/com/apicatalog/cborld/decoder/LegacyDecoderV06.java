@@ -1,5 +1,7 @@
 package com.apicatalog.cborld.decoder;
 
+import java.net.URI;
+
 import com.apicatalog.cborld.CborLd;
 import com.apicatalog.cborld.CborLdVersion;
 import com.apicatalog.cborld.context.ContextError;
@@ -12,8 +14,8 @@ import jakarta.json.JsonValue;
 
 public class LegacyDecoderV06 extends BaseDecoder {
 
-    public LegacyDecoderV06(DecoderConfig config, DocumentLoader loader) {
-        super(config, loader);
+    public LegacyDecoderV06(DecoderConfig config, DocumentLoader loader, URI base) {
+        super(config, loader, base);
     }
 
     @Override

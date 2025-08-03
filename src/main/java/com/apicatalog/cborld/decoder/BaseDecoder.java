@@ -48,9 +48,10 @@ public abstract class BaseDecoder implements Decoder {
     protected boolean bundledContexts;
     protected URI base;
     
-    protected BaseDecoder(DecoderConfig config, DocumentLoader loader) {
+    protected BaseDecoder(DecoderConfig config, DocumentLoader loader, URI base) {
         this.config = config;
         this.loader = loader;
+        this.base = base;
     }
 
     @Override

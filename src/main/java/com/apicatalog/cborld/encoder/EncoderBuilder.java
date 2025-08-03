@@ -156,9 +156,10 @@ public class EncoderBuilder implements EncoderConfig {
         if (bundledContexts) {
             loader = new StaticContextLoader(loader);
         }
-        var e = new LegacyEncoder(this);
-        e.loader(loader);
-        return e;
+        if (version == CborLdVersion.V05 || version == CborLdVersion.V06) {
+            return new LegacyEncoder(this, loader, base);            
+        }
+        return new LegacyEncoder(this, loader, base);
     }
     
     protected static final EncoderConfig config(CborLdVersion version) {
