@@ -2,6 +2,7 @@ package com.apicatalog.cborld.decoder;
 
 import java.io.ByteArrayInputStream;
 import java.math.BigInteger;
+import java.net.URI;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -16,6 +17,7 @@ import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.cborld.mapping.TypeMap;
 import com.apicatalog.cborld.registry.DocumentDictionary;
 import com.apicatalog.jsonld.json.JsonUtils;
+import com.apicatalog.jsonld.loader.DocumentLoader;
 
 import co.nstant.in.cbor.CborDecoder;
 import co.nstant.in.cbor.CborException;
@@ -42,12 +44,29 @@ public abstract class BaseDecoder implements Decoder {
 
     protected final DecoderConfig config;
 
-    protected BaseDecoder(DecoderConfig config) {
+    protected DocumentLoader loader;
+    protected boolean bundledContexts;
+    protected URI base;
+    
+    protected BaseDecoder(DecoderConfig config, DocumentLoader loader) {
         this.config = config;
+        this.loader = loader;
+    }
+
+    @Override
+    public JsonValue decode(byte[] encoded) throws ContextError, DecoderError {
+
+        final CborLdVersion version = BaseDecoder.assertCborLd(encoded);
+
+        if (version != config.version()) {
+            throw new DecoderError(Code.Unsupported, "The decoder does support " + version + " but " + config.version() + " .");
+
+        }
+        return decode(version, encoded);
     }
 
     protected final JsonValue decode(final DataItem data, final DocumentDictionary custom) throws DecoderError, ContextError {
-        final Mapping mapping = config.decoderMapping().getDecoderMapping(data, custom, config);
+        final Mapping mapping = config.decoderMapping().getDecoderMapping(data, custom, this);
         return decodeData(data, null, mapping.typeMap(), mapping);
     }
 
@@ -281,7 +300,6 @@ public abstract class BaseDecoder implements Decoder {
 
         final CborLdVersion version = CborLdVersion.of(encoded);
 
-
         if (version == null) {
             throw new DecoderError(Code.InvalidDocument, "The document is not CBOR-LD document. A tag must start with: "
                     + "v1.0 = "
@@ -294,7 +312,7 @@ public abstract class BaseDecoder implements Decoder {
                     + Hex.toString(Arrays.copyOfRange(encoded, 1, 3))
                     + ".");
         }
-        
+
         return version;
     }
 
@@ -328,4 +346,18 @@ public abstract class BaseDecoder implements Decoder {
         }
     }
 
+    @Override
+    public DecoderConfig config() {
+        return config;
+    }
+    
+    @Override
+    public URI base() {
+        return base;
+    }
+
+    @Override
+    public DocumentLoader loader() {
+        return loader;
+    }
 }

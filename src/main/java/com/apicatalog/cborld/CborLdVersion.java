@@ -4,12 +4,11 @@ import java.util.Arrays;
 
 public enum CborLdVersion {
 
-    V10(CborLd.VERSION_10_BYTES),
+    V1(CborLd.VERSION_10_BYTES),
     
     // legacy
     V06(new byte[] { CborLd.VERSION_06_BYTE }),
-    V05_COMPRESSED(new byte[] { CborLd.VERSION_05_BYTE, CborLd.COMPRESSED_BYTE }),
-    V05_UNCOMPRESSED(new byte[] { CborLd.VERSION_05_BYTE, CborLd.UNCOMPRESSED_BYTE });
+    V05(new byte[] { CborLd.VERSION_05_BYTE });
 
     private final byte[] bytes;
 

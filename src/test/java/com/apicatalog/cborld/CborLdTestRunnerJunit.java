@@ -16,13 +16,12 @@ import java.util.Objects;
 import com.apicatalog.cbor.CborComparison;
 import com.apicatalog.cbor.CborWriter;
 import com.apicatalog.cborld.config.DefaultConfig;
-import com.apicatalog.cborld.config.V05Config;
+import com.apicatalog.cborld.config.LegacyConfigV05;
 import com.apicatalog.cborld.context.ContextError;
+import com.apicatalog.cborld.decoder.Decoder;
 import com.apicatalog.cborld.decoder.DecoderConfig;
 import com.apicatalog.cborld.decoder.DecoderError;
-import com.apicatalog.cborld.decoder.MultiDecoder;
 import com.apicatalog.cborld.encoder.Encoder;
-import com.apicatalog.cborld.encoder.EncoderConfig;
 import com.apicatalog.cborld.encoder.EncoderError;
 import com.apicatalog.cborld.hex.Hex;
 import com.apicatalog.cborld.loader.StaticContextLoader;
@@ -49,20 +48,42 @@ class CborLdTestRunnerJunit {
 
     private final CborLdTestCase testCase;
 
+    public static final DocumentLoader LOADER;
+
+    public static final Encoder ENCODER_V1;
+
+    public static final Encoder ENCODER_V06;
+
+    public static final Encoder ENCODER_V05;
+
     static {
         StaticContextLoader.set("https://w3id.org/utopia/v2", CborLdTestRunnerJunit.class, "utopia-v2.jsonld");
         StaticContextLoader.set("https://w3id.org/age/v1", CborLdTestRunnerJunit.class, "age-v1.jsonld");
-    }
 
-    public static final DocumentLoader LOADER = new UriBaseRewriter(
-            CborLdTest.BASE,
-            "classpath:",
-            new UriBaseRewriter("https://raw.githubusercontent.com/filip26/iridium-cbor-ld/main/src/test/resources/com/apicatalog/cborld/",
-                    "classpath:",
-                    new SchemeRouter()
-                            .set("http", HttpLoader.defaultInstance())
-                            .set("https", HttpLoader.defaultInstance())
-                            .set("classpath", new ClasspathLoader())));
+        LOADER = new UriBaseRewriter(
+                CborLdTest.BASE,
+                "classpath:",
+                new UriBaseRewriter("https://raw.githubusercontent.com/filip26/iridium-cbor-ld/main/src/test/resources/com/apicatalog/cborld/",
+                        "classpath:",
+                        new SchemeRouter()
+                                .set("http", HttpLoader.defaultInstance())
+                                .set("https", HttpLoader.defaultInstance())
+                                .set("classpath", new ClasspathLoader())));
+
+        ENCODER_V1 = CborLd.createEncoder()
+                .loader(LOADER)
+//              .compactArray(testCase.compactArrays)
+                .build();
+
+        ENCODER_V06 = CborLd.createEncoder(CborLdVersion.V06)
+                .loader(LOADER)
+                .dictionary(Barcodes.DICTIONARY)
+                .build();
+
+        ENCODER_V05 = CborLd.createEncoder(CborLdVersion.V05)
+                .loader(LOADER)
+                .build();
+    }
 
     public CborLdTestRunnerJunit(CborLdTestCase testCase) {
         this.testCase = testCase;
@@ -83,10 +104,7 @@ class CborLdTestRunnerJunit {
 
                 JsonObject object = document.getJsonContent().orElseThrow(IllegalStateException::new).asJsonObject();
 
-                final Encoder encoder = CborLd.createEncoder(getEncoderConfig(testCase.config))
-                        .loader(LOADER)
-                        .compactArray(testCase.compactArrays)
-                        .build();
+                Encoder encoder = getEncoder(testCase.config);
 
                 byte[] bytes = encoder.encode(object);
 
@@ -118,10 +136,9 @@ class CborLdTestRunnerJunit {
 
                 assertNotNull(document);
 
-                final MultiDecoder decoder = CborLd.createDecoder(getDecoderConfig(testCase.config))
+                final Decoder decoder = CborLd.createDecoder(getDecoderConfig(testCase.config))
                         .loader(LOADER)
                         .compactArray(testCase.compactArrays)
-//                        .dictionary(Barcodes.DICTIONARY)
                         .build();
 
                 final JsonValue result = decoder.decode(((CborLdDocument) document).getByteArray());
@@ -278,22 +295,22 @@ class CborLdTestRunnerJunit {
         return true;
     }
 
-    static final EncoderConfig getEncoderConfig(String name) {
+    static final Encoder getEncoder(String name) {
         if ("v5".equals(name)) {
-            return V05Config.INSTANCE;
+            return ENCODER_V05;
         }
         if ("barcodes".equals(name)) {
-//FIXME            return Barcodes.INSTANCE;
+            return ENCODER_V06;
         }
-        return DefaultConfig.INSTANCE;
+        return ENCODER_V1;
     }
 
     static final DecoderConfig getDecoderConfig(String name) {
         if ("v5".equals(name)) {
-            return V05Config.INSTANCE;
+            return LegacyConfigV05.INSTANCE;
         }
         if ("barcodes".equals(name)) {
-//FIXME            return Barcodes.INSTANCE;
+//            return  DecoderBuilder.of(CborLdVersion.V06).dictionary(Barcodes.DICTIONARY);
         }
         return DefaultConfig.INSTANCE;
     }

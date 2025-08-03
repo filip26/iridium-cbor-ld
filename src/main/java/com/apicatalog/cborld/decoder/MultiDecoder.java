@@ -1,10 +1,12 @@
 package com.apicatalog.cborld.decoder;
 
+import java.net.URI;
 import java.util.Map;
 
 import com.apicatalog.cborld.CborLdVersion;
 import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.decoder.DecoderError.Code;
+import com.apicatalog.jsonld.loader.DocumentLoader;
 
 import jakarta.json.JsonValue;
 
@@ -40,5 +42,20 @@ public class MultiDecoder implements Decoder {
         }
 
         return decoder.decode(version, encoded);
+    }
+
+    @Override
+    public DecoderConfig config() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public URI base() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public DocumentLoader loader() {
+        throw new UnsupportedOperationException();
     }
 }

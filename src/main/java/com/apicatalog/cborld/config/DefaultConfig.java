@@ -86,23 +86,14 @@ public class DefaultConfig extends BaseConfig implements EncoderConfig, DecoderC
 
     public static final boolean COMPACT_ARRAYS = false;
 
-    public static final boolean STATIC_CONTEXTS = true;
-
     static final Map<Integer, DocumentDictionary> REGISTRY;
 
     static {
         REGISTRY = new HashMap<>();
         REGISTRY.put(1, LegacyDictionary.DICTIONARY);
     }
-
-    boolean compactArrays;
         
-    protected DefaultConfig() {
-        super(STATIC_CONTEXTS);
-        this.compactArrays = COMPACT_ARRAYS;
-    }
-
-    @Override
+     @Override
     public Collection<ValueEncoder> valueEncoders() {
         return VALUE_ENCODERS;
     }
@@ -134,11 +125,11 @@ public class DefaultConfig extends BaseConfig implements EncoderConfig, DecoderC
 
     @Override
     public CborLdVersion version() {
-        return CborLdVersion.V10;
+        return CborLdVersion.V1;
     }
     
     @Override
     public boolean isCompactArrays() {
-        return compactArrays;
+        return COMPACT_ARRAYS;
     }
 }

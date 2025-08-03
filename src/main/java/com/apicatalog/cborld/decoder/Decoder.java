@@ -1,7 +1,10 @@
 package com.apicatalog.cborld.decoder;
 
+import java.net.URI;
+
 import com.apicatalog.cborld.CborLdVersion;
 import com.apicatalog.cborld.context.ContextError;
+import com.apicatalog.jsonld.loader.DocumentLoader;
 
 import jakarta.json.JsonValue;
 
@@ -41,4 +44,10 @@ public interface Decoder {
      * @throws DecoderError if a decoding error occurs
      */
     JsonValue decode(CborLdVersion version, byte[] encoded) throws ContextError, DecoderError;
+
+    DecoderConfig config();
+
+    URI base();
+
+    DocumentLoader loader();
 }

@@ -32,9 +32,9 @@ import com.apicatalog.cborld.mapping.EncoderMappingProvider;
 import com.apicatalog.cborld.registry.DocumentDictionary;
 import com.apicatalog.cborld.registry.LegacyDictionary;
 
-public class V05Config extends BaseConfig implements EncoderConfig, DecoderConfig {
+public class LegacyConfigV05 extends BaseConfig implements EncoderConfig, DecoderConfig {
 
-    public static final V05Config INSTANCE = new V05Config();
+    public static final LegacyConfigV05 INSTANCE = new LegacyConfigV05();
 
     static final ContextMappingProvider MAPPING = new ContextMappingProvider();
 
@@ -76,20 +76,11 @@ public class V05Config extends BaseConfig implements EncoderConfig, DecoderConfi
 
     public static final boolean COMPACT_ARRAYS = true;
 
-    public static final boolean STATIC_CONTEXTS = true;
-
     static final Map<Integer, DocumentDictionary> DICTIONARIES;
 
     static {
         DICTIONARIES = new HashMap<>();
         DICTIONARIES.put(LegacyDictionary.DICTIONARY.code(), LegacyDictionary.DICTIONARY);
-    }
-    
-    boolean compactArrays;
-
-    protected V05Config() {
-        super(STATIC_CONTEXTS);
-        this.compactArrays = COMPACT_ARRAYS;
     }
 
     @Override
@@ -124,11 +115,11 @@ public class V05Config extends BaseConfig implements EncoderConfig, DecoderConfi
 
     @Override
     public CborLdVersion version() {
-        return CborLdVersion.V05_COMPRESSED;
+        return CborLdVersion.V05;
     }
     
     @Override
     public boolean isCompactArrays() {
-        return compactArrays;
+        return COMPACT_ARRAYS;
     }
 }

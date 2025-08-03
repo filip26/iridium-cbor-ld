@@ -1,12 +1,10 @@
 package com.apicatalog.cborld.config;
 
-import java.net.URI;
-
-import com.apicatalog.jsonld.loader.DocumentLoader;
+import com.apicatalog.cborld.CborLdVersion;
 
 public interface Config {
 
-    DocumentLoader loader();
+    CborLdVersion version();
 
-    URI base();
+    boolean isCompactArrays();    
 }

@@ -8,6 +8,7 @@ import com.apicatalog.cborld.CborLdVersion;
 import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.decoder.DecoderError.Code;
 import com.apicatalog.cborld.registry.DocumentDictionary;
+import com.apicatalog.jsonld.loader.DocumentLoader;
 
 import co.nstant.in.cbor.CborDecoder;
 import co.nstant.in.cbor.CborException;
@@ -18,20 +19,8 @@ import jakarta.json.JsonValue;
 
 public class DecoderV1 extends BaseDecoder {
 
-    public DecoderV1(DecoderConfig config) {
-        super(config);
-    }
-
-    @Override
-    public JsonValue decode(byte[] encoded) throws ContextError, DecoderError {
-
-        final CborLdVersion version = BaseDecoder.assertCborLd(encoded);
-
-        if (version != CborLdVersion.V10) {
-            throw new DecoderError(Code.Unsupported, "The decoder does support " + version + " but " + CborLdVersion.V10 + " .");
-
-        }
-        return decode(version, encoded);
+    public DecoderV1(DecoderConfig config, DocumentLoader loader) {
+        super(config, loader);
     }
 
     @Override
@@ -49,13 +38,13 @@ public class DecoderV1 extends BaseDecoder {
             final DataItem registryId = it.next();
 
             if (registryId == null || registryId.getMajorType() != MajorType.UNSIGNED_INTEGER) {
-                throw new DecoderError(Code.InvalidDocument, "The document is not CBOR-LD v1.0 document. Registry Entry ID is not and unsigned integer but " + registryId + ".");
+                throw new DecoderError(Code.InvalidDocument, "The document is not CBOR-LD v1.0 document. Registry Entry ID is not an unsigned integer but " + registryId + ".");
             }
 
-            final DocumentDictionary provider = config.registry().get(
+            final DocumentDictionary dictionary = config.registry().get(
                     ((UnsignedInteger) registryId).getValue().intValueExact());
 
-            return decode(it.next(), provider);
+            return decode(it.next(), dictionary);
 
         } catch (final CborException e) {
             throw new DecoderError(Code.InvalidDocument, e);
