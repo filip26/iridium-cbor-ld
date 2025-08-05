@@ -142,7 +142,6 @@ class CborLdTestRunnerJunit {
 
                 if (!match) {
                     write(testCase, bytes, ((CborLdDocument) expected).getByteArray());
-
                 }
 
                 assertTrue(match, "The expected result does not match.");
