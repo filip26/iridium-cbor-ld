@@ -27,8 +27,6 @@ import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.json.JsonLdComparison;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
-import com.apicatalog.jsonld.loader.HttpLoader;
-import com.apicatalog.jsonld.loader.SchemeRouter;
 
 import co.nstant.in.cbor.CborDecoder;
 import co.nstant.in.cbor.CborException;
@@ -51,24 +49,21 @@ class CborLdTestRunnerJunit {
     static final Encoder ENCODER_V06;
     static final Encoder ENCODER_V05;
     static final Encoder ENCODER_V05_NOCA;
-    
+
     static final Decoder DECODER_MULTI;
     static final Decoder DECODER_BARCODES_V06;
     static final Decoder DECODER_V05_NOCA;
 
     static {
-        StaticContextLoader.set("https://w3id.org/utopia/v2", CborLdTestRunnerJunit.class, "utopia-v2.jsonld");
-        StaticContextLoader.set("https://w3id.org/age/v1", CborLdTestRunnerJunit.class, "age-v1.jsonld");
+        StaticContextLoader.set("https://w3id.org/utopia/v2", CborLdTestRunnerJunit.class, "context/utopia-v2-context.jsonld");
+        StaticContextLoader.set("https://w3id.org/age/v1", CborLdTestRunnerJunit.class, "context/age-v1-context.jsonld");
+        StaticContextLoader.set("https://www.w3.org/ns/activitystreams", CborLdTestRunnerJunit.class, "context/activitystreams-context.jsonld");
 
         LOADER = new UriBaseRewriter(
                 CborLdTest.BASE,
                 "classpath:",
                 new UriBaseRewriter("https://raw.githubusercontent.com/filip26/iridium-cbor-ld/main/src/test/resources/com/apicatalog/cborld/",
-                        "classpath:",
-                        new SchemeRouter()
-                                .set("http", HttpLoader.defaultInstance())
-                                .set("https", HttpLoader.defaultInstance())
-                                .set("classpath", new ClasspathLoader())));
+                        "classpath:", new ClasspathLoader()));
 
         ENCODER_V1 = CborLd.createEncoder()
                 .loader(LOADER)
@@ -82,26 +77,26 @@ class CborLdTestRunnerJunit {
         ENCODER_V05 = CborLd.createEncoder(CborLdVersion.V05)
                 .loader(LOADER)
                 .build();
-        
+
         ENCODER_V05_NOCA = CborLd.createEncoder(CborLdVersion.V05)
                 .loader(LOADER)
                 .compactArray(false)
                 .build();
-        
+
         DECODER_MULTI = CborLd.createDecoder(CborLdVersion.V1, CborLdVersion.V06, CborLdVersion.V05)
                 .loader(LOADER)
                 .build();
-        
+
         DECODER_BARCODES_V06 = CborLd.createDecoder(CborLdVersion.V06)
                 .loader(LOADER)
                 .dictionary(UtopiaBarcode.DICTIONARY)
                 .build();
-        
+
         DECODER_V05_NOCA = CborLd.createDecoder(CborLdVersion.V05)
                 .loader(LOADER)
                 .compactArray(false)
                 .build();
-        
+
     }
 
     public CborLdTestRunnerJunit(CborLdTestCase testCase) {
@@ -157,9 +152,6 @@ class CborLdTestRunnerJunit {
 
                 final Decoder decoder = getDecoder(testCase.config, testCase.compactArrays);
 
-                System.out.print(testCase.id + ", " + testCase.name + "  ");
-                System.out.println(Hex.toString(((CborLdDocument) document).getByteArray()));
-                
                 final JsonValue result = decoder.decode(((CborLdDocument) document).getByteArray());
 
                 if (testCase.type.stream().noneMatch(o -> o.endsWith("PositiveEvaluationTest"))) {

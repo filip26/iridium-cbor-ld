@@ -35,12 +35,12 @@ import com.apicatalog.cborld.encoder.value.XsdDateTimeValueEncoder;
 import com.apicatalog.cborld.encoder.value.XsdDateValueEncoder;
 import com.apicatalog.cborld.mapping.DecoderMappingProvider;
 import com.apicatalog.cborld.mapping.EncoderMappingProvider;
+import com.apicatalog.cborld.registry.DefaultDocumentDictionary;
 import com.apicatalog.cborld.registry.DocumentDictionary;
-import com.apicatalog.cborld.registry.LegacyDictionary;
 
-public class DefaultConfig extends BaseConfig implements EncoderConfig, DecoderConfig {
+public class ConfigV1 extends BaseConfig implements EncoderConfig, DecoderConfig {
 
-    public static final DefaultConfig INSTANCE = new DefaultConfig();
+    public static final ConfigV1 INSTANCE = new ConfigV1();
 
     static final ContextMappingProvider MAPPING = new ContextMappingProvider();
 
@@ -94,9 +94,11 @@ public class DefaultConfig extends BaseConfig implements EncoderConfig, DecoderC
 
     static final Map<Integer, DocumentDictionary> REGISTRY;
 
+    static final DocumentDictionary DICTIONARY = new DefaultDocumentDictionary(1); 
+    
     static {
         REGISTRY = new HashMap<>();
-        REGISTRY.put(1, LegacyDictionary.DICTIONARY);
+        REGISTRY.put(DICTIONARY.code(), DICTIONARY);
     }
         
      @Override
@@ -126,7 +128,7 @@ public class DefaultConfig extends BaseConfig implements EncoderConfig, DecoderC
 
     @Override
     public DocumentDictionary dictionary() {
-        return LegacyDictionary.DICTIONARY;
+        return DICTIONARY;
     }
 
     @Override

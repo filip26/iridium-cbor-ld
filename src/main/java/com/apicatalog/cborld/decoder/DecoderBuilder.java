@@ -7,7 +7,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.apicatalog.cborld.CborLdVersion;
-import com.apicatalog.cborld.config.DefaultConfig;
+import com.apicatalog.cborld.config.ConfigV1;
 import com.apicatalog.cborld.config.LegacyConfigV05;
 import com.apicatalog.cborld.config.LegacyConfigV06;
 import com.apicatalog.cborld.encoder.EncoderBuilder;
@@ -170,7 +170,7 @@ public class DecoderBuilder {
     protected static final void enable(Map<CborLdVersion, DecoderConfigBuilder> decoders, CborLdVersion version) {
         switch (version) {
         case V1:
-            decoders.put(version, DecoderConfigBuilder.of(DefaultConfig.INSTANCE));
+            decoders.put(version, DecoderConfigBuilder.of(ConfigV1.INSTANCE));
             break;
         case V06:
             decoders.put(version, DecoderConfigBuilder.of(LegacyConfigV06.INSTANCE));

@@ -4,7 +4,7 @@ import java.net.URI;
 import java.util.Collection;
 
 import com.apicatalog.cborld.CborLdVersion;
-import com.apicatalog.cborld.config.DefaultConfig;
+import com.apicatalog.cborld.config.ConfigV1;
 import com.apicatalog.cborld.config.LegacyConfigV05;
 import com.apicatalog.cborld.config.LegacyConfigV06;
 import com.apicatalog.cborld.encoder.value.ValueEncoder;
@@ -165,13 +165,13 @@ public class EncoderBuilder implements EncoderConfig {
     protected static final EncoderConfig config(CborLdVersion version) {
         switch (version) {
         case V1:
-            return DefaultConfig.INSTANCE;
+            return ConfigV1.INSTANCE;
         case V06:
             return LegacyConfigV06.INSTANCE;
         case V05:
             return LegacyConfigV05.INSTANCE;
         }
-        return DefaultConfig.INSTANCE;
+        return ConfigV1.INSTANCE;
     }
     
     class ConfigBuilder {
