@@ -46,12 +46,12 @@ class CborLdTestRunnerJunit {
     static final DocumentLoader LOADER;
 
     static final Encoder ENCODER_V1;
-    static final Encoder ENCODER_V06;
+    static final Encoder ENCODER_UTOPIA_V06;
     static final Encoder ENCODER_V05;
     static final Encoder ENCODER_V05_NOCA;
 
     static final Decoder DECODER_MULTI;
-    static final Decoder DECODER_BARCODES_V06;
+    static final Decoder DECODER_UTOPIA_V06;
     static final Decoder DECODER_V05_NOCA;
 
     static {
@@ -69,7 +69,7 @@ class CborLdTestRunnerJunit {
                 .loader(LOADER)
                 .build();
 
-        ENCODER_V06 = CborLd.createEncoder(CborLdVersion.V06)
+        ENCODER_UTOPIA_V06 = CborLd.createEncoder(CborLdVersion.V06)
                 .loader(LOADER)
                 .dictionary(UtopiaBarcode.DICTIONARY)
                 .build();
@@ -87,7 +87,7 @@ class CborLdTestRunnerJunit {
                 .loader(LOADER)
                 .build();
 
-        DECODER_BARCODES_V06 = CborLd.createDecoder(CborLdVersion.V06)
+        DECODER_UTOPIA_V06 = CborLd.createDecoder(CborLdVersion.V06)
                 .loader(LOADER)
                 .dictionary(UtopiaBarcode.DICTIONARY)
                 .build();
@@ -311,7 +311,7 @@ class CborLdTestRunnerJunit {
             return compactArrays ? ENCODER_V05 : ENCODER_V05_NOCA;
         }
         if ("barcodes".equals(name)) {
-            return ENCODER_V06;
+            return ENCODER_UTOPIA_V06;
         }
         return ENCODER_V1;
     }
@@ -321,7 +321,7 @@ class CborLdTestRunnerJunit {
             return DECODER_V05_NOCA;
         }
         if ("barcodes".equals(name)) {
-            return DECODER_BARCODES_V06;
+            return DECODER_UTOPIA_V06;
         }
         return DECODER_MULTI;
     }
