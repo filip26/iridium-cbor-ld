@@ -18,10 +18,16 @@ public class IdValueDecoder implements ValueDecoder {
     public JsonValue decode(Mapping mapping, DataItem value, String term, Collection<String> types) throws DecoderError {
         if (mapping != null && mapping.terms() != null && types != null && types.contains(Keywords.ID)
                 && MajorType.UNSIGNED_INTEGER.equals(value.getMajorType())) {
-            final String type = mapping.terms().getValue(((UnsignedInteger) value).getValue().intValueExact());
-
-            if (type != null) {
-                return Json.createValue(type);
+            
+            int code = ((UnsignedInteger) value).getValue().intValueExact();
+            
+            String id = mapping.uris().getValue(code);
+            if (id == null) {
+                id = mapping.terms().getValue(code);
+            }
+            
+            if (id != null) {
+                return Json.createValue(id);
             }
         }
         return null;
