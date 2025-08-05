@@ -362,9 +362,9 @@
         "PositiveEvaluationTest",
         "EncoderTest"
       ],
-      "name": "barcode ex. #10",
-      "input": "decoder/barcode-ex-10.jsonld",
-      "expect": "decoder/barcode-ex-10.cborld",
+      "name": "0.6: utopia barcode ex. #10",
+      "input": "decoder/0.6/barcode-ex-10.jsonld",
+      "expect": "decoder/0.6/barcode-ex-10.cborld",
       "option": {
         "config": "barcodes"
       }
@@ -375,9 +375,9 @@
         "PositiveEvaluationTest",
         "EncoderTest"
       ],
-      "name": "barcode ex. #14",
-      "input": "decoder/barcode-ex-14.jsonld",
-      "expect": "decoder/barcode-ex-14.cborld",
+      "name": "0.6: utopia barcode ex. #14",
+      "input": "decoder/0.6/barcode-ex-14.jsonld",
+      "expect": "decoder/0.6/barcode-ex-14.cborld",
       "option": {
         "config": "barcodes"
       }

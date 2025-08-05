@@ -4,7 +4,7 @@ import com.apicatalog.cborld.dictionary.DictionaryBuilder;
 import com.apicatalog.cborld.registry.DocumentDictionary;
 import com.apicatalog.cborld.registry.DocumentDictionaryBuilder;
 
-public class Barcodes {
+public class UtopiaBarcode {
 
     public static final DocumentDictionary DICTIONARY;
 

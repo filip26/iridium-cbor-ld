@@ -76,7 +76,7 @@ class CborLdTestRunnerJunit {
 
         ENCODER_V06 = CborLd.createEncoder(CborLdVersion.V06)
                 .loader(LOADER)
-                .dictionary(Barcodes.DICTIONARY)
+                .dictionary(UtopiaBarcode.DICTIONARY)
                 .build();
 
         ENCODER_V05 = CborLd.createEncoder(CborLdVersion.V05)
@@ -94,7 +94,7 @@ class CborLdTestRunnerJunit {
         
         DECODER_BARCODES_V06 = CborLd.createDecoder(CborLdVersion.V06)
                 .loader(LOADER)
-                .dictionary(Barcodes.DICTIONARY)
+                .dictionary(UtopiaBarcode.DICTIONARY)
                 .build();
         
         DECODER_V05_NOCA = CborLd.createDecoder(CborLdVersion.V05)
@@ -157,6 +157,9 @@ class CborLdTestRunnerJunit {
 
                 final Decoder decoder = getDecoder(testCase.config, testCase.compactArrays);
 
+                System.out.print(testCase.id + ", " + testCase.name + "  ");
+                System.out.println(Hex.toString(((CborLdDocument) document).getByteArray()));
+                
                 final JsonValue result = decoder.decode(((CborLdDocument) document).getByteArray());
 
                 if (testCase.type.stream().noneMatch(o -> o.endsWith("PositiveEvaluationTest"))) {
