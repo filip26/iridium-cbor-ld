@@ -21,7 +21,6 @@ public class CustomUriValueEncoder implements ValueEncoder {
         if (JsonUtils.isString(jsonValue)) {
             final String value = ((JsonString) jsonValue).getString();
             if (UriUtils.isAbsoluteUri(value, UriValidationPolicy.SchemeOnly)) {
-
                 final Dictionary dictionary = mapping.uris();
 
                 if (dictionary != null) {

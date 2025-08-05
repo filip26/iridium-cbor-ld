@@ -27,6 +27,7 @@ import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.json.JsonLdComparison;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
+import com.apicatalog.multibase.Multibase;
 
 import co.nstant.in.cbor.CborDecoder;
 import co.nstant.in.cbor.CborException;
@@ -46,7 +47,8 @@ class CborLdTestRunnerJunit {
     static final DocumentLoader LOADER;
 
     static final Encoder ENCODER_V1;
-    static final Encoder ENCODER_UTOPIA_V1;    
+    static final Encoder ENCODER_UTOPIA_V1;
+    static final Encoder ENCODER_UTOPIA_EXT_V1;
     static final Encoder ENCODER_UTOPIA_V06;
     static final Encoder ENCODER_V05;
     static final Encoder ENCODER_V05_NOCA;
@@ -76,6 +78,11 @@ class CborLdTestRunnerJunit {
                 .dictionary(UtopiaBarcode.DICTIONARY)
                 .build();
 
+        ENCODER_UTOPIA_EXT_V1 = CborLd.createEncoder()
+                .loader(LOADER)
+                .dictionary(UtopiaBarcodeExtended.DICTIONARY)
+                .build();
+
         ENCODER_UTOPIA_V06 = CborLd.createEncoder(CborLdVersion.V06)
                 .loader(LOADER)
                 .dictionary(UtopiaBarcode.DICTIONARY)
@@ -93,6 +100,7 @@ class CborLdTestRunnerJunit {
         DECODER = CborLd.createDecoder(CborLdVersion.V1, CborLdVersion.V06, CborLdVersion.V05)
                 .loader(LOADER)
                 .dictionary(UtopiaBarcode.DICTIONARY)
+                .dictionary(UtopiaBarcodeExtended.DICTIONARY)
                 .dictionary(CborLdVersion.V06, UtopiaBarcode.DICTIONARY)
                 .build();
 
@@ -261,7 +269,8 @@ class CborLdTestRunnerJunit {
             writer.println();
 
             writer.println("Actual");
-            writer.println("header = " + Hex.toString(result, 3));
+            writer.print("header = " + Hex.toString(result, 3));
+            writer.println(", hex = " + Multibase.BASE_16_UPPER.encode(result).substring(1));
             List<DataItem> decodedResult = CborDecoder.decode(result);
             assertNotNull(decodedResult);
 
@@ -318,6 +327,9 @@ class CborLdTestRunnerJunit {
         }
         if ("v1utopia".equals(name)) {
             return ENCODER_UTOPIA_V1;
+        }
+        if ("v1utopiaext".equals(name)) {
+            return ENCODER_UTOPIA_EXT_V1;
         }        
         return ENCODER_V1;
     }

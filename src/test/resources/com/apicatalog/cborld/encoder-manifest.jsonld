@@ -407,6 +407,32 @@
       "option": {
         "config": "v1utopia"
       }
+    },
+    {
+      "@id": "#t0202",
+      "@type": [
+        "PositiveEvaluationTest",
+        "EncoderTest"
+      ],
+      "name": "1.0: URIs: Utopia Driver's License VCB",
+      "input": "1.0/utopia-ext-12.jsonld",
+      "expect": "1.0/utopia-ext-12.cborld",
+      "option": {
+        "config": "v1utopiaext"
+      }
+    },
+    {
+      "@id": "#t0203",
+      "@type": [
+        "PositiveEvaluationTest",
+        "EncoderTest"
+      ],
+      "name": "1.0: URIs: Utopia EAD VCB",
+      "input": "1.0/utopia-ext-19.jsonld",
+      "expect": "1.0/utopia-ext-19.cborld",
+      "option": {
+        "config": "v1utopiaext"
+      }
     }    
   ]
 }
