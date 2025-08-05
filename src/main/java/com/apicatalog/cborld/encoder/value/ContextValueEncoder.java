@@ -15,9 +15,12 @@ public class ContextValueEncoder implements ValueEncoder {
 
     @Override
     public DataItem encode(final Mapping mapping, final JsonValue jsonValue, final String term, Collection<String> types) {
-        if (Keywords.CONTEXT.equals(term) && JsonUtils.isString(jsonValue)) {
+        if (Keywords.CONTEXT.equals(term)
+                && JsonUtils.isString(jsonValue)
+                && mapping.dictionary() != null
+                && mapping.dictionary().contexts() != null) {
 
-            final Integer code = mapping.contexts().getCode(((JsonString) jsonValue).getString());
+            final Integer code = mapping.dictionary().contexts().getCode(((JsonString) jsonValue).getString());
 
             if (code != null) {
                 return new UnsignedInteger(code);

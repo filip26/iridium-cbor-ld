@@ -18,12 +18,16 @@ public class CustomTypeValueDecoder implements ValueDecoder {
     public JsonValue decode(final Mapping mapping, DataItem value, String term, Collection<String> types) throws DecoderError {
 
         if (mapping != null
+                && mapping.dictionary() != null
+                && mapping.dictionary().types() != null
                 && types != null
                 && MajorType.UNSIGNED_INTEGER.equals(value.getMajorType())) {
 
+            var typeMap = mapping.dictionary().types();
+
             for (final String type : types) {
 
-                final Dictionary dictionary = mapping.type(type);
+                final Dictionary dictionary = typeMap.get(type);
 
                 if (dictionary == null) {
                     continue;

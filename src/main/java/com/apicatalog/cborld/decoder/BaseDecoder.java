@@ -177,8 +177,8 @@ public abstract class BaseDecoder implements Decoder {
     protected static final String decodeKey(final BigInteger key, final Mapping mapping) {
 
         final String result = key.mod(BigInteger.ONE.add(BigInteger.ONE)).equals(BigInteger.ZERO)
-                ? mapping.terms().getValue(key.intValueExact())
-                : mapping.terms().getValue(key.subtract(BigInteger.ONE).intValueExact());
+                ? mapping.termMap().getValue(key.intValueExact())
+                : mapping.termMap().getValue(key.subtract(BigInteger.ONE).intValueExact());
 
         return result != null ? result : key.toString();
     }
@@ -303,7 +303,7 @@ public abstract class BaseDecoder implements Decoder {
         if (version == null) {
             throw new DecoderError(Code.InvalidDocument, "The document is not CBOR-LD document. A tag must start with: "
                     + "v1.0 = "
-                    + Hex.toString(CborLd.VERSION_10_BYTES)
+                    + Hex.toString(CborLd.VERSION_1_BYTES)
                     + ", or v0.6 = "
                     + Hex.toString(new byte[] { CborLd.VERSION_06_BYTE })
                     + ", or v0.5 = "

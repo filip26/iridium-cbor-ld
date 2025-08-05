@@ -18,7 +18,7 @@ public class VocabValueEncoder implements ValueEncoder {
 
         if (JsonUtils.isString(jsonValue) && types != null && types.contains(Keywords.VOCAB)) {
 
-            Integer code = mapping.terms().getCode(((JsonString) jsonValue).getString());
+            Integer code = mapping.termMap().getCode(((JsonString) jsonValue).getString());
 
             if (code != null) {
                 return new UnsignedInteger(code);

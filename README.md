@@ -94,16 +94,27 @@ var dictionary = DocumentDictionaryBuilder
 var encoder = CborLd.createEncoder()
                 .dictionary(dictionary)
                 .loader(...)
-                // customize
+                // ... customize
                 .build();
 
 // use with decoder, please note you can register multiple dictionaries
 var decoder = CborLd.createDecoder()
                 .dictionary(dictionary)
                 .loader(...)
-                // customize
+                // ... customize
                 .build();
                
+```
+
+### Diagnose
+
+```javascript
+var result = CborLd.diagnose(encoded);
+
+result.isCborLd();  // true if the encoded document is CBOR-LD format
+result.version()    // CBOR-LD encoding version
+result.dictionary();    // dictionary code, 0x1 for default compression based on version
+
 ```
 
 ### Backward Compatibility

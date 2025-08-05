@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 public enum CborLdVersion {
 
-    V1(CborLd.VERSION_10_BYTES),
+    V1(CborLd.VERSION_1_BYTES),
 
     // legacy
     V06(new byte[] { CborLd.VERSION_06_BYTE }),

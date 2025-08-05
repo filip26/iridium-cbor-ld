@@ -13,7 +13,7 @@ public class CborLd {
 
     public static final byte LEADING_BYTE = (byte) 0xD9; // tag
 
-    public static final byte[] VERSION_10_BYTES = new byte[] { (byte) 0xCB, 0x1D };
+    public static final byte[] VERSION_1_BYTES = new byte[] { (byte) 0xCB, 0x1D };
     public static final byte VERSION_06_BYTE = (byte) 0x06;
     public static final byte VERSION_05_BYTE = (byte) 0x05;
 

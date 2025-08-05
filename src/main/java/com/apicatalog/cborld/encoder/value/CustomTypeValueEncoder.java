@@ -1,6 +1,7 @@
 package com.apicatalog.cborld.encoder.value;
 
 import java.util.Collection;
+import java.util.Map;
 
 import com.apicatalog.cborld.dictionary.Dictionary;
 import com.apicatalog.cborld.encoder.EncoderError;
@@ -16,13 +17,17 @@ public class CustomTypeValueEncoder implements ValueEncoder {
 
     @Override
     public DataItem encode(Mapping mapping, JsonValue jsonValue, String term, Collection<String> types) throws EncoderError {
-        if (types != null && JsonUtils.isString(jsonValue)) {
+        if (types != null
+                && mapping.dictionary() != null
+                && mapping.dictionary().types() != null
+                && JsonUtils.isString(jsonValue)) {
 
+            final Map<String, Dictionary> typeMap = mapping.dictionary().types();
             final String value = ((JsonString) jsonValue).getString();
 
             for (final String type : types) {
 
-                final Dictionary dictionary = mapping.type(type);
+                final Dictionary dictionary = typeMap.get(type);
 
                 if (dictionary == null) {
                     continue;

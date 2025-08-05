@@ -105,8 +105,8 @@ public class DefaultEncoder implements Encoder {
             
             switch (config.version()) {
             case V1:
-                baos.write(CborLd.VERSION_10_BYTES[0]);
-                baos.write(CborLd.VERSION_10_BYTES[1]);
+                baos.write(CborLd.VERSION_1_BYTES[0]);
+                baos.write(CborLd.VERSION_1_BYTES[1]);
                 mapBuilder = builder.addArray()
                         .add(config.dictionary().code())
                         .addMap();
@@ -154,7 +154,7 @@ public class DefaultEncoder implements Encoder {
         for (final Entry<String, JsonValue> entry : object.entrySet()) {
             final String property = entry.getKey();
 
-            final Integer encodedProperty = mapping.terms().getCode(property);
+            final Integer encodedProperty = mapping.termMap().getCode(property);
 
             if (JsonUtils.isArray(entry.getValue())) {
 

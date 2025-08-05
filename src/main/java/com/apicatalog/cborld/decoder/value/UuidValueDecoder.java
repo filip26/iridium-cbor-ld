@@ -35,7 +35,6 @@ public class UuidValueDecoder implements ValueDecoder {
                         && ((UnsignedInteger) code).getValue().equals(BigInteger.valueOf(3))
                         && MajorType.BYTE_STRING.equals(uuid.getMajorType())) {
                     return Json.createValue(UuidValueEncoder.PREFIX + of(((ByteString) uuid).getBytes()).toString());
-
                 }
             }
         }

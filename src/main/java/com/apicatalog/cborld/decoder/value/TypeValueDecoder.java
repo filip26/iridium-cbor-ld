@@ -16,9 +16,9 @@ public class TypeValueDecoder implements ValueDecoder {
 
     @Override
     public JsonValue decode(Mapping mapping, DataItem value, String term, Collection<String> types) throws DecoderError {
-        if (mapping != null && mapping.terms() != null && types != null && types.contains(Keywords.TYPE)
+        if (mapping != null && mapping.termMap() != null && types != null && types.contains(Keywords.TYPE)
                 && MajorType.UNSIGNED_INTEGER.equals(value.getMajorType())) {
-            final String type = mapping.terms().getValue(((UnsignedInteger) value).getValue().intValueExact());
+            final String type = mapping.termMap().getValue(((UnsignedInteger) value).getValue().intValueExact());
 
             if (type != null) {
                 return Json.createValue(type);

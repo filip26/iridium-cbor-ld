@@ -12,7 +12,6 @@ public class UtopiaBarcodeExtended {
             .create(DICTIONARY_CODE)
             .context("https://www.w3.org/ns/credentials/v2", 1)
             .context("https://w3id.org/vc-barcodes/v1", 2)
-            .context("https://w3id.org/utopia/v2", 3)
             .type("https://w3id.org/security#cryptosuiteString",
                     DictionaryBuilder.create()
                             .set("ecdsa-rdfc-2019", 1)
