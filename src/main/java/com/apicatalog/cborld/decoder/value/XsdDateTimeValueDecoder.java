@@ -14,9 +14,12 @@ import jakarta.json.JsonValue;
 
 public class XsdDateTimeValueDecoder implements ValueDecoder {
 
+    public static final String DATE_TIME = "http://www.w3.org/2001/XMLSchema#dateTime";
+
     @Override
     public JsonValue decode(Mapping mapping, DataItem value, String term, Collection<String> types) throws DecoderError {
-        if (types != null && types.contains("http://www.w3.org/2001/XMLSchema#dateTime")
+        if (types != null
+                && types.contains(DATE_TIME)
                 && MajorType.UNSIGNED_INTEGER.equals(value.getMajorType())) {
 
             long epochSeconds = ((UnsignedInteger) value).getValue().longValueExact();

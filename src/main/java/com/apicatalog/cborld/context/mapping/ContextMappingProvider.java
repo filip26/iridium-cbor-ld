@@ -3,29 +3,34 @@ package com.apicatalog.cborld.context.mapping;
 import com.apicatalog.cborld.context.Context;
 import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.context.ContextError.Code;
-import com.apicatalog.cborld.decoder.DecoderConfig;
+import com.apicatalog.cborld.decoder.Decoder;
 import com.apicatalog.cborld.dictionary.CodeTermMap;
-import com.apicatalog.cborld.document.DocumentDictionary;
-import com.apicatalog.cborld.encoder.EncoderConfig;
+import com.apicatalog.cborld.encoder.Encoder;
 import com.apicatalog.cborld.mapping.DecoderMappingProvider;
 import com.apicatalog.cborld.mapping.EncoderMappingProvider;
 import com.apicatalog.cborld.mapping.Mapping;
-import com.apicatalog.cursor.MapCursor;
-import com.apicatalog.cursor.cbor.CborCursor;
+import com.apicatalog.cborld.registry.DocumentDictionary;
 import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.lq.Data;
+import com.apicatalog.lq.cbor.CborAdapter;
+import com.apicatalog.lq.jakarta.JakartaAdapter;
 
 import co.nstant.in.cbor.model.DataItem;
+import jakarta.json.JsonObject;
 
 public class ContextMappingProvider implements EncoderMappingProvider, DecoderMappingProvider {
 
     @Override
-    public Mapping getEncoderMapping(MapCursor document, EncoderConfig config) throws ContextError {
+    public Mapping getEncoderMapping(JsonObject document, Encoder encoder) throws ContextError {
         try {
-            final Context context = Context.from(document, config.base(), config.loader());
+
+            final Data value = JakartaAdapter.of(document);
+
+            final Context context = Context.from(value, encoder.base(), encoder.loader());
 
             return new EncoderContextMapping(
-                    config.dictionary().contexts(),
-                    config.dictionary().types(),
+                    encoder.config().dictionary().contexts(),
+                    encoder.config().dictionary().types(),
                     CodeTermMap.of(context.getContextKeySets()),
                     context.getTypeMapping());
 
@@ -35,17 +40,17 @@ public class ContextMappingProvider implements EncoderMappingProvider, DecoderMa
     }
 
     @Override
-    public Mapping getDecoderMapping(DataItem document, DocumentDictionary custom, DecoderConfig config) throws ContextError {
+    public Mapping getDecoderMapping(DataItem document, DocumentDictionary dictionary, Decoder decoder) throws ContextError {
         try {
-            final DecoderContextMapping mapping = new DecoderContextMapping(custom.contexts(), custom.types(), config.valueDecoders());
+            final DecoderContextMapping mapping = new DecoderContextMapping(dictionary, decoder.config().valueDecoders());
 
-            final MapCursor cursor = CborCursor.from(
+            final Data data = CborAdapter.of(
                     document,
                     mapping::decodeKey,
                     mapping::encodeKey,
                     mapping::decodeValue);
 
-            final Context context = Context.from(cursor, config.base(), config.loader(), mapping::add, mapping.typeKeyNameMap());
+            final Context context = Context.from(data, decoder.base(), decoder.loader(), mapping::add, mapping.typeKeyNameMap());
 
             mapping.typeMap(context.getTypeMapping());
 
@@ -55,5 +60,4 @@ public class ContextMappingProvider implements EncoderMappingProvider, DecoderMa
             throw new ContextError(Code.InvalidContext, e);
         }
     }
-
 }

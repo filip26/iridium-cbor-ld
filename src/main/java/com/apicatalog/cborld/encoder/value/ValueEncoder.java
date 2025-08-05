@@ -4,12 +4,12 @@ import java.util.Collection;
 
 import com.apicatalog.cborld.encoder.EncoderError;
 import com.apicatalog.cborld.mapping.Mapping;
-import com.apicatalog.cursor.ValueCursor;
 
 import co.nstant.in.cbor.model.DataItem;
+import jakarta.json.JsonValue;
 
 public interface ValueEncoder {
 
-    DataItem encode(Mapping mapping, ValueCursor value, String term, Collection<String> types) throws EncoderError;
+    DataItem encode(Mapping mapping, JsonValue jsonValue, String term, Collection<String> types) throws EncoderError;
 
 }

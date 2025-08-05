@@ -1,56 +1,76 @@
 package com.apicatalog.cborld.decoder;
 
 import java.net.URI;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
+import com.apicatalog.cborld.CborLdVersion;
 import com.apicatalog.cborld.config.DefaultConfig;
-import com.apicatalog.cborld.decoder.value.ValueDecoder;
-import com.apicatalog.cborld.document.DocumentDictionary;
+import com.apicatalog.cborld.config.LegacyConfigV05;
+import com.apicatalog.cborld.config.LegacyConfigV06;
+import com.apicatalog.cborld.encoder.EncoderBuilder;
 import com.apicatalog.cborld.loader.StaticContextLoader;
-import com.apicatalog.cborld.mapping.DecoderMappingProvider;
+import com.apicatalog.cborld.registry.DocumentDictionary;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.http.DefaultHttpClient;
 import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.HttpLoader;
 
-public class DecoderBuilder implements DecoderConfig {
+public class DecoderBuilder {
 
-    protected DecoderMappingProvider provider;
-
-    protected Map<Integer, DocumentDictionary> dictionaries;
-
-    protected Collection<ValueDecoder> valueDecoders;
+    protected final CborLdVersion defaultVersion;
+    protected final Map<CborLdVersion, DecoderConfigBuilder> versions;
 
     protected DocumentLoader loader;
     protected boolean bundledContexts;
-    protected boolean compactArrays;
     protected URI base;
 
-    public DecoderBuilder(DecoderConfig config) {
-        this.provider = config.decoderMapping();
-        this.compactArrays = config.isCompactArrays();
-        this.valueDecoders = config.valueDecoders();
-        this.dictionaries = config.dictionaries() != null
-                ? new HashMap<>(config.dictionaries())
-                : new HashMap<>();
-        this.base = config.base();
-        this.loader = config.loader();
-        this.bundledContexts = DefaultConfig.STATIC_CONTEXTS;
+    protected DecoderBuilder(
+            CborLdVersion defaultVersion,
+            Map<CborLdVersion, DecoderConfigBuilder> decoders) {
+        this.defaultVersion = defaultVersion;
+        this.versions = decoders;
+        this.base = null;
+        this.loader = null;
+        this.bundledContexts = true;
     }
 
-    /**
-     * If set to true, the encoder replaces arrays with just one element with that
-     * element during encoding saving one byte. Enabled by default.
-     *
-     * @param enable <code>true</code> to enable arrays compaction
-     * @return {@link DecoderBuilder} instance
-     *
-     */
-    public DecoderBuilder compactArray(boolean enable) {
-        compactArrays = enable;
+    public static final DecoderBuilder of(CborLdVersion... versions) {
+        if (versions == null || versions.length == 0) {
+            throw new IllegalArgumentException();
+        }
+
+        final Map<CborLdVersion, DecoderConfigBuilder> decoders = new HashMap<>();
+        for (CborLdVersion version : versions) {
+            enable(decoders, version);
+        }
+
+        return new DecoderBuilder(versions[0], decoders);
+    }
+
+    public static final DecoderBuilder of(DecoderConfig... configs) {
+        if (configs == null || configs.length == 0) {
+            throw new IllegalArgumentException();
+        }
+
+        final Map<CborLdVersion, DecoderConfigBuilder> decoders = new HashMap<>();
+        for (DecoderConfig config : configs) {
+            decoders.put(config.version(), DecoderConfigBuilder.of(config));
+        }
+
+        return new DecoderBuilder(configs[0].version(), decoders);
+    }
+
+    public DecoderBuilder enable(CborLdVersion version) {
+        enable(versions, version);
+        return this;
+    }
+
+    public DecoderBuilder disable(CborLdVersion version) {
+        versions.remove(version);
         return this;
     }
 
@@ -91,58 +111,35 @@ public class DecoderBuilder implements DecoderConfig {
     }
 
     /**
-     * Add new terms dictionary
-     * 
-     * @param dictionary a custom dictionary
-     * @return {@link DecoderBuilder} instance
+     * If set to true, the encoder replaces arrays with just one element with that
+     * element during encoding saving one byte. Enabled by default.
+     *
+     * @param enable <code>true</code> to enable arrays compaction
+     * @return {@link DecoderConfig} instance
+     *
      */
-    public DecoderBuilder dictionary(DocumentDictionary dictionary) {
-        return dictionary(dictionary.code(), dictionary);
+    public DecoderBuilder compactArray(boolean enable) {
+        return compactArray(defaultVersion, enable);
+    }
+
+    public DecoderBuilder compactArray(CborLdVersion version, boolean enable) {
+        versions.get(version).compactArrays = enable;
+        return this;
     }
 
     /**
-     * Add new terms dictionary
+     * Set a custom dictionary
      * 
-     * @param code       CBOR-LD terms dictionary code
-     * @param dictionary a custom dictionary
-     * @return {@link DecoderBuilder} instance
+     * @param dictionary
+     * @return {@link EncoderBuilder} instance
      */
-    public DecoderBuilder dictionary(int code, DocumentDictionary dictionary) {
-        if (dictionaries == null) {
-            dictionaries = new HashMap<>();
-        }
-        dictionaries.put(code, dictionary);
+    public DecoderBuilder dictionary(DocumentDictionary dictionary) {
+        return dictionary(defaultVersion, dictionary);
+    }
+
+    public DecoderBuilder dictionary(CborLdVersion version, DocumentDictionary dictionary) {
+        versions.get(version).registry.put(dictionary.code(), dictionary);
         return this;
-    }
-    
-    @Override
-    public boolean isCompactArrays() {
-        return compactArrays;
-    }
-
-    @Override
-    public Collection<ValueDecoder> valueDecoders() {
-        return valueDecoders;
-    }
-
-    @Override
-    public DecoderMappingProvider decoderMapping() {
-        return provider;
-    }
-
-    @Override
-    public Map<Integer, DocumentDictionary> dictionaries() {
-        return dictionaries;
-    }
-
-    @Override
-    public DocumentLoader loader() {
-        return loader;
-    }
-
-    @Override
-    public URI base() {
-        return base;
     }
 
     public Decoder build() {
@@ -156,6 +153,43 @@ public class DecoderBuilder implements DecoderConfig {
             loader = new StaticContextLoader(loader);
         }
 
-        return new Decoder(this);
+        // only one?
+        if (versions.size() == 1) {
+            return newInstance(versions.values().iterator().next(), loader, base);
+        }
+
+        return new MultiDecoder(
+                versions.values().stream()
+                        .map(c -> newInstance(c, loader, base))
+                        .collect(Collectors.toUnmodifiableMap(
+                                t -> t.config().version(),
+                                Function.identity())),
+                loader, base);
+    }
+
+    protected static final void enable(Map<CborLdVersion, DecoderConfigBuilder> decoders, CborLdVersion version) {
+        switch (version) {
+        case V1:
+            decoders.put(version, DecoderConfigBuilder.of(DefaultConfig.INSTANCE));
+            break;
+        case V06:
+            decoders.put(version, DecoderConfigBuilder.of(LegacyConfigV06.INSTANCE));
+            break;
+        case V05:
+            decoders.put(version, DecoderConfigBuilder.of(LegacyConfigV05.INSTANCE));
+            break;
+        }
+    }
+
+    protected static final Decoder newInstance(DecoderConfig config, DocumentLoader loader, URI base) {
+        switch (config.version()) {
+        case V1:
+            return new DecoderV1(config, loader, base);
+        case V06:
+            return new LegacyDecoderV06(config, loader, base);
+        case V05:
+            return new LegacyDecoderV05(config, loader, base);
+        }
+        throw new IllegalStateException();
     }
 }

@@ -4,7 +4,6 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 
 import com.apicatalog.cborld.decoder.DecoderError;
 import com.apicatalog.cborld.decoder.value.ValueDecoder;
@@ -13,6 +12,7 @@ import com.apicatalog.cborld.dictionary.Dictionary;
 import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.cborld.mapping.TypeKeyNameMapper;
 import com.apicatalog.cborld.mapping.TypeMap;
+import com.apicatalog.cborld.registry.DocumentDictionary;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 
@@ -24,31 +24,29 @@ import jakarta.json.JsonValue;
 
 class DecoderContextMapping implements Mapping {
 
-    private final Dictionary contexts;
-    private final Map<String, Dictionary> types;
+    private final DocumentDictionary custom;
     private final CodeTermMap dictionary;
     private final TypeKeyNameMapper typeKeyNameMap;
     private TypeMap typeMap;
 
     private final Collection<ValueDecoder> valueDecoders;
 
-    DecoderContextMapping(Dictionary contexts, Map<String, Dictionary> types, Collection<ValueDecoder> valueDecoders) {
-        this.contexts = contexts;
-        this.types = types;
+    DecoderContextMapping(DocumentDictionary custom, Collection<ValueDecoder> valueDecoders) {
+        this.custom = custom;
         this.valueDecoders = valueDecoders;
         this.dictionary = CodeTermMap.create();
         this.typeKeyNameMap = new DefaultTypeKeyNameMapper();
         this.typeMap = null;
     }
 
-    final DataItem decodeValue(final DataItem value, String term, Collection<String> path) {
+    final DataItem decodeValue(final DataItem value, String term) {
 
         Collection<String> TYPE = Arrays.asList(Keywords.TYPE);
 
         for (final ValueDecoder decoder : valueDecoders) {
             try {
                 final JsonValue decoded = decoder.decode(this, value, term,
-                        typeKeyNameMap.isTypeKey(term, path)
+                        typeKeyNameMap.isTypeKey(term)
                                 ? TYPE
                                 : Collections.emptySet());
 
@@ -86,7 +84,7 @@ class DecoderContextMapping implements Mapping {
 
         switch (data.getMajorType()) {
         case UNICODE_STRING:
-            return decodeKey(((UnicodeString) data).getString());
+            return ((UnicodeString) data).getString();
 
         case UNSIGNED_INTEGER:
             return decodeKey(((UnsignedInteger) data).getValue());
@@ -96,11 +94,7 @@ class DecoderContextMapping implements Mapping {
         }
     }
 
-    final String decodeKey(String key) {
-        return key;
-    }
-
-    final String decodeKey(BigInteger key) {
+    final String decodeKey(final BigInteger key) {
 
         if (key.mod(BigInteger.ONE.add(BigInteger.ONE)).equals(BigInteger.ZERO)) {
             String result = dictionary.getValue(key.intValueExact());
@@ -135,12 +129,17 @@ class DecoderContextMapping implements Mapping {
     }
 
     @Override
-    public Dictionary context() {
-        return contexts;
+    public Dictionary contexts() {
+        return custom != null ? custom.contexts() : null;
     }
 
     @Override
     public Dictionary type(String type) {
-        return types != null ? types.get(type) : null;
+        return custom != null && custom.types() != null ? custom.types().get(type) : null;
+    }
+
+    @Override
+    public Dictionary uris() {
+        return custom != null ? custom.uris() : null;
     }
 }

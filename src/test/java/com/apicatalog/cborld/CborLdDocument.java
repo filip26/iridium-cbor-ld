@@ -9,7 +9,7 @@ import java.util.Optional;
 import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.http.media.MediaType;
 
-public class CborLdDocument implements Document {
+class CborLdDocument implements Document {
 
     public static final MediaType MEDIA_TYPE = MediaType.of("application", "cbor");
 
@@ -60,21 +60,21 @@ public class CborLdDocument implements Document {
         byte[] buf = new byte[bufLen];
         int readLen;
         IOException exception = null;
-    
+
         try {
             try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
-                
+
                 while ((readLen = inputStream.read(buf, 0, bufLen)) != -1) {
                     outputStream.write(buf, 0, readLen);
                 }
-    
+
                 return outputStream.toByteArray();
             }
-            
+
         } catch (IOException e) {
             exception = e;
             throw e;
-            
+
         } finally {
             if (exception == null) {
                 inputStream.close();

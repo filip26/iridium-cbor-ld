@@ -42,13 +42,13 @@ final class JsonMapBuilder {
         for (final Map.Entry<String, Object> entry : map.entrySet()) {
 
             if (entry.getValue() instanceof JsonValue) {
-                builder.add(entry.getKey(), (JsonValue)entry.getValue());
+                builder.add(entry.getKey(), (JsonValue) entry.getValue());
 
             } else if (entry.getValue() instanceof JsonArrayBuilder) {
-                builder.add(entry.getKey(), ((JsonArrayBuilder)entry.getValue()).build());
+                builder.add(entry.getKey(), ((JsonArrayBuilder) entry.getValue()).build());
 
             } else if (entry.getValue() instanceof JsonMapBuilder) {
-                builder.add(entry.getKey(), ((JsonMapBuilder)entry.getValue()).build());
+                builder.add(entry.getKey(), ((JsonMapBuilder) entry.getValue()).build());
 
             } else {
                 throw new IllegalStateException();
@@ -95,26 +95,25 @@ final class JsonMapBuilder {
         }
 
         if (item instanceof JsonValue) {
-            return Optional.of((JsonValue)item);
+            return Optional.of((JsonValue) item);
 
         } else if (item instanceof JsonArrayBuilder) {
-            return Optional.of(((JsonArrayBuilder)item).build());
+            return Optional.of(((JsonArrayBuilder) item).build());
 
         } else if (item instanceof JsonMapBuilder) {
-            return Optional.of(((JsonMapBuilder)item).build());
+            return Optional.of(((JsonMapBuilder) item).build());
         }
         throw new IllegalStateException();
     }
 
     public void add(String key, JsonValue value) {
 
-
         // 2. If value is an array, then for each element v in value, use add value
         // recursively to add v to key in entry.
         if (JsonUtils.isArray(value)) {
             value.asJsonArray().forEach(v -> add(key, v));
 
-        // 3.
+            // 3.
         } else {
 
             final Object original = map.get(key);
@@ -124,24 +123,24 @@ final class JsonMapBuilder {
 
                 if (original instanceof JsonValue) {
 
-                    if (JsonUtils.isArray((JsonValue)original)) {
-                        map.put(key, Json.createArrayBuilder(((JsonValue)original).asJsonArray()).add(value));
+                    if (JsonUtils.isArray((JsonValue) original)) {
+                        map.put(key, Json.createArrayBuilder(((JsonValue) original).asJsonArray()).add(value));
 
                     } else {
-                        map.put(key, Json.createArrayBuilder().add((JsonValue)original).add(value));
+                        map.put(key, Json.createArrayBuilder().add((JsonValue) original).add(value));
                     }
 
                 } else if (original instanceof JsonArrayBuilder) {
-                    ((JsonArrayBuilder)original).add(value);
+                    ((JsonArrayBuilder) original).add(value);
 
                 } else if (original instanceof JsonMapBuilder) {
-                    map.put(key, Json.createArrayBuilder().add(((JsonMapBuilder)original).build()));
+                    map.put(key, Json.createArrayBuilder().add(((JsonMapBuilder) original).build()));
 
                 } else {
                     throw new IllegalStateException();
                 }
 
-            // 3.2
+                // 3.2
             } else {
                 map.put(key, value);
             }
@@ -163,14 +162,14 @@ final class JsonMapBuilder {
         if (value != null) {
 
             if (value instanceof JsonMapBuilder) {
-                return (JsonMapBuilder)value;
+                return (JsonMapBuilder) value;
             }
 
             if (value instanceof JsonValue) {
-                return JsonMapBuilder.create(((JsonValue)value).asJsonObject());
+                return JsonMapBuilder.create(((JsonValue) value).asJsonObject());
             }
 
-           throw new IllegalStateException();
+            throw new IllegalStateException();
 
         }
 

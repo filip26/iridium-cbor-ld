@@ -17,13 +17,12 @@ public class ContextValueDecoder implements ValueDecoder {
     @Override
     public JsonValue decode(Mapping mapping, DataItem value, String term, Collection<String> types) throws DecoderError {
         if (mapping != null
-                && mapping.context() != null
+                && mapping.contexts() != null
                 && Keywords.CONTEXT.equals(term)
-                && MajorType.UNSIGNED_INTEGER.equals(value.getMajorType())
-                ) {
-            
-            final String decoded = mapping.context().getValue(((UnsignedInteger)value).getValue().intValueExact());
-    
+                && MajorType.UNSIGNED_INTEGER.equals(value.getMajorType())) {
+
+            final String decoded = mapping.contexts().getValue(((UnsignedInteger) value).getValue().intValueExact());
+
             if (decoded != null) {
                 return Json.createValue(decoded);
             }

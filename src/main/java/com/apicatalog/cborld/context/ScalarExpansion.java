@@ -18,11 +18,11 @@ package com.apicatalog.cborld.context;
 import java.util.Collection;
 import java.util.function.Consumer;
 
-import com.apicatalog.cursor.ValueCursor;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.lang.Keywords;
+import com.apicatalog.lq.Data;
 
 import jakarta.json.JsonValue;
 
@@ -31,13 +31,13 @@ final class ScalarExpansion {
     // mandatory
     private ActiveContext activeContext;
     private JsonValue propertyContext;
-    private ValueCursor element;
+    private Data element;
     private String activeProperty;
-    
+
     private final Consumer<Collection<String>> appliedContexts;
 
     private ScalarExpansion(final ActiveContext activeContext, final JsonValue propertyContext,
-            final ValueCursor element, final String activeProperty, Consumer<Collection<String>> appliedContexts) {
+            final Data element, final String activeProperty, Consumer<Collection<String>> appliedContexts) {
         this.activeContext = activeContext;
         this.propertyContext = propertyContext;
         this.element = element;
@@ -46,7 +46,7 @@ final class ScalarExpansion {
     }
 
     public static final ScalarExpansion with(final ActiveContext activeContext, final JsonValue propertyContext,
-            final ValueCursor element, final String activeProperty, Consumer<Collection<String>> appliedContexts) {
+            final Data element, final String activeProperty, Consumer<Collection<String>> appliedContexts) {
         return new ScalarExpansion(activeContext, propertyContext, element, activeProperty, appliedContexts);
     }
 
@@ -68,11 +68,10 @@ final class ScalarExpansion {
          */
         if (propertyContext != null) {
             activeContext = activeContext
-                                .newContext()
-                                .create(
-                                    propertyContext,
-                                    activeContext.getTerm(activeProperty).map(TermDefinition::getBaseUrl).orElse(null)
-                                );
+                    .newContext()
+                    .create(
+                            propertyContext,
+                            activeContext.getTerm(activeProperty).map(TermDefinition::getBaseUrl).orElse(null));
         }
 
         return ValueExpasion.with(activeContext, appliedContexts).expand(element, activeProperty);

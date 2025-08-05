@@ -3,11 +3,13 @@ package com.apicatalog.cborld.encoder.value;
 import java.util.Collection;
 
 import com.apicatalog.cborld.mapping.Mapping;
-import com.apicatalog.cursor.ValueCursor;
+import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.multibase.MultibaseDecoder;
 
 import co.nstant.in.cbor.model.ByteString;
 import co.nstant.in.cbor.model.DataItem;
+import jakarta.json.JsonString;
+import jakarta.json.JsonValue;
 
 public class MultibaseValueEncoder implements ValueEncoder {
 
@@ -16,14 +18,14 @@ public class MultibaseValueEncoder implements ValueEncoder {
     static final MultibaseDecoder MULTIBASE = MultibaseDecoder.getInstance();
 
     @Override
-    public DataItem encode(Mapping mapping, ValueCursor value, String term, Collection<String> types) {
-        if (value.isString() && types != null && types.contains(TYPE)) {
+    public DataItem encode(Mapping mapping, JsonValue jsonValue, String term, Collection<String> types) {
+        if (JsonUtils.isString(jsonValue) && types != null && types.contains(TYPE)) {
 
-            final String based = value.stringValue();
+            final String encoded = ((JsonString) jsonValue).getString();
 
-            return MULTIBASE.getBase(based)
+            return MULTIBASE.getBase(encoded)
                     .map(base -> {
-                        byte[] bytes = base.decode(value.stringValue());
+                        byte[] bytes = base.decode(encoded);
                         if (bytes != null) {
 
                             byte[] compressed = new byte[bytes.length + 1];

@@ -1,12 +1,13 @@
 package com.apicatalog.cborld.decoder.value;
 
 import java.math.BigInteger;
+import java.nio.ByteBuffer;
 import java.util.Collection;
+import java.util.UUID;
 
 import com.apicatalog.cborld.decoder.DecoderError;
 import com.apicatalog.cborld.encoder.value.UuidValueEncoder;
 import com.apicatalog.cborld.mapping.Mapping;
-import com.apicatalog.uuid.Uuid;
 
 import co.nstant.in.cbor.model.Array;
 import co.nstant.in.cbor.model.ByteString;
@@ -33,11 +34,18 @@ public class UuidValueDecoder implements ValueDecoder {
                 if (MajorType.UNSIGNED_INTEGER.equals(code.getMajorType())
                         && ((UnsignedInteger) code).getValue().equals(BigInteger.valueOf(3))
                         && MajorType.BYTE_STRING.equals(uuid.getMajorType())) {
-                    return Json.createValue(UuidValueEncoder.PREFIX + Uuid.of(((ByteString) uuid).getBytes()).toString());
+                    return Json.createValue(UuidValueEncoder.PREFIX + of(((ByteString) uuid).getBytes()).toString());
 
                 }
             }
         }
         return null;
+    }
+
+    public static UUID of(byte[] bytes) {
+        ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
+        long high = byteBuffer.getLong();
+        long low = byteBuffer.getLong();
+        return new UUID(high, low);
     }
 }

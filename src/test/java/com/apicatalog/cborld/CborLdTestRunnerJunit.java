@@ -15,14 +15,10 @@ import java.util.Objects;
 
 import com.apicatalog.cbor.CborComparison;
 import com.apicatalog.cbor.CborWriter;
-import com.apicatalog.cborld.config.DefaultConfig;
-import com.apicatalog.cborld.config.V05Config;
 import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.decoder.Decoder;
-import com.apicatalog.cborld.decoder.DecoderConfig;
 import com.apicatalog.cborld.decoder.DecoderError;
 import com.apicatalog.cborld.encoder.Encoder;
-import com.apicatalog.cborld.encoder.EncoderConfig;
 import com.apicatalog.cborld.encoder.EncoderError;
 import com.apicatalog.cborld.hex.Hex;
 import com.apicatalog.cborld.loader.StaticContextLoader;
@@ -45,24 +41,68 @@ import jakarta.json.JsonWriter;
 import jakarta.json.JsonWriterFactory;
 import jakarta.json.stream.JsonGenerator;
 
-public class CborLdTestRunnerJunit {
+class CborLdTestRunnerJunit {
 
     private final CborLdTestCase testCase;
+
+    static final DocumentLoader LOADER;
+
+    static final Encoder ENCODER_V1;
+    static final Encoder ENCODER_V06;
+    static final Encoder ENCODER_V05;
+    static final Encoder ENCODER_V05_NOCA;
+    
+    static final Decoder DECODER_MULTI;
+    static final Decoder DECODER_BARCODES_V06;
+    static final Decoder DECODER_V05_NOCA;
 
     static {
         StaticContextLoader.set("https://w3id.org/utopia/v2", CborLdTestRunnerJunit.class, "utopia-v2.jsonld");
         StaticContextLoader.set("https://w3id.org/age/v1", CborLdTestRunnerJunit.class, "age-v1.jsonld");
-    }
 
-    public static final DocumentLoader LOADER = new UriBaseRewriter(
-            CborLdTest.BASE,
-            "classpath:",
-            new UriBaseRewriter("https://raw.githubusercontent.com/filip26/iridium-cbor-ld/main/src/test/resources/com/apicatalog/cborld/",
-                    "classpath:",
-                    new SchemeRouter()
-                            .set("http", HttpLoader.defaultInstance())
-                            .set("https", HttpLoader.defaultInstance())
-                            .set("classpath", new ClasspathLoader())));
+        LOADER = new UriBaseRewriter(
+                CborLdTest.BASE,
+                "classpath:",
+                new UriBaseRewriter("https://raw.githubusercontent.com/filip26/iridium-cbor-ld/main/src/test/resources/com/apicatalog/cborld/",
+                        "classpath:",
+                        new SchemeRouter()
+                                .set("http", HttpLoader.defaultInstance())
+                                .set("https", HttpLoader.defaultInstance())
+                                .set("classpath", new ClasspathLoader())));
+
+        ENCODER_V1 = CborLd.createEncoder()
+                .loader(LOADER)
+                .build();
+
+        ENCODER_V06 = CborLd.createEncoder(CborLdVersion.V06)
+                .loader(LOADER)
+                .dictionary(UtopiaBarcode.DICTIONARY)
+                .build();
+
+        ENCODER_V05 = CborLd.createEncoder(CborLdVersion.V05)
+                .loader(LOADER)
+                .build();
+        
+        ENCODER_V05_NOCA = CborLd.createEncoder(CborLdVersion.V05)
+                .loader(LOADER)
+                .compactArray(false)
+                .build();
+        
+        DECODER_MULTI = CborLd.createDecoder(CborLdVersion.V1, CborLdVersion.V06, CborLdVersion.V05)
+                .loader(LOADER)
+                .build();
+        
+        DECODER_BARCODES_V06 = CborLd.createDecoder(CborLdVersion.V06)
+                .loader(LOADER)
+                .dictionary(UtopiaBarcode.DICTIONARY)
+                .build();
+        
+        DECODER_V05_NOCA = CborLd.createDecoder(CborLdVersion.V05)
+                .loader(LOADER)
+                .compactArray(false)
+                .build();
+        
+    }
 
     public CborLdTestRunnerJunit(CborLdTestCase testCase) {
         this.testCase = testCase;
@@ -83,10 +123,7 @@ public class CborLdTestRunnerJunit {
 
                 JsonObject object = document.getJsonContent().orElseThrow(IllegalStateException::new).asJsonObject();
 
-                final Encoder encoder = CborLd.createEncoder(getEncoderConfig(testCase.config))
-                        .loader(LOADER)
-                        .compactArray(testCase.compactArrays)
-                        .build();
+                Encoder encoder = getEncoder(testCase.config, testCase.compactArrays);
 
                 byte[] bytes = encoder.encode(object);
 
@@ -118,12 +155,11 @@ public class CborLdTestRunnerJunit {
 
                 assertNotNull(document);
 
-                final Decoder decoder = CborLd.createDecoder(getDecoderConfig(testCase.config))
-                        .loader(LOADER)
-                        .compactArray(testCase.compactArrays)
-                        .dictionary(UtopiaBarcodesConfig.DICTIONARY)
-                        .build();
+                final Decoder decoder = getDecoder(testCase.config, testCase.compactArrays);
 
+                System.out.print(testCase.id + ", " + testCase.name + "  ");
+                System.out.println(Hex.toString(((CborLdDocument) document).getByteArray()));
+                
                 final JsonValue result = decoder.decode(((CborLdDocument) document).getByteArray());
 
                 if (testCase.type.stream().noneMatch(o -> o.endsWith("PositiveEvaluationTest"))) {
@@ -278,23 +314,23 @@ public class CborLdTestRunnerJunit {
         return true;
     }
 
-    static final EncoderConfig getEncoderConfig(String name) {
+    static final Encoder getEncoder(String name, boolean compactArrays) {
         if ("v5".equals(name)) {
-            return V05Config.INSTANCE;
+            return compactArrays ? ENCODER_V05 : ENCODER_V05_NOCA;
         }
         if ("barcodes".equals(name)) {
-            return UtopiaBarcodesConfig.INSTANCE;
+            return ENCODER_V06;
         }
-        return DefaultConfig.INSTANCE;
+        return ENCODER_V1;
     }
-    
-    static final DecoderConfig getDecoderConfig(String name) {
-        if ("v5".equals(name)) {
-            return V05Config.INSTANCE;
+
+    static final Decoder getDecoder(String name, boolean compactArrays) {
+        if ("v5".equals(name) && !compactArrays) {
+            return DECODER_V05_NOCA;
         }
         if ("barcodes".equals(name)) {
-            return UtopiaBarcodesConfig.INSTANCE;
+            return DECODER_BARCODES_V06;
         }
-        return DefaultConfig.INSTANCE;
+        return DECODER_MULTI;
     }
 }

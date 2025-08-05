@@ -22,7 +22,7 @@ public class CustomTypeValueDecoder implements ValueDecoder {
                 && MajorType.UNSIGNED_INTEGER.equals(value.getMajorType())) {
 
             for (final String type : types) {
-                
+
                 final Dictionary dictionary = mapping.type(type);
 
                 if (dictionary == null) {

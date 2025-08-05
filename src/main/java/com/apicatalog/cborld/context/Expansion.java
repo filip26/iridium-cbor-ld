@@ -21,11 +21,13 @@ import java.util.function.Consumer;
 
 import com.apicatalog.cborld.mapping.TypeKeyNameMapper;
 import com.apicatalog.cborld.mapping.TypeMap;
-import com.apicatalog.cursor.ValueCursor;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.json.JsonUtils;
+import com.apicatalog.lq.Data;
+import com.apicatalog.lq.DataType;
+import com.apicatalog.lq.Q;
 
 import jakarta.json.JsonValue;
 
@@ -33,7 +35,7 @@ final class Expansion {
 
     // mandatory
     private ActiveContext activeContext;
-    private ValueCursor element;
+    private Data element;
     private String activeProperty;
     private URI baseUrl;
 
@@ -44,7 +46,7 @@ final class Expansion {
     private Consumer<Collection<String>> appliedContexts;
     private TypeKeyNameMapper typeMapper;
 
-    private Expansion(final ActiveContext activeContext, final ValueCursor element, final String activeProperty,
+    private Expansion(final ActiveContext activeContext, final Data element, final String activeProperty,
             final URI baseUrl, Consumer<Collection<String>> appliedContexts, TypeKeyNameMapper typeMapper) {
         this.activeContext = activeContext;
         this.element = element;
@@ -59,7 +61,7 @@ final class Expansion {
         this.fromMap = false;
     }
 
-    public static final Expansion with(final ActiveContext activeContext, final ValueCursor element, final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts,
+    public static final Expansion with(final ActiveContext activeContext, final Data element, final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts,
             TypeKeyNameMapper typeMapper) {
         return new Expansion(activeContext, element, activeProperty, baseUrl, appliedContexts, typeMapper);
     }
@@ -77,15 +79,17 @@ final class Expansion {
     protected JsonValue compute() throws JsonLdError {
 
         // 1. If element is null, return null
-        if (element.isNull()) {
+        if (element == null) {
             return JsonValue.NULL;
         }
 
+        final DataType dataType = Q.type(element);
+
         // 5. If element is an array,
-        if (element.isArray()) {
+        if (DataType.ARRAY == dataType) {
 
             return ArrayExpansion
-                    .with(activeContext, element.asArray(), activeProperty, baseUrl, appliedContexts, typeMapper)
+                    .with(activeContext, element, activeProperty, baseUrl, appliedContexts, typeMapper)
                     .ordered(ordered)
                     .fromMap(fromMap)
                     .expand();
@@ -105,8 +109,7 @@ final class Expansion {
         }
 
         // 4. If element is a scalar
-        if (element.isScalar()) {
-
+        if (Q.isScalar(dataType)) {
             return ScalarExpansion
                     .with(activeContext, propertyContext, element, activeProperty, appliedContexts)
                     .expand();
@@ -114,7 +117,7 @@ final class Expansion {
 
         // 6. Otherwise element is a map
         return ObjectExpansion
-                .with(activeContext, propertyContext, element.asMap(), activeProperty, baseUrl, appliedContexts, typeMapper)
+                .with(activeContext, propertyContext, element, activeProperty, baseUrl, appliedContexts, typeMapper)
                 .ordered(ordered)
                 .fromMap(fromMap)
                 .expand();

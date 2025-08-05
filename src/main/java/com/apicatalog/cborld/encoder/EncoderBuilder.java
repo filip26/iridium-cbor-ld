@@ -3,11 +3,14 @@ package com.apicatalog.cborld.encoder;
 import java.net.URI;
 import java.util.Collection;
 
+import com.apicatalog.cborld.CborLdVersion;
 import com.apicatalog.cborld.config.DefaultConfig;
-import com.apicatalog.cborld.document.DocumentDictionary;
+import com.apicatalog.cborld.config.LegacyConfigV05;
+import com.apicatalog.cborld.config.LegacyConfigV06;
 import com.apicatalog.cborld.encoder.value.ValueEncoder;
 import com.apicatalog.cborld.loader.StaticContextLoader;
 import com.apicatalog.cborld.mapping.EncoderMappingProvider;
+import com.apicatalog.cborld.registry.DocumentDictionary;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.http.DefaultHttpClient;
 import com.apicatalog.jsonld.http.media.MediaType;
@@ -22,22 +25,30 @@ public class EncoderBuilder implements EncoderConfig {
 
     protected Collection<ValueEncoder> valueEncoders;
 
-    protected byte version;
+    protected CborLdVersion version;
 
     protected DocumentLoader loader;
     protected boolean bundledContexts;
     protected boolean compactArrays;
     protected URI base;
 
-    public EncoderBuilder(EncoderConfig config) {
+    protected EncoderBuilder(EncoderConfig config) {
         this.provider = config.encoderMapping();
         this.compactArrays = config.isCompactArrays();
         this.valueEncoders = config.valueEncoders();
         this.dictionary = config.dictionary();
         this.version = config.version();
-        this.base = config.base();
-        this.loader = config.loader();
-        this.bundledContexts = DefaultConfig.STATIC_CONTEXTS;
+        this.base = null;
+        this.loader = null;
+        this.bundledContexts = true;
+    }
+    
+    public static EncoderBuilder of(EncoderConfig config) {
+        return new EncoderBuilder(config);
+    }
+    
+    public static EncoderBuilder of(CborLdVersion version) {
+        return new EncoderBuilder(config(version));
     }
 
     /**
@@ -103,10 +114,10 @@ public class EncoderBuilder implements EncoderConfig {
     /**
      * Set encoding version
      * 
-     * @param dictionary
+     * @param version
      * @return {@link EncoderBuilder} instance
      */
-    public EncoderBuilder version(byte version) {
+    public EncoderBuilder version(CborLdVersion version) {
         this.version = version;
         return this;
     }
@@ -114,16 +125,6 @@ public class EncoderBuilder implements EncoderConfig {
     @Override
     public boolean isCompactArrays() {
         return compactArrays;
-    }
-
-    @Override
-    public DocumentLoader loader() {
-        return loader;
-    }
-
-    @Override
-    public URI base() {
-        return base;
     }
 
     @Override
@@ -142,7 +143,7 @@ public class EncoderBuilder implements EncoderConfig {
     }
 
     @Override
-    public byte version() {
+    public CborLdVersion version() {
         return version;
     }
 
@@ -155,6 +156,26 @@ public class EncoderBuilder implements EncoderConfig {
         if (bundledContexts) {
             loader = new StaticContextLoader(loader);
         }
-        return new Encoder(this);
+        if (version == CborLdVersion.V05 || version == CborLdVersion.V06) {
+            return new LegacyEncoder(this, loader, base);            
+        }
+        return new LegacyEncoder(this, loader, base);
     }
+    
+    protected static final EncoderConfig config(CborLdVersion version) {
+        switch (version) {
+        case V1:
+            return DefaultConfig.INSTANCE;
+        case V06:
+            return LegacyConfigV06.INSTANCE;
+        case V05:
+            return LegacyConfigV05.INSTANCE;
+        }
+        return DefaultConfig.INSTANCE;
+    }
+    
+    class ConfigBuilder {
+        
+    }
+
 }

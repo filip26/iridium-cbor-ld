@@ -51,7 +51,7 @@ final class UriExpansion {
 
     private JsonObject localContext;
     private Map<String, Boolean> defined;
-    
+
     private final Consumer<Collection<String>> appliedContexts;
 
     private UriExpansion(final ActiveContext activeContext, Consumer<Collection<String>> appliedContexts) {
@@ -157,7 +157,7 @@ final class UriExpansion {
                 String entryValueString = ((JsonString) entryValue).getString();
 
                 if (!defined.containsKey(entryValueString) || Boolean.FALSE.equals(defined.get(entryValueString))) {
-                    
+
                     appliedContexts.accept(localContext.keySet());
 
                     activeContext.newTerm(localContext, defined).create(value);
@@ -170,7 +170,7 @@ final class UriExpansion {
 
         // 6.3.
         if (localContext != null && localContext.containsKey(prefix) && !Boolean.TRUE.equals(defined.get(prefix))) {
-            
+
             appliedContexts.accept(localContext.keySet());
 
             activeContext.newTerm(localContext, defined).create(prefix);
@@ -196,7 +196,7 @@ final class UriExpansion {
 
             return activeContext.getVocabularyMapping().concat(result);
 
-        // 8.
+            // 8.
         } else if (documentRelative) {
 
             return UriResolver.resolve(activeContext.getBaseUri(), result);
@@ -210,7 +210,7 @@ final class UriExpansion {
         this.uriValidation = uriValidation ? UriValidationPolicy.Full : UriValidationPolicy.SchemeOnly;
         return this;
     }
-    
+
     public UriExpansion uriValidation(UriValidationPolicy uriValidation) {
         this.uriValidation = uriValidation;
         return this;

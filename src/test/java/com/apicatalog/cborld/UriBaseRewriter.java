@@ -1,6 +1,5 @@
 package com.apicatalog.cborld;
 
-
 import java.net.URI;
 
 import com.apicatalog.jsonld.JsonLdError;
@@ -9,7 +8,7 @@ import com.apicatalog.jsonld.document.Document;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
 
-public final class UriBaseRewriter implements DocumentLoader {
+final class UriBaseRewriter implements DocumentLoader {
 
     private final String sourceBase;
     private final String targetBase;

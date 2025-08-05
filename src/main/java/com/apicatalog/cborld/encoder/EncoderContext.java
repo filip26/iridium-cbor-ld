@@ -2,66 +2,67 @@ package com.apicatalog.cborld.encoder;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.Map.Entry;
 
-import com.apicatalog.cursor.ValueCursor;
-import com.apicatalog.cursor.ArrayItemCursor;
-import com.apicatalog.cursor.MapCursor;
-import com.apicatalog.cursor.MapEntryCursor;
+import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.uri.UriUtils;
+import com.apicatalog.jsonld.uri.UriValidationPolicy;
+
+import jakarta.json.JsonObject;
+import jakarta.json.JsonString;
+import jakarta.json.JsonValue;
 
 public class EncoderContext {
 
-    public final static Collection<String> get(final MapCursor document) {
+    public final static Collection<String> get(final JsonObject document) {
         return get(document, new LinkedHashSet<>());
     }
 
-    static final Collection<String> get(final MapCursor document, Collection<String> contexts) {
+    static final Collection<String> get(final JsonObject document, Collection<String> contexts) {
 
-        for (final MapEntryCursor entry : document) {
-    
-            if (Keywords.CONTEXT.equals(entry.mapKey())) {
-                processContextValue(entry, contexts);
+        for (final Entry<String, JsonValue> entry : document.entrySet()) {
 
-            } else if (entry.isMap()) {
-                get(entry.asMap(), contexts);
+            if (Keywords.CONTEXT.equals(entry.getKey())) {
+                processContextValue(entry.getValue(), contexts);
+
+            } else if (JsonUtils.isObject(entry.getValue())) {
+                get(entry.getValue().asJsonObject(), contexts);
             }
         }
-        document.parent();    
         return contexts;
     }
 
-    static final void processContextValue(final ValueCursor value, final Collection<String> result) {
-    
-        if (value.isString()) {
-            final String uri = value.stringValue();
-    
-            if (UriUtils.isAbsoluteUri(uri, true)) {
+    static final void processContextValue(final JsonValue jsonValue, final Collection<String> result) {
+
+        if (JsonUtils.isString(jsonValue)) {
+            final String uri = ((JsonString) jsonValue).getString();
+
+            if (UriUtils.isAbsoluteUri(uri, UriValidationPolicy.Full)) {
                 result.add(uri);
                 return;
             }
-    
-        } else if (value.isNonEmptyArray()) {
-    
-            for (final ArrayItemCursor item : value.asArray()) {
-                processContextValue(item, result);                
-            }            
-            value.parent();
+
+        } else if (JsonUtils.isNonEmptyArray(jsonValue)) {
+
+            for (final JsonValue item : jsonValue.asJsonArray()) {
+                processContextValue(item, result);
+            }
             return;
-    
-        } else if (value.isMap()) {
-    
-            if (value.asMap().size() == 1 && value.asMap().isString(Keywords.ID)) {
-    
-                final String id = value.asMap().stringValue(Keywords.ID);
-        
-                if (UriUtils.isAbsoluteUri(id, true)) {
+
+        } else if (JsonUtils.isObject(jsonValue)) {
+
+            if (jsonValue.asJsonObject().size() == 1 && JsonUtils.isString(jsonValue.asJsonObject().get(Keywords.ID))) {
+
+                final String id = ((JsonString) jsonValue.asJsonObject().get(Keywords.ID)).getString();
+
+                if (UriUtils.isAbsoluteUri(id, UriValidationPolicy.Full)) {
                     result.add(id);
                     return;
                 }
             }
         }
-    
-        throw new IllegalArgumentException("Non compress-able context detected.");
+
+        throw new IllegalArgumentException("Non compress-able context detected " + jsonValue + ".");
     }
 }

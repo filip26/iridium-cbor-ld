@@ -9,10 +9,10 @@ import com.apicatalog.cborld.mapping.TypeMap;
 class EncoderContextMapping implements Mapping {
 
     private final Dictionary contexts;
-    private final Map<String, Dictionary> types; 
+    private final Map<String, Dictionary> types;
     private final Dictionary dictionary;
     private final TypeMap typeMap;
-        
+
     EncoderContextMapping(Dictionary contexts, Map<String, Dictionary> types, Dictionary dictionary, TypeMap typeMap) {
         this.contexts = contexts;
         this.types = types;
@@ -31,12 +31,18 @@ class EncoderContextMapping implements Mapping {
     }
 
     @Override
-    public Dictionary context() {
+    public Dictionary contexts() {
         return contexts;
     }
 
     @Override
     public Dictionary type(String type) {
         return types != null ? types.get(type) : null;
+    }
+
+    @Override
+    public Dictionary uris() {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

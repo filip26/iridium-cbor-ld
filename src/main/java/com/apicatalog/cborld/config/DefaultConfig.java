@@ -2,10 +2,11 @@ package com.apicatalog.cborld.config;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.apicatalog.cborld.CborLd;
+import com.apicatalog.cborld.CborLdVersion;
 import com.apicatalog.cborld.context.mapping.ContextMappingProvider;
 import com.apicatalog.cborld.decoder.DecoderConfig;
 import com.apicatalog.cborld.decoder.value.ContextValueDecoder;
@@ -19,11 +20,10 @@ import com.apicatalog.cborld.decoder.value.ValueDecoder;
 import com.apicatalog.cborld.decoder.value.VocabValueDecoder;
 import com.apicatalog.cborld.decoder.value.XsdDateTimeValueDecoder;
 import com.apicatalog.cborld.decoder.value.XsdDateValueDecoder;
-import com.apicatalog.cborld.document.CompressedDocument;
-import com.apicatalog.cborld.document.DocumentDictionary;
 import com.apicatalog.cborld.encoder.EncoderConfig;
 import com.apicatalog.cborld.encoder.value.ContextValueEncoder;
 import com.apicatalog.cborld.encoder.value.CustomTypeValueEncoder;
+import com.apicatalog.cborld.encoder.value.CustomUriValueEncoder;
 import com.apicatalog.cborld.encoder.value.DidKeyValueEncoder;
 import com.apicatalog.cborld.encoder.value.IdValueEncoder;
 import com.apicatalog.cborld.encoder.value.MultibaseValueEncoder;
@@ -35,6 +35,8 @@ import com.apicatalog.cborld.encoder.value.XsdDateTimeValueEncoder;
 import com.apicatalog.cborld.encoder.value.XsdDateValueEncoder;
 import com.apicatalog.cborld.mapping.DecoderMappingProvider;
 import com.apicatalog.cborld.mapping.EncoderMappingProvider;
+import com.apicatalog.cborld.registry.DocumentDictionary;
+import com.apicatalog.cborld.registry.LegacyDictionary;
 
 public class DefaultConfig extends BaseConfig implements EncoderConfig, DecoderConfig {
 
@@ -42,24 +44,30 @@ public class DefaultConfig extends BaseConfig implements EncoderConfig, DecoderC
 
     static final ContextMappingProvider MAPPING = new ContextMappingProvider();
 
-    static final Collection<ValueEncoder> VALUE_ENCODERS = new ArrayList<>();
+    static final Collection<ValueEncoder> VALUE_ENCODERS;
 
     static {
+        
+        Collection<ValueEncoder> valueEncoders = new ArrayList<>();
+        
         // term driven
-        VALUE_ENCODERS.add(new ContextValueEncoder());
+        valueEncoders.add(new ContextValueEncoder());
 
         // type driven
-        VALUE_ENCODERS.add(new IdValueEncoder());
-        VALUE_ENCODERS.add(new TypeValueEncoder());
-        VALUE_ENCODERS.add(new XsdDateTimeValueEncoder());
-        VALUE_ENCODERS.add(new XsdDateValueEncoder());
-        VALUE_ENCODERS.add(new MultibaseValueEncoder());
-        VALUE_ENCODERS.add(new VocabValueEncoder());
-        VALUE_ENCODERS.add(new CustomTypeValueEncoder());
+        valueEncoders.add(new IdValueEncoder());
+        valueEncoders.add(new TypeValueEncoder());
+        valueEncoders.add(new XsdDateTimeValueEncoder());
+        valueEncoders.add(new XsdDateValueEncoder());
+        valueEncoders.add(new MultibaseValueEncoder());
+        valueEncoders.add(new VocabValueEncoder());
+        valueEncoders.add(new CustomTypeValueEncoder());
 
         // value driven
-        VALUE_ENCODERS.add(new UuidValueEncoder());
-        VALUE_ENCODERS.add(new DidKeyValueEncoder());
+        valueEncoders.add(new CustomUriValueEncoder());
+        valueEncoders.add(new UuidValueEncoder());
+        valueEncoders.add(new DidKeyValueEncoder());
+        
+        VALUE_ENCODERS = Collections.unmodifiableCollection(valueEncoders);
     }
 
     static final Collection<ValueDecoder> VALUE_DECODERS = new ArrayList<>();
@@ -82,24 +90,16 @@ public class DefaultConfig extends BaseConfig implements EncoderConfig, DecoderC
         VALUE_DECODERS.add(new DidKeyValueDecoder());
     }
 
-    protected static final boolean COMPACT_ARRAYS = false;
+    public static final boolean COMPACT_ARRAYS = false;
 
-    public static final boolean STATIC_CONTEXTS = true;
-
-    public static final byte VERSION = CborLd.VERSION_6_BYTE;
-
-    static final Map<Integer, DocumentDictionary> DICTIONARIES;
+    static final Map<Integer, DocumentDictionary> REGISTRY;
 
     static {
-        DICTIONARIES = new HashMap<>();
-        DICTIONARIES.put(CompressedDocument.DICTIONARY.code(), CompressedDocument.DICTIONARY);
+        REGISTRY = new HashMap<>();
+        REGISTRY.put(1, LegacyDictionary.DICTIONARY);
     }
-
-    protected DefaultConfig() {
-        super(STATIC_CONTEXTS, COMPACT_ARRAYS);
-    }
-
-    @Override
+        
+     @Override
     public Collection<ValueEncoder> valueEncoders() {
         return VALUE_ENCODERS;
     }
@@ -120,17 +120,22 @@ public class DefaultConfig extends BaseConfig implements EncoderConfig, DecoderC
     }
 
     @Override
-    public Map<Integer, DocumentDictionary> dictionaries() {
-        return DICTIONARIES;
+    public Map<Integer, DocumentDictionary> registry() {
+        return REGISTRY;
     }
 
     @Override
     public DocumentDictionary dictionary() {
-        return CompressedDocument.DICTIONARY;
+        return LegacyDictionary.DICTIONARY;
     }
 
     @Override
-    public byte version() {
-        return VERSION;
+    public CborLdVersion version() {
+        return CborLdVersion.V1;
+    }
+    
+    @Override
+    public boolean isCompactArrays() {
+        return COMPACT_ARRAYS;
     }
 }

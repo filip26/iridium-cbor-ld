@@ -1,6 +1,5 @@
 package com.apicatalog.cborld;
 
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -13,7 +12,7 @@ import com.apicatalog.jsonld.document.RdfDocument;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
 
-public class ClasspathLoader implements DocumentLoader {
+class ClasspathLoader implements DocumentLoader {
 
     @Override
     public Document loadDocument(URI url, DocumentLoaderOptions options) throws JsonLdError {
@@ -41,9 +40,9 @@ public class ClasspathLoader implements DocumentLoader {
 
         } else if (url.toString().endsWith(".cborld")) {
             try {
-            return CborLdDocument.from(is);
+                return CborLdDocument.from(is);
             } catch (IOException e) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
+                throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
             }
         }
 

@@ -45,8 +45,8 @@
         "NegativeEvaluationTest",
         "DecoderTest"
       ],
-      "name": "unknown compression flag",
-      "input": "decoder/0004-in.cborld",
+      "name": "0.5: unknown compression flag",
+      "input": "decoder/0.5/0004-in.cborld",
       "expectErrorCode": "UnknownCompression"
     },
     {
@@ -55,9 +55,9 @@
         "PositiveEvaluationTest",
         "DecoderTest"
       ],
-      "name": "one compress able property name",
-      "input": "decoder/0005-in.cborld",
-      "expect": "decoder/0005-out.jsonld"
+      "name": "0.5: one compress able property name",
+      "input": "decoder/0.5/0005-in.cborld",
+      "expect": "decoder/0.5/0005-out.jsonld"
     },
     {
       "@id": "#t0006",
@@ -65,9 +65,9 @@
         "PositiveEvaluationTest",
         "DecoderTest"
       ],
-      "name": "two simple compress able property name",
-      "input": "decoder/0006-in.cborld",
-      "expect": "decoder/0006-out.jsonld"
+      "name": "0.5: two simple compress able property name",
+      "input": "decoder/0.5/0006-in.cborld",
+      "expect": "decoder/0.5/0006-out.jsonld"
     },
     {
       "@id": "#t0007",
@@ -75,9 +75,9 @@
         "PositiveEvaluationTest",
         "DecoderTest"
       ],
-      "name": "compress able context with @id",
-      "input": "decoder/0007-in.cborld",
-      "expect": "decoder/0007-out.jsonld"
+      "name": "0.5: compress able context with @id",
+      "input": "decoder/0.5/0007-in.cborld",
+      "expect": "decoder/0.5/0007-out.jsonld"
     },
     {
       "@id": "#t0008",
@@ -85,9 +85,9 @@
         "PositiveEvaluationTest",
         "DecoderTest"
       ],
-      "name": "compress able context with @type = @id",
-      "input": "decoder/0008-in.cborld",
-      "expect": "decoder/0008-out.jsonld"
+      "name": "0.5: compress able context with @type = @id",
+      "input": "decoder/0.5/0008-in.cborld",
+      "expect": "decoder/0.5/0008-out.jsonld"
     },
     {
       "@id": "#t0009",
@@ -95,9 +95,9 @@
         "PositiveEvaluationTest",
         "DecoderTest"
       ],
-      "name": "simple term value",
-      "input": "decoder/0009-in.cborld",
-      "expect": "decoder/0009-out.jsonld"
+      "name": "0.5: simple term value",
+      "input": "decoder/0.5/0009-in.cborld",
+      "expect": "decoder/0.5/0009-out.jsonld"
     },
     {
       "@id": "#t0010",
@@ -105,12 +105,9 @@
         "PositiveEvaluationTest",
         "DecoderTest"
       ],
-      "name": "single item array term value",
-      "input": "decoder/0010-in.cborld",
-      "expect": "decoder/0010-out.jsonld",
-      "option": {
-        "compactArrays": true
-      }
+      "name": "0.5: single item array term value",
+      "input": "decoder/0.5/0010-in.cborld",
+      "expect": "decoder/0.5/0010-out.jsonld"
     },
     {
       "@id": "#t0011",
@@ -118,9 +115,9 @@
         "PositiveEvaluationTest",
         "DecoderTest"
       ],
-      "name": "two items array term value",
-      "input": "decoder/0011-in.cborld",
-      "expect": "decoder/0011-out.jsonld"
+      "name": "0.5: two items array term value",
+      "input": "decoder/0.5/0011-in.cborld",
+      "expect": "decoder/0.5/0011-out.jsonld"
     },
     {
       "@id": "#t0012",
@@ -128,9 +125,13 @@
         "PositiveEvaluationTest",
         "DecoderTest"
       ],
-      "name": "compactArrays: false - single item array term value",
-      "input": "decoder/0012-in.cborld",
-      "expect": "decoder/0012-out.jsonld"
+      "name": "0.5: compactArrays: false - single item array term value",
+      "input": "decoder/0.5/0012-in.cborld",
+      "expect": "decoder/0.5/0012-out.jsonld",
+      "option": {
+        "config": "v5",
+        "compactArrays": false
+      }      
     },
     {
       "@id": "#t0013",
@@ -138,12 +139,9 @@
         "PositiveEvaluationTest",
         "DecoderTest"
       ],
-      "name": "@list container term value",
-      "input": "decoder/0013-in.cborld",
-      "expect": "decoder/0013-out.jsonld",
-      "option": {
-        "compactArrays": true
-      }
+      "name": "0.5: @list container term value",
+      "input": "decoder/0.5/0013-in.cborld",
+      "expect": "decoder/0.5/0013-out.jsonld"
     },
     {
       "@id": "#t0014",
@@ -151,9 +149,9 @@
         "PositiveEvaluationTest",
         "DecoderTest"
       ],
-      "name": "xsd:dateTime @type",
-      "input": "decoder/0014-in.cborld",
-      "expect": "decoder/0014-out.jsonld"
+      "name": "0.5: xsd:dateTime @type",
+      "input": "decoder/0.5/0014-in.cborld",
+      "expect": "decoder/0.5/0014-out.jsonld"
     },
     {
       "@id": "#t0015",
@@ -161,9 +159,9 @@
         "PositiveEvaluationTest",
         "DecoderTest"
       ],
-      "name": "xsd:date @type",
-      "input": "decoder/0015-in.cborld",
-      "expect": "decoder/0015-out.jsonld"
+      "name": "0.5: xsd:date @type",
+      "input": "decoder/0.5/0015-in.cborld",
+      "expect": "decoder/0.5/0015-out.jsonld"
     },
     {
       "@id": "#t0016",
@@ -171,9 +169,9 @@
         "PositiveEvaluationTest",
         "DecoderTest"
       ],
-      "name": "UUID term value",
-      "input": "decoder/0016-in.cborld",
-      "expect": "decoder/0016-out.jsonld"
+      "name": "0.5: UUID term value",
+      "input": "decoder/0.5/0016-in.cborld",
+      "expect": "decoder/0.5/0016-out.jsonld"
     },
     {
       "@id": "#t0017",
@@ -181,9 +179,9 @@
         "PositiveEvaluationTest",
         "DecoderTest"
       ],
-      "name": "@vocab term value",
-      "input": "decoder/0017-in.cborld",
-      "expect": "decoder/0017-out.jsonld"
+      "name": "0.5: @vocab term value",
+      "input": "decoder/0.5/0017-in.cborld",
+      "expect": "decoder/0.5/0017-out.jsonld"
     },
     {
       "@id": "#t0018",
@@ -191,9 +189,9 @@
         "PositiveEvaluationTest",
         "DecoderTest"
       ],
-      "name": "multibase term value",
-      "input": "decoder/0018-in.cborld",
-      "expect": "decoder/0018-out.jsonld"
+      "name": "0.5: multibase term value",
+      "input": "decoder/0.5/0018-in.cborld",
+      "expect": "decoder/0.5/0018-out.jsonld"
     },
     {
       "@id": "#t0019",
@@ -201,9 +199,9 @@
         "PositiveEvaluationTest",
         "DecoderTest"
       ],
-      "name": "did:key term value",
-      "input": "decoder/0019-in.cborld",
-      "expect": "decoder/0019-out.jsonld"
+      "name": "0.5: did:key term value",
+      "input": "decoder/0.5/0019-in.cborld",
+      "expect": "decoder/0.5/0019-out.jsonld"
     },
     {
       "@id": "#t0020",
@@ -211,9 +209,9 @@
         "PositiveEvaluationTest",
         "DecoderTest"
       ],
-      "name": "@type selector",
-      "input": "decoder/0020-in.cborld",
-      "expect": "decoder/0020-out.jsonld"
+      "name": "0.5: @type selector",
+      "input": "decoder/0.5/0020-in.cborld",
+      "expect": "decoder/0.5/0020-out.jsonld"
     },
     {
       "@id": "#t0021",
@@ -221,9 +219,9 @@
         "PositiveEvaluationTest",
         "DecoderTest"
       ],
-      "name": "double scoped context",
-      "input": "decoder/0021-in.cborld",
-      "expect": "decoder/0021-out.jsonld"
+      "name": "0.5: double scoped context",
+      "input": "decoder/0.5/0021-in.cborld",
+      "expect": "decoder/0.5/0021-out.jsonld"
     },
     {
       "@id": "#t0022",
@@ -231,9 +229,9 @@
         "PositiveEvaluationTest",
         "DecoderTest"
       ],
-      "name": "@type - activity streams context",
-      "input": "decoder/0022-in.cborld",
-      "expect": "decoder/0022-out.jsonld"
+      "name": "0.5: @type - activity streams context",
+      "input": "decoder/0.5/0022-in.cborld",
+      "expect": "decoder/0.5/0022-out.jsonld"
     },
     {
       "@id": "#t0023",
@@ -241,9 +239,9 @@
         "PositiveEvaluationTest",
         "DecoderTest"
       ],
-      "name": "@id - activity streams context",
-      "input": "decoder/0023-in.cborld",
-      "expect": "decoder/0023-out.jsonld"
+      "name": "0.5: @id - activity streams context",
+      "input": "decoder/0.5/0023-in.cborld",
+      "expect": "decoder/0.5/0023-out.jsonld"
     },
     {
       "@id": "#t0024",
@@ -251,9 +249,9 @@
         "PositiveEvaluationTest",
         "DecoderTest"
       ],
-      "name": "@type - custom context",
-      "input": "decoder/0024-in.cborld",
-      "expect": "decoder/0024-out.jsonld"
+      "name": "0.5: @type - custom context",
+      "input": "decoder/0.5/0024-in.cborld",
+      "expect": "decoder/0.5/0024-out.jsonld"
     },
     {
       "@id": "#t0025",
@@ -261,9 +259,9 @@
         "PositiveEvaluationTest",
         "DecoderTest"
       ],
-      "name": "scoped context test",
-      "input": "decoder/0025-in.cborld",
-      "expect": "decoder/0025-out.jsonld"
+      "name": "0.5: scoped context test",
+      "input": "decoder/0.5/0025-in.cborld",
+      "expect": "decoder/0.5/0025-out.jsonld"
     },
     {
       "@id": "#t0026",
@@ -271,9 +269,9 @@
         "PositiveEvaluationTest",
         "DecoderTest"
       ],
-      "name": "scoped context: @type redefinition",
-      "input": "decoder/0026-in.cborld",
-      "expect": "decoder/0026-out.jsonld"
+      "name": "0.5: scoped context: @type redefinition",
+      "input": "decoder/0.5/0026-in.cborld",
+      "expect": "decoder/0.5/0026-out.jsonld"
     },
     {
       "@id": "#t0052",
@@ -281,9 +279,9 @@
         "PositiveEvaluationTest",
         "DecoderTest"
       ],
-      "name": "verifiable credentials",
-      "input": "decoder/0052-in.cborld",
-      "expect": "decoder/0052-out.jsonld"
+      "name": "0.5: verifiable credentials",
+      "input": "decoder/0.5/0052-in.cborld",
+      "expect": "decoder/0.5/0052-out.jsonld"
     },
     {
       "@id": "#t0053",
@@ -291,9 +289,9 @@
         "PositiveEvaluationTest",
         "DecoderTest"
       ],
-      "name": "issue #4 CborCursor NPE",
-      "input": "decoder/0053-in.cborld",
-      "expect": "decoder/0052-out.jsonld"
+      "name": "0.5: issue #4 CborCursor NPE",
+      "input": "decoder/0.5/0053-in.cborld",
+      "expect": "decoder/0.5/0052-out.jsonld"
     },
     {
       "@id": "#t0060",
@@ -301,9 +299,9 @@
         "PositiveEvaluationTest",
         "DecoderTest"
       ],
-      "name": "inline @type, @id",
-      "input": "decoder/0060-in.cborld",
-      "expect": "decoder/0060-out.jsonld"
+      "name": "0.5: inline @type, @id",
+      "input": "decoder/0.5/0060-in.cborld",
+      "expect": "decoder/0.5/0060-out.jsonld"
     },
     {
       "@id": "#t0062",
@@ -311,9 +309,9 @@
         "PositiveEvaluationTest",
         "DecoderTest"
       ],
-      "name": "simple values",
-      "input": "decoder/0062-in.cborld",
-      "expect": "decoder/0062-out.jsonld"
+      "name": "0.5: simple values",
+      "input": "decoder/0.5/0062-in.cborld",
+      "expect": "decoder/0.5/0062-out.jsonld"
     },
     {
       "@id": "#t0100",
@@ -321,9 +319,9 @@
         "PositiveEvaluationTest",
         "DecoderTest"
       ],
-      "name": "barcode ex. #10",
-      "input": "decoder/barcode-ex-10.cborld",
-      "expect": "decoder/barcode-ex-10.jsonld",
+      "name": "0.6: barcode ex. #10",
+      "input": "decoder/0.6/barcode-ex-10.cborld",
+      "expect": "decoder/0.6/barcode-ex-10.jsonld",
       "option": {
         "config": "barcodes"
       }
@@ -334,9 +332,12 @@
         "PositiveEvaluationTest",
         "DecoderTest"
       ],
-      "name": "barcode ex. #14",
-      "input": "decoder/barcode-ex-14.cborld",
-      "expect": "decoder/barcode-ex-14.jsonld"
+      "name": "0.6: barcode ex. #14",
+      "input": "decoder/0.6/barcode-ex-14.cborld",
+      "expect": "decoder/0.6/barcode-ex-14.jsonld",
+      "option": {
+        "config": "barcodes"
+      }      
     }
   ]
 }
