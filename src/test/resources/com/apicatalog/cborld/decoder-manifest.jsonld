@@ -319,7 +319,7 @@
         "PositiveEvaluationTest",
         "DecoderTest"
       ],
-      "name": "0.6: barcode ex. #10",
+      "name": "0.6: Utopia Driver's License VCB",
       "input": "0.6/barcode-ex-10.cborld",
       "expect": "0.6/barcode-ex-10.jsonld"
     },
@@ -329,7 +329,7 @@
         "PositiveEvaluationTest",
         "DecoderTest"
       ],
-      "name": "0.6: barcode ex. #14",
+      "name": "0.6: Utopia EAD VCB",
       "input": "0.6/barcode-ex-14.cborld",
       "expect": "0.6/barcode-ex-14.jsonld" 
     }

@@ -34,13 +34,13 @@ import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 
-public class BaseEncoder implements Encoder {
+public class DefaultEncoder implements Encoder {
 
     protected final EncoderConfig config;
     protected DocumentLoader loader;
     protected URI base;
 
-    protected BaseEncoder(EncoderConfig config, DocumentLoader loader, URI base) {
+    protected DefaultEncoder(EncoderConfig config, DocumentLoader loader, URI base) {
         this.config = config;
         this.loader = loader;
         this.base = base;
@@ -96,31 +96,40 @@ public class BaseEncoder implements Encoder {
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
         try {
-            final Mapping mapping = config.encoderMapping().getEncoderMapping(document, this);
-
-            CborBuilder builder = (CborBuilder) encode(document, new CborBuilder().addMap(), mapping.typeMap(), mapping).end();
-
             // 2.CBOR Tag - 0xD9
             baos.write(CborLd.LEADING_BYTE);
+            
+            final CborBuilder builder = new CborBuilder();
+            
+            MapBuilder<?> mapBuilder;
             
             switch (config.version()) {
             case V1:
                 baos.write(CborLd.VERSION_10_BYTES[0]);
-                baos.write(CborLd.VERSION_10_BYTES[1]);                
+                baos.write(CborLd.VERSION_10_BYTES[1]);
+                mapBuilder = builder.addArray()
+                        .add(config.dictionary().code())
+                        .addMap();
                 break;
 
             case V06:
                 baos.write(CborLd.VERSION_06_BYTE);
                 baos.write(config.dictionary().code());
+                mapBuilder = builder.addMap();
                 break;
                 
             case V05:
                 baos.write(CborLd.VERSION_05_BYTE);
                 baos.write(config.dictionary().code());
+                mapBuilder = builder.addMap();
                 break;
             default:
                 throw new EncoderError(Code.Unsupported, "Unsupported CBOR-LD version " + config.version() + ".");
             }
+
+            final Mapping mapping = config.encoderMapping().getEncoderMapping(document, this);
+
+            encode(document, mapBuilder, mapping.typeMap(), mapping).end();
 
             new CborEncoder(baos).encode(builder.build());
 

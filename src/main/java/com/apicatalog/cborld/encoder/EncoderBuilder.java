@@ -42,11 +42,11 @@ public class EncoderBuilder implements EncoderConfig {
         this.loader = null;
         this.bundledContexts = true;
     }
-    
+
     public static EncoderBuilder of(EncoderConfig config) {
         return new EncoderBuilder(config);
     }
-    
+
     public static EncoderBuilder of(CborLdVersion version) {
         return new EncoderBuilder(config(version));
     }
@@ -157,25 +157,22 @@ public class EncoderBuilder implements EncoderConfig {
             loader = new StaticContextLoader(loader);
         }
         if (version == CborLdVersion.V05 || version == CborLdVersion.V06) {
-            return new LegacyEncoder(this, loader, base);            
+            return new DefaultEncoder(this, loader, base);
         }
-        return new LegacyEncoder(this, loader, base);
+        return new DefaultEncoder(this, loader, base);
     }
-    
+
     protected static final EncoderConfig config(CborLdVersion version) {
-        switch (version) {
-        case V1:
-            return ConfigV1.INSTANCE;
+        switch (version) {     
         case V06:
             return LegacyConfigV06.INSTANCE;
         case V05:
             return LegacyConfigV05.INSTANCE;
+            
+        case V1:
+        default:
+            break;
         }
         return ConfigV1.INSTANCE;
     }
-    
-    class ConfigBuilder {
-        
-    }
-
 }

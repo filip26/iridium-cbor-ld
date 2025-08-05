@@ -362,7 +362,7 @@
         "PositiveEvaluationTest",
         "EncoderTest"
       ],
-      "name": "0.6: utopia barcode",
+      "name": "0.6: Utopia Driver's License VCB",
       "input": "0.6/barcode-ex-10.jsonld",
       "expect": "0.6/barcode-ex-10.cborld",
       "option": {
@@ -375,7 +375,7 @@
         "PositiveEvaluationTest",
         "EncoderTest"
       ],
-      "name": "0.6: utopia barcode",
+      "name": "0.6: Utopia EAD VCB",
       "input": "0.6/barcode-ex-14.jsonld",
       "expect": "0.6/barcode-ex-14.cborld",
       "option": {
@@ -388,7 +388,7 @@
         "PositiveEvaluationTest",
         "EncoderTest"
       ],
-      "name": "1.0: utopia barcode",
+      "name": "1.0: Utopia Driver's License VCB",
       "input": "1.0/utopia-12.jsonld",
       "expect": "1.0/utopia-12.cborld",
       "option": {
@@ -401,7 +401,7 @@
         "PositiveEvaluationTest",
         "EncoderTest"
       ],
-      "name": "1.0: utopia barcode",
+      "name": "1.0: Utopia EAD VCB",
       "input": "1.0/utopia-19.jsonld",
       "expect": "1.0/utopia-19.cborld",
       "option": {
