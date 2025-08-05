@@ -106,14 +106,23 @@ var decoder = CborLd.createDecoder()
                
 ```
 
-### Diagnose
+### Diagnose / Debug
 
 ```javascript
-var result = CborLd.diagnose(encoded);
+var result = CborLd.createDecoder()
+                // ... customize
+                .debug()
+                .decode(encoded);
 
-result.isCborLd();  // true if the encoded document is CBOR-LD format
-result.version()    // CBOR-LD encoding version
-result.dictionary();    // dictionary code, 0x1 for default compression based on version
+result.isCborLd();      // true if the encoded document is in CBOR-LD format
+result.version();       // CBOR-LD encoding version
+result.dictionary();    // dictionary code: 0x1 for default compression based on version, 0x0 for no compression
+result.typeMap();       // dynamic type map
+result.termMap();       // dynamic term map
+result.decoded();       // decoded JSON-LD document
+...
+result.isError();       // true if an exception has been thrown
+result.error();         // an exception or null
 
 ```
 

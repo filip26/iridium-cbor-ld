@@ -166,6 +166,10 @@ public class DecoderBuilder {
                                 Function.identity())),
                 loader, base);
     }
+    
+    public DebugDecoder debug() {
+        return new DebugDecoder();
+    }
 
     protected static final void enable(Map<CborLdVersion, DecoderConfigBuilder> decoders, CborLdVersion version) {
         switch (version) {

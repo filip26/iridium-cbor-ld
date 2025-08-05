@@ -1,21 +1,11 @@
 package com.apicatalog.cborld.registry;
 
+import java.util.Collections;
 import java.util.Map;
 
 import com.apicatalog.cborld.dictionary.Dictionary;
 
-public class DefaultDocumentDictionary implements DocumentDictionary {
-
-    protected final int code;
-
-    public DefaultDocumentDictionary(int code) {
-        this.code = code;
-    }
-
-    @Override
-    public int code() {
-        return code;
-    }
+public record DefaultDocumentDictionary(int code) implements DocumentDictionary {
 
     @Override
     public Dictionary contexts() {
@@ -24,7 +14,7 @@ public class DefaultDocumentDictionary implements DocumentDictionary {
 
     @Override
     public Map<String, Dictionary> types() {
-        return null;
+        return Collections.emptyMap();
     }
 
     @Override

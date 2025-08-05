@@ -29,8 +29,8 @@ public class LegacyDecoderV06 extends BaseDecoder {
 
         if (dictionary == null) {
             throw new DecoderError(Code.UnknownCompression,
-                    "Unkknown CBOR-LD document terms dictionary type id, found ["
-                            + Hex.toString(encoded[2]) + "].");
+                    "Unkknown CBOR-LD document terms dictionary type id, found "
+                            + Hex.toString(encoded[2]) + ".");
         }
 
         return decode(encoded, dictionary);

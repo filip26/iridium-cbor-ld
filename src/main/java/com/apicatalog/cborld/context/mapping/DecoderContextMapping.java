@@ -25,7 +25,7 @@ import jakarta.json.JsonValue;
 class DecoderContextMapping implements Mapping {
 
     private final DocumentDictionary dictionary;
-    private final CodeTermMap terms;
+    private final CodeTermMap termMap;
     private final TypeKeyNameMapper typeKeyNameMap;
     private TypeMap typeMap;
 
@@ -34,7 +34,7 @@ class DecoderContextMapping implements Mapping {
     DecoderContextMapping(DocumentDictionary dictionary, Collection<ValueDecoder> valueDecoders) {
         this.dictionary = dictionary;
         this.valueDecoders = valueDecoders;
-        this.terms = CodeTermMap.create();
+        this.termMap = CodeTermMap.create();
         this.typeKeyNameMap = new DefaultTypeKeyNameMapper();
         this.typeMap = null;
     }
@@ -68,7 +68,7 @@ class DecoderContextMapping implements Mapping {
 
     final DataItem encodeKey(String key) {
 
-        final Integer encodedProperty = terms.getCode(key);
+        final Integer encodedProperty = termMap.getCode(key);
 
         if (encodedProperty != null) {
             return new UnsignedInteger(encodedProperty);
@@ -97,18 +97,18 @@ class DecoderContextMapping implements Mapping {
     final String decodeKey(final BigInteger key) {
 
         if (key.mod(BigInteger.ONE.add(BigInteger.ONE)).equals(BigInteger.ZERO)) {
-            String result = terms.getValue(key.intValueExact());
+            String result = termMap.getValue(key.intValueExact());
             return result != null ? result : key.toString();
         }
 
-        String result = terms.getValue(key.subtract(BigInteger.ONE).intValueExact());
+        String result = termMap.getValue(key.subtract(BigInteger.ONE).intValueExact());
 
         return result != null ? result : key.toString();
     }
 
     @Override
     public Dictionary termMap() {
-        return terms;
+        return termMap;
     }
 
     @Override
@@ -121,7 +121,7 @@ class DecoderContextMapping implements Mapping {
     }
 
     public void add(Collection<String> keySet) {
-        terms.add(keySet);
+        termMap.add(keySet);
     }
 
     public TypeKeyNameMapper typeKeyNameMap() {
