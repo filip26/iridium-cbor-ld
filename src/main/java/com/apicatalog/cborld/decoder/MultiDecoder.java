@@ -1,6 +1,7 @@
 package com.apicatalog.cborld.decoder;
 
 import java.net.URI;
+import java.util.Collection;
 import java.util.Map;
 
 import com.apicatalog.cborld.CborLdVersion;
@@ -13,21 +14,15 @@ import jakarta.json.JsonValue;
 public class MultiDecoder implements Decoder {
 
     protected final Map<CborLdVersion, Decoder> decoders;
-
-    protected MultiDecoder(Map<CborLdVersion, Decoder> decoders) {
+    protected final DocumentLoader loader;
+    protected final URI base;
+    
+    protected MultiDecoder(Map<CborLdVersion, Decoder> decoders, DocumentLoader loader, URI base) {
         this.decoders = decoders;
+        this.loader = loader;
+        this.base = base;
     }
 
-    /**
-     * Decode CBOR-LD document as JSON-LD document.
-     * 
-     * @param encoded an encoded CBOR-LD document
-     * 
-     * @return a decoded CBOR-LD document
-     *
-     * @throws ContextError
-     * @throws DecoderError
-     */
     @Override
     public JsonValue decode(byte[] encoded) throws ContextError, DecoderError {
         return decode(BaseDecoder.assertCborLd(encoded), encoded);
@@ -38,10 +33,18 @@ public class MultiDecoder implements Decoder {
         final Decoder decoder = decoders.get(version);
 
         if (decoder == null) {
-            throw new DecoderError(Code.Unsupported, "The decoder is not configured to support version " + version + ".");
+            throw new DecoderError(Code.Unsupported, "The decoder is not configured to support version " + version + " but " + decoders.keySet() +  ".");
         }
 
         return decoder.decode(version, encoded);
+    }
+
+    public Collection<CborLdVersion> versions() {
+        return decoders.keySet();
+    }
+    
+    public Collection<Decoder> decoders() {
+        return decoders.values();
     }
 
     @Override
@@ -51,11 +54,11 @@ public class MultiDecoder implements Decoder {
 
     @Override
     public URI base() {
-        throw new UnsupportedOperationException();
+        return base;
     }
 
     @Override
     public DocumentLoader loader() {
-        throw new UnsupportedOperationException();
+        return loader;
     }
 }

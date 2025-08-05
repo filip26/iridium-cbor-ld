@@ -3,6 +3,8 @@ package com.apicatalog.cborld.decoder;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import com.apicatalog.cborld.CborLdVersion;
 import com.apicatalog.cborld.config.DefaultConfig;
@@ -20,7 +22,7 @@ import com.apicatalog.jsonld.loader.HttpLoader;
 public class DecoderBuilder {
 
     protected final CborLdVersion defaultVersion;
-    protected final Map<CborLdVersion, DecoderConfig> decoders;
+    protected final Map<CborLdVersion, DecoderConfig> versions;
 
     protected DocumentLoader loader;
     protected boolean bundledContexts;
@@ -30,14 +32,14 @@ public class DecoderBuilder {
             CborLdVersion defaultVersion,
             Map<CborLdVersion, DecoderConfig> decoders) {
         this.defaultVersion = defaultVersion;
-        this.decoders = decoders;
+        this.versions = decoders;
         this.base = null;
         this.loader = null;
         this.bundledContexts = true;
     }
 
     public static final DecoderBuilder of(CborLdVersion... versions) {
-        if (versions == null) {
+        if (versions == null || versions.length == 0) {
             throw new IllegalArgumentException();
         }
 
@@ -50,7 +52,7 @@ public class DecoderBuilder {
     }
 
     public static final DecoderBuilder of(DecoderConfig... configs) {
-        if (configs == null) {
+        if (configs == null || configs.length == 0) {
             throw new IllegalArgumentException();
         }
 
@@ -63,12 +65,12 @@ public class DecoderBuilder {
     }
 
     public DecoderBuilder enable(CborLdVersion version) {
-        enable(decoders, version);
+        enable(versions, version);
         return this;
     }
 
     public DecoderBuilder disable(CborLdVersion version) {
-        decoders.remove(version);
+        versions.remove(version);
         return this;
     }
 
@@ -108,16 +110,6 @@ public class DecoderBuilder {
         return this;
     }
 
-//    @Override
-//    public DocumentLoader loader() {
-//        return loader;
-//    }
-//
-//    @Override
-//    public URI base() {
-//        return base;
-//    }
-
     /**
      * If set to true, the encoder replaces arrays with just one element with that
      * element during encoding saving one byte. Enabled by default.
@@ -142,7 +134,11 @@ public class DecoderBuilder {
      * @return {@link EncoderBuilder} instance
      */
     public DecoderBuilder dictionary(DocumentDictionary dictionary) {
-//        this.dictionary = dictionary;
+        return dictionary(defaultVersion, dictionary);
+    }
+
+    public DecoderBuilder dictionary(CborLdVersion version, DocumentDictionary dictionary) {
+//      this.dictionary = dictionary;
         return this;
     }
 
@@ -158,11 +154,15 @@ public class DecoderBuilder {
         }
 
         // only one?
-        if (decoders.size() == 1) {
-            return newInstance(decoders.values().iterator().next(), loader, base);
+        if (versions.size() == 1) {
+            return newInstance(versions.values().iterator().next(), loader, base);
         }
-        
-        return new MultiDecoder(null); // FIXME
+
+        return new MultiDecoder(
+                versions.values().stream()
+                        .map(c -> newInstance(c, loader, base))
+                        .collect(Collectors.toUnmodifiableMap(t -> t.config().version(), Function.identity())),
+                loader, base);
     }
 
     protected static final void enable(Map<CborLdVersion, DecoderConfig> decoders, CborLdVersion version) {
@@ -178,7 +178,7 @@ public class DecoderBuilder {
             break;
         }
     }
-    
+
     protected static final Decoder newInstance(DecoderConfig config, DocumentLoader loader, URI base) {
         switch (config.version()) {
         case V1:
@@ -190,5 +190,5 @@ public class DecoderBuilder {
         }
         throw new IllegalStateException();
     }
-    
+
 }

@@ -63,6 +63,6 @@ public class EncoderContext {
             }
         }
 
-        throw new IllegalArgumentException("Non compress-able context detected.");
+        throw new IllegalArgumentException("Non compress-able context detected " + jsonValue + ".");
     }
 }

@@ -34,13 +34,13 @@ import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 
-public class LegacyEncoder implements Encoder {
+public class BaseEncoder implements Encoder {
 
     protected final EncoderConfig config;
     protected DocumentLoader loader;
     protected URI base;
 
-    protected LegacyEncoder(EncoderConfig config, DocumentLoader loader, URI base) {
+    protected BaseEncoder(EncoderConfig config, DocumentLoader loader, URI base) {
         this.config = config;
         this.loader = loader;
         this.base = base;
@@ -60,19 +60,6 @@ public class LegacyEncoder implements Encoder {
         if (document == null) {
             throw new IllegalArgumentException("The 'document' parameter must not be null.");
         }
-
-//        return encode(JakartaJsonCursor.from(document));
-//    }
-//
-//    /**
-//     * Encode JSON-LD document as CBOR-LD document.
-//     * 
-//     * @return a byte array representing the encoded CBOR-LD document.
-//     * 
-//     * @throws EncoderError
-//     * @throws ContextError
-//     */
-//    byte[] encode(MapCursor document) throws EncoderError, ContextError {
 
         try {
 

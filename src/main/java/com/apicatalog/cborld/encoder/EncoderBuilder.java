@@ -173,5 +173,9 @@ public class EncoderBuilder implements EncoderConfig {
         }
         return DefaultConfig.INSTANCE;
     }
+    
+    class ConfigBuilder {
+        
+    }
 
 }

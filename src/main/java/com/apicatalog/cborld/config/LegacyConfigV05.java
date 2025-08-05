@@ -2,7 +2,6 @@ package com.apicatalog.cborld.config;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 
 import com.apicatalog.cborld.CborLdVersion;
@@ -76,13 +75,6 @@ public class LegacyConfigV05 extends BaseConfig implements EncoderConfig, Decode
 
     public static final boolean COMPACT_ARRAYS = true;
 
-    static final Map<Integer, DocumentDictionary> DICTIONARIES;
-
-    static {
-        DICTIONARIES = new HashMap<>();
-        DICTIONARIES.put(LegacyDictionary.DICTIONARY.code(), LegacyDictionary.DICTIONARY);
-    }
-
     @Override
     public Collection<ValueEncoder> valueEncoders() {
         return VALUE_ENCODERS;
@@ -105,7 +97,7 @@ public class LegacyConfigV05 extends BaseConfig implements EncoderConfig, Decode
 
     @Override
     public Map<Integer, DocumentDictionary> registry() {
-        return DICTIONARIES;
+        throw new UnsupportedOperationException();
     }
 
     @Override

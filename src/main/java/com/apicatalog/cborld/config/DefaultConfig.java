@@ -2,6 +2,7 @@ package com.apicatalog.cborld.config;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,25 +44,30 @@ public class DefaultConfig extends BaseConfig implements EncoderConfig, DecoderC
 
     static final ContextMappingProvider MAPPING = new ContextMappingProvider();
 
-    static final Collection<ValueEncoder> VALUE_ENCODERS = new ArrayList<>();
+    static final Collection<ValueEncoder> VALUE_ENCODERS;
 
     static {
+        
+        Collection<ValueEncoder> valueEncoders = new ArrayList<>();
+        
         // term driven
-        VALUE_ENCODERS.add(new ContextValueEncoder());
+        valueEncoders.add(new ContextValueEncoder());
 
         // type driven
-        VALUE_ENCODERS.add(new IdValueEncoder());
-        VALUE_ENCODERS.add(new TypeValueEncoder());
-        VALUE_ENCODERS.add(new XsdDateTimeValueEncoder());
-        VALUE_ENCODERS.add(new XsdDateValueEncoder());
-        VALUE_ENCODERS.add(new MultibaseValueEncoder());
-        VALUE_ENCODERS.add(new VocabValueEncoder());
-        VALUE_ENCODERS.add(new CustomTypeValueEncoder());
+        valueEncoders.add(new IdValueEncoder());
+        valueEncoders.add(new TypeValueEncoder());
+        valueEncoders.add(new XsdDateTimeValueEncoder());
+        valueEncoders.add(new XsdDateValueEncoder());
+        valueEncoders.add(new MultibaseValueEncoder());
+        valueEncoders.add(new VocabValueEncoder());
+        valueEncoders.add(new CustomTypeValueEncoder());
 
         // value driven
-        VALUE_ENCODERS.add(new CustomUriValueEncoder());
-        VALUE_ENCODERS.add(new UuidValueEncoder());
-        VALUE_ENCODERS.add(new DidKeyValueEncoder());
+        valueEncoders.add(new CustomUriValueEncoder());
+        valueEncoders.add(new UuidValueEncoder());
+        valueEncoders.add(new DidKeyValueEncoder());
+        
+        VALUE_ENCODERS = Collections.unmodifiableCollection(valueEncoders);
     }
 
     static final Collection<ValueDecoder> VALUE_DECODERS = new ArrayList<>();
