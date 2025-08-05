@@ -1,6 +1,6 @@
 package com.apicatalog.cborld;
 
-import com.apicatalog.cborld.config.DefaultConfig;
+import com.apicatalog.cborld.config.ConfigV1;
 import com.apicatalog.cborld.decoder.DecoderBuilder;
 import com.apicatalog.cborld.decoder.DecoderConfig;
 import com.apicatalog.cborld.encoder.EncoderBuilder;
@@ -32,7 +32,7 @@ public class CborLd {
      * @return a new {@link DecoderBuilder} instance
      */
     public static DecoderBuilder createDecoder() {
-        return createDecoder(DefaultConfig.INSTANCE);
+        return createDecoder(ConfigV1.INSTANCE);
     }
 
     /**
@@ -65,13 +65,13 @@ public class CborLd {
 
     /**
      * Create a new {@link EncoderBuilder} allowing to configure an encoder. The
-     * builder is initialized by {@link DefaultConfig}.
+     * builder is initialized by {@link ConfigV1}.
      * 
      * @return a new {@link EncoderBuilder} instance
      * 
      */
     public static EncoderBuilder createEncoder() {
-        return createEncoder(DefaultConfig.INSTANCE);
+        return createEncoder(ConfigV1.INSTANCE);
     }
 
     /**

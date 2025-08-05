@@ -3,14 +3,18 @@
 > Your feedback is essential to the improvement of this library. Please share any concerns, primary use cases, areas for enhancement, or challenges you have encountered. Your insights help refine and optimize the library to better meet user needs. Thank you for your time and contributions.
 
 # Iridium CBOR-LD
-An implementation of the [CBOR-LD 1.0](https://json-ld.github.io/cbor-ld-spec/) in Java.
 
-### Features
+Iridium CBOR-LD is a Java implementation of [CBOR-LD 1.0](https://json-ld.github.io/cbor-ld-spec/), a compact binary format for Linked Data.
 
-* Semantic compression / decompression
-* Configurable API
-* Custom document dictionaries and builders
-* [Verifiable Credential Barcodes](https://w3c-ccg.github.io/vc-barcodes/)
+---
+
+## ✨ Features
+
+- 🔄 Semantic compression and decompression
+- ⚙️ Configurable API for flexible integration
+- 🧱 Support for custom document dictionaries and builders
+- 📦 Integration with [Verifiable Credential Barcodes](https://w3c-ccg.github.io/vc-barcodes/)
+
 
 ### Status
 

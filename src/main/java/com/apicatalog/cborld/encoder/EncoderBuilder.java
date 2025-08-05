@@ -4,7 +4,7 @@ import java.net.URI;
 import java.util.Collection;
 
 import com.apicatalog.cborld.CborLdVersion;
-import com.apicatalog.cborld.config.DefaultConfig;
+import com.apicatalog.cborld.config.ConfigV1;
 import com.apicatalog.cborld.config.LegacyConfigV05;
 import com.apicatalog.cborld.config.LegacyConfigV06;
 import com.apicatalog.cborld.encoder.value.ValueEncoder;
@@ -42,11 +42,11 @@ public class EncoderBuilder implements EncoderConfig {
         this.loader = null;
         this.bundledContexts = true;
     }
-    
+
     public static EncoderBuilder of(EncoderConfig config) {
         return new EncoderBuilder(config);
     }
-    
+
     public static EncoderBuilder of(CborLdVersion version) {
         return new EncoderBuilder(config(version));
     }
@@ -101,7 +101,7 @@ public class EncoderBuilder implements EncoderConfig {
     }
 
     /**
-     * Set a custom dictionary
+     * Set a dictionary
      * 
      * @param dictionary
      * @return {@link EncoderBuilder} instance
@@ -157,25 +157,22 @@ public class EncoderBuilder implements EncoderConfig {
             loader = new StaticContextLoader(loader);
         }
         if (version == CborLdVersion.V05 || version == CborLdVersion.V06) {
-            return new LegacyEncoder(this, loader, base);            
+            return new DefaultEncoder(this, loader, base);
         }
-        return new LegacyEncoder(this, loader, base);
+        return new DefaultEncoder(this, loader, base);
     }
-    
+
     protected static final EncoderConfig config(CborLdVersion version) {
-        switch (version) {
-        case V1:
-            return DefaultConfig.INSTANCE;
+        switch (version) {     
         case V06:
             return LegacyConfigV06.INSTANCE;
         case V05:
             return LegacyConfigV05.INSTANCE;
+            
+        case V1:
+        default:
+            break;
         }
-        return DefaultConfig.INSTANCE;
+        return ConfigV1.INSTANCE;
     }
-    
-    class ConfigBuilder {
-        
-    }
-
 }

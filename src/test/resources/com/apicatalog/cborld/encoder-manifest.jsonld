@@ -36,10 +36,10 @@
         "EncoderTest"
       ],
       "name": "simple term value",
-      "input": "encoder/0003-in.jsonld",
-      "expect": "encoder/0003-out.cborld",
+      "input": "encoder/0.5/0003-in.jsonld",
+      "expect": "encoder/0.5/0003-out.cborld",
       "option": {
-        "config": "v5"
+        "config": "v05"
       }
     },
     {
@@ -49,10 +49,10 @@
         "EncoderTest"
       ],
       "name": "single item array term value",
-      "input": "encoder/0004-in.jsonld",
-      "expect": "encoder/0004-out.cborld",
+      "input": "encoder/0.5/0004-in.jsonld",
+      "expect": "encoder/0.5/0004-out.cborld",
       "option": {
-        "config": "v5",
+        "config": "v05",
         "compactArrays": true
       }
     },
@@ -63,10 +63,10 @@
         "EncoderTest"
       ],
       "name": "two items array term value",
-      "input": "encoder/0005-in.jsonld",
-      "expect": "encoder/0005-out.cborld",
+      "input": "encoder/0.5/0005-in.jsonld",
+      "expect": "encoder/0.5/0005-out.cborld",
       "option": {
-        "config": "v5"
+        "config": "v05"
       }
     },
     {
@@ -76,10 +76,10 @@
         "EncoderTest"
       ],
       "name": "compactArrays: false - single item array term value",
-      "input": "encoder/0006-in.jsonld",
-      "expect": "encoder/0006-out.cborld",
+      "input": "encoder/0.5/0006-in.jsonld",
+      "expect": "encoder/0.5/0006-out.cborld",
       "option": {
-        "config": "v5"
+        "config": "v05"
       }
     },
     {
@@ -89,10 +89,10 @@
         "EncoderTest"
       ],
       "name": "@list container term value",
-      "input": "encoder/0007-in.jsonld",
-      "expect": "encoder/0007-out.cborld",
+      "input": "encoder/0.5/0007-in.jsonld",
+      "expect": "encoder/0.5/0007-out.cborld",
       "option": {
-        "config": "v5",
+        "config": "v05",
         "compactArrays": true
       }
     },
@@ -103,10 +103,10 @@
         "EncoderTest"
       ],
       "name": "xsd:dateTime @type",
-      "input": "encoder/0008-in.jsonld",
-      "expect": "encoder/0008-out.cborld",
+      "input": "encoder/0.5/0008-in.jsonld",
+      "expect": "encoder/0.5/0008-out.cborld",
       "option": {
-        "config": "v5"
+        "config": "v05"
       }
     },
     {
@@ -116,10 +116,10 @@
         "EncoderTest"
       ],
       "name": "xsd:date @type",
-      "input": "encoder/0009-in.jsonld",
-      "expect": "encoder/0009-out.cborld",
+      "input": "encoder/0.5/0009-in.jsonld",
+      "expect": "encoder/0.5/0009-out.cborld",
       "option": {
-        "config": "v5"
+        "config": "v05"
       }
     },
     {
@@ -129,10 +129,10 @@
         "EncoderTest"
       ],
       "name": "UUID term value",
-      "input": "encoder/0010-in.jsonld",
-      "expect": "encoder/0010-out.cborld",
+      "input": "encoder/0.5/0010-in.jsonld",
+      "expect": "encoder/0.5/0010-out.cborld",
       "option": {
-        "config": "v5"
+        "config": "v05"
       }
     },
     {
@@ -142,10 +142,10 @@
         "EncoderTest"
       ],
       "name": "@vocab term value",
-      "input": "encoder/0011-in.jsonld",
-      "expect": "encoder/0011-out.cborld",
+      "input": "encoder/0.5/0011-in.jsonld",
+      "expect": "encoder/0.5/0011-out.cborld",
       "option": {
-        "config": "v5"
+        "config": "v05"
       }
     },
     {
@@ -155,10 +155,10 @@
         "EncoderTest"
       ],
       "name": "multibase term value",
-      "input": "encoder/0012-in.jsonld",
-      "expect": "encoder/0012-out.cborld",
+      "input": "encoder/0.5/0012-in.jsonld",
+      "expect": "encoder/0.5/0012-out.cborld",
       "option": {
-        "config": "v5"
+        "config": "v05"
       }
     },
     {
@@ -168,10 +168,10 @@
         "EncoderTest"
       ],
       "name": "did:key term value",
-      "input": "encoder/0013-in.jsonld",
-      "expect": "encoder/0013-out.cborld",
+      "input": "encoder/0.5/0013-in.jsonld",
+      "expect": "encoder/0.5/0013-out.cborld",
       "option": {
-        "config": "v5"
+        "config": "v05"
       }
     },
     {
@@ -181,10 +181,10 @@
         "EncoderTest"
       ],
       "name": "@type selector",
-      "input": "encoder/0014-in.jsonld",
-      "expect": "encoder/0014-out.cborld",
+      "input": "encoder/0.5/0014-in.jsonld",
+      "expect": "encoder/0.5/0014-out.cborld",
       "option": {
-        "config": "v5"
+        "config": "v05"
       }
     },
     {
@@ -194,10 +194,10 @@
         "EncoderTest"
       ],
       "name": "double scoped context",
-      "input": "encoder/0015-in.jsonld",
-      "expect": "encoder/0015-out.cborld",
+      "input": "encoder/0.5/0015-in.jsonld",
+      "expect": "encoder/0.5/0015-out.cborld",
       "option": {
-        "config": "v5"
+        "config": "v05"
       }
     },
     {
@@ -207,10 +207,10 @@
         "EncoderTest"
       ],
       "name": "@type - activity streams context",
-      "input": "encoder/0020-in.jsonld",
-      "expect": "encoder/0020-out.cborld",
+      "input": "encoder/0.5/0020-in.jsonld",
+      "expect": "encoder/0.5/0020-out.cborld",
       "option": {
-        "config": "v5"
+        "config": "v05"
       }
     },
     {
@@ -220,10 +220,10 @@
         "EncoderTest"
       ],
       "name": "@id - activity streams context",
-      "input": "encoder/0021-in.jsonld",
-      "expect": "encoder/0021-out.cborld",
+      "input": "encoder/0.5/0021-in.jsonld",
+      "expect": "encoder/0.5/0021-out.cborld",
       "option": {
-        "config": "v5"
+        "config": "v05"
       }
     },
     {
@@ -233,10 +233,10 @@
         "EncoderTest"
       ],
       "name": "@type - custom context",
-      "input": "encoder/0022-in.jsonld",
-      "expect": "encoder/0022-out.cborld",
+      "input": "encoder/0.5/0022-in.jsonld",
+      "expect": "encoder/0.5/0022-out.cborld",
       "option": {
-        "config": "v5"
+        "config": "v05"
       }
     },
     {
@@ -246,10 +246,10 @@
         "EncoderTest"
       ],
       "name": "scoped context",
-      "input": "encoder/0023-in.jsonld",
-      "expect": "encoder/0023-out.cborld",
+      "input": "encoder/0.5/0023-in.jsonld",
+      "expect": "encoder/0.5/0023-out.cborld",
       "option": {
-        "config": "v5"
+        "config": "v05"
       }
     },
     {
@@ -259,10 +259,10 @@
         "EncoderTest"
       ],
       "name": "scoped context: @type redefinition",
-      "input": "encoder/0024-in.jsonld",
-      "expect": "encoder/0024-out.cborld",
+      "input": "encoder/0.5/0024-in.jsonld",
+      "expect": "encoder/0.5/0024-out.cborld",
       "option": {
-        "config": "v5"
+        "config": "v05"
       }
     },
     {
@@ -272,10 +272,10 @@
         "EncoderTest"
       ],
       "name": "two scoped context: same props",
-      "input": "encoder/0025-in.jsonld",
-      "expect": "encoder/0025-out.cborld",
+      "input": "encoder/0.5/0025-in.jsonld",
+      "expect": "encoder/0.5/0025-out.cborld",
       "option": {
-        "config": "v5"
+        "config": "v05"
       }
     },
     {
@@ -285,10 +285,10 @@
         "EncoderTest"
       ],
       "name": "an array of scoped contexts",
-      "input": "encoder/0026-in.jsonld",
-      "expect": "encoder/0026-out.cborld",
+      "input": "encoder/0.5/0026-in.jsonld",
+      "expect": "encoder/0.5/0026-out.cborld",
       "option": {
-        "config": "v5"
+        "config": "v05"
       }
     },
     {
@@ -298,10 +298,10 @@
         "EncoderTest"
       ],
       "name": "verifiable credentials",
-      "input": "encoder/0052-in.jsonld",
-      "expect": "encoder/0052-out.cborld",
+      "input": "encoder/0.5/0052-in.jsonld",
+      "expect": "encoder/0.5/0052-out.cborld",
       "option": {
-        "config": "v5"
+        "config": "v05"
       }
     },
     {
@@ -311,10 +311,10 @@
         "EncoderTest"
       ],
       "name": "verifiable credentials",
-      "input": "encoder/0053-in.jsonld",
-      "expect": "encoder/0053-out.cborld",
+      "input": "encoder/0.5/0053-in.jsonld",
+      "expect": "encoder/0.5/0053-out.cborld",
       "option": {
-        "config": "v5"
+        "config": "v05"
       }
     },
     {
@@ -324,10 +324,10 @@
         "EncoderTest"
       ],
       "name": "inline @type, @id",
-      "input": "encoder/0060-in.jsonld",
-      "expect": "encoder/0060-out.cborld",
+      "input": "encoder/0.5/0060-in.jsonld",
+      "expect": "encoder/0.5/0060-out.cborld",
       "option": {
-        "config": "v5"
+        "config": "v05"
       }
     },
     {
@@ -337,10 +337,10 @@
         "EncoderTest"
       ],
       "name": "non compress-able document",
-      "input": "encoder/0061-in.jsonld",
+      "input": "encoder/0.5/0061-in.jsonld",
       "expectErrorCode": "InvalidDocument",
       "option": {
-        "config": "v5"
+        "config": "v05"
       }
     },
     {
@@ -350,10 +350,10 @@
         "EncoderTest"
       ],
       "name": "simple values",
-      "input": "encoder/0062-in.jsonld",
-      "expect": "encoder/0062-out.cborld",
+      "input": "encoder/0.5/0062-in.jsonld",
+      "expect": "encoder/0.5/0062-out.cborld",
       "option": {
-        "config": "v5"
+        "config": "v05"
       }
     },
     {
@@ -362,11 +362,11 @@
         "PositiveEvaluationTest",
         "EncoderTest"
       ],
-      "name": "0.6: utopia barcode ex. #10",
-      "input": "decoder/0.6/barcode-ex-10.jsonld",
-      "expect": "decoder/0.6/barcode-ex-10.cborld",
+      "name": "0.6: Utopia Driver's License VCB",
+      "input": "0.6/barcode-ex-10.jsonld",
+      "expect": "0.6/barcode-ex-10.cborld",
       "option": {
-        "config": "barcodes"
+        "config": "v06utopia"
       }
     },
     {
@@ -375,12 +375,64 @@
         "PositiveEvaluationTest",
         "EncoderTest"
       ],
-      "name": "0.6: utopia barcode ex. #14",
-      "input": "decoder/0.6/barcode-ex-14.jsonld",
-      "expect": "decoder/0.6/barcode-ex-14.cborld",
+      "name": "0.6: Utopia EAD VCB",
+      "input": "0.6/barcode-ex-14.jsonld",
+      "expect": "0.6/barcode-ex-14.cborld",
       "option": {
-        "config": "barcodes"
+        "config": "v06utopia"
       }
-    }
+    },
+    {
+      "@id": "#t0200",
+      "@type": [
+        "PositiveEvaluationTest",
+        "EncoderTest"
+      ],
+      "name": "1.0: Utopia Driver's License VCB",
+      "input": "1.0/utopia-12.jsonld",
+      "expect": "1.0/utopia-12.cborld",
+      "option": {
+        "config": "v1utopia"
+      }
+    },
+    {
+      "@id": "#t0201",
+      "@type": [
+        "PositiveEvaluationTest",
+        "EncoderTest"
+      ],
+      "name": "1.0: Utopia EAD VCB",
+      "input": "1.0/utopia-19.jsonld",
+      "expect": "1.0/utopia-19.cborld",
+      "option": {
+        "config": "v1utopia"
+      }
+    },
+    {
+      "@id": "#t0202",
+      "@type": [
+        "PositiveEvaluationTest",
+        "EncoderTest"
+      ],
+      "name": "1.0: URIs: Utopia Driver's License VCB",
+      "input": "1.0/utopia-ext-12.jsonld",
+      "expect": "1.0/utopia-ext-12.cborld",
+      "option": {
+        "config": "v1utopiaext"
+      }
+    },
+    {
+      "@id": "#t0203",
+      "@type": [
+        "PositiveEvaluationTest",
+        "EncoderTest"
+      ],
+      "name": "1.0: URIs: Utopia EAD VCB",
+      "input": "1.0/utopia-ext-19.jsonld",
+      "expect": "1.0/utopia-ext-19.cborld",
+      "option": {
+        "config": "v1utopiaext"
+      }
+    }    
   ]
 }

@@ -10,12 +10,16 @@ class EncoderContextMapping implements Mapping {
 
     private final Dictionary contexts;
     private final Map<String, Dictionary> types;
+    private final Dictionary uris;
+    
     private final Dictionary dictionary;
     private final TypeMap typeMap;
 
-    EncoderContextMapping(Dictionary contexts, Map<String, Dictionary> types, Dictionary dictionary, TypeMap typeMap) {
+    //TODO revise
+    EncoderContextMapping(Dictionary contexts, Map<String, Dictionary> types, Dictionary uris, Dictionary dictionary, TypeMap typeMap) {
         this.contexts = contexts;
         this.types = types;
+        this.uris = uris;
         this.dictionary = dictionary;
         this.typeMap = typeMap;
     }
@@ -42,7 +46,6 @@ class EncoderContextMapping implements Mapping {
 
     @Override
     public Dictionary uris() {
-        // TODO Auto-generated method stub
-        return null;
+        return uris;
     }
 }

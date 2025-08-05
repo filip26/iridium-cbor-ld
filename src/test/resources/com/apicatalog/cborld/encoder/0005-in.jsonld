@@ -1,4 +1,0 @@
-{
-    "@context": "https://raw.githubusercontent.com/filip26/iridium-cbor-ld/main/src/test/resources/com/apicatalog/cborld/encoder/0003-context.jsonld",
-	"types": ["type-id1", "type-id2"]
-}

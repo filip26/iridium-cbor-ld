@@ -129,7 +129,7 @@
       "input": "decoder/0.5/0012-in.cborld",
       "expect": "decoder/0.5/0012-out.jsonld",
       "option": {
-        "config": "v5",
+        "config": "v05",
         "compactArrays": false
       }      
     },
@@ -319,12 +319,9 @@
         "PositiveEvaluationTest",
         "DecoderTest"
       ],
-      "name": "0.6: barcode ex. #10",
-      "input": "decoder/0.6/barcode-ex-10.cborld",
-      "expect": "decoder/0.6/barcode-ex-10.jsonld",
-      "option": {
-        "config": "barcodes"
-      }
+      "name": "0.6: Utopia Driver's License VCB",
+      "input": "0.6/barcode-ex-10.cborld",
+      "expect": "0.6/barcode-ex-10.jsonld"
     },
     {
       "@id": "#t0101",
@@ -332,12 +329,9 @@
         "PositiveEvaluationTest",
         "DecoderTest"
       ],
-      "name": "0.6: barcode ex. #14",
-      "input": "decoder/0.6/barcode-ex-14.cborld",
-      "expect": "decoder/0.6/barcode-ex-14.jsonld",
-      "option": {
-        "config": "barcodes"
-      }      
+      "name": "0.6: Utopia EAD VCB",
+      "input": "0.6/barcode-ex-14.cborld",
+      "expect": "0.6/barcode-ex-14.jsonld" 
     }
   ]
 }

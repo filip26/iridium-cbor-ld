@@ -1,1 +1,1 @@
-{"@context":"https://raw.githubusercontent.com/filip26/iridium-cbor-ld/main/src/test/resources/com/apicatalog/cborld/decoder/0006-context.jsonld","prop1":1,"prop2":2}
+{"@context":"https://raw.githubusercontent.com/filip26/iridium-cbor-ld/main/src/test/resources/com/apicatalog/cborld/decoder/0.5/0006-context.jsonld","prop1":1,"prop2":2}
