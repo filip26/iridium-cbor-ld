@@ -132,10 +132,8 @@
       "input": "decoder/0012-in.cborld",
       "expect": "decoder/0012-out.jsonld",
       "option": {
-        "compactArrays": false,
-        "version": "v5"
-      }
-      
+        "compactArrays": false
+      }      
     },
     {
       "@id": "#t0013",
@@ -341,7 +339,10 @@
       ],
       "name": "barcode ex. #14",
       "input": "decoder/barcode-ex-14.cborld",
-      "expect": "decoder/barcode-ex-14.jsonld"
+      "expect": "decoder/barcode-ex-14.jsonld",
+      "option": {
+        "config": "barcodes"
+      }      
     }
   ]
 }

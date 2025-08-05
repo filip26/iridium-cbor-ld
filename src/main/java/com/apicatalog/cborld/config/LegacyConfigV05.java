@@ -97,7 +97,7 @@ public class LegacyConfigV05 extends BaseConfig implements EncoderConfig, Decode
 
     @Override
     public Map<Integer, DocumentDictionary> registry() {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("Custom dictionaries are not supported by version 0.5. Use v1.0.");
     }
 
     @Override

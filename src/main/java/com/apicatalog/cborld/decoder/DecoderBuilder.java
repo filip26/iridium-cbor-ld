@@ -22,7 +22,7 @@ import com.apicatalog.jsonld.loader.HttpLoader;
 public class DecoderBuilder {
 
     protected final CborLdVersion defaultVersion;
-    protected final Map<CborLdVersion, DecoderConfig> versions;
+    protected final Map<CborLdVersion, DecoderConfigBuilder> versions;
 
     protected DocumentLoader loader;
     protected boolean bundledContexts;
@@ -30,7 +30,7 @@ public class DecoderBuilder {
 
     protected DecoderBuilder(
             CborLdVersion defaultVersion,
-            Map<CborLdVersion, DecoderConfig> decoders) {
+            Map<CborLdVersion, DecoderConfigBuilder> decoders) {
         this.defaultVersion = defaultVersion;
         this.versions = decoders;
         this.base = null;
@@ -43,7 +43,7 @@ public class DecoderBuilder {
             throw new IllegalArgumentException();
         }
 
-        final Map<CborLdVersion, DecoderConfig> decoders = new HashMap<>();
+        final Map<CborLdVersion, DecoderConfigBuilder> decoders = new HashMap<>();
         for (CborLdVersion version : versions) {
             enable(decoders, version);
         }
@@ -56,9 +56,9 @@ public class DecoderBuilder {
             throw new IllegalArgumentException();
         }
 
-        final Map<CborLdVersion, DecoderConfig> decoders = new HashMap<>();
+        final Map<CborLdVersion, DecoderConfigBuilder> decoders = new HashMap<>();
         for (DecoderConfig config : configs) {
-            decoders.put(config.version(), config);
+            decoders.put(config.version(), DecoderConfigBuilder.of(config));
         }
 
         return new DecoderBuilder(configs[0].version(), decoders);
@@ -123,7 +123,7 @@ public class DecoderBuilder {
     }
 
     public DecoderBuilder compactArray(CborLdVersion version, boolean enable) {
-//FIXME        this.compactArrays = enable;
+        versions.get(version).compactArrays = enable;
         return this;
     }
 
@@ -138,7 +138,7 @@ public class DecoderBuilder {
     }
 
     public DecoderBuilder dictionary(CborLdVersion version, DocumentDictionary dictionary) {
-//      this.dictionary = dictionary;
+        versions.get(version).registry.put(dictionary.code(), dictionary);
         return this;
     }
 
@@ -167,16 +167,16 @@ public class DecoderBuilder {
                 loader, base);
     }
 
-    protected static final void enable(Map<CborLdVersion, DecoderConfig> decoders, CborLdVersion version) {
+    protected static final void enable(Map<CborLdVersion, DecoderConfigBuilder> decoders, CborLdVersion version) {
         switch (version) {
         case V1:
-            decoders.put(version, DefaultConfig.INSTANCE);
+            decoders.put(version, DecoderConfigBuilder.of(DefaultConfig.INSTANCE));
             break;
         case V06:
-            decoders.put(version, LegacyConfigV06.INSTANCE);
+            decoders.put(version, DecoderConfigBuilder.of(LegacyConfigV06.INSTANCE));
             break;
         case V05:
-            decoders.put(version, LegacyConfigV05.INSTANCE);
+            decoders.put(version, DecoderConfigBuilder.of(LegacyConfigV05.INSTANCE));
             break;
         }
     }
@@ -192,5 +192,4 @@ public class DecoderBuilder {
         }
         throw new IllegalStateException();
     }
-
 }
