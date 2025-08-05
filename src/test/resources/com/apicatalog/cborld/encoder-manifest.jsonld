@@ -39,7 +39,7 @@
       "input": "encoder/0.5/0003-in.jsonld",
       "expect": "encoder/0.5/0003-out.cborld",
       "option": {
-        "config": "v5"
+        "config": "v05"
       }
     },
     {
@@ -52,7 +52,7 @@
       "input": "encoder/0.5/0004-in.jsonld",
       "expect": "encoder/0.5/0004-out.cborld",
       "option": {
-        "config": "v5",
+        "config": "v05",
         "compactArrays": true
       }
     },
@@ -66,7 +66,7 @@
       "input": "encoder/0.5/0005-in.jsonld",
       "expect": "encoder/0.5/0005-out.cborld",
       "option": {
-        "config": "v5"
+        "config": "v05"
       }
     },
     {
@@ -79,7 +79,7 @@
       "input": "encoder/0.5/0006-in.jsonld",
       "expect": "encoder/0.5/0006-out.cborld",
       "option": {
-        "config": "v5"
+        "config": "v05"
       }
     },
     {
@@ -92,7 +92,7 @@
       "input": "encoder/0.5/0007-in.jsonld",
       "expect": "encoder/0.5/0007-out.cborld",
       "option": {
-        "config": "v5",
+        "config": "v05",
         "compactArrays": true
       }
     },
@@ -106,7 +106,7 @@
       "input": "encoder/0.5/0008-in.jsonld",
       "expect": "encoder/0.5/0008-out.cborld",
       "option": {
-        "config": "v5"
+        "config": "v05"
       }
     },
     {
@@ -119,7 +119,7 @@
       "input": "encoder/0.5/0009-in.jsonld",
       "expect": "encoder/0.5/0009-out.cborld",
       "option": {
-        "config": "v5"
+        "config": "v05"
       }
     },
     {
@@ -132,7 +132,7 @@
       "input": "encoder/0.5/0010-in.jsonld",
       "expect": "encoder/0.5/0010-out.cborld",
       "option": {
-        "config": "v5"
+        "config": "v05"
       }
     },
     {
@@ -145,7 +145,7 @@
       "input": "encoder/0.5/0011-in.jsonld",
       "expect": "encoder/0.5/0011-out.cborld",
       "option": {
-        "config": "v5"
+        "config": "v05"
       }
     },
     {
@@ -158,7 +158,7 @@
       "input": "encoder/0.5/0012-in.jsonld",
       "expect": "encoder/0.5/0012-out.cborld",
       "option": {
-        "config": "v5"
+        "config": "v05"
       }
     },
     {
@@ -171,7 +171,7 @@
       "input": "encoder/0.5/0013-in.jsonld",
       "expect": "encoder/0.5/0013-out.cborld",
       "option": {
-        "config": "v5"
+        "config": "v05"
       }
     },
     {
@@ -184,7 +184,7 @@
       "input": "encoder/0.5/0014-in.jsonld",
       "expect": "encoder/0.5/0014-out.cborld",
       "option": {
-        "config": "v5"
+        "config": "v05"
       }
     },
     {
@@ -197,7 +197,7 @@
       "input": "encoder/0.5/0015-in.jsonld",
       "expect": "encoder/0.5/0015-out.cborld",
       "option": {
-        "config": "v5"
+        "config": "v05"
       }
     },
     {
@@ -210,7 +210,7 @@
       "input": "encoder/0.5/0020-in.jsonld",
       "expect": "encoder/0.5/0020-out.cborld",
       "option": {
-        "config": "v5"
+        "config": "v05"
       }
     },
     {
@@ -223,7 +223,7 @@
       "input": "encoder/0.5/0021-in.jsonld",
       "expect": "encoder/0.5/0021-out.cborld",
       "option": {
-        "config": "v5"
+        "config": "v05"
       }
     },
     {
@@ -236,7 +236,7 @@
       "input": "encoder/0.5/0022-in.jsonld",
       "expect": "encoder/0.5/0022-out.cborld",
       "option": {
-        "config": "v5"
+        "config": "v05"
       }
     },
     {
@@ -249,7 +249,7 @@
       "input": "encoder/0.5/0023-in.jsonld",
       "expect": "encoder/0.5/0023-out.cborld",
       "option": {
-        "config": "v5"
+        "config": "v05"
       }
     },
     {
@@ -262,7 +262,7 @@
       "input": "encoder/0.5/0024-in.jsonld",
       "expect": "encoder/0.5/0024-out.cborld",
       "option": {
-        "config": "v5"
+        "config": "v05"
       }
     },
     {
@@ -275,7 +275,7 @@
       "input": "encoder/0.5/0025-in.jsonld",
       "expect": "encoder/0.5/0025-out.cborld",
       "option": {
-        "config": "v5"
+        "config": "v05"
       }
     },
     {
@@ -288,7 +288,7 @@
       "input": "encoder/0.5/0026-in.jsonld",
       "expect": "encoder/0.5/0026-out.cborld",
       "option": {
-        "config": "v5"
+        "config": "v05"
       }
     },
     {
@@ -301,7 +301,7 @@
       "input": "encoder/0.5/0052-in.jsonld",
       "expect": "encoder/0.5/0052-out.cborld",
       "option": {
-        "config": "v5"
+        "config": "v05"
       }
     },
     {
@@ -314,7 +314,7 @@
       "input": "encoder/0.5/0053-in.jsonld",
       "expect": "encoder/0.5/0053-out.cborld",
       "option": {
-        "config": "v5"
+        "config": "v05"
       }
     },
     {
@@ -327,7 +327,7 @@
       "input": "encoder/0.5/0060-in.jsonld",
       "expect": "encoder/0.5/0060-out.cborld",
       "option": {
-        "config": "v5"
+        "config": "v05"
       }
     },
     {
@@ -340,7 +340,7 @@
       "input": "encoder/0.5/0061-in.jsonld",
       "expectErrorCode": "InvalidDocument",
       "option": {
-        "config": "v5"
+        "config": "v05"
       }
     },
     {
@@ -353,7 +353,7 @@
       "input": "encoder/0.5/0062-in.jsonld",
       "expect": "encoder/0.5/0062-out.cborld",
       "option": {
-        "config": "v5"
+        "config": "v05"
       }
     },
     {
@@ -362,11 +362,11 @@
         "PositiveEvaluationTest",
         "EncoderTest"
       ],
-      "name": "0.6: utopia barcode ex. #10",
+      "name": "0.6: utopia barcode",
       "input": "0.6/barcode-ex-10.jsonld",
       "expect": "0.6/barcode-ex-10.cborld",
       "option": {
-        "config": "barcodes"
+        "config": "v06utopia"
       }
     },
     {
@@ -375,12 +375,38 @@
         "PositiveEvaluationTest",
         "EncoderTest"
       ],
-      "name": "0.6: utopia barcode ex. #14",
+      "name": "0.6: utopia barcode",
       "input": "0.6/barcode-ex-14.jsonld",
       "expect": "0.6/barcode-ex-14.cborld",
       "option": {
-        "config": "barcodes"
+        "config": "v06utopia"
       }
-    }
+    },
+    {
+      "@id": "#t0200",
+      "@type": [
+        "PositiveEvaluationTest",
+        "EncoderTest"
+      ],
+      "name": "1.0: utopia barcode",
+      "input": "1.0/utopia-12.jsonld",
+      "expect": "1.0/utopia-12.cborld",
+      "option": {
+        "config": "v1utopia"
+      }
+    },
+    {
+      "@id": "#t0201",
+      "@type": [
+        "PositiveEvaluationTest",
+        "EncoderTest"
+      ],
+      "name": "1.0: utopia barcode",
+      "input": "1.0/utopia-19.jsonld",
+      "expect": "1.0/utopia-19.cborld",
+      "option": {
+        "config": "v1utopia"
+      }
+    }    
   ]
 }

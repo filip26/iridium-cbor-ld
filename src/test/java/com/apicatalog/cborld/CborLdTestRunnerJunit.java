@@ -46,12 +46,12 @@ class CborLdTestRunnerJunit {
     static final DocumentLoader LOADER;
 
     static final Encoder ENCODER_V1;
+    static final Encoder ENCODER_UTOPIA_V1;    
     static final Encoder ENCODER_UTOPIA_V06;
     static final Encoder ENCODER_V05;
     static final Encoder ENCODER_V05_NOCA;
 
-    static final Decoder DECODER_MULTI;
-    static final Decoder DECODER_UTOPIA_V06;
+    static final Decoder DECODER;
     static final Decoder DECODER_V05_NOCA;
 
     static {
@@ -71,6 +71,11 @@ class CborLdTestRunnerJunit {
                 .loader(LOADER)
                 .build();
 
+        ENCODER_UTOPIA_V1 = CborLd.createEncoder()
+                .loader(LOADER)
+                .dictionary(UtopiaBarcode.DICTIONARY)
+                .build();
+
         ENCODER_UTOPIA_V06 = CborLd.createEncoder(CborLdVersion.V06)
                 .loader(LOADER)
                 .dictionary(UtopiaBarcode.DICTIONARY)
@@ -85,13 +90,10 @@ class CborLdTestRunnerJunit {
                 .compactArray(false)
                 .build();
 
-        DECODER_MULTI = CborLd.createDecoder(CborLdVersion.V1, CborLdVersion.V06, CborLdVersion.V05)
-                .loader(LOADER)
-                .build();
-
-        DECODER_UTOPIA_V06 = CborLd.createDecoder(CborLdVersion.V06)
+        DECODER = CborLd.createDecoder(CborLdVersion.V1, CborLdVersion.V06, CborLdVersion.V05)
                 .loader(LOADER)
                 .dictionary(UtopiaBarcode.DICTIONARY)
+                .dictionary(CborLdVersion.V06, UtopiaBarcode.DICTIONARY)
                 .build();
 
         DECODER_V05_NOCA = CborLd.createDecoder(CborLdVersion.V05)
@@ -308,22 +310,22 @@ class CborLdTestRunnerJunit {
     }
 
     static final Encoder getEncoder(String name, boolean compactArrays) {
-        if ("v5".equals(name)) {
+        if ("v05".equals(name)) {
             return compactArrays ? ENCODER_V05 : ENCODER_V05_NOCA;
         }
-        if ("barcodes".equals(name)) {
+        if ("v06utopia".equals(name)) {
             return ENCODER_UTOPIA_V06;
         }
+        if ("v1utopia".equals(name)) {
+            return ENCODER_UTOPIA_V1;
+        }        
         return ENCODER_V1;
     }
 
     static final Decoder getDecoder(String name, boolean compactArrays) {
-        if ("v5".equals(name) && !compactArrays) {
+        if ("v05".equals(name) && !compactArrays) {
             return DECODER_V05_NOCA;
         }
-        if ("barcodes".equals(name)) {
-            return DECODER_UTOPIA_V06;
-        }
-        return DECODER_MULTI;
+        return DECODER;
     }
 }

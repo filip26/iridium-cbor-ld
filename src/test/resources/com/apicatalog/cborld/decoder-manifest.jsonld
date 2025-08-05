@@ -129,7 +129,7 @@
       "input": "decoder/0.5/0012-in.cborld",
       "expect": "decoder/0.5/0012-out.jsonld",
       "option": {
-        "config": "v5",
+        "config": "v05",
         "compactArrays": false
       }      
     },
@@ -321,10 +321,7 @@
       ],
       "name": "0.6: barcode ex. #10",
       "input": "0.6/barcode-ex-10.cborld",
-      "expect": "0.6/barcode-ex-10.jsonld",
-      "option": {
-        "config": "barcodes"
-      }
+      "expect": "0.6/barcode-ex-10.jsonld"
     },
     {
       "@id": "#t0101",
@@ -334,10 +331,7 @@
       ],
       "name": "0.6: barcode ex. #14",
       "input": "0.6/barcode-ex-14.cborld",
-      "expect": "0.6/barcode-ex-14.jsonld",
-      "option": {
-        "config": "barcodes"
-      }      
+      "expect": "0.6/barcode-ex-14.jsonld" 
     }
   ]
 }
