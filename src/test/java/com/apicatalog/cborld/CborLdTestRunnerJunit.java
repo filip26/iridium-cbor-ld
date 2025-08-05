@@ -55,16 +55,18 @@ class CborLdTestRunnerJunit {
     static final Decoder DECODER_V05_NOCA;
 
     static {
+        // load from test resources
         StaticContextLoader.set("https://w3id.org/utopia/v2", CborLdTestRunnerJunit.class, "context/utopia-v2-context.jsonld");
         StaticContextLoader.set("https://w3id.org/age/v1", CborLdTestRunnerJunit.class, "context/age-v1-context.jsonld");
-        StaticContextLoader.set("https://www.w3.org/ns/activitystreams", CborLdTestRunnerJunit.class, "context/activitystreams-context.jsonld");
 
+        // test loader using only local resources
         LOADER = new UriBaseRewriter(
                 CborLdTest.BASE,
                 "classpath:",
                 new UriBaseRewriter("https://raw.githubusercontent.com/filip26/iridium-cbor-ld/main/src/test/resources/com/apicatalog/cborld/",
                         "classpath:", new ClasspathLoader()));
 
+        // several test instances reflecting various configurations
         ENCODER_V1 = CborLd.createEncoder()
                 .loader(LOADER)
                 .build();
@@ -140,6 +142,7 @@ class CborLdTestRunnerJunit {
 
                 if (!match) {
                     write(testCase, bytes, ((CborLdDocument) expected).getByteArray());
+
                 }
 
                 assertTrue(match, "The expected result does not match.");
@@ -239,7 +242,6 @@ class CborLdTestRunnerJunit {
 
     public static void write(final CborLdTestCase testCase, final byte[] result, final byte[] expected) {
         final StringWriter stringWriter = new StringWriter();
-
         try (final PrintWriter writer = new PrintWriter(stringWriter)) {
             writer.println("Test " + testCase.id.getFragment() + ": " + testCase.name);
 

@@ -101,7 +101,7 @@ public class EncoderBuilder implements EncoderConfig {
     }
 
     /**
-     * Set a custom dictionary
+     * Set a dictionary
      * 
      * @param dictionary
      * @return {@link EncoderBuilder} instance

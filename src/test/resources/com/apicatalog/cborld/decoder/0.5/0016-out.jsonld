@@ -1,4 +1,4 @@
 {
-    "@context": "https://raw.githubusercontent.com/filip26/iridium-cbor-ld/main/src/test/resources/com/apicatalog/cborld/encoder/0010-context.jsonld",
+    "@context": "https://raw.githubusercontent.com/filip26/iridium-cbor-ld/main/src/test/resources/com/apicatalog/cborld/encoder/0.5/0010-context.jsonld",
 	"identifier": "urn:uuid:188e8450-269e-11eb-b545-d3692cf35398"
 }
