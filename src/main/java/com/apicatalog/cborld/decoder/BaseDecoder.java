@@ -47,7 +47,7 @@ public abstract class BaseDecoder implements Decoder {
     protected DocumentLoader loader;
     protected boolean bundledContexts;
     protected URI base;
-    
+
     protected BaseDecoder(DecoderConfig config, DocumentLoader loader, URI base) {
         this.config = config;
         this.loader = loader;
@@ -56,7 +56,6 @@ public abstract class BaseDecoder implements Decoder {
 
     @Override
     public JsonValue decode(byte[] encoded) throws ContextError, DecoderError {
-
         final CborLdVersion version = BaseDecoder.assertCborLd(encoded);
 
         if (version != config.version()) {
@@ -351,7 +350,7 @@ public abstract class BaseDecoder implements Decoder {
     public DecoderConfig config() {
         return config;
     }
-    
+
     @Override
     public URI base() {
         return base;

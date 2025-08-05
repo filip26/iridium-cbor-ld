@@ -130,7 +130,12 @@
       ],
       "name": "compactArrays: false - single item array term value",
       "input": "decoder/0012-in.cborld",
-      "expect": "decoder/0012-out.jsonld"
+      "expect": "decoder/0012-out.jsonld",
+      "option": {
+        "compactArrays": false,
+        "version": "v5"
+      }
+      
     },
     {
       "@id": "#t0013",

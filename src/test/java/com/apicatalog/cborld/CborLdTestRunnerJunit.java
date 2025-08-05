@@ -15,11 +15,8 @@ import java.util.Objects;
 
 import com.apicatalog.cbor.CborComparison;
 import com.apicatalog.cbor.CborWriter;
-import com.apicatalog.cborld.config.DefaultConfig;
-import com.apicatalog.cborld.config.LegacyConfigV05;
 import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.decoder.Decoder;
-import com.apicatalog.cborld.decoder.DecoderConfig;
 import com.apicatalog.cborld.decoder.DecoderError;
 import com.apicatalog.cborld.encoder.Encoder;
 import com.apicatalog.cborld.encoder.EncoderError;
@@ -48,15 +45,16 @@ class CborLdTestRunnerJunit {
 
     private final CborLdTestCase testCase;
 
-    public static final DocumentLoader LOADER;
+    static final DocumentLoader LOADER;
 
-    public static final Encoder ENCODER_V1;
-
-    public static final Encoder ENCODER_V06;
-
-    public static final Encoder ENCODER_V05;
+    static final Encoder ENCODER_V1;
+    static final Encoder ENCODER_V06;
+    static final Encoder ENCODER_V05;
+    static final Encoder ENCODER_V05_NOCA;
     
-    public static final Encoder ENCODER_V05_NOCA;
+    static final Decoder DECODER_MULTI;
+    static final Decoder DECODER_BARCODES_V06;
+    static final Decoder DECODER_V05_NOCA;
 
     static {
         StaticContextLoader.set("https://w3id.org/utopia/v2", CborLdTestRunnerJunit.class, "utopia-v2.jsonld");
@@ -86,6 +84,20 @@ class CborLdTestRunnerJunit {
                 .build();
         
         ENCODER_V05_NOCA = CborLd.createEncoder(CborLdVersion.V05)
+                .loader(LOADER)
+                .compactArray(false)
+                .build();
+        
+        DECODER_MULTI = CborLd.createDecoder(CborLdVersion.V1, CborLdVersion.V06, CborLdVersion.V05)
+                .loader(LOADER)
+                .build();
+        
+        DECODER_BARCODES_V06 = CborLd.createDecoder(CborLdVersion.V06)
+                .loader(LOADER)
+                .dictionary(Barcodes.DICTIONARY)
+                .build();
+        
+        DECODER_V05_NOCA = CborLd.createDecoder(CborLdVersion.V05)
                 .loader(LOADER)
                 .compactArray(false)
                 .build();
@@ -143,10 +155,7 @@ class CborLdTestRunnerJunit {
 
                 assertNotNull(document);
 
-                final Decoder decoder = CborLd.createDecoder(getDecoderConfig(testCase.config))
-                        .loader(LOADER)
-                        .compactArray(testCase.compactArrays)
-                        .build();
+                final Decoder decoder = getDecoder(testCase.config, testCase.compactArrays);
 
                 final JsonValue result = decoder.decode(((CborLdDocument) document).getByteArray());
 
@@ -312,13 +321,13 @@ class CborLdTestRunnerJunit {
         return ENCODER_V1;
     }
 
-    static final DecoderConfig getDecoderConfig(String name) {
-        if ("v5".equals(name)) {
-            return LegacyConfigV05.INSTANCE;
+    static final Decoder getDecoder(String name, boolean compactArrays) {
+        if ("v5".equals(name) && !compactArrays) {
+            return DECODER_V05_NOCA;
         }
         if ("barcodes".equals(name)) {
-//            return  DecoderBuilder.of(CborLdVersion.V06).dictionary(Barcodes.DICTIONARY);
+            return DECODER_BARCODES_V06;
         }
-        return DefaultConfig.INSTANCE;
+        return DECODER_MULTI;
     }
 }

@@ -22,6 +22,9 @@ public class LegacyDecoderV05 extends BaseDecoder {
         if (encoded[2] == CborLd.UNCOMPRESSED_BYTE) {
             throw new DecoderError(Code.Unsupported, "Uncompressed CBOR-LD v0.5 is not supported.");
         }
+        if (encoded[2] != CborLd.COMPRESSED_BYTE) {
+            throw new DecoderError(Code.UnknownCompression, "Custom dictionaries are not supported by v0.5. Use version 1.0.");
+        }
 
         return decode(encoded, LegacyDictionary.DICTIONARY);
     }
