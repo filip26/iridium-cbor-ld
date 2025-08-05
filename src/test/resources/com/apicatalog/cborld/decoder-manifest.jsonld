@@ -320,8 +320,8 @@
         "DecoderTest"
       ],
       "name": "0.6: barcode ex. #10",
-      "input": "decoder/0.6/barcode-ex-10.cborld",
-      "expect": "decoder/0.6/barcode-ex-10.jsonld",
+      "input": "0.6/barcode-ex-10.cborld",
+      "expect": "0.6/barcode-ex-10.jsonld",
       "option": {
         "config": "barcodes"
       }
@@ -333,8 +333,8 @@
         "DecoderTest"
       ],
       "name": "0.6: barcode ex. #14",
-      "input": "decoder/0.6/barcode-ex-14.cborld",
-      "expect": "decoder/0.6/barcode-ex-14.jsonld",
+      "input": "0.6/barcode-ex-14.cborld",
+      "expect": "0.6/barcode-ex-14.jsonld",
       "option": {
         "config": "barcodes"
       }      
