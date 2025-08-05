@@ -9,7 +9,7 @@ import com.apicatalog.cborld.decoder.value.ValueDecoder;
 import com.apicatalog.cborld.mapping.DecoderMappingProvider;
 import com.apicatalog.cborld.registry.DocumentDictionary;
 
-public class DecoderConfigBuilder implements DecoderConfig {
+class DecoderConfigBuilder implements DecoderConfig {
 
     CborLdVersion version;
     boolean compactArrays;

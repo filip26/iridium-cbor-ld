@@ -132,6 +132,7 @@
       "input": "decoder/0012-in.cborld",
       "expect": "decoder/0012-out.jsonld",
       "option": {
+        "config": "v5",
         "compactArrays": false
       }      
     },
