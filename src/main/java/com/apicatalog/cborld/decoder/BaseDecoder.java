@@ -299,7 +299,7 @@ public abstract class BaseDecoder implements Decoder {
                     + ".");
         }
 
-        final CborLdVersion version = CborLdVersion.of(encoded);
+        final CborLdVersion version = CborLdVersion.of(encoded, 1); // skip leading byte
 
         if (version == null) {
             throw new DecoderError(Code.InvalidDocument, "The document is not CBOR-LD document. A tag must start with: "

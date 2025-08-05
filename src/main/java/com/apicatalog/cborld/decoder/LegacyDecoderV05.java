@@ -19,7 +19,6 @@ public class LegacyDecoderV05 extends BaseDecoder {
 
     @Override
     public JsonValue decode(CborLdVersion version, byte[] encoded) throws ContextError, DecoderError {
-        
         if (encoded[2] == CborLd.UNCOMPRESSED_BYTE) {
             throw new DecoderError(Code.Unsupported, "Uncompressed CBOR-LD v0.5 is not supported.");
         }

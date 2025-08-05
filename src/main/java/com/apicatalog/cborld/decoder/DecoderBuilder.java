@@ -161,7 +161,9 @@ public class DecoderBuilder {
         return new MultiDecoder(
                 versions.values().stream()
                         .map(c -> newInstance(c, loader, base))
-                        .collect(Collectors.toUnmodifiableMap(t -> t.config().version(), Function.identity())),
+                        .collect(Collectors.toUnmodifiableMap(
+                                t -> t.config().version(),
+                                Function.identity())),
                 loader, base);
     }
 
