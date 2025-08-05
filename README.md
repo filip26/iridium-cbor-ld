@@ -70,6 +70,7 @@ document = decoder.decode(encoded);
 
 It’s highly recommended to use dictionaries to maximize the compression ratio. A dictionary consists of terms and the codes they are encoded to. The dictionary code is preserved in the encoded CBOR-LD, but the decoder must have the same dictionary enabled. See the [W3C CBOR-LD Registry for examples](https://json-ld.github.io/cbor-ld-spec/#registry).
 
+A dictionary should contain terms that are not present in contexts, such as the context URIs themselves, custom common values bound to types, and custom common URIs.
 
 ```javascript
 // build a new dictionary
@@ -77,7 +78,6 @@ var dictionary = DocumentDictionaryBuilder
             .create(DICTIONARY_CODE)
             .context("https://www.w3.org/ns/credentials/v2", 1)
             .context("https://w3id.org/vc-barcodes/v1", 2)
-            .context("https://w3id.org/utopia/v2", 3)
             .type("https://w3id.org/security#cryptosuiteString",
                     DictionaryBuilder.create()
                             .set("ecdsa-rdfc-2019", 1)
@@ -88,7 +88,6 @@ var dictionary = DocumentDictionaryBuilder
             .uri("did:key:zDnaeWjKfs1ob9QcgasjYSPEMkwq31hmvSAWPVAgnrt1e9GKj#zDnaeWjKfs1ob9QcgasjYSPEMkwq31hmvSAWPVAgnrt1e9GKj", 2)            
             .uri("https://sandbox.platform.veres.dev/statuses/z19rJ4oGrbFCqf3cNTVDHSbNd/status-lists", 3)
             .uri("did:key:zDnaeZSD9XcuULaS8qmgDUa6TMg2QjF9xABnZK42awDH3BEzj", 4)
-            .uri("did:key:zDnaeZSD9XcuULaS8qmgDUa6TMg2QjF9xABnZK42awDH3BEzj#zDnaeZSD9XcuULaS8qmgDUa6TMg2QjF9xABnZK42awDH3BEzj", 5)
             .build();
 
 // use with encoder
