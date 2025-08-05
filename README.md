@@ -6,8 +6,6 @@
 
 Iridium CBOR-LD is a Java implementation of [CBOR-LD 1.0](https://json-ld.github.io/cbor-ld-spec/), a compact binary format for Linked Data.
 
----
-
 ## ✨ Features
 
 - 🔄 Semantic compression and decompression
@@ -35,19 +33,14 @@ Iridium CBOR-LD is a Java implementation of [CBOR-LD 1.0](https://json-ld.github
 ```javascript
 // create an encoder builder initialized with default values
 var encoder = CborLd.createEncoder()
+               // terms dictionary (optional)
+               .dictionary(dictionary)
                // use bundled static contexts (true by default)
                .useBundledContexts(true)
                // loader (optional)
                .loader(...)
-               // custom terms dictionary (optional)
-               .dictionary(customDictionary)
                // create a new encoder instance
                .build(); 
-                   
-// create barcodes encoder builder 
-var encoder = CborLd.createEncoder(BarcodesConfig.INSTANCE)
-               // ... customize
-               .build()
 
 // encode a document
 byte[] encoded = encoder.encode(document);
@@ -58,37 +51,83 @@ byte[] encoded = encoder.encode(document);
 ```javascript
 // create a decoder builder initialized with default values
 var decoder = CborLd.createDecoder()
+               // terms dictionaries (optional)
+               .dictionary(dictionary1);
+               .dictionary(dictionary2);               
+               // ...
                // use bundled static contexts (true by default)
                .useBundledContexts(true)
                // loader (optional)
                .loader(...)
-               // add custom terms dictionary (optional)
-               .dictionary(customDictionary);
                // create a new decoder instance
                .build(); 
-                   
-// create barcodes decoder builder
-var decoder = CborLd.createDecoder(BarcodesConfig.INSTANCE)
-               // ... customize
-               .build()
-  
+
 // decode
 document = decoder.decode(encoded);
+```
+
+### Dictionary
+
+It’s highly recommended to use dictionaries to maximize the compression ratio. A dictionary consists of terms and the codes they are encoded to. The dictionary code is preserved in the encoded CBOR-LD, but the decoder must have the same dictionary enabled. See the [W3C CBOR-LD Registry for examples](https://json-ld.github.io/cbor-ld-spec/#registry).
+
+
+```javascript
+// build a new dictionary
+var dictionary = DocumentDictionaryBuilder
+            .create(DICTIONARY_CODE)
+            .context("https://www.w3.org/ns/credentials/v2", 1)
+            .context("https://w3id.org/vc-barcodes/v1", 2)
+            .context("https://w3id.org/utopia/v2", 3)
+            .type("https://w3id.org/security#cryptosuiteString",
+                    DictionaryBuilder.create()
+                            .set("ecdsa-rdfc-2019", 1)
+                            .set("ecdsa-sd-2023", 2)
+                            .set("eddsa-rdfc-2022", 3)
+                            .set("ecdsa-xi-2023", 4))
+            .uri("did:key:zDnaeWjKfs1ob9QcgasjYSPEMkwq31hmvSAWPVAgnrt1e9GKj", 1)
+            .uri("did:key:zDnaeWjKfs1ob9QcgasjYSPEMkwq31hmvSAWPVAgnrt1e9GKj#zDnaeWjKfs1ob9QcgasjYSPEMkwq31hmvSAWPVAgnrt1e9GKj", 2)            
+            .uri("https://sandbox.platform.veres.dev/statuses/z19rJ4oGrbFCqf3cNTVDHSbNd/status-lists", 3)
+            .uri("did:key:zDnaeZSD9XcuULaS8qmgDUa6TMg2QjF9xABnZK42awDH3BEzj", 4)
+            .uri("did:key:zDnaeZSD9XcuULaS8qmgDUa6TMg2QjF9xABnZK42awDH3BEzj#zDnaeZSD9XcuULaS8qmgDUa6TMg2QjF9xABnZK42awDH3BEzj", 5)
+            .build();
+
+// use with encoder
+var encoder = CborLd.createEncoder()
+                .dictionary(dictionary)
+                .loader(...)
+                // customize
+                .build();
+
+// use with decoder, please note you can register multiple dictionaries
+var decoder = CborLd.createDecoder()
+                .dictionary(dictionary)
+                .loader(...)
+                // customize
+                .build();
+               
 ```
 
 ### Backward Compatibility
 
 ```javascript
-// Iridium < v0.2.0
-CborLd.create[Encoder|Decoder](V05Config.INSTANCE)
+// CBOR-LD v0.5
+CborLd.createEncoder(CborLdVersion.V05)
       // ... customize      
       .build();
-      
-// Iridium < v0.2.0, @digitalbazaar/cborld compatibility
-CborLd.create[Encoder|Decoder](V05Config.INSTANCE)
-      .compactArrays(false)
+
+// CBOR-LD v0.6
+CborLd.createEncoder(CborLdVersion.V06)
       // ... customize      
       .build();
+
+// Multi-Decoder 
+CborLd.createDecoder(CborLdVersion.V1, CborLdVersion.V06, CborLdVersion.V05)
+      // sets dictionary for v1
+      .dictionary(dictionary)
+      // sets dictionary for v0.6
+      .dictionary(CborLdVersion.V06, dictionary)
+      // ... customize
+      .build();      
 ```
 
 
