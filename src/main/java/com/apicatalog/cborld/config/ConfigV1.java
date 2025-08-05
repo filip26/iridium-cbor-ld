@@ -23,7 +23,6 @@ import com.apicatalog.cborld.decoder.value.XsdDateValueDecoder;
 import com.apicatalog.cborld.encoder.EncoderConfig;
 import com.apicatalog.cborld.encoder.value.ContextValueEncoder;
 import com.apicatalog.cborld.encoder.value.CustomTypeValueEncoder;
-import com.apicatalog.cborld.encoder.value.CustomUriValueEncoder;
 import com.apicatalog.cborld.encoder.value.DidKeyValueEncoder;
 import com.apicatalog.cborld.encoder.value.IdValueEncoder;
 import com.apicatalog.cborld.encoder.value.MultibaseValueEncoder;
@@ -63,7 +62,6 @@ public class ConfigV1 extends BaseConfig implements EncoderConfig, DecoderConfig
         valueEncoders.add(new CustomTypeValueEncoder());
 
         // value driven
-        valueEncoders.add(new CustomUriValueEncoder());
         valueEncoders.add(new UuidValueEncoder());
         valueEncoders.add(new DidKeyValueEncoder());
         
