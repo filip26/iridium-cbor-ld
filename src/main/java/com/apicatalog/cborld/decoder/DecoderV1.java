@@ -19,7 +19,7 @@ import co.nstant.in.cbor.model.UnsignedInteger;
 import jakarta.json.Json;
 import jakarta.json.JsonValue;
 
-class DecoderV1 extends BaseDecoder {
+class DecoderV1 extends AbstractDecoder {
 
     public DecoderV1(DecoderConfig config, DecoderMappingProvider mapping, DocumentLoader loader, URI base) {
         super(config, mapping, loader, base);

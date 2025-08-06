@@ -3,17 +3,14 @@ package com.apicatalog.cborld.decoder;
 import java.io.ByteArrayInputStream;
 import java.math.BigInteger;
 import java.net.URI;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
-import com.apicatalog.cborld.CborLd;
 import com.apicatalog.cborld.CborLdVersion;
 import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.decoder.DecoderException.Code;
 import com.apicatalog.cborld.decoder.value.ValueDecoder;
-import com.apicatalog.cborld.hex.Hex;
 import com.apicatalog.cborld.mapping.DecoderMappingProvider;
 import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.cborld.mapping.TypeMap;
@@ -42,7 +39,7 @@ import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 
-public abstract class BaseDecoder implements Decoder {
+abstract class AbstractDecoder implements Decoder {
 
     static final byte UNCOMPRESSED_BYTE = 0x00;
 
@@ -54,7 +51,7 @@ public abstract class BaseDecoder implements Decoder {
     final DocumentLoader loader;
     final URI base;
 
-    protected BaseDecoder(DecoderConfig config, DecoderMappingProvider mappingProvider, DocumentLoader loader, URI base) {
+    protected AbstractDecoder(DecoderConfig config, DecoderMappingProvider mappingProvider, DocumentLoader loader, URI base) {
         this.config = config;
         this.mappingProvider = mappingProvider;
         this.loader = loader;
@@ -63,7 +60,7 @@ public abstract class BaseDecoder implements Decoder {
 
     @Override
     public JsonValue decode(byte[] encoded) throws ContextError, DecoderException {
-        final CborLdVersion version = BaseDecoder.assertCborLd(encoded);
+        final CborLdVersion version = Decoder.assertCborLd(encoded);
 
         if (version != config.version()) {
             throw new DecoderException(Code.Unsupported, "The decoder does support " + version + " but " + config.version() + " .");
@@ -270,41 +267,6 @@ public abstract class BaseDecoder implements Decoder {
         throw new IllegalStateException("Unsupported CBOR simple value type [" + value.getSimpleValueType() + "].");
     }
 
-    public static final CborLdVersion assertCborLd(byte[] encoded) throws DecoderException {
-        if (encoded == null) {
-            throw new IllegalArgumentException("The encoded document paramenter must not be null but byte array.");
-        }
-
-        if (encoded.length < 4) {
-            throw new DecoderException(Code.InvalidDocument,
-                    "The encoded document must be at least 4 bytes but is [" + encoded.length + "].");
-        }
-
-        if (encoded[0] != CborLd.LEADING_BYTE) {
-            throw new DecoderException(Code.InvalidDocument, "The document is not CBOR-LD document. Must start with "
-                    + Hex.toString(CborLd.LEADING_BYTE)
-                    + ", but is "
-                    + Hex.toString(encoded[0])
-                    + ".");
-        }
-
-        final CborLdVersion version = CborLdVersion.of(encoded, 1); // skip leading byte
-
-        if (version == null) {
-            throw new DecoderException(Code.InvalidDocument, "The document is not CBOR-LD document. A tag must start with: "
-                    + "v1.0 = "
-                    + Hex.toString(CborLd.VERSION_1_BYTES)
-                    + ", or v0.6 = "
-                    + Hex.toString(new byte[] { CborLd.VERSION_06_BYTE })
-                    + ", or v0.5 = "
-                    + Hex.toString(new byte[] { CborLd.VERSION_05_BYTE, COMPRESSED_BYTE })
-                    + ", but is "
-                    + Hex.toString(Arrays.copyOfRange(encoded, 1, 3))
-                    + ".");
-        }
-
-        return version;
-    }
 
     // legacy support
     protected final JsonValue decode(final DocumentDictionary dictionary, byte[] encoded) throws ContextError, DecoderException {

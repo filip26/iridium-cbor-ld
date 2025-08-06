@@ -5,7 +5,6 @@ import java.util.Map;
 
 import com.apicatalog.cborld.CborLdVersion;
 import com.apicatalog.cborld.context.ContextError;
-import com.apicatalog.cborld.decoder.BaseDecoder;
 import com.apicatalog.cborld.decoder.Decoder;
 import com.apicatalog.cborld.decoder.DecoderBuilder;
 import com.apicatalog.cborld.decoder.DecoderConfig;
@@ -61,7 +60,7 @@ public class DebugDecoder extends Debug {
      */
     public void decode(byte[] encoded) {
         try {
-            version = BaseDecoder.assertCborLd(encoded);
+            version = Decoder.assertCborLd(encoded);
 
             var config = versions.get(version);
 

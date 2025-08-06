@@ -82,9 +82,9 @@ public class DefaultEncoder implements Encoder {
         throw new EncoderException(
                 Code.NonCompressible,
                 """
-                Non-compressible document. Only JSON-LD documents containing referenced contexts can be compressed. \
-                Referenced contexts serve as a shared dictionary, which is not possible with inline contexts.
-                """);
+                        Non-compressible document. Only JSON-LD documents containing referenced contexts can be compressed. \
+                        Referenced contexts serve as a shared dictionary, which is not possible with inline contexts.
+                        """);
     }
 
     /**
@@ -113,21 +113,21 @@ public class DefaultEncoder implements Encoder {
 
             switch (config.version()) {
             case V1:
-                baos.write(CborLd.VERSION_1_BYTES[0]);
-                baos.write(CborLd.VERSION_1_BYTES[1]);
+                baos.write(config.version().bytes()[0]);
+                baos.write(config.version().bytes()[1]);
                 mapBuilder = builder.addArray()
                         .add(config.dictionary().code())
                         .addMap();
                 break;
 
             case V06:
-                baos.write(CborLd.VERSION_06_BYTE);
+                baos.write(config.version().bytes()[0]);
                 baos.write(config.dictionary().code());
                 mapBuilder = builder.addMap();
                 break;
 
             case V05:
-                baos.write(CborLd.VERSION_05_BYTE);
+                baos.write(config.version().bytes()[0]);
                 baos.write(config.dictionary().code());
                 mapBuilder = builder.addMap();
                 break;
