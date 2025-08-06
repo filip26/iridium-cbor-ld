@@ -168,7 +168,7 @@ public class DecoderBuilder {
     }
     
     public DebugDecoder debug() {
-        return new DebugDecoder();
+        return new DebugDecoder(build());
     }
 
     protected static final void enable(Map<CborLdVersion, DecoderConfigBuilder> decoders, CborLdVersion version) {
