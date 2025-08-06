@@ -7,6 +7,7 @@ import com.apicatalog.cborld.CborLdVersion;
 import com.apicatalog.cborld.config.ConfigV1;
 import com.apicatalog.cborld.config.LegacyConfigV05;
 import com.apicatalog.cborld.config.LegacyConfigV06;
+import com.apicatalog.cborld.debug.DebugEncoder;
 import com.apicatalog.cborld.encoder.value.ValueEncoder;
 import com.apicatalog.cborld.loader.StaticContextLoader;
 import com.apicatalog.cborld.mapping.EncoderMappingProvider;
@@ -168,7 +169,7 @@ public class EncoderBuilder implements EncoderConfig {
         if (bundledContexts) {
             loader = new StaticContextLoader(loader);
         }
-        return new DebugEncoder(this, provider, loader, base);        
+        return new DebugEncoder(this, loader, base);        
     }
 
     protected static final EncoderConfig config(CborLdVersion version) {

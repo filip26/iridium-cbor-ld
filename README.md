@@ -68,7 +68,7 @@ document = decoder.decode(encoded);
 
 ### Dictionary
 
-It’s highly recommended to use dictionaries to maximize the compression ratio. A dictionary consists of terms and the codes they are encoded to. The dictionary code is preserved in the encoded CBOR-LD, but the decoder must have the same dictionary enabled. See the [W3C CBOR-LD Registry for examples](https://json-ld.github.io/cbor-ld-spec/#registry).
+Use dictionaries to maximize the compression ratio. A dictionary consists of terms and the codes they are encoded to. The dictionary code is preserved in the encoded CBOR-LD, but the decoder must have the same dictionary enabled. See the [W3C CBOR-LD Registry for examples](https://json-ld.github.io/cbor-ld-spec/#registry).
 
 A dictionary should contain terms that are not present in contexts, such as the context URIs themselves, custom common values bound to types, and custom common URIs.
 
@@ -119,7 +119,6 @@ debug.isCborLd();      // true if the encoded document is in CBOR-LD format
 debug.version();       // CBOR-LD encoding version
 debug.dictionary();    // static terms
 debug.terms();         // dynamic term map
-debug.decoded();       // decoded JSON-LD document
 
 debug.isError();       // true if an exception has been thrown
 debug.error();         // an exception or null

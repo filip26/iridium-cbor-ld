@@ -42,7 +42,7 @@ import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 
-abstract class BaseDecoder implements Decoder {
+public abstract class BaseDecoder implements Decoder {
 
     static final byte UNCOMPRESSED_BYTE = 0x00;
 
@@ -270,7 +270,7 @@ abstract class BaseDecoder implements Decoder {
         throw new IllegalStateException("Unsupported CBOR simple value type [" + value.getSimpleValueType() + "].");
     }
 
-    protected static final CborLdVersion assertCborLd(byte[] encoded) throws DecoderException {
+    public static final CborLdVersion assertCborLd(byte[] encoded) throws DecoderException {
         if (encoded == null) {
             throw new IllegalArgumentException("The encoded document paramenter must not be null but byte array.");
         }

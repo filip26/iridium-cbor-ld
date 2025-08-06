@@ -35,14 +35,14 @@ import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 
-class DefaultEncoder implements Encoder {
+public class DefaultEncoder implements Encoder {
 
     final EncoderConfig config;
     final EncoderMappingProvider mappingProvider;
     final DocumentLoader loader;
     final URI base;
 
-    DefaultEncoder(EncoderConfig config, EncoderMappingProvider mappingProvider, DocumentLoader loader, URI base) {
+    public DefaultEncoder(EncoderConfig config, EncoderMappingProvider mappingProvider, DocumentLoader loader, URI base) {
         this.config = config;
         this.mappingProvider = mappingProvider;
         this.loader = loader;

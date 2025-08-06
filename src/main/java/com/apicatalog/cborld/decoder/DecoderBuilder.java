@@ -10,6 +10,7 @@ import com.apicatalog.cborld.CborLdVersion;
 import com.apicatalog.cborld.config.ConfigV1;
 import com.apicatalog.cborld.config.LegacyConfigV05;
 import com.apicatalog.cborld.config.LegacyConfigV06;
+import com.apicatalog.cborld.debug.DebugDecoder;
 import com.apicatalog.cborld.encoder.EncoderBuilder;
 import com.apicatalog.cborld.loader.StaticContextLoader;
 import com.apicatalog.cborld.mapping.DecoderMappingProvider;
@@ -205,7 +206,7 @@ public class DecoderBuilder {
         return newInstance(config, config.decoderMapping(), loader, base);
     }
     
-    protected static final Decoder newInstance(DecoderConfig config, DecoderMappingProvider mapping, DocumentLoader loader, URI base) {
+    public static final Decoder newInstance(DecoderConfig config, DecoderMappingProvider mapping, DocumentLoader loader, URI base) {
         switch (config.version()) {
         case V1:
             return new DecoderV1(config, mapping, loader, base);
