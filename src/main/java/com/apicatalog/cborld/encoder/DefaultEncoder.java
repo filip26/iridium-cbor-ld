@@ -123,16 +123,12 @@ public class DefaultEncoder implements Encoder {
                 break;
 
             case V06:
-                baos.write(config.version().bytes()[0]);
-                baos.write(config.dictionary().code());
-                mapBuilder = builder.addMap();
-                break;
-
             case V05:
                 baos.write(config.version().bytes()[0]);
                 baos.write(config.dictionary().code());
                 mapBuilder = builder.addMap();
                 break;
+
             default:
                 throw new EncoderException(Code.Unsupported, "Unsupported CBOR-LD version " + config.version() + ".");
             }

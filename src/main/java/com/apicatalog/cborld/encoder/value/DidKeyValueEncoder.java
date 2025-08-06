@@ -17,8 +17,8 @@ import jakarta.json.JsonValue;
 
 public class DidKeyValueEncoder implements ValueEncoder {
 
-    public final static String PREFIX = "did:key:";
-    public final static int CODE = 1025;
+    public static final String PREFIX = "did:key:";
+    public static final int CODE = 1025;
 
     protected static MulticodecDecoder CODECS = MulticodecDecoder.getInstance(Tag.Key);
 

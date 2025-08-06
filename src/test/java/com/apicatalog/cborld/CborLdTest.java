@@ -63,7 +63,7 @@ class CborLdTest {
                     .asJsonObject().getJsonArray("http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#entries")
                     .stream()
                     .map(JsonValue::asJsonObject)
-                    .map(test -> CborLdTestCase.of(test, manifest, CborLdTestRunnerJunit.LOADER));
+                    .map(test -> CborLdTestCase.of(test, CborLdTestRunnerJunit.LOADER));
         }
     }
 }

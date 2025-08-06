@@ -12,6 +12,10 @@ import co.nstant.in.cbor.model.Map;
 
 public class CborComparison {
 
+    protected CborComparison() {
+        // protected
+    }
+    
     public static final boolean equals(byte[] value1, byte[] value2) throws CborException {
 
         if (value1 == null || value2 == null) {

@@ -37,13 +37,13 @@ class DecoderV1 extends AbstractDecoder {
             }
 
             if (dataItems.size() == 1) {
-                return decode(version, dataItems.iterator().next());
+                return decode(dataItems.iterator().next());
             }
 
             var arrayBuilder = Json.createArrayBuilder();
 
             for (var item : dataItems) {
-                arrayBuilder.add(decode(version, item));
+                arrayBuilder.add(decode(item));
             }
 
             return arrayBuilder.build();
@@ -53,7 +53,7 @@ class DecoderV1 extends AbstractDecoder {
         }
     }
 
-    public JsonValue decode(CborLdVersion version, DataItem dataItem) throws ContextError, DecoderException {
+    public JsonValue decode(DataItem dataItem) throws ContextError, DecoderException {
         if (dataItem == null || dataItem.getMajorType() != MajorType.ARRAY) {
             throw new DecoderException(Code.InvalidDocument, "The document is not CBOR-LD v1.0 document. Must start with array of two items, but is " + dataItem + ".");
         }

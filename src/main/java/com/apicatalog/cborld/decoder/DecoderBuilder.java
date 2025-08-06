@@ -1,7 +1,7 @@
 package com.apicatalog.cborld.decoder;
 
 import java.net.URI;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -58,7 +58,7 @@ public class DecoderBuilder {
             throw new IllegalArgumentException();
         }
 
-        final Map<CborLdVersion, DecoderConfigBuilder> decoders = new HashMap<>();
+        final Map<CborLdVersion, DecoderConfigBuilder> decoders = new EnumMap<>(CborLdVersion.class);
         for (CborLdVersion version : versions) {
             enable(decoders, version);
         }
@@ -79,7 +79,7 @@ public class DecoderBuilder {
             throw new IllegalArgumentException();
         }
 
-        final Map<CborLdVersion, DecoderConfigBuilder> decoders = new HashMap<>();
+        final Map<CborLdVersion, DecoderConfigBuilder> decoders = new EnumMap<>(CborLdVersion.class);
         for (DecoderConfig config : configs) {
             decoders.put(config.version(), DecoderConfigBuilder.of(config));
         }

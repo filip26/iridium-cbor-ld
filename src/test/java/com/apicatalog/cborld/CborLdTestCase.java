@@ -29,7 +29,7 @@ class CborLdTestCase {
 
     public String config;
 
-    public static CborLdTestCase of(JsonObject test, JsonObject manifest, DocumentLoader loader) {
+    public static CborLdTestCase of(JsonObject test, DocumentLoader loader) {
 
         final CborLdTestCase testCase = new CborLdTestCase();
 

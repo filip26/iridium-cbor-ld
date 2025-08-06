@@ -178,5 +178,5 @@ public class DocumentDictionaryBuilder {
             Dictionary contexts,
             Map<String, Dictionary> types,
             Dictionary uris) implements DocumentDictionary {
-    };
+    }
 }
