@@ -30,9 +30,6 @@ Iridium CBOR-LD is a Java implementation of [CBOR-LD 1.0](https://json-ld.github
 
 ### Encoding
 
-> Please note: Only JSON-LD documents containing referenced contexts can be compressed. This is because referenced contexts act as shared dictionaries that enable term mapping across documents. Compression is not possible with inline contexts, as their definitions are embedded directly in the document and cannot be reused or referenced externally.
-
-
 ```javascript
 // create an encoder builder initialized with default values
 var encoder = CborLd.createEncoder()
@@ -48,6 +45,9 @@ var encoder = CborLd.createEncoder()
 // encode a document
 byte[] encoded = encoder.encode(document);
 ```
+
+> Please note: Only JSON-LD documents containing referenced contexts can be compressed. This is because referenced contexts act as shared dictionaries that enable term mapping across documents. Compression is not possible with inline contexts, as their definitions are embedded directly in the document and cannot be reused or referenced externally.
+
 
 ### Decoding
 
