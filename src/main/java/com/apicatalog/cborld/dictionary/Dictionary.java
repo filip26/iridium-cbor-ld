@@ -2,7 +2,7 @@ package com.apicatalog.cborld.dictionary;
 
 import java.util.Map;
 
-public interface Dictionary extends Iterable<Map.Entry<Integer, String>> {
+public interface Dictionary extends Iterable<Map.Entry<String, Integer>> {
 
     Integer getCode(String value);
 

@@ -12,7 +12,7 @@ class KeywordDictionary implements Dictionary {
     public static final byte CUSTOM_OFFSET = 0x64; // 100 decimal
 
     protected static final Map<String, Integer> TERM_TO_CODE = new HashMap<>();
-    protected static final Map<Integer, String> CODE_TO_TERM = new HashMap<>();
+    protected static final String[] CODE_TO_TERM = new String[27];
 
     static {
         add("@context", (int) CONTEXT_CODE);
@@ -48,7 +48,7 @@ class KeywordDictionary implements Dictionary {
 
     static final void add(String term, Integer code) {
         TERM_TO_CODE.put(term, code);
-        CODE_TO_TERM.put(code, term);
+        CODE_TO_TERM[code / 2] = term;
     }
 
     @Override
@@ -58,11 +58,11 @@ class KeywordDictionary implements Dictionary {
 
     @Override
     public String getValue(Integer code) {
-        return CODE_TO_TERM.get(code);
+        return CODE_TO_TERM[code / 2 ];
     }
 
     @Override
-    public Iterator<Entry<Integer, String>> iterator() {
-        return CODE_TO_TERM.entrySet().iterator();
+    public Iterator<Entry<String, Integer>> iterator() {
+        return TERM_TO_CODE.entrySet().iterator();
     }
 }

@@ -92,35 +92,10 @@ public class DocumentDictionaryBuilder {
         return this;
     }
 
-    class DocumentDictionaryImpl implements DocumentDictionary {
-
-        protected final int code;
-        protected final Dictionary contexts;
-        protected final Map<String, Dictionary> types;
-        protected final Dictionary uris;
-
-        public DocumentDictionaryImpl(final int code, Dictionary contexts, Map<String, Dictionary> types, Dictionary uris) {
-            this.code = code;
-            this.contexts = contexts;
-            this.types = types;
-            this.uris = uris;
-        }
-
-        public int code() {
-            return code;
-        }
-
-        public Dictionary contexts() {
-            return contexts;
-        }
-
-        public Map<String, Dictionary> types() {
-            return types;
-        }
-
-        @Override
-        public Dictionary uris() {
-            return uris;
-        }
-    }
+    record DocumentDictionaryImpl(
+            int code,
+            Dictionary contexts,
+            Map<String, Dictionary> types,
+            Dictionary uris) implements DocumentDictionary {
+    };
 }

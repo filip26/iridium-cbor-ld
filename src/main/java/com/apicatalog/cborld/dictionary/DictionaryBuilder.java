@@ -1,7 +1,6 @@
 package com.apicatalog.cborld.dictionary;
 
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -15,8 +14,8 @@ public class DictionaryBuilder {
         this.reverse = new LinkedHashMap<>();
     }
 
-    protected DictionaryBuilder(DoubleIndexDictionary dictionary) {
-        this.reverse = new LinkedHashMap<>(dictionary.reverse);
+    protected DictionaryBuilder(BidirectionalDictionary dictionary) {
+        this.reverse = new LinkedHashMap<>(dictionary.reverse());
     }
 
     public static DictionaryBuilder create() {
@@ -24,8 +23,8 @@ public class DictionaryBuilder {
     }
 
     public static DictionaryBuilder of(Dictionary dictionary) {
-        if (dictionary instanceof DoubleIndexDictionary) {
-            return new DictionaryBuilder((DoubleIndexDictionary) dictionary);
+        if (dictionary instanceof BidirectionalDictionary) {
+            return new DictionaryBuilder((BidirectionalDictionary) dictionary);
         }
         return new DictionaryBuilder().merge(dictionary);
     }
@@ -46,36 +45,10 @@ public class DictionaryBuilder {
     }
 
     public Dictionary build() {
-        return new DoubleIndexDictionary(
+        return new BidirectionalDictionary(
                 reverse.entrySet()
                         .stream()
                         .collect(Collectors.toUnmodifiableMap(Entry::getValue, Entry::getKey)),
                 Collections.unmodifiableMap(reverse));
-    }
-
-    class DoubleIndexDictionary implements Dictionary {
-
-        final Map<String, Integer> index;
-        final Map<Integer, String> reverse;
-
-        DoubleIndexDictionary(Map<String, Integer> index, Map<Integer, String> reverse) {
-            this.index = index;
-            this.reverse = reverse;
-        }
-
-        @Override
-        public Integer getCode(String value) {
-            return index.get(value);
-        }
-
-        @Override
-        public String getValue(Integer code) {
-            return reverse.get(code);
-        }
-
-        @Override
-        public Iterator<Entry<Integer, String>> iterator() {
-            return reverse.entrySet().iterator();
-        }
     }
 }
