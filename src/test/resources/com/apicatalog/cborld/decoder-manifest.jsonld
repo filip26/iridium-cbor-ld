@@ -356,8 +356,8 @@
     {
         "@id": "#t0202",
         "@type": [
-        "PositiveEvaluationTest",
-        "DecoderTest"
+          "PositiveEvaluationTest",
+          "DecoderTest"
         ],
         "name": "1.0: URIs: Utopia Driver's License VCB",
         "input": "1.0/utopia-ext-12.cborld",
@@ -373,6 +373,16 @@
         "input": "1.0/utopia-ext-19.cborld",
         "expect": "1.0/utopia-ext-19.jsonld" 
     },
+    {
+        "@id": "#t0204",
+        "@type": [
+          "PositiveEvaluationTest",
+          "DecoderTest"
+        ],
+        "name": "1.0: Driver's License VCB",
+        "input": "1.0/utopia-d1-12.cborld",
+        "expect": "1.0/utopia-12.jsonld"
+    },    
     {
         "@id": "#t9000",
         "@type": [

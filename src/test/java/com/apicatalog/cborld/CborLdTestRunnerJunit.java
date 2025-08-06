@@ -49,6 +49,7 @@ class CborLdTestRunnerJunit {
     static final DocumentLoader LOADER;
 
     static final Encoder ENCODER_V1;
+    static final Encoder ENCODER_V1_NOCP;
     static final Encoder ENCODER_UTOPIA_V1;
     static final Encoder ENCODER_UTOPIA_EXT_V1;
     static final Encoder ENCODER_UTOPIA_V06;
@@ -75,6 +76,11 @@ class CborLdTestRunnerJunit {
         // several test instances reflecting various configurations
         ENCODER_V1 = CborLd.createEncoder()
                 .loader(LOADER)
+                .build();
+
+        ENCODER_V1_NOCP = CborLd.createEncoder()
+                .loader(LOADER)
+                .dictionary(null)
                 .build();
 
         ENCODER_UTOPIA_V1 = CborLd.createEncoder()
@@ -398,6 +404,9 @@ class CborLdTestRunnerJunit {
         }
         if ("v1utopiaext".equals(name)) {
             return ENCODER_UTOPIA_EXT_V1;
+        }
+        if ("v1nocp".equals(name)) {
+            return ENCODER_V1_NOCP;
         }
         return ENCODER_V1;
     }
