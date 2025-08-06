@@ -87,10 +87,9 @@ var dictionary = DocumentDictionaryBuilder
                             .set("ecdsa-sd-2023", 2)
                             .set("eddsa-rdfc-2022", 3)
                             .set("ecdsa-xi-2023", 4))
-            .uri("did:key:zDnaeWjKfs1ob9QcgasjYSPEMkwq31hmvSAWPVAgnrt1e9GKj", 1)
-            .uri("did:key:zDnaeWjKfs1ob9QcgasjYSPEMkwq31hmvSAWPVAgnrt1e9GKj#zDnaeWjKfs1ob9QcgasjYSPEMkwq31hmvSAWPVAgnrt1e9GKj", 2)            
-            .uri("https://sandbox.platform.veres.dev/statuses/z19rJ4oGrbFCqf3cNTVDHSbNd/status-lists", 3)
-            .uri("did:key:zDnaeZSD9XcuULaS8qmgDUa6TMg2QjF9xABnZK42awDH3BEzj", 4)
+            .uri("did:key:zD...", 1)
+            .uri("did:key:zD...", 2)            
+            .uri("https://example.../status-lists", 3)
             .build();
 
 // use with encoder
@@ -166,8 +165,6 @@ Java 17+
 </dependency>
 
 ```
-
-Iridium CBOR-LD for Android is distributed under a commercial license. [Contact](mailto:filip26@gmail.com)
 
 #### JSON-P Provider
 

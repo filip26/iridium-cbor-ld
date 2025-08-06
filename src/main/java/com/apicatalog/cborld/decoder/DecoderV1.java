@@ -35,7 +35,7 @@ class DecoderV1 extends AbstractDecoder {
             if (dataItems.isEmpty()) {
                 return null;
             }
-            
+
             if (dataItems.size() == 1) {
                 return decode(version, dataItems.iterator().next());
             }
@@ -71,7 +71,7 @@ class DecoderV1 extends AbstractDecoder {
         }
 
         var code = ((UnsignedInteger) registryId).getValue().intValueExact();
-        
+
         var dictionary = config.registry().get(code);
 
         if (code > 0 && dictionary == null) {
