@@ -1,7 +1,11 @@
 package com.apicatalog.cborld.decoder;
 
 import java.net.URI;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Spliterators;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import com.apicatalog.cborld.CborLdVersion;
 import com.apicatalog.cborld.context.ContextError;
@@ -92,31 +96,47 @@ public class DebugDecoder {
     }
 
     public JsonObject dump() {
-        var builder = Json.createObjectBuilder();
+        return Json.createObjectBuilder()
+                .add("version", version != null ? Json.createValue(version.name()) : JsonValue.NULL)
+                .add("dictionary", dictionary != null ? dump(dictionary) : JsonValue.NULL)
 
-        builder.add("version", version != null ? Json.createValue(version.name()) : JsonValue.NULL);
-        builder.add("dictionary", dictionary != null ? dump(dictionary) : JsonValue.NULL);
-        
-        if (mapping != null) {
-            builder.add("termMap", dump(mapping.termMap()));
-        }
-        
-        return builder.build();
+                .add("terms", mapping != null && mapping.termMap() != null
+                        ? dump(mapping.termMap())
+                        : JsonValue.NULL)
+                .build();
     }
 
     static final JsonObject dump(DocumentDictionary dictionary) {
-        var builder = Json.createObjectBuilder();
-        builder.add("code", dictionary.code());
-        builder.add("context", dump(dictionary.contexts()));
-        builder.add("uri", dump(dictionary.uris()));
-        
+        var builder = Json.createObjectBuilder()
+                .add("code", dictionary.code())
+                .add("context", dictionary.contexts() != null
+                        ? dump(dictionary.contexts())
+                        : JsonValue.NULL);
+
+        if (dictionary.types() != null) {
+            dictionary.types().entrySet().forEach(typeEntry -> builder.add(typeEntry.getKey(), dump(typeEntry.getValue())));
+        }
+        if (dictionary.uris() != null) {
+            builder.add("uri", dump(dictionary.uris()));
+        }
+
         return builder.build();
     }
-    
+
     static final JsonObject dump(Dictionary dictionary) {
         var builder = Json.createObjectBuilder();
-        dictionary.iterator().forEachRemaining(e -> builder.add(e.getKey(), e.getValue()));
-        return builder.build();        
+
+        toStream(dictionary.iterator())
+                .sorted((o1, o2) -> o1.getValue() - o2.getValue())
+                .forEach(e -> builder.add(e.getKey(), e.getValue()));
+
+        return builder.build();
+    }
+
+    static <T> Stream<T> toStream(Iterator<T> iterator) {
+        return StreamSupport.stream(
+                Spliterators.spliteratorUnknownSize(iterator, 0),
+                false);
     }
 
     class DebugMapping implements DecoderMappingProvider {
