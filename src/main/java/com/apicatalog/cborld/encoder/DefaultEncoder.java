@@ -74,12 +74,17 @@ public class DefaultEncoder implements Encoder {
 
             return compress(document, contexts);
 
-            // non compressable context
+            // non compressible context
         } catch (IllegalArgumentException e) {
             /* ignored, expected in a case of non compress-able documents */
         }
 
-        throw new EncoderException(Code.InvalidDocument, "Non compress-able document.");
+        throw new EncoderException(
+                Code.NonCompressible,
+                """
+                Non-compressible document. Only JSON-LD documents containing referenced contexts can be compressed. \
+                Referenced contexts serve as a shared dictionary, which is not possible with inline contexts.
+                """);
     }
 
     /**
@@ -101,11 +106,11 @@ public class DefaultEncoder implements Encoder {
         try {
             // 2.CBOR Tag - 0xD9
             baos.write(CborLd.LEADING_BYTE);
-            
+
             final CborBuilder builder = new CborBuilder();
-            
+
             MapBuilder<?> mapBuilder;
-            
+
             switch (config.version()) {
             case V1:
                 baos.write(CborLd.VERSION_1_BYTES[0]);
@@ -120,7 +125,7 @@ public class DefaultEncoder implements Encoder {
                 baos.write(config.dictionary().code());
                 mapBuilder = builder.addMap();
                 break;
-                
+
             case V05:
                 baos.write(CborLd.VERSION_05_BYTE);
                 baos.write(config.dictionary().code());
