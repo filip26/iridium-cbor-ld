@@ -6,12 +6,12 @@ import java.util.Map;
 
 import com.apicatalog.cborld.CborLdVersion;
 import com.apicatalog.cborld.context.ContextError;
-import com.apicatalog.cborld.decoder.DecoderError.Code;
+import com.apicatalog.cborld.decoder.DecoderException.Code;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 
 import jakarta.json.JsonValue;
 
-public class MultiDecoder implements Decoder {
+class MultiDecoder implements Decoder {
 
     protected final Map<CborLdVersion, Decoder> decoders;
     protected final DocumentLoader loader;
@@ -24,16 +24,16 @@ public class MultiDecoder implements Decoder {
     }
 
     @Override
-    public JsonValue decode(byte[] encoded) throws ContextError, DecoderError {
+    public JsonValue decode(byte[] encoded) throws ContextError, DecoderException {
         return decode(BaseDecoder.assertCborLd(encoded), encoded);
     }
 
     @Override
-    public JsonValue decode(CborLdVersion version, byte[] encoded) throws ContextError, DecoderError {
+    public JsonValue decode(CborLdVersion version, byte[] encoded) throws ContextError, DecoderException {
         final Decoder decoder = decoders.get(version);
 
         if (decoder == null) {
-            throw new DecoderError(Code.Unsupported, "The decoder is not configured to support version " + version + " but " + decoders.keySet() +  ".");
+            throw new DecoderException(Code.Unsupported, "The decoder is not configured to support version " + version + " but " + decoders.keySet() +  ".");
         }
 
         return decoder.decode(version, encoded);

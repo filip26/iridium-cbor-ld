@@ -16,7 +16,7 @@ public class TypeValueEncoder implements ValueEncoder {
     public DataItem encode(Mapping mapping, JsonValue jsonValue, String term, Collection<String> types) {
 
         if (types != null && types.contains(Keywords.TYPE)) {
-            final Integer code = mapping.terms().getCode(((JsonString) jsonValue).getString());
+            final Integer code = mapping.termMap().getCode(((JsonString) jsonValue).getString());
 
             if (code != null) {
                 return new UnsignedInteger(code);

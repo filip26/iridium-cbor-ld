@@ -1,6 +1,6 @@
 package com.apicatalog.cborld.config;
 
-public enum DictionaryAlgorithm {
+public enum ContextTermsAlgorithm {
 
     ProcessingOrderAppliedContexts,
 

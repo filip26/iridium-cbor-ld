@@ -2,7 +2,7 @@ package com.apicatalog.cborld.decoder.value;
 
 import java.util.Collection;
 
-import com.apicatalog.cborld.decoder.DecoderError;
+import com.apicatalog.cborld.decoder.DecoderException;
 import com.apicatalog.cborld.encoder.value.MultibaseValueEncoder;
 import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.multibase.MultibaseDecoder;
@@ -18,7 +18,7 @@ public class MultibaseValueDecoder implements ValueDecoder {
     static final MultibaseDecoder MULTIBASE = MultibaseDecoder.getInstance();
 
     @Override
-    public JsonValue decode(Mapping mapping, DataItem value, String term, Collection<String> types) throws DecoderError {
+    public JsonValue decode(Mapping mapping, DataItem value, String term, Collection<String> types) throws DecoderException {
 
         if (types != null && types.contains(MultibaseValueEncoder.TYPE)
                 && MajorType.BYTE_STRING.equals(value.getMajorType())) {

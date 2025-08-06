@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
-import com.apicatalog.cborld.decoder.DecoderError;
+import com.apicatalog.cborld.decoder.DecoderException;
 import com.apicatalog.cborld.decoder.value.ValueDecoder;
 import com.apicatalog.cborld.dictionary.CodeTermMap;
 import com.apicatalog.cborld.dictionary.Dictionary;
@@ -24,17 +24,17 @@ import jakarta.json.JsonValue;
 
 class DecoderContextMapping implements Mapping {
 
-    private final DocumentDictionary custom;
-    private final CodeTermMap dictionary;
-    private final TypeKeyNameMapper typeKeyNameMap;
-    private TypeMap typeMap;
+    final DocumentDictionary dictionary;
+    final CodeTermMap termMap;
+    final TypeKeyNameMapper typeKeyNameMap;
+    TypeMap typeMap;
 
     private final Collection<ValueDecoder> valueDecoders;
 
-    DecoderContextMapping(DocumentDictionary custom, Collection<ValueDecoder> valueDecoders) {
-        this.custom = custom;
+    DecoderContextMapping(DocumentDictionary dictionary, Collection<ValueDecoder> valueDecoders) {
+        this.dictionary = dictionary;
         this.valueDecoders = valueDecoders;
-        this.dictionary = CodeTermMap.create();
+        this.termMap = CodeTermMap.create();
         this.typeKeyNameMap = new DefaultTypeKeyNameMapper();
         this.typeMap = null;
     }
@@ -58,7 +58,7 @@ class DecoderContextMapping implements Mapping {
                     return new UnicodeString(((JsonString) decoded).getString());
                 }
 
-            } catch (DecoderError e) {
+            } catch (DecoderException e) {
                 /* ignored */
             }
         }
@@ -68,7 +68,7 @@ class DecoderContextMapping implements Mapping {
 
     final DataItem encodeKey(String key) {
 
-        final Integer encodedProperty = dictionary.getCode(key);
+        final Integer encodedProperty = termMap.getCode(key);
 
         if (encodedProperty != null) {
             return new UnsignedInteger(encodedProperty);
@@ -97,18 +97,18 @@ class DecoderContextMapping implements Mapping {
     final String decodeKey(final BigInteger key) {
 
         if (key.mod(BigInteger.ONE.add(BigInteger.ONE)).equals(BigInteger.ZERO)) {
-            String result = dictionary.getValue(key.intValueExact());
+            String result = termMap.getValue(key.intValueExact());
             return result != null ? result : key.toString();
         }
 
-        String result = dictionary.getValue(key.subtract(BigInteger.ONE).intValueExact());
+        String result = termMap.getValue(key.subtract(BigInteger.ONE).intValueExact());
 
         return result != null ? result : key.toString();
     }
 
     @Override
-    public Dictionary terms() {
-        return dictionary;
+    public Dictionary termMap() {
+        return termMap;
     }
 
     @Override
@@ -121,7 +121,7 @@ class DecoderContextMapping implements Mapping {
     }
 
     public void add(Collection<String> keySet) {
-        dictionary.add(keySet);
+        termMap.add(keySet);
     }
 
     public TypeKeyNameMapper typeKeyNameMap() {
@@ -129,17 +129,7 @@ class DecoderContextMapping implements Mapping {
     }
 
     @Override
-    public Dictionary contexts() {
-        return custom != null ? custom.contexts() : null;
-    }
-
-    @Override
-    public Dictionary type(String type) {
-        return custom != null && custom.types() != null ? custom.types().get(type) : null;
-    }
-
-    @Override
-    public Dictionary uris() {
-        return custom != null ? custom.uris() : null;
+    public DocumentDictionary dictionary() {
+        return dictionary;
     }
 }

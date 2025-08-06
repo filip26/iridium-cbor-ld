@@ -433,6 +433,32 @@
       "option": {
         "config": "v1utopiaext"
       }
-    }    
+    },
+    {
+      "@id": "#t9000",
+      "@type": [
+        "PositiveEvaluationTest",
+        "DebugEncoderTest"
+      ],
+      "name": "Debug: 1.0: Utopia Driver's License VCB",
+      "input": "1.0/utopia-12.jsonld",
+      "expect": "1.0/utopia-12-debug.json",
+      "option": {
+        "config": "v1utopia"
+      }
+    },
+    {
+      "@id": "#t9001",
+      "@type": [
+        "PositiveEvaluationTest",
+        "DebugEncoderTest"
+      ],
+      "name": "Debug: 1.0: URIs: Utopia EAD VCB",
+      "input": "1.0/utopia-ext-19.jsonld",
+      "expect": "1.0/utopia-ext-19-debug.json",
+      "option": {
+        "config": "v1utopiaext"
+      }
+    }
   ]
 }

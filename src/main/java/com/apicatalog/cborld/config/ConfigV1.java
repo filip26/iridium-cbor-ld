@@ -37,7 +37,7 @@ import com.apicatalog.cborld.mapping.EncoderMappingProvider;
 import com.apicatalog.cborld.registry.DefaultDocumentDictionary;
 import com.apicatalog.cborld.registry.DocumentDictionary;
 
-public class ConfigV1 extends BaseConfig implements EncoderConfig, DecoderConfig {
+public class ConfigV1 implements EncoderConfig, DecoderConfig {
 
     public static final ConfigV1 INSTANCE = new ConfigV1();
 

@@ -29,7 +29,9 @@ public class DocumentDictionaryBuilder {
     public static DocumentDictionaryBuilder of(DocumentDictionary dictionary) {
         return new DocumentDictionaryBuilder(
                 dictionary.code(),
-                DictionaryBuilder.of(dictionary.contexts()),
+                dictionary.contexts() != null
+                        ? DictionaryBuilder.of(dictionary.contexts())
+                        : DictionaryBuilder.create(),
                 dictionary.types()
                         .entrySet()
                         .stream()
@@ -37,7 +39,9 @@ public class DocumentDictionaryBuilder {
                         .collect(Collectors.toMap(
                                 Map.Entry::getKey,
                                 Map.Entry::getValue)),
-                DictionaryBuilder.of(dictionary.uris()));
+                dictionary.uris() != null
+                        ? DictionaryBuilder.of(dictionary.uris())
+                        : DictionaryBuilder.create());
     }
 
     public DocumentDictionary build() {
@@ -88,36 +92,10 @@ public class DocumentDictionaryBuilder {
         return this;
     }
 
-    
-    class DocumentDictionaryImpl implements DocumentDictionary {
-
-        protected final int code;
-        protected final Dictionary contexts;
-        protected final Map<String, Dictionary> types;
-        protected final Dictionary uris;
-
-        public DocumentDictionaryImpl(final int code, Dictionary contexts, Map<String, Dictionary> types, Dictionary uris) {
-            this.code = code;
-            this.contexts = contexts;
-            this.types = types;
-            this.uris = uris;
-        }
-
-        public int code() {
-            return code;
-        }
-
-        public Dictionary contexts() {
-            return contexts;
-        }
-
-        public Map<String, Dictionary> types() {
-            return types;
-        }
-
-        @Override
-        public Dictionary uris() {
-            return uris;
-        }
-    }
+    record DocumentDictionaryImpl(
+            int code,
+            Dictionary contexts,
+            Map<String, Dictionary> types,
+            Dictionary uris) implements DocumentDictionary {
+    };
 }

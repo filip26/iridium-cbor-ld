@@ -45,9 +45,9 @@
         "NegativeEvaluationTest",
         "DecoderTest"
       ],
-      "name": "0.5: unknown compression flag",
+      "name": "0.5: unknown dictionary",
       "input": "decoder/0.5/0004-in.cborld",
-      "expectErrorCode": "UnknownCompression"
+      "expectErrorCode": "Unsupported"
     },
     {
       "@id": "#t0005",
@@ -364,7 +364,7 @@
         "expect": "1.0/utopia-ext-12.jsonld"
     },
     {
-        "@id": "#t0201",
+        "@id": "#t0203",
         "@type": [
           "PositiveEvaluationTest",
           "DecoderTest"
@@ -372,6 +372,26 @@
         "name": "1.0: URIs: Utopia EAD VCB",
         "input": "1.0/utopia-ext-19.cborld",
         "expect": "1.0/utopia-ext-19.jsonld" 
+    },
+    {
+        "@id": "#t9000",
+        "@type": [
+          "PositiveEvaluationTest",
+          "DebugDecoderTest"
+        ],
+        "name": "Debug: 1.0: Utopia Driver's License VCB",
+        "input": "1.0/utopia-12.cborld",
+        "expect": "1.0/utopia-12-debug.json"
+    },
+    {
+        "@id": "#t9001",
+        "@type": [
+          "PositiveEvaluationTest",
+          "DebugDecoderTest"
+        ],
+        "name": "Debug: 1.0: URIs: Utopia EAD VCB",
+        "input": "1.0/utopia-ext-19.cborld",
+        "expect": "1.0/utopia-ext-19-debug.json" 
     }
   ]
 }

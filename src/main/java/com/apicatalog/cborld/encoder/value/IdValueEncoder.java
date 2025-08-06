@@ -14,14 +14,17 @@ public class IdValueEncoder implements ValueEncoder {
 
     @Override
     public DataItem encode(Mapping mapping, JsonValue jsonValue, String term, Collection<String> types) {
-        if (types != null && types.contains(Keywords.ID)) {
+        if (types != null
+                && types.contains(Keywords.ID)
+                && mapping.dictionary() != null
+                && mapping.dictionary().uris() != null) {
 
             final String id = ((JsonString) jsonValue).getString();
 
-            Integer code = mapping.uris().getCode(id);
+            Integer code = mapping.dictionary().uris().getCode(id);
 
             if (code == null) {
-                code = mapping.terms().getCode(id);
+                code = mapping.termMap().getCode(id);
             }
 
             if (code != null) {

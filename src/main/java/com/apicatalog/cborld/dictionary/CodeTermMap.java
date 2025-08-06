@@ -15,12 +15,12 @@ public class CodeTermMap implements Dictionary {
 
     int lastCustomIndex;
 
-    protected CodeTermMap(Map<Integer, String> index, int lastCustomIndex) {
-        this.index = index;
-        this.reverse = index
+    protected CodeTermMap(Map<String, Integer> reverse, int lastCustomIndex) {
+        this.index = reverse
                 .entrySet()
                 .stream()
                 .collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
+        this.reverse = reverse;
 
         this.lastCustomIndex = lastCustomIndex;
     }
@@ -28,7 +28,7 @@ public class CodeTermMap implements Dictionary {
     public static CodeTermMap of(Collection<Collection<String>> contextKeys) {
 
         final CodeTermMap map = new CodeTermMap(
-                new LinkedHashMap<>(KeywordDictionary.CODE_TO_TERM),
+                new LinkedHashMap<>(KeywordDictionary.TERM_TO_CODE),
                 KeywordDictionary.CUSTOM_OFFSET);
         contextKeys
                 .stream()
@@ -40,12 +40,9 @@ public class CodeTermMap implements Dictionary {
     }
 
     public static CodeTermMap create() {
-
-        final CodeTermMap map = new CodeTermMap(
-                new LinkedHashMap<>(KeywordDictionary.CODE_TO_TERM),
+        return new CodeTermMap(
+                new LinkedHashMap<>(KeywordDictionary.TERM_TO_CODE),
                 KeywordDictionary.CUSTOM_OFFSET);
-
-        return map;
     }
 
     public void add(Collection<String> keys) {
@@ -74,7 +71,7 @@ public class CodeTermMap implements Dictionary {
     }
 
     @Override
-    public Iterator<Entry<Integer, String>> iterator() {
-        return index.entrySet().iterator();
+    public Iterator<Entry<String, Integer>> iterator() {
+        return reverse.entrySet().iterator();
     }
 }

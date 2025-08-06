@@ -6,7 +6,7 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 
-import com.apicatalog.cborld.decoder.DecoderError;
+import com.apicatalog.cborld.decoder.DecoderException;
 import com.apicatalog.cborld.mapping.Mapping;
 
 import co.nstant.in.cbor.model.DataItem;
@@ -20,7 +20,7 @@ public class XsdDateValueDecoder implements ValueDecoder {
     public static final String DATE = "http://www.w3.org/2001/XMLSchema#date";
 
     @Override
-    public JsonValue decode(Mapping mapping, DataItem value, String term, Collection<String> types) throws DecoderError {
+    public JsonValue decode(Mapping mapping, DataItem value, String term, Collection<String> types) throws DecoderException {
         if (types != null
                 && types.contains(DATE)
                 && MajorType.UNSIGNED_INTEGER.equals(value.getMajorType())) {

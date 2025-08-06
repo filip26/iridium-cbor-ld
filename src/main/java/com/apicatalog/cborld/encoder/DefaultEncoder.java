@@ -9,8 +9,9 @@ import java.util.Map.Entry;
 
 import com.apicatalog.cborld.CborLd;
 import com.apicatalog.cborld.context.ContextError;
-import com.apicatalog.cborld.encoder.EncoderError.Code;
+import com.apicatalog.cborld.encoder.EncoderException.Code;
 import com.apicatalog.cborld.encoder.value.ValueEncoder;
+import com.apicatalog.cborld.mapping.EncoderMappingProvider;
 import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.cborld.mapping.TypeMap;
 import com.apicatalog.jsonld.JsonLdError;
@@ -36,12 +37,14 @@ import jakarta.json.JsonValue;
 
 public class DefaultEncoder implements Encoder {
 
-    protected final EncoderConfig config;
-    protected DocumentLoader loader;
-    protected URI base;
+    final EncoderConfig config;
+    final EncoderMappingProvider mappingProvider;
+    final DocumentLoader loader;
+    final URI base;
 
-    protected DefaultEncoder(EncoderConfig config, DocumentLoader loader, URI base) {
+    public DefaultEncoder(EncoderConfig config, EncoderMappingProvider mappingProvider, DocumentLoader loader, URI base) {
         this.config = config;
+        this.mappingProvider = mappingProvider;
         this.loader = loader;
         this.base = base;
     }
@@ -52,10 +55,10 @@ public class DefaultEncoder implements Encoder {
      * @param document JSON-LD document to encode
      * @return a byte array representing the encoded CBOR-LD document.
      * 
-     * @throws EncoderError
+     * @throws EncoderException
      * @throws ContextError
      */
-    public final byte[] encode(JsonObject document) throws EncoderError, ContextError {
+    public final byte[] encode(JsonObject document) throws EncoderException, ContextError {
 
         if (document == null) {
             throw new IllegalArgumentException("The 'document' parameter must not be null.");
@@ -66,7 +69,7 @@ public class DefaultEncoder implements Encoder {
             final Collection<String> contexts = EncoderContext.get(document);
 
             if (contexts.isEmpty()) { // is not JSON-LD document
-                throw new EncoderError(Code.InvalidDocument, "Not a valid JSON-LD document in a compacted form. @context declaration is missing");
+                throw new EncoderException(Code.InvalidDocument, "Not a valid JSON-LD document in a compacted form. @context declaration is missing");
             }
 
             return compress(document, contexts);
@@ -76,7 +79,7 @@ public class DefaultEncoder implements Encoder {
             /* ignored, expected in a case of non compress-able documents */
         }
 
-        throw new EncoderError(Code.InvalidDocument, "Non compress-able document.");
+        throw new EncoderException(Code.InvalidDocument, "Non compress-able document.");
     }
 
     /**
@@ -89,9 +92,9 @@ public class DefaultEncoder implements Encoder {
      *
      * @throws IOException
      * @throws ContextError
-     * @throws EncoderError
+     * @throws EncoderException
      */
-    final byte[] compress(final JsonObject document, Collection<String> contextUrls) throws ContextError, EncoderError {
+    final byte[] compress(final JsonObject document, Collection<String> contextUrls) throws ContextError, EncoderException {
 
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
@@ -105,8 +108,8 @@ public class DefaultEncoder implements Encoder {
             
             switch (config.version()) {
             case V1:
-                baos.write(CborLd.VERSION_10_BYTES[0]);
-                baos.write(CborLd.VERSION_10_BYTES[1]);
+                baos.write(CborLd.VERSION_1_BYTES[0]);
+                baos.write(CborLd.VERSION_1_BYTES[1]);
                 mapBuilder = builder.addArray()
                         .add(config.dictionary().code())
                         .addMap();
@@ -124,10 +127,10 @@ public class DefaultEncoder implements Encoder {
                 mapBuilder = builder.addMap();
                 break;
             default:
-                throw new EncoderError(Code.Unsupported, "Unsupported CBOR-LD version " + config.version() + ".");
+                throw new EncoderException(Code.Unsupported, "Unsupported CBOR-LD version " + config.version() + ".");
             }
 
-            final Mapping mapping = config.encoderMapping().getEncoderMapping(document, this);
+            final Mapping mapping = mappingProvider.getEncoderMapping(document, this);
 
             encode(document, mapBuilder, mapping.typeMap(), mapping).end();
 
@@ -136,14 +139,14 @@ public class DefaultEncoder implements Encoder {
             return baos.toByteArray();
 
         } catch (CborException e) {
-            throw new EncoderError(Code.InvalidDocument, e);
+            throw new EncoderException(Code.InvalidDocument, e);
 
         } catch (JsonLdError e) {
-            throw new EncoderError(Code.Internal, e);
+            throw new EncoderException(Code.Internal, e);
         }
     }
 
-    final MapBuilder<?> encode(final JsonObject object, final MapBuilder<?> builder, TypeMap typeMapping, Mapping mapping) throws EncoderError, JsonLdError {
+    final MapBuilder<?> encode(final JsonObject object, final MapBuilder<?> builder, TypeMap typeMapping, Mapping mapping) throws EncoderException, JsonLdError {
 
         if (object.isEmpty()) {
             return builder;
@@ -154,7 +157,7 @@ public class DefaultEncoder implements Encoder {
         for (final Entry<String, JsonValue> entry : object.entrySet()) {
             final String property = entry.getKey();
 
-            final Integer encodedProperty = mapping.terms().getCode(property);
+            final Integer encodedProperty = mapping.termMap().getCode(property);
 
             if (JsonUtils.isArray(entry.getValue())) {
 
@@ -211,7 +214,7 @@ public class DefaultEncoder implements Encoder {
         return flow;
     }
 
-    final DataItem encode(final JsonValue jsonValue, final String term, TypeMap typeMapping, Mapping mapping) throws EncoderError {
+    final DataItem encode(final JsonValue jsonValue, final String term, TypeMap typeMapping, Mapping mapping) throws EncoderException {
 
         if (JsonUtils.isNull(jsonValue)) {
             return SimpleValue.NULL;
@@ -265,7 +268,7 @@ public class DefaultEncoder implements Encoder {
         throw new IllegalStateException();
     }
 
-    final ArrayBuilder<?> encode(final JsonArray jsonArray, final ArrayBuilder<?> builder, String property, TypeMap typeMapping, Mapping mapping) throws EncoderError, JsonLdError {
+    final ArrayBuilder<?> encode(final JsonArray jsonArray, final ArrayBuilder<?> builder, String property, TypeMap typeMapping, Mapping mapping) throws EncoderException, JsonLdError {
 
         if (jsonArray.isEmpty()) {
             return builder;

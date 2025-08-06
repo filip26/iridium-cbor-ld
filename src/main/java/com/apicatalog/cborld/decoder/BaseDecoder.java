@@ -6,13 +6,15 @@ import java.net.URI;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 import com.apicatalog.cborld.CborLd;
 import com.apicatalog.cborld.CborLdVersion;
 import com.apicatalog.cborld.context.ContextError;
-import com.apicatalog.cborld.decoder.DecoderError.Code;
+import com.apicatalog.cborld.decoder.DecoderException.Code;
 import com.apicatalog.cborld.decoder.value.ValueDecoder;
 import com.apicatalog.cborld.hex.Hex;
+import com.apicatalog.cborld.mapping.DecoderMappingProvider;
 import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.cborld.mapping.TypeMap;
 import com.apicatalog.cborld.registry.DocumentDictionary;
@@ -42,39 +44,42 @@ import jakarta.json.JsonValue;
 
 public abstract class BaseDecoder implements Decoder {
 
-    protected final DecoderConfig config;
+    static final byte UNCOMPRESSED_BYTE = 0x00;
 
-    protected DocumentLoader loader;
-    protected boolean bundledContexts;
-    protected URI base;
+    static final byte COMPRESSED_BYTE = 0x01;
 
-    protected BaseDecoder(DecoderConfig config, DocumentLoader loader, URI base) {
+    final DecoderMappingProvider mappingProvider;
+    
+    final DecoderConfig config;
+    final DocumentLoader loader;
+    final URI base;
+
+    protected BaseDecoder(DecoderConfig config, DecoderMappingProvider mappingProvider, DocumentLoader loader, URI base) {
         this.config = config;
+        this.mappingProvider = mappingProvider;
         this.loader = loader;
         this.base = base;
     }
 
     @Override
-    public JsonValue decode(byte[] encoded) throws ContextError, DecoderError {
+    public JsonValue decode(byte[] encoded) throws ContextError, DecoderException {
         final CborLdVersion version = BaseDecoder.assertCborLd(encoded);
 
         if (version != config.version()) {
-            throw new DecoderError(Code.Unsupported, "The decoder does support " + version + " but " + config.version() + " .");
+            throw new DecoderException(Code.Unsupported, "The decoder does support " + version + " but " + config.version() + " .");
 
         }
         return decode(version, encoded);
     }
 
-    protected final JsonValue decode(final DataItem data, final DocumentDictionary custom) throws DecoderError, ContextError {
-        final Mapping mapping = config.decoderMapping().getDecoderMapping(data, custom, this);
+    protected final JsonValue decode(final DocumentDictionary dictionary, final DataItem data) throws DecoderException, ContextError {
+        final Mapping mapping = mappingProvider.getDecoderMapping(data, dictionary, this);
         return decodeData(data, null, mapping.typeMap(), mapping);
     }
 
-    protected final JsonValue decodeData(final DataItem data, final String term, final TypeMap def, Mapping mapping) throws DecoderError, ContextError {
+    protected final JsonValue decodeData(final DataItem data, final String term, final TypeMap def, Mapping mapping) throws DecoderException, ContextError {
 
-        if (data == null) {
-            throw new IllegalArgumentException("The data parameter must not be null.");
-        }
+        Objects.requireNonNull(data);
 
         switch (data.getMajorType()) {
         case MAP:
@@ -98,7 +103,7 @@ public abstract class BaseDecoder implements Decoder {
         case BYTE_STRING:
             JsonValue decoded = decodeValue(data, term, def, mapping);
             if (decoded == null) {
-                throw new DecoderError(Code.InvalidDocument, "Unknown encoded value [" + data.getMajorType() + "] at key [" + term + "].");
+                throw new DecoderException(Code.InvalidDocument, "Unknown encoded value [" + data.getMajorType() + "] at key [" + term + "].");
             }
 
             return decoded;
@@ -108,11 +113,9 @@ public abstract class BaseDecoder implements Decoder {
         }
     }
 
-    protected final JsonObject decodeMap(final co.nstant.in.cbor.model.Map map, final TypeMap def, final Mapping mapping) throws DecoderError, ContextError {
+    protected final JsonObject decodeMap(final co.nstant.in.cbor.model.Map map, final TypeMap def, final Mapping mapping) throws DecoderException, ContextError {
 
-        if (map == null) {
-            throw new IllegalArgumentException("The map parameter must not be null.");
-        }
+        Objects.requireNonNull(map);
 
         if (map.getKeys().isEmpty()) {
             return JsonValue.EMPTY_JSON_OBJECT;
@@ -154,13 +157,11 @@ public abstract class BaseDecoder implements Decoder {
 
     protected static final String decodeKey(final DataItem data, final Mapping mapping) {
 
-        if (data == null) {
-            throw new IllegalArgumentException("The data parameter must not be null.");
-        }
+        Objects.requireNonNull(data);
 
         switch (data.getMajorType()) {
         case UNICODE_STRING:
-            return decodeKey(((UnicodeString) data).getString());
+            return ((UnicodeString) data).getString();
 
         case UNSIGNED_INTEGER:
             return decodeKey(((UnsignedInteger) data).getValue(), mapping);
@@ -170,24 +171,18 @@ public abstract class BaseDecoder implements Decoder {
         }
     }
 
-    protected static final String decodeKey(final String key) {
-        return key;
-    }
-
     protected static final String decodeKey(final BigInteger key, final Mapping mapping) {
 
         final String result = key.mod(BigInteger.ONE.add(BigInteger.ONE)).equals(BigInteger.ZERO)
-                ? mapping.terms().getValue(key.intValueExact())
-                : mapping.terms().getValue(key.subtract(BigInteger.ONE).intValueExact());
+                ? mapping.termMap().getValue(key.intValueExact())
+                : mapping.termMap().getValue(key.subtract(BigInteger.ONE).intValueExact());
 
         return result != null ? result : key.toString();
     }
 
-    protected final JsonArray decodeArray(final Collection<DataItem> items, final String key, final TypeMap def, final Mapping mapping) throws DecoderError, ContextError {
+    protected final JsonArray decodeArray(final Collection<DataItem> items, final String key, final TypeMap def, final Mapping mapping) throws DecoderException, ContextError {
 
-        if (items == null) {
-            throw new IllegalArgumentException("The items parameter must not be null.");
-        }
+        Objects.requireNonNull(items);
 
         if (items.isEmpty()) {
             return JsonValue.EMPTY_JSON_ARRAY;
@@ -203,18 +198,13 @@ public abstract class BaseDecoder implements Decoder {
     }
 
     protected static final JsonString decodeString(final UnicodeString string) {
-
-        if (string == null) {
-            throw new IllegalArgumentException("The string parameter must not be null.");
-        }
+        Objects.requireNonNull(string);
         return Json.createValue(string.getString());
     }
 
-    protected final JsonValue decodeInteger(final DataItem number, final String key, final TypeMap def, final Mapping mapping) throws DecoderError {
+    protected final JsonValue decodeInteger(final DataItem number, final String key, final TypeMap def, final Mapping mapping) throws DecoderException {
 
-        if (number == null) {
-            throw new IllegalArgumentException("The number parameter must not be null.");
-        }
+        Objects.requireNonNull(number);
 
         JsonValue decoded = decodeValue(number, key, def, mapping);
 
@@ -226,7 +216,7 @@ public abstract class BaseDecoder implements Decoder {
         return Json.createValue(((UnsignedInteger) number).getValue());
     }
 
-    protected final JsonValue decodeValue(final DataItem value, final String term, final TypeMap def, final Mapping mapping) throws DecoderError {
+    protected final JsonValue decodeValue(final DataItem value, final String term, final TypeMap def, final Mapping mapping) throws DecoderException {
         if (def != null) {
             final Collection<String> types = def.getType(term);
 
@@ -280,18 +270,18 @@ public abstract class BaseDecoder implements Decoder {
         throw new IllegalStateException("Unsupported CBOR simple value type [" + value.getSimpleValueType() + "].");
     }
 
-    protected static final CborLdVersion assertCborLd(byte[] encoded) throws DecoderError {
+    public static final CborLdVersion assertCborLd(byte[] encoded) throws DecoderException {
         if (encoded == null) {
             throw new IllegalArgumentException("The encoded document paramenter must not be null but byte array.");
         }
 
         if (encoded.length < 4) {
-            throw new DecoderError(Code.InvalidDocument,
+            throw new DecoderException(Code.InvalidDocument,
                     "The encoded document must be at least 4 bytes but is [" + encoded.length + "].");
         }
 
         if (encoded[0] != CborLd.LEADING_BYTE) {
-            throw new DecoderError(Code.InvalidDocument, "The document is not CBOR-LD document. Must start with "
+            throw new DecoderException(Code.InvalidDocument, "The document is not CBOR-LD document. Must start with "
                     + Hex.toString(CborLd.LEADING_BYTE)
                     + ", but is "
                     + Hex.toString(encoded[0])
@@ -301,13 +291,13 @@ public abstract class BaseDecoder implements Decoder {
         final CborLdVersion version = CborLdVersion.of(encoded, 1); // skip leading byte
 
         if (version == null) {
-            throw new DecoderError(Code.InvalidDocument, "The document is not CBOR-LD document. A tag must start with: "
+            throw new DecoderException(Code.InvalidDocument, "The document is not CBOR-LD document. A tag must start with: "
                     + "v1.0 = "
-                    + Hex.toString(CborLd.VERSION_10_BYTES)
+                    + Hex.toString(CborLd.VERSION_1_BYTES)
                     + ", or v0.6 = "
                     + Hex.toString(new byte[] { CborLd.VERSION_06_BYTE })
                     + ", or v0.5 = "
-                    + Hex.toString(new byte[] { CborLd.VERSION_05_BYTE, CborLd.COMPRESSED_BYTE })
+                    + Hex.toString(new byte[] { CborLd.VERSION_05_BYTE, COMPRESSED_BYTE })
                     + ", but is "
                     + Hex.toString(Arrays.copyOfRange(encoded, 1, 3))
                     + ".");
@@ -317,7 +307,7 @@ public abstract class BaseDecoder implements Decoder {
     }
 
     // legacy support
-    protected JsonValue decode(byte[] encoded, final DocumentDictionary provider) throws ContextError, DecoderError {
+    protected final JsonValue decode(final DocumentDictionary dictionary, byte[] encoded) throws ContextError, DecoderException {
         try {
             final ByteArrayInputStream bais = new ByteArrayInputStream(encoded);
             final List<DataItem> dataItems = new CborDecoder(bais).decode();
@@ -329,20 +319,20 @@ public abstract class BaseDecoder implements Decoder {
 
             // only one object
             if (dataItems.size() == 1) {
-                return decode(dataItems.iterator().next(), provider);
+                return decode(dictionary, dataItems.iterator().next());
             }
 
             // decode as an array of objects
             final JsonArrayBuilder builder = Json.createArrayBuilder();
 
             for (final DataItem item : dataItems) {
-                builder.add(decode(item, provider));
+                builder.add(decode(dictionary, item));
             }
 
             return builder.build();
 
         } catch (final CborException e) {
-            throw new DecoderError(Code.InvalidDocument, e);
+            throw new DecoderException(Code.InvalidDocument, e);
         }
     }
 

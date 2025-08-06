@@ -13,7 +13,7 @@ import jakarta.json.JsonValue;
  * <p>
  * Implementations should validate the document format version to ensure
  * compatibility with the decoder. If the document uses an unsupported version,
- * a {@link DecoderError} should be thrown.
+ * a {@link DecoderException} should be thrown.
  */
 public interface Decoder {
 
@@ -25,10 +25,10 @@ public interface Decoder {
      * @param encoded the CBOR-LD encoded document as a byte array
      * @return the decoded JSON-LD document as a {@link JsonValue}
      * @throws ContextError if a context-related error occurs during decoding
-     * @throws DecoderError if the version is unsupported or if a decoding error
+     * @throws DecoderException if the version is unsupported or if a decoding error
      *                      occurs
      */
-    JsonValue decode(byte[] encoded) throws ContextError, DecoderError;
+    JsonValue decode(byte[] encoded) throws ContextError, DecoderException;
 
     /**
      * Decodes a CBOR-LD document into a JSON-LD document using the specified
@@ -41,9 +41,9 @@ public interface Decoder {
      * @param encoded the CBOR-LD encoded document as a byte array
      * @return the decoded JSON-LD document as a {@link JsonValue}
      * @throws ContextError if a context-related error occurs during decoding
-     * @throws DecoderError if a decoding error occurs
+     * @throws DecoderException if a decoding error occurs
      */
-    JsonValue decode(CborLdVersion version, byte[] encoded) throws ContextError, DecoderError;
+    JsonValue decode(CborLdVersion version, byte[] encoded) throws ContextError, DecoderException;
 
     DecoderConfig config();
 

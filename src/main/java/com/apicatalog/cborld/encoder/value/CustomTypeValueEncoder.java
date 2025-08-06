@@ -1,9 +1,10 @@
 package com.apicatalog.cborld.encoder.value;
 
 import java.util.Collection;
+import java.util.Map;
 
 import com.apicatalog.cborld.dictionary.Dictionary;
-import com.apicatalog.cborld.encoder.EncoderError;
+import com.apicatalog.cborld.encoder.EncoderException;
 import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.jsonld.json.JsonUtils;
 
@@ -15,14 +16,18 @@ import jakarta.json.JsonValue;
 public class CustomTypeValueEncoder implements ValueEncoder {
 
     @Override
-    public DataItem encode(Mapping mapping, JsonValue jsonValue, String term, Collection<String> types) throws EncoderError {
-        if (types != null && JsonUtils.isString(jsonValue)) {
+    public DataItem encode(Mapping mapping, JsonValue jsonValue, String term, Collection<String> types) throws EncoderException {
+        if (types != null
+                && mapping.dictionary() != null
+                && mapping.dictionary().types() != null
+                && JsonUtils.isString(jsonValue)) {
 
+            final Map<String, Dictionary> typeMap = mapping.dictionary().types();
             final String value = ((JsonString) jsonValue).getString();
 
             for (final String type : types) {
 
-                final Dictionary dictionary = mapping.type(type);
+                final Dictionary dictionary = typeMap.get(type);
 
                 if (dictionary == null) {
                     continue;
