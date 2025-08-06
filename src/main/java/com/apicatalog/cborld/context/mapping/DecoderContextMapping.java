@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
-import com.apicatalog.cborld.decoder.DecoderError;
+import com.apicatalog.cborld.decoder.DecoderException;
 import com.apicatalog.cborld.decoder.value.ValueDecoder;
 import com.apicatalog.cborld.dictionary.CodeTermMap;
 import com.apicatalog.cborld.dictionary.Dictionary;
@@ -24,10 +24,10 @@ import jakarta.json.JsonValue;
 
 class DecoderContextMapping implements Mapping {
 
-    private final DocumentDictionary dictionary;
-    private final CodeTermMap termMap;
-    private final TypeKeyNameMapper typeKeyNameMap;
-    private TypeMap typeMap;
+    final DocumentDictionary dictionary;
+    final CodeTermMap termMap;
+    final TypeKeyNameMapper typeKeyNameMap;
+    TypeMap typeMap;
 
     private final Collection<ValueDecoder> valueDecoders;
 
@@ -58,7 +58,7 @@ class DecoderContextMapping implements Mapping {
                     return new UnicodeString(((JsonString) decoded).getString());
                 }
 
-            } catch (DecoderError e) {
+            } catch (DecoderException e) {
                 /* ignored */
             }
         }

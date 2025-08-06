@@ -18,9 +18,9 @@ import com.apicatalog.cbor.CborWriter;
 import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.decoder.DecoderDebug;
 import com.apicatalog.cborld.decoder.Decoder;
-import com.apicatalog.cborld.decoder.DecoderError;
+import com.apicatalog.cborld.decoder.DecoderException;
 import com.apicatalog.cborld.encoder.Encoder;
-import com.apicatalog.cborld.encoder.EncoderError;
+import com.apicatalog.cborld.encoder.EncoderException;
 import com.apicatalog.cborld.hex.Hex;
 import com.apicatalog.cborld.loader.StaticContextLoader;
 import com.apicatalog.jsonld.JsonLdError;
@@ -205,10 +205,10 @@ class CborLdTestRunnerJunit {
         } catch (ContextError e) {
             assertException(e.getCode().name(), e);
 
-        } catch (EncoderError e) {
+        } catch (EncoderException e) {
             assertException(e.getCode().name(), e);
 
-        } catch (DecoderError e) {
+        } catch (DecoderException e) {
             assertException(e.getCode().name(), e);
 
         } catch (JsonLdError e) {

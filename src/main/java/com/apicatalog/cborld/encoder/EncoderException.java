@@ -1,8 +1,8 @@
 package com.apicatalog.cborld.encoder;
 
-public class EncoderError extends Exception {
+public class EncoderException extends Exception {
 
-    private static final long serialVersionUID = -5385517008580552451L;
+    private static final long serialVersionUID = 4949655193741388758L;
 
     public enum Code {
         Internal, // internal - an unexpected error
@@ -12,12 +12,12 @@ public class EncoderError extends Exception {
 
     protected final Code code;
 
-    public EncoderError(Code code, String message) {
+    public EncoderException(Code code, String message) {
         super(message);
         this.code = code;
     }
 
-    public EncoderError(Code code, Throwable cause) {
+    public EncoderException(Code code, Throwable cause) {
         super(cause);
         this.code = code;
     }

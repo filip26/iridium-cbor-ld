@@ -15,10 +15,10 @@ public interface Encoder {
      * @param document JSON-LD document to encode
      * @return a byte array representing the encoded CBOR-LD document.
      * 
-     * @throws EncoderError
+     * @throws EncoderException
      * @throws ContextError
      */
-    byte[] encode(JsonObject document) throws EncoderError, ContextError;
+    byte[] encode(JsonObject document) throws EncoderException, ContextError;
 
     URI base();
 

@@ -5,7 +5,8 @@ import java.net.URI;
 
 import com.apicatalog.cborld.CborLdVersion;
 import com.apicatalog.cborld.context.ContextError;
-import com.apicatalog.cborld.decoder.DecoderError.Code;
+import com.apicatalog.cborld.decoder.DecoderException.Code;
+import com.apicatalog.cborld.hex.Hex;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 
 import co.nstant.in.cbor.CborDecoder;
@@ -24,13 +25,13 @@ class DecoderV1 extends BaseDecoder {
     }
 
     @Override
-    public JsonValue decode(CborLdVersion version, byte[] encoded) throws ContextError, DecoderError {
+    public JsonValue decode(CborLdVersion version, byte[] encoded) throws ContextError, DecoderException {
         try {
             var bais = new ByteArrayInputStream(encoded);
             var dataItems = new CborDecoder(bais).decode();
 
             if (dataItems.isEmpty()) {
-                throw new DecoderError(Code.InvalidDocument, "The document is not CBOR-LD v1.0 document, contains no data.");
+                throw new DecoderException(Code.InvalidDocument, "The document is not CBOR-LD v1.0 document, contains no data.");
             }
 
             if (dataItems.size() == 1) {
@@ -46,17 +47,17 @@ class DecoderV1 extends BaseDecoder {
             return arrayBuilder.build();
 
         } catch (final CborException e) {
-            throw new DecoderError(Code.InvalidDocument, e);
+            throw new DecoderException(Code.InvalidDocument, e);
         }
     }
 
-    public JsonValue decode(CborLdVersion version, DataItem dataItem) throws ContextError, DecoderError {
+    public JsonValue decode(CborLdVersion version, DataItem dataItem) throws ContextError, DecoderException {
         if (dataItem == null || dataItem.getMajorType() != MajorType.ARRAY) {
-            throw new DecoderError(Code.InvalidDocument, "The document is not CBOR-LD v1.0 document. Must start with array of two items, but is " + dataItem + ".");
+            throw new DecoderException(Code.InvalidDocument, "The document is not CBOR-LD v1.0 document. Must start with array of two items, but is " + dataItem + ".");
         }
 
         if (((Array) dataItem).getDataItems().size() != 2) {
-            throw new DecoderError(Code.InvalidDocument, "The document is not CBOR-LD v1.0 document. Must start with array of two items but is " + dataItem + ".");
+            throw new DecoderException(Code.InvalidDocument, "The document is not CBOR-LD v1.0 document. Must start with array of two items but is " + dataItem + ".");
         }
 
         var it = ((Array) dataItem).getDataItems().iterator();
@@ -64,11 +65,19 @@ class DecoderV1 extends BaseDecoder {
         var registryId = it.next();
 
         if (registryId == null || registryId.getMajorType() != MajorType.UNSIGNED_INTEGER) {
-            throw new DecoderError(Code.InvalidDocument, "The document is not CBOR-LD v1.0 document. Registry Entry ID is not an unsigned integer but " + registryId + ".");
+            throw new DecoderException(Code.InvalidDocument, "The document is not CBOR-LD v1.0 document. Registry Entry ID is not an unsigned integer but " + registryId + ".");
         }
 
         var dictionary = config.registry().get(
                 ((UnsignedInteger) registryId).getValue().intValueExact());
+
+        if (dictionary == null) {
+            throw new DecoderException(Code.UnknownDictionary,
+                    "Unknown CBOR-LD document terms dictionary code = "
+                            + registryId
+                            + ", hex = "
+                            + Hex.toString(((UnsignedInteger) registryId).getValue().intValueExact()) + ".");
+        }
 
         return decode(dictionary, it.next());
     }

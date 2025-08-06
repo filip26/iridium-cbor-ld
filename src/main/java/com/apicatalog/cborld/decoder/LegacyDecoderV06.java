@@ -5,7 +5,7 @@ import java.net.URI;
 import com.apicatalog.cborld.CborLd;
 import com.apicatalog.cborld.CborLdVersion;
 import com.apicatalog.cborld.context.ContextError;
-import com.apicatalog.cborld.decoder.DecoderError.Code;
+import com.apicatalog.cborld.decoder.DecoderException.Code;
 import com.apicatalog.cborld.hex.Hex;
 import com.apicatalog.cborld.registry.DocumentDictionary;
 import com.apicatalog.jsonld.loader.DocumentLoader;
@@ -19,17 +19,17 @@ class LegacyDecoderV06 extends BaseDecoder {
     }
 
     @Override
-    public JsonValue decode(CborLdVersion version, byte[] encoded) throws ContextError, DecoderError {
+    public JsonValue decode(CborLdVersion version, byte[] encoded) throws ContextError, DecoderException {
 
         if (encoded[2] == CborLd.UNCOMPRESSED_BYTE) {
-            throw new DecoderError(Code.Unsupported, "Uncompressed CBOR-LD v0.6 is not supported.");
+            throw new DecoderException(Code.Unsupported, "Uncompressed CBOR-LD v0.6 is not supported.");
         }
 
         final DocumentDictionary dictionary = config.registry().get(Byte.toUnsignedInt(encoded[2]));
 
         if (dictionary == null) {
-            throw new DecoderError(Code.UnknownCompression,
-                    "Unkknown CBOR-LD document terms dictionary type id, found "
+            throw new DecoderException(Code.UnknownDictionary,
+                    "Unknown CBOR-LD document terms dictionary code = "
                             + Hex.toString(encoded[2]) + ".");
         }
 

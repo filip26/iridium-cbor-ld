@@ -5,7 +5,7 @@ import java.util.Map;
 
 import com.apicatalog.cborld.CborLdVersion;
 import com.apicatalog.cborld.context.ContextError;
-import com.apicatalog.cborld.decoder.DecoderError.Code;
+import com.apicatalog.cborld.decoder.DecoderException.Code;
 import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.cborld.registry.DocumentDictionary;
 import com.apicatalog.jsonld.loader.DocumentLoader;
@@ -47,14 +47,14 @@ public class DecoderDebug {
             decoder = decoders.get(version);
 
             if (decoder == null) {
-                throw new DecoderError(Code.Unsupported, "The decoder is not configured to support version " + version + " but " + decoders.keySet() + ".");
+                throw new DecoderException(Code.Unsupported, "The decoder is not configured to support version " + version + " but " + decoders.keySet() + ".");
             }
 
             var debugger = new Debugger(decoder, this);
 
             decoded = debugger.decode(encoded);
 
-        } catch (ContextError | DecoderError e) {
+        } catch (ContextError | DecoderException e) {
             this.error = e;
         }
     }
@@ -94,18 +94,18 @@ public class DecoderDebug {
         }
 
         @Override
-        public JsonValue decode(byte[] encoded) throws ContextError, DecoderError {
+        public JsonValue decode(byte[] encoded) throws ContextError, DecoderException {
             return decoder.decode(encoded);
         }
 
         @Override
-        public JsonValue decode(CborLdVersion version, byte[] encoded) throws ContextError, DecoderError {
+        public JsonValue decode(CborLdVersion version, byte[] encoded) throws ContextError, DecoderException {
             debug.version = version;
             return decoder.decode(version, encoded);
         }
 
         @Override
-        protected Mapping getMapping(DocumentDictionary dictionary, DataItem data) throws DecoderError, ContextError {
+        protected Mapping getMapping(DocumentDictionary dictionary, DataItem data) throws DecoderException, ContextError {
             debug.dictionary = dictionary;
             debug.mapping = super.getMapping(dictionary, data);
             return debug.mapping;

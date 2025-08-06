@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.UUID;
 
-import com.apicatalog.cborld.decoder.DecoderError;
+import com.apicatalog.cborld.decoder.DecoderException;
 import com.apicatalog.cborld.encoder.value.UuidValueEncoder;
 import com.apicatalog.cborld.mapping.Mapping;
 
@@ -20,7 +20,7 @@ import jakarta.json.JsonValue;
 public class UuidValueDecoder implements ValueDecoder {
 
     @Override
-    public JsonValue decode(Mapping mapping, DataItem value, String term, Collection<String> types) throws DecoderError {
+    public JsonValue decode(Mapping mapping, DataItem value, String term, Collection<String> types) throws DecoderException {
 
         if (MajorType.ARRAY.equals(value.getMajorType())) {
 

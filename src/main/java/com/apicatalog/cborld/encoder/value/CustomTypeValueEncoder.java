@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import com.apicatalog.cborld.dictionary.Dictionary;
-import com.apicatalog.cborld.encoder.EncoderError;
+import com.apicatalog.cborld.encoder.EncoderException;
 import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.jsonld.json.JsonUtils;
 
@@ -16,7 +16,7 @@ import jakarta.json.JsonValue;
 public class CustomTypeValueEncoder implements ValueEncoder {
 
     @Override
-    public DataItem encode(Mapping mapping, JsonValue jsonValue, String term, Collection<String> types) throws EncoderError {
+    public DataItem encode(Mapping mapping, JsonValue jsonValue, String term, Collection<String> types) throws EncoderException {
         if (types != null
                 && mapping.dictionary() != null
                 && mapping.dictionary().types() != null

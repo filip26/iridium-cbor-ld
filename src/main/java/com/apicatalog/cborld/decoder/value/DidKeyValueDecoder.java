@@ -3,7 +3,7 @@ package com.apicatalog.cborld.decoder.value;
 import java.util.Collection;
 import java.util.List;
 
-import com.apicatalog.cborld.decoder.DecoderError;
+import com.apicatalog.cborld.decoder.DecoderException;
 import com.apicatalog.cborld.encoder.value.DidKeyValueEncoder;
 import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.multibase.Multibase;
@@ -19,7 +19,7 @@ import jakarta.json.JsonValue;
 public class DidKeyValueDecoder implements ValueDecoder {
 
     @Override
-    public JsonValue decode(Mapping mapping, DataItem value, String term, Collection<String> types) throws DecoderError {
+    public JsonValue decode(Mapping mapping, DataItem value, String term, Collection<String> types) throws DecoderException {
 
         if (MajorType.ARRAY.equals(value.getMajorType())) {
 

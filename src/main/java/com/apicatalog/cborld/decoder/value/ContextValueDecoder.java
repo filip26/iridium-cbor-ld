@@ -2,7 +2,7 @@ package com.apicatalog.cborld.decoder.value;
 
 import java.util.Collection;
 
-import com.apicatalog.cborld.decoder.DecoderError;
+import com.apicatalog.cborld.decoder.DecoderException;
 import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.jsonld.lang.Keywords;
 
@@ -15,7 +15,7 @@ import jakarta.json.JsonValue;
 public class ContextValueDecoder implements ValueDecoder {
 
     @Override
-    public JsonValue decode(Mapping mapping, DataItem value, String term, Collection<String> types) throws DecoderError {
+    public JsonValue decode(Mapping mapping, DataItem value, String term, Collection<String> types) throws DecoderException {
         if (mapping != null
                 && mapping.dictionary() != null
                 && mapping.dictionary().contexts() != null

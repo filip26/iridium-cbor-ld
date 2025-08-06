@@ -45,9 +45,9 @@
         "NegativeEvaluationTest",
         "DecoderTest"
       ],
-      "name": "0.5: unknown compression flag",
+      "name": "0.5: unknown dictionary",
       "input": "decoder/0.5/0004-in.cborld",
-      "expectErrorCode": "UnknownCompression"
+      "expectErrorCode": "Unsupported"
     },
     {
       "@id": "#t0005",
