@@ -156,10 +156,19 @@ public class EncoderBuilder implements EncoderConfig {
         if (bundledContexts) {
             loader = new StaticContextLoader(loader);
         }
-        if (version == CborLdVersion.V05 || version == CborLdVersion.V06) {
-            return new DefaultEncoder(this, loader, base);
+        return new DefaultEncoder(this, provider, loader, base);
+    }
+    
+    public DebugEncoder debug() {
+        if (loader == null) {
+            loader = new HttpLoader(DefaultHttpClient.defaultInstance());
+            ((HttpLoader) loader).fallbackContentType(MediaType.JSON);
         }
-        return new DefaultEncoder(this, loader, base);
+
+        if (bundledContexts) {
+            loader = new StaticContextLoader(loader);
+        }
+        return new DebugEncoder(this, provider, loader, base);        
     }
 
     protected static final EncoderConfig config(CborLdVersion version) {
@@ -168,7 +177,6 @@ public class EncoderBuilder implements EncoderConfig {
             return LegacyConfigV06.INSTANCE;
         case V05:
             return LegacyConfigV05.INSTANCE;
-            
         case V1:
         default:
             break;

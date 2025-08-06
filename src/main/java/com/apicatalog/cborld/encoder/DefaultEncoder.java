@@ -11,6 +11,7 @@ import com.apicatalog.cborld.CborLd;
 import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.encoder.EncoderException.Code;
 import com.apicatalog.cborld.encoder.value.ValueEncoder;
+import com.apicatalog.cborld.mapping.EncoderMappingProvider;
 import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.cborld.mapping.TypeMap;
 import com.apicatalog.jsonld.JsonLdError;
@@ -36,12 +37,14 @@ import jakarta.json.JsonValue;
 
 class DefaultEncoder implements Encoder {
 
-    protected final EncoderConfig config;
-    protected DocumentLoader loader;
-    protected URI base;
+    final EncoderConfig config;
+    final EncoderMappingProvider mappingProvider;
+    final DocumentLoader loader;
+    final URI base;
 
-    protected DefaultEncoder(EncoderConfig config, DocumentLoader loader, URI base) {
+    DefaultEncoder(EncoderConfig config, EncoderMappingProvider mappingProvider, DocumentLoader loader, URI base) {
         this.config = config;
+        this.mappingProvider = mappingProvider;
         this.loader = loader;
         this.base = base;
     }
@@ -127,7 +130,7 @@ class DefaultEncoder implements Encoder {
                 throw new EncoderException(Code.Unsupported, "Unsupported CBOR-LD version " + config.version() + ".");
             }
 
-            final Mapping mapping = config.encoderMapping().getEncoderMapping(document, this);
+            final Mapping mapping = mappingProvider.getEncoderMapping(document, this);
 
             encode(document, mapBuilder, mapping.typeMap(), mapping).end();
 

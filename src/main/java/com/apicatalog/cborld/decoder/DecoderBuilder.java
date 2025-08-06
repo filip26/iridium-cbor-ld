@@ -182,7 +182,7 @@ public class DecoderBuilder {
         return new DebugDecoder(
                 versions.values().stream()
                         .collect(Collectors.toUnmodifiableMap(
-                                t -> t.version(),
+                                DecoderConfig::version,
                                 Function.identity())),
                 loader, base);
     }

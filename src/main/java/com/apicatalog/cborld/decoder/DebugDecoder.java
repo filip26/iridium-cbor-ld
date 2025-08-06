@@ -23,9 +23,9 @@ import jakarta.json.JsonValue;
 
 public class DebugDecoder {
 
-    protected final Map<CborLdVersion, DecoderConfig> decoders;
-    protected final DocumentLoader loader;
-    protected final URI base;
+    final Map<CborLdVersion, DecoderConfig> decoders;
+    final DocumentLoader loader;
+    final URI base;
 
     protected Decoder decoder;
     protected CborLdVersion version;
@@ -35,7 +35,7 @@ public class DebugDecoder {
 
     protected Exception error;
 
-    public DebugDecoder(Map<CborLdVersion, DecoderConfig> decoders, DocumentLoader loader, URI base) {
+    DebugDecoder(Map<CborLdVersion, DecoderConfig> decoders, DocumentLoader loader, URI base) {
         this.decoders = decoders;
         this.loader = loader;
         this.base = base;
@@ -82,6 +82,10 @@ public class DebugDecoder {
     public DocumentDictionary dictionary() {
         return dictionary;
     }
+    
+    public Dictionary terms() {
+        return mapping != null ? mapping.termMap() : null;
+    }
 
     public boolean isCborLd() {
         return version != null && dictionary != null;
@@ -93,6 +97,10 @@ public class DebugDecoder {
 
     public Exception error() {
         return error;
+    }
+    
+    public JsonValue decoded() {
+        return decoded;
     }
 
     public JsonObject dump() {

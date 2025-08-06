@@ -19,6 +19,7 @@ import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.decoder.DebugDecoder;
 import com.apicatalog.cborld.decoder.Decoder;
 import com.apicatalog.cborld.decoder.DecoderException;
+import com.apicatalog.cborld.encoder.DebugEncoder;
 import com.apicatalog.cborld.encoder.Encoder;
 import com.apicatalog.cborld.encoder.EncoderException;
 import com.apicatalog.cborld.hex.Hex;
@@ -56,7 +57,7 @@ class CborLdTestRunnerJunit {
 
     static final Decoder DECODER;
     static final Decoder DECODER_V05_NOCA;
-    
+
     static final DebugDecoder DECODER_DEBUG;
 
     static {
@@ -194,13 +195,42 @@ class CborLdTestRunnerJunit {
 
                 assertTrue(match, "The expected result does not match.");
 
+            } else if (testCase.type.contains(CborLdTest.VOCAB + "DebugEncoderTest")) {
+
+                var document = LOADER.loadDocument(testCase.input, new DocumentLoaderOptions());
+
+                var object = document.getJsonContent().orElseThrow(IllegalStateException::new).asJsonObject();
+
+                var debug = getDebugEncoder(testCase.config);
+
+                debug.encode(object);
+
+                if (testCase.type.stream().noneMatch(o -> o.endsWith("PositiveEvaluationTest"))) {
+                    fail("Expected error code [" + testCase.result + "].");
+                    return;
+                }
+
+                var result = debug.dump();
+
+                var expected = LOADER.loadDocument(testCase.result, new DocumentLoaderOptions()).getJsonContent().orElse(null);
+
+                assertNotNull(expected);
+
+                var match = JsonLdComparison.equals(expected, result);
+
+                if (!match) {
+                    write(testCase, result, expected);
+                }
+
+                assertTrue(match, "The expected result does not match.");
+
             } else if (testCase.type.contains(CborLdTest.VOCAB + "DebugDecoderTest")) {
 
-                Document document = LOADER.loadDocument(testCase.input, new DocumentLoaderOptions());
+                var document = LOADER.loadDocument(testCase.input, new DocumentLoaderOptions());
 
                 assertNotNull(document);
 
-                final DebugDecoder debug = DECODER_DEBUG;
+                var debug = DECODER_DEBUG;
 
                 debug.decode(((CborLdDocument) document).getByteArray());
 
@@ -211,11 +241,11 @@ class CborLdTestRunnerJunit {
 
                 var result = debug.dump();
 
-                final JsonStructure expected = LOADER.loadDocument(testCase.result, new DocumentLoaderOptions()).getJsonContent().orElse(null);
+                var expected = LOADER.loadDocument(testCase.result, new DocumentLoaderOptions()).getJsonContent().orElse(null);
 
                 assertNotNull(expected);
 
-                final boolean match = JsonLdComparison.equals(expected, result);
+                var match = JsonLdComparison.equals(expected, result);
 
                 if (!match) {
                     write(testCase, result, expected);
@@ -368,8 +398,26 @@ class CborLdTestRunnerJunit {
         }
         if ("v1utopiaext".equals(name)) {
             return ENCODER_UTOPIA_EXT_V1;
-        }        
+        }
         return ENCODER_V1;
+    }
+
+    static final DebugEncoder getDebugEncoder(String name) {
+        if ("v1utopia".equals(name)) {
+            return CborLd.createEncoder()
+                    .loader(LOADER)
+                    .dictionary(UtopiaBarcode.DICTIONARY)
+                    .debug();
+        }
+        if ("v1utopiaext".equals(name)) {
+            return CborLd.createEncoder()
+                    .loader(LOADER)
+                    .dictionary(UtopiaBarcodeExtended.DICTIONARY)
+                    .debug();
+        }
+        return CborLd.createEncoder()
+                .loader(LOADER)
+                .debug();
     }
 
     static final Decoder getDecoder(String name, boolean compactArrays) {
