@@ -116,7 +116,9 @@ public class DefaultEncoder implements Encoder {
                 baos.write(config.version().bytes()[0]);
                 baos.write(config.version().bytes()[1]);
                 mapBuilder = builder.addArray()
-                        .add(config.dictionary().code())
+                        .add(config.dictionary() != null
+                                ? config.dictionary().code()
+                                : 0)
                         .addMap();
                 break;
 
@@ -135,9 +137,14 @@ public class DefaultEncoder implements Encoder {
                 throw new EncoderException(Code.Unsupported, "Unsupported CBOR-LD version " + config.version() + ".");
             }
 
-            final Mapping mapping = mappingProvider.getEncoderMapping(document, this);
+            // if no compression
+            if (config.dictionary() == null) {
+                encode(document, mapBuilder, null, null).end();
 
-            encode(document, mapBuilder, mapping.typeMap(), mapping).end();
+            } else {
+                final Mapping mapping = mappingProvider.getEncoderMapping(document, this);
+                encode(document, mapBuilder, mapping.typeMap(), mapping).end();
+            }
 
             new CborEncoder(baos).encode(builder.build());
 
@@ -162,7 +169,9 @@ public class DefaultEncoder implements Encoder {
         for (final Entry<String, JsonValue> entry : object.entrySet()) {
             final String property = entry.getKey();
 
-            final Integer encodedProperty = mapping.termMap().getCode(property);
+            final Integer encodedProperty = mapping != null
+                    ? mapping.termMap().getCode(property)
+                    : null;
 
             if (JsonUtils.isArray(entry.getValue())) {
 
@@ -205,7 +214,9 @@ public class DefaultEncoder implements Encoder {
                     : new UnicodeString(property);
 
             if (JsonUtils.isObject(entry.getValue())) {
-                final TypeMap propertyTypeMapping = typeMapping.getMapping(property);
+                final TypeMap propertyTypeMapping = typeMapping != null
+                        ? typeMapping.getMapping(property)
+                        : null;
                 flow = (MapBuilder<?>) encode(entry.getValue().asJsonObject(), flow.putMap(key),
                         propertyTypeMapping, mapping).end();
                 continue;
