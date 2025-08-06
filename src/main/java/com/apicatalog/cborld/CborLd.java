@@ -17,10 +17,6 @@ public class CborLd {
     public static final byte VERSION_06_BYTE = (byte) 0x06;
     public static final byte VERSION_05_BYTE = (byte) 0x05;
 
-    public static final byte UNCOMPRESSED_BYTE = 0x00;
-
-    public static final byte COMPRESSED_BYTE = 0x01;
-
     protected CborLd() {
         /* protected */ }
 
@@ -84,7 +80,7 @@ public class CborLd {
     public static EncoderBuilder createEncoder(EncoderConfig config) {
         return EncoderBuilder.of(config);
     }
-    
+
     public static EncoderBuilder createEncoder(CborLdVersion version) {
         return EncoderBuilder.of(version);
     }

@@ -2,11 +2,11 @@ package com.apicatalog.cborld.decoder;
 
 import java.net.URI;
 
-import com.apicatalog.cborld.CborLd;
 import com.apicatalog.cborld.CborLdVersion;
 import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.decoder.DecoderException.Code;
 import com.apicatalog.cborld.hex.Hex;
+import com.apicatalog.cborld.mapping.DecoderMappingProvider;
 import com.apicatalog.cborld.registry.DocumentDictionary;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 
@@ -14,14 +14,14 @@ import jakarta.json.JsonValue;
 
 class LegacyDecoderV06 extends BaseDecoder {
 
-    public LegacyDecoderV06(DecoderConfig config, DocumentLoader loader, URI base) {
-        super(config, loader, base);
+    public LegacyDecoderV06(DecoderConfig config, DecoderMappingProvider mapping, DocumentLoader loader, URI base) {
+        super(config, mapping, loader, base);
     }
 
     @Override
     public JsonValue decode(CborLdVersion version, byte[] encoded) throws ContextError, DecoderException {
 
-        if (encoded[2] == CborLd.UNCOMPRESSED_BYTE) {
+        if (encoded[2] == UNCOMPRESSED_BYTE) {
             throw new DecoderException(Code.Unsupported, "Uncompressed CBOR-LD v0.6 is not supported.");
         }
 

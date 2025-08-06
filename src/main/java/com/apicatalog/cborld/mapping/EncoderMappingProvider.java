@@ -5,6 +5,7 @@ import com.apicatalog.cborld.encoder.Encoder;
 
 import jakarta.json.JsonObject;
 
+@FunctionalInterface
 public interface EncoderMappingProvider {
 
     Mapping getEncoderMapping(JsonObject document, Encoder encoder) throws ContextError;

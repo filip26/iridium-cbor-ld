@@ -372,6 +372,16 @@
         "name": "1.0: URIs: Utopia EAD VCB",
         "input": "1.0/utopia-ext-19.cborld",
         "expect": "1.0/utopia-ext-19.jsonld" 
+    },
+    {
+        "@id": "#t0900",
+        "@type": [
+        "PositiveEvaluationTest",
+        "DebugDecoderTest"
+        ],
+        "name": "Debug: 1.0: Utopia Driver's License VCB",
+        "input": "1.0/utopia-12.cborld",
+        "expect": "1.0/utopia-12.jsonld"
     }
   ]
 }

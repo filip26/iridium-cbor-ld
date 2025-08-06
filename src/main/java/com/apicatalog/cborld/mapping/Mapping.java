@@ -10,5 +10,6 @@ public interface Mapping {
     // dynamic
     Dictionary termMap();
 
+    // dynamic
     TypeMap typeMap();
 }

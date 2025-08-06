@@ -16,7 +16,7 @@ import java.util.Objects;
 import com.apicatalog.cbor.CborComparison;
 import com.apicatalog.cbor.CborWriter;
 import com.apicatalog.cborld.context.ContextError;
-import com.apicatalog.cborld.decoder.DecoderDebug;
+import com.apicatalog.cborld.decoder.DebugDecoder;
 import com.apicatalog.cborld.decoder.Decoder;
 import com.apicatalog.cborld.decoder.DecoderException;
 import com.apicatalog.cborld.encoder.Encoder;
@@ -57,7 +57,7 @@ class CborLdTestRunnerJunit {
     static final Decoder DECODER;
     static final Decoder DECODER_V05_NOCA;
     
-    static final DecoderDebug DECODER_DEBUG;
+    static final DebugDecoder DECODER_DEBUG;
 
     static {
         // load from test resources
@@ -194,6 +194,35 @@ class CborLdTestRunnerJunit {
 
                 assertTrue(match, "The expected result does not match.");
 
+            } else if (testCase.type.contains(CborLdTest.VOCAB + "DebugDecoderTest")) {
+
+                Document document = LOADER.loadDocument(testCase.input, new DocumentLoaderOptions());
+
+                assertNotNull(document);
+
+                final DebugDecoder debug = DECODER_DEBUG;
+
+                debug.decode(((CborLdDocument) document).getByteArray());
+
+                if (testCase.type.stream().noneMatch(o -> o.endsWith("PositiveEvaluationTest"))) {
+                    fail("Expected error code [" + testCase.result + "].");
+                    return;
+                }
+
+                var result = debug.dump();
+
+                final JsonStructure expected = LOADER.loadDocument(testCase.result, new DocumentLoaderOptions()).getJsonContent().orElse(null);
+
+                assertNotNull(expected);
+
+                final boolean match = JsonLdComparison.equals(expected, result);
+
+                if (!match) {
+                    write(testCase, result, expected);
+                }
+
+                assertTrue(match, "The expected result does not match.");
+
             } else {
                 fail("Unknown test execution method: " + testCase.type);
                 return;
@@ -206,10 +235,10 @@ class CborLdTestRunnerJunit {
             assertException(e.getCode().name(), e);
 
         } catch (EncoderException e) {
-            assertException(e.getCode().name(), e);
+            assertException(e.code().name(), e);
 
         } catch (DecoderException e) {
-            assertException(e.getCode().name(), e);
+            assertException(e.code().name(), e);
 
         } catch (JsonLdError e) {
             fail(e);

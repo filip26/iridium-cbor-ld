@@ -11,7 +11,7 @@ public class DecoderException extends Exception {
         Unsupported,
     }
 
-    protected final Code code;
+    private final Code code;
 
     public DecoderException(Code code, String message) {
         super(message);
@@ -23,7 +23,7 @@ public class DecoderException extends Exception {
         this.code = code;
     }
 
-    public Code getCode() {
+    public Code code() {
         return code;
     }
 }

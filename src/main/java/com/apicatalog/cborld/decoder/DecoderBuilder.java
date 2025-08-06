@@ -12,6 +12,7 @@ import com.apicatalog.cborld.config.LegacyConfigV05;
 import com.apicatalog.cborld.config.LegacyConfigV06;
 import com.apicatalog.cborld.encoder.EncoderBuilder;
 import com.apicatalog.cborld.loader.StaticContextLoader;
+import com.apicatalog.cborld.mapping.DecoderMappingProvider;
 import com.apicatalog.cborld.registry.DocumentDictionary;
 import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.http.DefaultHttpClient;
@@ -167,7 +168,7 @@ public class DecoderBuilder {
                 loader, base);
     }
 
-    public DecoderDebug debug() {
+    public DebugDecoder debug() {
 
         if (loader == null) {
             loader = new HttpLoader(DefaultHttpClient.defaultInstance());
@@ -178,11 +179,10 @@ public class DecoderBuilder {
             loader = new StaticContextLoader(loader);
         }
 
-        return new DecoderDebug(
+        return new DebugDecoder(
                 versions.values().stream()
-                        .map(c -> newInstance(c, loader, base))
                         .collect(Collectors.toUnmodifiableMap(
-                                t -> t.config().version(),
+                                t -> t.version(),
                                 Function.identity())),
                 loader, base);
     }
@@ -202,13 +202,17 @@ public class DecoderBuilder {
     }
 
     protected static final Decoder newInstance(DecoderConfig config, DocumentLoader loader, URI base) {
+        return newInstance(config, config.decoderMapping(), loader, base);
+    }
+    
+    protected static final Decoder newInstance(DecoderConfig config, DecoderMappingProvider mapping, DocumentLoader loader, URI base) {
         switch (config.version()) {
         case V1:
-            return new DecoderV1(config, loader, base);
+            return new DecoderV1(config, mapping, loader, base);
         case V06:
-            return new LegacyDecoderV06(config, loader, base);
+            return new LegacyDecoderV06(config, mapping, loader, base);
         case V05:
-            return new LegacyDecoderV05(config, loader, base);
+            return new LegacyDecoderV05(config, mapping, loader, base);
         }
         throw new IllegalStateException();
     }

@@ -7,6 +7,7 @@ import com.apicatalog.cborld.CborLdVersion;
 import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.decoder.DecoderException.Code;
 import com.apicatalog.cborld.hex.Hex;
+import com.apicatalog.cborld.mapping.DecoderMappingProvider;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 
 import co.nstant.in.cbor.CborDecoder;
@@ -20,8 +21,8 @@ import jakarta.json.JsonValue;
 
 class DecoderV1 extends BaseDecoder {
 
-    public DecoderV1(DecoderConfig config, DocumentLoader loader, URI base) {
-        super(config, loader, base);
+    public DecoderV1(DecoderConfig config, DecoderMappingProvider mapping, DocumentLoader loader, URI base) {
+        super(config, mapping, loader, base);
     }
 
     @Override
@@ -30,10 +31,11 @@ class DecoderV1 extends BaseDecoder {
             var bais = new ByteArrayInputStream(encoded);
             var dataItems = new CborDecoder(bais).decode();
 
+            // nothing do de-compress
             if (dataItems.isEmpty()) {
-                throw new DecoderException(Code.InvalidDocument, "The document is not CBOR-LD v1.0 document, contains no data.");
+                return null;
             }
-
+            
             if (dataItems.size() == 1) {
                 return decode(version, dataItems.iterator().next());
             }
