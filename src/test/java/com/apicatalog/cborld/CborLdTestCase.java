@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import com.apicatalog.cborld.config.ConfigV1;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.loader.DocumentLoader;
 
 import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
@@ -29,7 +28,7 @@ class CborLdTestCase {
 
     public String config;
 
-    public static CborLdTestCase of(JsonObject test, DocumentLoader loader) {
+    public static CborLdTestCase of(JsonObject test) {
 
         final CborLdTestCase testCase = new CborLdTestCase();
 
