@@ -435,6 +435,29 @@
       }
     },
     {
+      "@id": "#t0204",
+      "@type": [
+        "PositiveEvaluationTest",
+        "EncoderTest"
+      ],
+      "name": "1.0: 0x0 Driver's License VCB",
+      "input": "1.0/utopia-12.jsonld",
+      "expect": "1.0/utopia-d0-12.cborld",
+      "option": {
+        "config": "v1nocp"
+      }
+    },
+    {
+      "@id": "#t0205",
+      "@type": [
+        "PositiveEvaluationTest",
+        "EncoderTest"
+      ],
+      "name": "1.0: 0x1 Driver's License VCB",
+      "input": "1.0/utopia-12.jsonld",
+      "expect": "1.0/utopia-d1-12.cborld"
+    },    
+    {
       "@id": "#t9000",
       "@type": [
         "PositiveEvaluationTest",

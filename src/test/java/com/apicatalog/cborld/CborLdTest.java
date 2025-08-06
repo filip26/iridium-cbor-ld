@@ -50,9 +50,7 @@ class CborLdTest {
     }
 
     static final Stream<CborLdTestCase> manifest(String name) throws JsonLdError, IOException {
-
         try (final InputStream is = CborLdTest.class.getResourceAsStream(name)) {
-
             final JsonObject manifest = JsonLd.expand(JsonDocument.of(is))
                     .base(BASE)
                     .loader(CborLdTestRunnerJunit.LOADER)
@@ -63,7 +61,7 @@ class CborLdTest {
                     .asJsonObject().getJsonArray("http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#entries")
                     .stream()
                     .map(JsonValue::asJsonObject)
-                    .map(test -> CborLdTestCase.of(test, manifest, CborLdTestRunnerJunit.LOADER));
+                    .map(CborLdTestCase::of);
         }
     }
 }

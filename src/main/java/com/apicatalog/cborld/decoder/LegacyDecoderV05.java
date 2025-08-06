@@ -11,7 +11,7 @@ import com.apicatalog.jsonld.loader.DocumentLoader;
 
 import jakarta.json.JsonValue;
 
-class LegacyDecoderV05 extends BaseDecoder {
+class LegacyDecoderV05 extends AbstractDecoder {
 
     public LegacyDecoderV05(DecoderConfig config, DecoderMappingProvider mapping, DocumentLoader loader, URI base) {
         super(config, mapping, loader, base);

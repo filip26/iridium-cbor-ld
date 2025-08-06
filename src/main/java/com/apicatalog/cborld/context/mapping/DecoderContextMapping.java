@@ -41,13 +41,13 @@ class DecoderContextMapping implements Mapping {
 
     final DataItem decodeValue(final DataItem value, String term) {
 
-        Collection<String> TYPE = Arrays.asList(Keywords.TYPE);
+        var type = Arrays.asList(Keywords.TYPE);
 
         for (final ValueDecoder decoder : valueDecoders) {
             try {
                 final JsonValue decoded = decoder.decode(this, value, term,
                         typeKeyNameMap.isTypeKey(term)
-                                ? TYPE
+                                ? type
                                 : Collections.emptySet());
 
                 if (decoded == null) {

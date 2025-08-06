@@ -8,7 +8,7 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
-    environment: RELEASE
+    environment: maven-central
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 17
@@ -16,14 +16,17 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-          server-id: ossrh
-      - name: Import GPG Key
-        uses: crazy-max/ghaction-import-gpg@v6
-        with:
-          gpg_private_key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
-          passphrase: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
+          cache: 'maven'
+          server-id: central
+          server-username: CENTRAL_TOKEN_ID
+          server-password: CENTRAL_TOKEN_SECRET
+          gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE
       - name: Publish package
-        run: mvn -B -Pmaven-central -Dgpg.passphrase=${{secrets.MAVEN_GPG_PASSPHRASE}} -s maven-settings.xml deploy
+        run: mvn -B -Pmaven-central deploy
         env:
-          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
+          CENTRAL_TOKEN_ID: ${{ secrets.CENTRAL_TOKEN_ID }}
+          CENTRAL_TOKEN_SECRET: ${{ secrets.CENTRAL_TOKEN_SECRET }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
+          MAVEN_GPG_KEY: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
+          

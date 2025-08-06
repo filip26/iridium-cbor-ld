@@ -16,8 +16,8 @@ import jakarta.json.JsonValue;
 
 public class UuidValueEncoder implements ValueEncoder {
 
-    public final static String PREFIX = "urn:uuid:";
-    public final static int CODE = 3;
+    public static final String PREFIX = "urn:uuid:";
+    public static final int CODE = 3;
 
     @Override
     public DataItem encode(Mapping mapping, JsonValue jsonValue, String term, Collection<String> types) {

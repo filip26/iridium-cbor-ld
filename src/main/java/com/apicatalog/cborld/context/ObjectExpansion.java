@@ -223,15 +223,6 @@ final class ObjectExpansion {
                     .map(JsonString::getString)
                     .sorted()
                     .collect(Collectors.toList());
-//            entry.save();
-//            final List<String> terms = ValueCursor
-//                                            .toStream(entry.mapKey(key))
-//                                            .filter(ValueCursor::isString)
-//                                            .map(ValueCursor::stringValue)
-//                                            .sorted()
-//                                            .collect(Collectors.toList());
-
-//            entry.restore();
 
             for (final String term : terms) {
 

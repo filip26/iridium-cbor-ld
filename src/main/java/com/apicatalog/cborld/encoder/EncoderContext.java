@@ -16,7 +16,7 @@ import jakarta.json.JsonValue;
 
 class EncoderContext {
 
-    public final static Collection<String> get(final JsonObject document) throws EncoderException {
+    public static final Collection<String> get(final JsonObject document) throws EncoderException {
         return get(document, new LinkedHashSet<>());
     }
 
@@ -64,13 +64,12 @@ class EncoderContext {
             }
         }
 
-//        throw new IllegalArgumentException("Non compress-able context detected " + jsonValue + ".");
         throw new EncoderException(
                 Code.NonCompressible,
                 """
-                Non-compressible document. Only JSON-LD documents containing referenced contexts can be compressed. \
-                Referenced contexts serve as a shared dictionary, which is not possible with inline contexts.
-                """);
+                        Non-compressible document. Only JSON-LD documents containing referenced contexts can be compressed. \
+                        Referenced contexts serve as a shared dictionary, which is not possible with inline contexts.
+                        """);
 
     }
 }

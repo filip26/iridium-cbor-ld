@@ -19,7 +19,7 @@ import co.nstant.in.cbor.model.UnsignedInteger;
 import jakarta.json.Json;
 import jakarta.json.JsonValue;
 
-class DecoderV1 extends BaseDecoder {
+class DecoderV1 extends AbstractDecoder {
 
     public DecoderV1(DecoderConfig config, DecoderMappingProvider mapping, DocumentLoader loader, URI base) {
         super(config, mapping, loader, base);
@@ -35,15 +35,15 @@ class DecoderV1 extends BaseDecoder {
             if (dataItems.isEmpty()) {
                 return null;
             }
-            
+
             if (dataItems.size() == 1) {
-                return decode(version, dataItems.iterator().next());
+                return decode(dataItems.iterator().next());
             }
 
             var arrayBuilder = Json.createArrayBuilder();
 
             for (var item : dataItems) {
-                arrayBuilder.add(decode(version, item));
+                arrayBuilder.add(decode(item));
             }
 
             return arrayBuilder.build();
@@ -53,7 +53,7 @@ class DecoderV1 extends BaseDecoder {
         }
     }
 
-    public JsonValue decode(CborLdVersion version, DataItem dataItem) throws ContextError, DecoderException {
+    public JsonValue decode(DataItem dataItem) throws ContextError, DecoderException {
         if (dataItem == null || dataItem.getMajorType() != MajorType.ARRAY) {
             throw new DecoderException(Code.InvalidDocument, "The document is not CBOR-LD v1.0 document. Must start with array of two items, but is " + dataItem + ".");
         }
@@ -70,10 +70,11 @@ class DecoderV1 extends BaseDecoder {
             throw new DecoderException(Code.InvalidDocument, "The document is not CBOR-LD v1.0 document. Registry Entry ID is not an unsigned integer but " + registryId + ".");
         }
 
-        var dictionary = config.registry().get(
-                ((UnsignedInteger) registryId).getValue().intValueExact());
+        var code = ((UnsignedInteger) registryId).getValue().intValueExact();
 
-        if (dictionary == null) {
+        var dictionary = config.registry().get(code);
+
+        if (code > 0 && dictionary == null) {
             throw new DecoderException(Code.UnknownDictionary,
                     "Unknown CBOR-LD document terms dictionary code = "
                             + registryId
