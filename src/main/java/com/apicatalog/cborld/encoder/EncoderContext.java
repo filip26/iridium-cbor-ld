@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Map.Entry;
 
+import com.apicatalog.cborld.encoder.EncoderException.Code;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.uri.UriUtils;
@@ -15,11 +16,11 @@ import jakarta.json.JsonValue;
 
 class EncoderContext {
 
-    public final static Collection<String> get(final JsonObject document) {
+    public final static Collection<String> get(final JsonObject document) throws EncoderException {
         return get(document, new LinkedHashSet<>());
     }
 
-    static final Collection<String> get(final JsonObject document, Collection<String> contexts) {
+    static final Collection<String> get(final JsonObject document, Collection<String> contexts) throws EncoderException {
 
         for (final Entry<String, JsonValue> entry : document.entrySet()) {
 
@@ -33,7 +34,7 @@ class EncoderContext {
         return contexts;
     }
 
-    static final void processContextValue(final JsonValue jsonValue, final Collection<String> result) {
+    static final void processContextValue(final JsonValue jsonValue, final Collection<String> result) throws EncoderException {
 
         if (JsonUtils.isString(jsonValue)) {
             final String uri = ((JsonString) jsonValue).getString();
@@ -63,6 +64,13 @@ class EncoderContext {
             }
         }
 
-        throw new IllegalArgumentException("Non compress-able context detected " + jsonValue + ".");
+//        throw new IllegalArgumentException("Non compress-able context detected " + jsonValue + ".");
+        throw new EncoderException(
+                Code.NonCompressible,
+                """
+                Non-compressible document. Only JSON-LD documents containing referenced contexts can be compressed. \
+                Referenced contexts serve as a shared dictionary, which is not possible with inline contexts.
+                """);
+
     }
 }
