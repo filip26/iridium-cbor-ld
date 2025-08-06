@@ -31,7 +31,7 @@ import com.apicatalog.cborld.mapping.EncoderMappingProvider;
 import com.apicatalog.cborld.registry.DocumentDictionary;
 import com.apicatalog.cborld.registry.LegacyDictionary;
 
-public class LegacyConfigV05 extends BaseConfig implements EncoderConfig, DecoderConfig {
+public class LegacyConfigV05 implements EncoderConfig, DecoderConfig {
 
     public static final LegacyConfigV05 INSTANCE = new LegacyConfigV05();
 
