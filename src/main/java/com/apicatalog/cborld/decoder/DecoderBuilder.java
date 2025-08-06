@@ -21,6 +21,12 @@ import com.apicatalog.jsonld.http.media.MediaType;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.HttpLoader;
 
+/**
+ * Builder class for creating and configuring {@link Decoder} instances.
+ * <p>
+ * Supports configuration of multiple CBOR-LD versions, base URI, dictionary,
+ * array compaction behavior, context loading strategy, and document loaders.
+ */
 public class DecoderBuilder {
 
     protected final CborLdVersion defaultVersion;
@@ -40,6 +46,14 @@ public class DecoderBuilder {
         this.bundledContexts = true;
     }
 
+    /**
+     * Creates a new {@code DecoderBuilder} instance with the given CBOR-LD format
+     * versions enabled.
+     *
+     * @param versions one or more CBOR-LD versions to support
+     * @return a new {@code DecoderBuilder} instance
+     * @throws IllegalArgumentException if {@code versions} is {@code null} or empty
+     */
     public static final DecoderBuilder of(CborLdVersion... versions) {
         if (versions == null || versions.length == 0) {
             throw new IllegalArgumentException();
@@ -53,6 +67,14 @@ public class DecoderBuilder {
         return new DecoderBuilder(versions[0], decoders);
     }
 
+    /**
+     * Creates a new {@code DecoderBuilder} instance pre-configured with the given
+     * decoder configurations.
+     *
+     * @param configs one or more decoder configurations
+     * @return a new {@code DecoderBuilder} instance
+     * @throws IllegalArgumentException if {@code configs} is {@code null} or empty
+     */
     public static final DecoderBuilder of(DecoderConfig... configs) {
         if (configs == null || configs.length == 0) {
             throw new IllegalArgumentException();
@@ -66,11 +88,23 @@ public class DecoderBuilder {
         return new DecoderBuilder(configs[0].version(), decoders);
     }
 
+    /**
+     * Enables support for the specified CBOR-LD version.
+     *
+     * @param version the version to enable
+     * @return this builder instance
+     */
     public DecoderBuilder enable(CborLdVersion version) {
         enable(versions, version);
         return this;
     }
 
+    /**
+     * Disables support for the specified CBOR-LD version.
+     *
+     * @param version the version to disable
+     * @return this builder instance
+     */
     public DecoderBuilder disable(CborLdVersion version) {
         versions.remove(version);
         return this;
@@ -124,26 +158,47 @@ public class DecoderBuilder {
         return compactArray(defaultVersion, enable);
     }
 
+    /**
+     * Enables or disables array compaction for a specific CBOR-LD version.
+     *
+     * @param version the CBOR-LD version
+     * @param enable  {@code true} to enable array compaction
+     * @return this builder instance
+     */
     public DecoderBuilder compactArray(CborLdVersion version, boolean enable) {
         versions.get(version).compactArrays = enable;
         return this;
     }
 
     /**
-     * Set a custom dictionary
-     * 
-     * @param dictionary
-     * @return {@link EncoderBuilder} instance
+     * Registers a custom document dictionary to be used for decoding.
+     * <p>
+     * Applies to the default version.
+     *
+     * @param dictionary the dictionary to register
+     * @return this builder instance
      */
     public DecoderBuilder dictionary(DocumentDictionary dictionary) {
         return dictionary(defaultVersion, dictionary);
     }
 
+    /**
+     * Registers a custom document dictionary for a specific CBOR-LD version.
+     *
+     * @param version    the version to associate the dictionary with
+     * @param dictionary the dictionary to register
+     * @return this builder instance
+     */
     public DecoderBuilder dictionary(CborLdVersion version, DocumentDictionary dictionary) {
         versions.get(version).registry.put(dictionary.code(), dictionary);
         return this;
     }
 
+    /**
+     * Builds a {@link Decoder} instance based on the current configuration.
+     *
+     * @return a fully configured {@code Decoder} instance
+     */
     public Decoder build() {
 
         if (loader == null) {
@@ -169,6 +224,11 @@ public class DecoderBuilder {
                 loader, base);
     }
 
+    /**
+     * Builds a {@link DebugDecoder} instance for diagnostic purposes.
+     *
+     * @return a {@code DebugDecoder} instance
+     */
     public DebugDecoder debug() {
 
         if (loader == null) {
@@ -205,7 +265,7 @@ public class DecoderBuilder {
     protected static final Decoder newInstance(DecoderConfig config, DocumentLoader loader, URI base) {
         return newInstance(config, config.decoderMapping(), loader, base);
     }
-    
+
     public static final Decoder newInstance(DecoderConfig config, DecoderMappingProvider mapping, DocumentLoader loader, URI base) {
         switch (config.version()) {
         case V1:

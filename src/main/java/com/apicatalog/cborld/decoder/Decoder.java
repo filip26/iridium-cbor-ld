@@ -24,9 +24,9 @@ public interface Decoder {
      *
      * @param encoded the CBOR-LD encoded document as a byte array
      * @return the decoded JSON-LD document as a {@link JsonValue}
-     * @throws ContextError if a context-related error occurs during decoding
+     * @throws ContextError     if a context-related error occurs during decoding
      * @throws DecoderException if the version is unsupported or if a decoding error
-     *                      occurs
+     *                          occurs
      */
     JsonValue decode(byte[] encoded) throws ContextError, DecoderException;
 
@@ -40,14 +40,29 @@ public interface Decoder {
      * @param version the {@link CborLdVersion} of the encoded document
      * @param encoded the CBOR-LD encoded document as a byte array
      * @return the decoded JSON-LD document as a {@link JsonValue}
-     * @throws ContextError if a context-related error occurs during decoding
+     * @throws ContextError     if a context-related error occurs during decoding
      * @throws DecoderException if a decoding error occurs
      */
     JsonValue decode(CborLdVersion version, byte[] encoded) throws ContextError, DecoderException;
 
+    /**
+     * Returns the decoder configuration in use.
+     *
+     * @return the {@link DecoderConfig} applied to this decoder
+     */
     DecoderConfig config();
 
+    /**
+     * Returns the base URI used during decoding.
+     *
+     * @return the base {@link URI} or {@code null} if not set
+     */
     URI base();
 
+    /**
+     * Returns the document loader used to resolve external contexts.
+     *
+     * @return the {@link DocumentLoader} used by this decoder
+     */
     DocumentLoader loader();
 }
