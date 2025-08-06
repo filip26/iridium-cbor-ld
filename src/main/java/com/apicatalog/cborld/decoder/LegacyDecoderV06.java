@@ -12,7 +12,7 @@ import com.apicatalog.jsonld.loader.DocumentLoader;
 
 import jakarta.json.JsonValue;
 
-public class LegacyDecoderV06 extends BaseDecoder {
+class LegacyDecoderV06 extends BaseDecoder {
 
     public LegacyDecoderV06(DecoderConfig config, DocumentLoader loader, URI base) {
         super(config, loader, base);
@@ -33,6 +33,6 @@ public class LegacyDecoderV06 extends BaseDecoder {
                             + Hex.toString(encoded[2]) + ".");
         }
 
-        return decode(encoded, dictionary);
+        return decode(dictionary, encoded);
     }
 }

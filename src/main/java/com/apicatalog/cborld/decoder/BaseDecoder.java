@@ -40,7 +40,7 @@ import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 
-public abstract class BaseDecoder implements Decoder {
+abstract class BaseDecoder implements Decoder {
 
     protected final DecoderConfig config;
 
@@ -65,9 +65,13 @@ public abstract class BaseDecoder implements Decoder {
         return decode(version, encoded);
     }
 
-    protected final JsonValue decode(final DataItem data, final DocumentDictionary custom) throws DecoderError, ContextError {
-        final Mapping mapping = config.decoderMapping().getDecoderMapping(data, custom, this);
+    protected final JsonValue decode(final DocumentDictionary dictionary, final DataItem data) throws DecoderError, ContextError {
+        final Mapping mapping = config.decoderMapping().getDecoderMapping(data, dictionary, this);
         return decodeData(data, null, mapping.typeMap(), mapping);
+    }
+    
+    protected Mapping getMapping(final DocumentDictionary dictionary, final DataItem data) throws DecoderError, ContextError {
+        return config.decoderMapping().getDecoderMapping(data, dictionary, this);
     }
 
     protected final JsonValue decodeData(final DataItem data, final String term, final TypeMap def, Mapping mapping) throws DecoderError, ContextError {
@@ -317,7 +321,7 @@ public abstract class BaseDecoder implements Decoder {
     }
 
     // legacy support
-    protected JsonValue decode(byte[] encoded, final DocumentDictionary provider) throws ContextError, DecoderError {
+    protected final JsonValue decode(final DocumentDictionary dictionary, byte[] encoded) throws ContextError, DecoderError {
         try {
             final ByteArrayInputStream bais = new ByteArrayInputStream(encoded);
             final List<DataItem> dataItems = new CborDecoder(bais).decode();
@@ -329,14 +333,14 @@ public abstract class BaseDecoder implements Decoder {
 
             // only one object
             if (dataItems.size() == 1) {
-                return decode(dataItems.iterator().next(), provider);
+                return decode(dictionary, dataItems.iterator().next());
             }
 
             // decode as an array of objects
             final JsonArrayBuilder builder = Json.createArrayBuilder();
 
             for (final DataItem item : dataItems) {
-                builder.add(decode(item, provider));
+                builder.add(decode(dictionary, item));
             }
 
             return builder.build();

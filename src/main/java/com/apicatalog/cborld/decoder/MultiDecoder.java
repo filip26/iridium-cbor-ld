@@ -11,7 +11,7 @@ import com.apicatalog.jsonld.loader.DocumentLoader;
 
 import jakarta.json.JsonValue;
 
-public class MultiDecoder implements Decoder {
+class MultiDecoder implements Decoder {
 
     protected final Map<CborLdVersion, Decoder> decoders;
     protected final DocumentLoader loader;

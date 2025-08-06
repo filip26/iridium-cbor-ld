@@ -5,19 +5,17 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 public class DictionaryBuilder {
 
-    protected final Map<String, Integer> index;
     protected final Map<Integer, String> reverse;
 
     protected DictionaryBuilder() {
-        this.index = new LinkedHashMap<>();
         this.reverse = new LinkedHashMap<>();
     }
 
     protected DictionaryBuilder(DoubleIndexDictionary dictionary) {
-        this.index = new LinkedHashMap<>(dictionary.index);
         this.reverse = new LinkedHashMap<>(dictionary.reverse);
     }
 
@@ -38,29 +36,29 @@ public class DictionaryBuilder {
     }
 
     public DictionaryBuilder set(Integer code, String value) {
-        index.put(value, code);
         reverse.put(code, value);
         return this;
     }
 
     public DictionaryBuilder set(String value, Integer code) {
-        index.put(value, code);
         reverse.put(code, value);
         return this;
     }
 
     public Dictionary build() {
         return new DoubleIndexDictionary(
-                Collections.unmodifiableMap(index),
+                reverse.entrySet()
+                        .stream()
+                        .collect(Collectors.toUnmodifiableMap(Entry::getValue, Entry::getKey)),
                 Collections.unmodifiableMap(reverse));
     }
 
     class DoubleIndexDictionary implements Dictionary {
 
-        protected final Map<String, Integer> index;
-        protected final Map<Integer, String> reverse;
+        final Map<String, Integer> index;
+        final Map<Integer, String> reverse;
 
-        public DoubleIndexDictionary(Map<String, Integer> index, Map<Integer, String> reverse) {
+        DoubleIndexDictionary(Map<String, Integer> index, Map<Integer, String> reverse) {
             this.index = index;
             this.reverse = reverse;
         }

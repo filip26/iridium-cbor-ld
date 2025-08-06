@@ -13,7 +13,7 @@ import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 
-public class EncoderContext {
+class EncoderContext {
 
     public final static Collection<String> get(final JsonObject document) {
         return get(document, new LinkedHashSet<>());

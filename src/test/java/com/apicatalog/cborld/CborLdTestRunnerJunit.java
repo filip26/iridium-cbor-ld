@@ -16,6 +16,7 @@ import java.util.Objects;
 import com.apicatalog.cbor.CborComparison;
 import com.apicatalog.cbor.CborWriter;
 import com.apicatalog.cborld.context.ContextError;
+import com.apicatalog.cborld.decoder.DecoderDebug;
 import com.apicatalog.cborld.decoder.Decoder;
 import com.apicatalog.cborld.decoder.DecoderError;
 import com.apicatalog.cborld.encoder.Encoder;
@@ -55,6 +56,8 @@ class CborLdTestRunnerJunit {
 
     static final Decoder DECODER;
     static final Decoder DECODER_V05_NOCA;
+    
+    static final DecoderDebug DECODER_DEBUG;
 
     static {
         // load from test resources
@@ -109,6 +112,12 @@ class CborLdTestRunnerJunit {
                 .compactArray(false)
                 .build();
 
+        DECODER_DEBUG = CborLd.createDecoder(CborLdVersion.V1, CborLdVersion.V06, CborLdVersion.V05)
+                .loader(LOADER)
+                .dictionary(UtopiaBarcode.DICTIONARY)
+                .dictionary(UtopiaBarcodeExtended.DICTIONARY)
+                .dictionary(CborLdVersion.V06, UtopiaBarcode.DICTIONARY)
+                .debug();
     }
 
     public CborLdTestRunnerJunit(CborLdTestCase testCase) {

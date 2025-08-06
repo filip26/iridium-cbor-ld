@@ -29,7 +29,9 @@ public class DocumentDictionaryBuilder {
     public static DocumentDictionaryBuilder of(DocumentDictionary dictionary) {
         return new DocumentDictionaryBuilder(
                 dictionary.code(),
-                DictionaryBuilder.of(dictionary.contexts()),
+                dictionary.contexts() != null
+                        ? DictionaryBuilder.of(dictionary.contexts())
+                        : DictionaryBuilder.create(),
                 dictionary.types()
                         .entrySet()
                         .stream()
@@ -37,7 +39,9 @@ public class DocumentDictionaryBuilder {
                         .collect(Collectors.toMap(
                                 Map.Entry::getKey,
                                 Map.Entry::getValue)),
-                DictionaryBuilder.of(dictionary.uris()));
+                dictionary.uris() != null
+                        ? DictionaryBuilder.of(dictionary.uris())
+                        : DictionaryBuilder.create());
     }
 
     public DocumentDictionary build() {
@@ -88,7 +92,6 @@ public class DocumentDictionaryBuilder {
         return this;
     }
 
-    
     class DocumentDictionaryImpl implements DocumentDictionary {
 
         protected final int code;

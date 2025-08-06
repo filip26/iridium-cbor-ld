@@ -166,9 +166,25 @@ public class DecoderBuilder {
                                 Function.identity())),
                 loader, base);
     }
-    
-    public DebugDecoder debug() {
-        return new DebugDecoder(build());
+
+    public DecoderDebug debug() {
+
+        if (loader == null) {
+            loader = new HttpLoader(DefaultHttpClient.defaultInstance());
+            ((HttpLoader) loader).fallbackContentType(MediaType.JSON);
+        }
+
+        if (bundledContexts) {
+            loader = new StaticContextLoader(loader);
+        }
+
+        return new DecoderDebug(
+                versions.values().stream()
+                        .map(c -> newInstance(c, loader, base))
+                        .collect(Collectors.toUnmodifiableMap(
+                                t -> t.config().version(),
+                                Function.identity())),
+                loader, base);
     }
 
     protected static final void enable(Map<CborLdVersion, DecoderConfigBuilder> decoders, CborLdVersion version) {

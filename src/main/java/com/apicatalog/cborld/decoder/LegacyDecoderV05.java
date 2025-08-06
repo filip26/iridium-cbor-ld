@@ -11,7 +11,7 @@ import com.apicatalog.jsonld.loader.DocumentLoader;
 
 import jakarta.json.JsonValue;
 
-public class LegacyDecoderV05 extends BaseDecoder {
+class LegacyDecoderV05 extends BaseDecoder {
 
     public LegacyDecoderV05(DecoderConfig config, DocumentLoader loader, URI base) {
         super(config, loader, base);
@@ -26,6 +26,6 @@ public class LegacyDecoderV05 extends BaseDecoder {
             throw new DecoderError(Code.UnknownCompression, "Custom dictionaries are not supported by v0.5. Use version 1.0.");
         }
 
-        return decode(encoded, LegacyDictionary.DICTIONARY);
+        return decode(LegacyDictionary.DICTIONARY, encoded);
     }
 }

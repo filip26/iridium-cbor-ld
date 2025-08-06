@@ -34,7 +34,7 @@ import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 
-public class DefaultEncoder implements Encoder {
+class DefaultEncoder implements Encoder {
 
     protected final EncoderConfig config;
     protected DocumentLoader loader;

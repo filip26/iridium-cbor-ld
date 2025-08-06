@@ -117,8 +117,8 @@ debuger.decode(encoded);
 
 debugger.isCborLd();      // true if the encoded document is in CBOR-LD format
 debugger.version();       // CBOR-LD encoding version
-debugger.dictionary();    // dictionary code: 0x1 for default compression based on version, 0x0 for no compression
-debug.typeMap();       // dynamic type map
+debugger.dictionary();    // static terms
+debug.typeMap();          // dynamic type map
 debugger.termMap();       // dynamic term map
 debugger.decoded();       // decoded JSON-LD document
 ...

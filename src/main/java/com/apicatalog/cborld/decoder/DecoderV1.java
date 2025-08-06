@@ -17,7 +17,7 @@ import co.nstant.in.cbor.model.UnsignedInteger;
 import jakarta.json.Json;
 import jakarta.json.JsonValue;
 
-public class DecoderV1 extends BaseDecoder {
+class DecoderV1 extends BaseDecoder {
 
     public DecoderV1(DecoderConfig config, DocumentLoader loader, URI base) {
         super(config, loader, base);
@@ -70,7 +70,7 @@ public class DecoderV1 extends BaseDecoder {
         var dictionary = config.registry().get(
                 ((UnsignedInteger) registryId).getValue().intValueExact());
 
-        return decode(it.next(), dictionary);
+        return decode(dictionary, it.next());
     }
 
 }
