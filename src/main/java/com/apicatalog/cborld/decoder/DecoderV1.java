@@ -76,7 +76,7 @@ class DecoderV1 extends AbstractDecoder {
 
         if (code > 0 && dictionary == null) {
             throw new DecoderException(Code.UnknownDictionary,
-                    "Unknown CBOR-LD document terms dictionary code = "
+                    "Unknown CBOR-LD v1.0 document terms dictionary code = "
                             + registryId
                             + ", hex = "
                             + Hex.toString(((UnsignedInteger) registryId).getValue().intValueExact()) + ".");
