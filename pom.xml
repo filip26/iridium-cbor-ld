@@ -58,7 +58,7 @@
 
         <jakarta.json.version>2.0.1</jakarta.json.version>
 
-        <copper-multibase>1.1.0</copper-multibase>
+        <copper-multibase>4.0.0</copper-multibase>
         <copper-multicodec>2.0.0</copper-multicodec>        
 
         <cbor-java.version>0.9</cbor-java.version>
