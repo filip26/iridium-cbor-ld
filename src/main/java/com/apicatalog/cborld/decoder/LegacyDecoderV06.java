@@ -29,7 +29,7 @@ class LegacyDecoderV06 extends AbstractDecoder {
 
         if (dictionary == null) {
             throw new DecoderException(Code.UnknownDictionary,
-                    "Unknown CBOR-LD document terms dictionary code = "
+                    "Unknown CBOR-LD v0.6 document terms dictionary code = "
                             + Hex.toString(encoded[2]) + ".");
         }
 
