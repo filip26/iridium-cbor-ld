@@ -173,7 +173,7 @@ Add JSON-P provider, if it is not on the classpath already.
 </dependency>
 ```
 
-## LD-CLI
+## 🛠️ LD-CLI
 [LD-CLI](https://github.com/filip26/ld-cli) is a command-line utility for
 working with CBOR-LD, JSON-LD, multiformats, and related specifications.
 
