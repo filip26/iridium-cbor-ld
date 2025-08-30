@@ -7,7 +7,7 @@
 
     <groupId>com.apicatalog</groupId>
     <artifactId>iridium-cbor-ld</artifactId>
-    <version>0.7.2</version>
+    <version>0.7.3</version>
 
     <packaging>jar</packaging>
     <name>Iridium CBOR-LD</name>
@@ -59,7 +59,6 @@
         <jakarta.json.version>2.0.1</jakarta.json.version>
 
         <copper-multibase>4.1.0</copper-multibase>
-        <copper-multicodec>2.3.0</copper-multicodec>        
 
         <cbor-java.version>0.9</cbor-java.version>
 
@@ -96,12 +95,6 @@
             <groupId>com.apicatalog</groupId>
             <artifactId>copper-multibase</artifactId>
             <version>${copper-multibase}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.apicatalog</groupId>
-            <artifactId>copper-multicodec</artifactId>
-            <version>${copper-multicodec}</version>
         </dependency>
 
         <!-- Tests -->
