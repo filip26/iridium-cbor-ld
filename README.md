@@ -22,9 +22,6 @@ Iridium CBOR-LD provides a full implementation of the [CBOR-LD 1.0 specification
 - 🧱 Support for custom document dictionaries and builders
 - 📦 Integration with [Verifiable Credential Barcodes](https://w3c-ccg.github.io/vc-barcodes/)
 
-## CLI
-[LD-CLI](https://github.com/filip26/ld-cli) is a command line utility for Ubuntu, Mac and Windows.
-
 ## Usage
 
 ### Encoding
@@ -151,7 +148,6 @@ CborLd.createDecoder(CborLdVersion.V1, CborLdVersion.V06, CborLdVersion.V05)
       .build();      
 ```
 
-
 ## Installation
 
 Java 17+
@@ -175,6 +171,21 @@ Add JSON-P provider, if it is not on the classpath already.
     <artifactId>jakarta.json</artifactId>
     <version>2.0.1</version>
 </dependency>
+```
+
+## LD-CLI
+[LD-CLI](https://github.com/filip26/ld-cli) is a command-line utility for
+working with CBOR-LD, JSON-LD, multiformats, and related specifications.
+
+It provides encoding, decoding, detection, analysis, and format conversion
+features, making it useful for inspecting identifiers, testing content
+addressing, and integrating multiformats into development workflows.
+
+### Example
+
+Decompress CBOR-LD into JSON-LD
+```bash
+ld-cli decompress --pretty --hex --dictionary ./utopia-barcodes-dictionary-example.json <<< 'd90664a60183198000198001198002189d82187618a418b8a3189c18a618ce18b218d01ae592208118baa2189c18a018a8447582002018be18aa18c0a5189c186c18d60418e018e618e258417ab7c2e56b49e2cce62184ce26818e15a8b173164401b5d3bb93ffd6d2b5eb8f6ac0971502ae3dd49d17ec66528164034c912685b8111bc04cdc9ec13dbadd91cc18e418ac'
 ```
 
 ## Contributing
