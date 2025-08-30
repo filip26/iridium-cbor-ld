@@ -5,8 +5,6 @@ import java.util.Collection;
 import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.multibase.Multibase;
-import com.apicatalog.multicodec.Multicodec.Tag;
-import com.apicatalog.multicodec.MulticodecDecoder;
 
 import co.nstant.in.cbor.model.Array;
 import co.nstant.in.cbor.model.ByteString;
@@ -19,8 +17,6 @@ public class DidKeyValueEncoder implements ValueEncoder {
 
     public static final String PREFIX = "did:key:";
     public static final int CODE = 1025;
-
-    protected static MulticodecDecoder CODECS = MulticodecDecoder.getInstance(Tag.Key);
 
     @Override
     public DataItem encode(Mapping mapping, JsonValue jsonValue, String term, Collection<String> types) {
