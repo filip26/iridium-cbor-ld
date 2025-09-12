@@ -23,6 +23,7 @@ import co.nstant.in.cbor.model.SpecialType;
 import co.nstant.in.cbor.model.UnicodeString;
 import co.nstant.in.cbor.model.UnsignedInteger;
 
+@Deprecated
 public class CborFunctions implements Functions {
 
     @FunctionalInterface

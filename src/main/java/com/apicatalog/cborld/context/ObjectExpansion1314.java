@@ -129,7 +129,7 @@ final class ObjectExpansion1314 {
                 continue;
             }
 
-            final Object value = adapter.propertyValue(key, element);
+            final Object value = adapter.property(key, element);
             final NodeType valueType = adapter.typeOf(value);
 
             // 13.4. If expanded property is a keyword:

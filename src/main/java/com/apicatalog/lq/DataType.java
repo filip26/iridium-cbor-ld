@@ -1,5 +1,6 @@
 package com.apicatalog.lq;
 
+@Deprecated
 public enum DataType {
 
     MAP,

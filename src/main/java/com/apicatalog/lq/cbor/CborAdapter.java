@@ -8,6 +8,7 @@ import com.apicatalog.lq.cbor.CborFunctions.ValueDecoder;
 
 import co.nstant.in.cbor.model.DataItem;
 
+@Deprecated
 public class CborAdapter {
 
     public static final Data of(DataItem value,

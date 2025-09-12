@@ -12,6 +12,7 @@ import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonValue;
 
+@Deprecated
 public class JakartaAdapter {
 
     public static final Functions VALUE_PROVIDER = new JakartaFunctions();

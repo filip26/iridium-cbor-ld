@@ -17,6 +17,7 @@ import jakarta.json.JsonStructure;
 import jakarta.json.JsonValue;
 import jakarta.json.JsonValue.ValueType;
 
+@Deprecated
 public class JakartaFunctions implements Functions {
 
     protected JakartaFunctions() {

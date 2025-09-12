@@ -41,6 +41,13 @@ public class ContextMappingProvider implements EncoderMappingProvider, DecoderMa
         try {
             final DecoderContextMapping mapping = new DecoderContextMapping(dictionary, decoder.config().valueDecoders());
 
+//          final Data data = CborAdapter.of(
+//          document,
+//          mapping::decodeKey,
+//          mapping::encodeKey,
+//          mapping::decodeValue);
+
+            
             final Context context = Context.from(document, NodeAdapter.withNativeTypes(CborAdapter.instance()), decoder.base(), decoder.loader(), mapping::add, mapping.typeKeyNameMap());
 
             mapping.typeMap(context.getTypeMapping());

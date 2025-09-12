@@ -172,11 +172,11 @@ final class ObjectExpansion {
     private void initLocalContext() throws JsonLdError {
 
         // 9.
-        final Object contextElement = adapter.propertyValue(Keywords.CONTEXT, element);
+        final Object contextElement = adapter.property(Keywords.CONTEXT, element);
 
         if (contextElement != null) {
 
-            final JsonValue jsonContext = JakartaAdapter.asJson(contextElement, adapter);
+            final JsonValue jsonContext = JakartaAdapter.adapt(contextElement, adapter);
 
             for (final JsonValue context : JsonUtils.toJsonArray(jsonContext)) {
                 final ActiveContext ac = new ActiveContext(activeContext.getBaseUri(), activeContext.getBaseUrl(), activeContext.runtime())
@@ -221,7 +221,7 @@ final class ObjectExpansion {
                 typeMapper.typeKeyName(key);
             }
 
-            final Object entry = adapter.propertyValue(key, element);
+            final Object entry = adapter.property(key, element);
 
 //            final JsonValue entryValue = JakartaAdapter.toJson(entry);
 

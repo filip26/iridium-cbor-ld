@@ -5,6 +5,7 @@ import java.math.BigInteger;
 import java.util.Collection;
 import java.util.function.Function;
 
+@Deprecated
 public interface Functions {
 
     Function<?, DataType> type();
