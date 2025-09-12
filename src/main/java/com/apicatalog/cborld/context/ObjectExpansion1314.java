@@ -130,7 +130,7 @@ final class ObjectExpansion1314 {
             }
 
             final Object value = adapter.property(key, element);
-            final NodeType valueType = adapter.typeOf(value);
+            final NodeType valueType = adapter.type(value);
 
             // 13.4. If expanded property is a keyword:
             if (Keywords.contains(expandedProperty)) {

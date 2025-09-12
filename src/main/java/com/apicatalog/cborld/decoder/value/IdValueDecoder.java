@@ -9,13 +9,11 @@ import com.apicatalog.jsonld.lang.Keywords;
 import co.nstant.in.cbor.model.DataItem;
 import co.nstant.in.cbor.model.MajorType;
 import co.nstant.in.cbor.model.UnsignedInteger;
-import jakarta.json.Json;
-import jakarta.json.JsonValue;
 
 public class IdValueDecoder implements ValueDecoder {
 
     @Override
-    public JsonValue decode(Mapping mapping, DataItem value, String term, Collection<String> types) throws DecoderException {
+    public String decode(Mapping mapping, DataItem value, String term, Collection<String> types) throws DecoderException {
         if (mapping != null
                 && types != null
                 && types.contains(Keywords.ID)
@@ -32,7 +30,7 @@ public class IdValueDecoder implements ValueDecoder {
             }
 
             if (id != null) {
-                return Json.createValue(id);
+                return id;
             }
         }
         return null;

@@ -14,13 +14,11 @@ import co.nstant.in.cbor.model.ByteString;
 import co.nstant.in.cbor.model.DataItem;
 import co.nstant.in.cbor.model.MajorType;
 import co.nstant.in.cbor.model.UnsignedInteger;
-import jakarta.json.Json;
-import jakarta.json.JsonValue;
 
 public class UuidValueDecoder implements ValueDecoder {
 
     @Override
-    public JsonValue decode(Mapping mapping, DataItem value, String term, Collection<String> types) throws DecoderException {
+    public String decode(Mapping mapping, DataItem value, String term, Collection<String> types) throws DecoderException {
 
         if (MajorType.ARRAY.equals(value.getMajorType())) {
 
@@ -34,7 +32,7 @@ public class UuidValueDecoder implements ValueDecoder {
                 if (MajorType.UNSIGNED_INTEGER.equals(code.getMajorType())
                         && ((UnsignedInteger) code).getValue().equals(BigInteger.valueOf(3))
                         && MajorType.BYTE_STRING.equals(uuid.getMajorType())) {
-                    return Json.createValue(UuidValueEncoder.PREFIX + of(((ByteString) uuid).getBytes()).toString());
+                    return UuidValueEncoder.PREFIX + of(((ByteString) uuid).getBytes()).toString();
                 }
             }
         }

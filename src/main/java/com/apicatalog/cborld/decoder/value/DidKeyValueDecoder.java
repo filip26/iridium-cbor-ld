@@ -13,13 +13,11 @@ import co.nstant.in.cbor.model.ByteString;
 import co.nstant.in.cbor.model.DataItem;
 import co.nstant.in.cbor.model.MajorType;
 import co.nstant.in.cbor.model.UnsignedInteger;
-import jakarta.json.Json;
-import jakarta.json.JsonValue;
 
 public class DidKeyValueDecoder implements ValueDecoder {
 
     @Override
-    public JsonValue decode(Mapping mapping, DataItem value, String term, Collection<String> types) throws DecoderException {
+    public String decode(Mapping mapping, DataItem value, String term, Collection<String> types) throws DecoderException {
 
         if (MajorType.ARRAY.equals(value.getMajorType())) {
 
@@ -46,7 +44,7 @@ public class DidKeyValueDecoder implements ValueDecoder {
                     ? "#" + decode((ByteString) part2)
                     : "";
 
-            return Json.createValue(DidKeyValueEncoder.PREFIX + key + fragment);
+            return DidKeyValueEncoder.PREFIX + key + fragment;
         }
 
         return null;

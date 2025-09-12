@@ -39,5 +39,5 @@ public interface ValueDecoder {
      * @throws DecoderException if decoding fails due to unsupported structure, type
      *                          mismatch, or malformed data
      */
-    JsonValue decode(Mapping mapping, DataItem value, String term, Collection<String> types) throws DecoderException;
+    String decode(Mapping mapping, DataItem value, String term, Collection<String> types) throws DecoderException;
 }

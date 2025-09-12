@@ -37,7 +37,7 @@ final class ArrayExpansion {
     private String activeProperty;
     private URI baseUrl;
 
-    private Object element;
+    private final Object element;
     private final NodeAdapter adapter;
 
     private final Consumer<Collection<String>> appliedContexts;
@@ -63,8 +63,14 @@ final class ArrayExpansion {
         this.fromMap = false;
     }
 
-    public static final ArrayExpansion with(final ActiveContext activeContext, final Object element, NodeAdapter adapter,
-            final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts, TypeKeyNameMapper typeMapper) {
+    public static final ArrayExpansion with(
+            final ActiveContext activeContext, 
+            final Object element,
+            final NodeAdapter adapter,
+            final String activeProperty, 
+            final URI baseUrl, 
+            final Consumer<Collection<String>> appliedContexts, 
+            final TypeKeyNameMapper typeMapper) {
         return new ArrayExpansion(activeContext, element, adapter, activeProperty, baseUrl, appliedContexts, typeMapper);
     }
 
@@ -87,7 +93,7 @@ final class ArrayExpansion {
         final JsonArrayBuilder result = Json.createArrayBuilder();
 
         // 5.2.
-        for (final Object item : adapter.items(element)) {
+        for (final Object item : adapter.iterable(element)) {
 
             // 5.2.1
             JsonValue expanded = Expansion

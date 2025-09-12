@@ -13,14 +13,11 @@ import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.cborld.mapping.TypeKeyNameMapper;
 import com.apicatalog.cborld.mapping.TypeMap;
 import com.apicatalog.cborld.registry.DocumentDictionary;
-import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 
 import co.nstant.in.cbor.model.DataItem;
 import co.nstant.in.cbor.model.UnicodeString;
 import co.nstant.in.cbor.model.UnsignedInteger;
-import jakarta.json.JsonString;
-import jakarta.json.JsonValue;
 
 class DecoderContextMapping implements Mapping {
 
@@ -45,7 +42,7 @@ class DecoderContextMapping implements Mapping {
 
         for (final ValueDecoder decoder : valueDecoders) {
             try {
-                final JsonValue decoded = decoder.decode(this, value, term,
+                final String decoded = decoder.decode(this, value, term,
                         typeKeyNameMap.isTypeKey(term)
                                 ? type
                                 : Collections.emptySet());
@@ -54,9 +51,7 @@ class DecoderContextMapping implements Mapping {
                     continue;
                 }
 
-                if (JsonUtils.isString(decoded)) {
-                    return new UnicodeString(((JsonString) decoded).getString());
-                }
+                return new UnicodeString(decoded);
 
             } catch (DecoderException e) {
                 /* ignored */

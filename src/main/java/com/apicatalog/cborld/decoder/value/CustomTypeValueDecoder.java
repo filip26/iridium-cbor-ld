@@ -9,13 +9,11 @@ import com.apicatalog.cborld.mapping.Mapping;
 import co.nstant.in.cbor.model.DataItem;
 import co.nstant.in.cbor.model.MajorType;
 import co.nstant.in.cbor.model.UnsignedInteger;
-import jakarta.json.Json;
-import jakarta.json.JsonValue;
 
 public class CustomTypeValueDecoder implements ValueDecoder {
 
     @Override
-    public JsonValue decode(final Mapping mapping, DataItem value, String term, Collection<String> types) throws DecoderException {
+    public String decode(final Mapping mapping, DataItem value, String term, Collection<String> types) throws DecoderException {
 
         if (mapping != null
                 && mapping.dictionary() != null
@@ -34,7 +32,7 @@ public class CustomTypeValueDecoder implements ValueDecoder {
                 }
                 final String decoded = dictionary.getValue(((UnsignedInteger) value).getValue().intValueExact());
                 if (decoded != null) {
-                    return Json.createValue(decoded);
+                    return decoded;
                 }
             }
         }
