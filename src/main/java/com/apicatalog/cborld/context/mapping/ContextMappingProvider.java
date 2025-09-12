@@ -12,7 +12,6 @@ import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.cborld.registry.DocumentDictionary;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.tree.io.JakartaAdapter;
-import com.apicatalog.tree.io.NodeAdapter;
 
 import co.nstant.in.cbor.model.DataItem;
 import jakarta.json.JsonObject;
@@ -23,7 +22,10 @@ public class ContextMappingProvider implements EncoderMappingProvider, DecoderMa
     public Mapping getEncoderMapping(JsonObject document, Encoder encoder) throws ContextError {
         try {
 
-            final Context context = Context.from(document, NodeAdapter.withNativeTypes(JakartaAdapter.instance()), encoder.base(), encoder.loader());
+            final Context context = Context.from(document, 
+                    JakartaAdapter.instance(), 
+                    encoder.base(), 
+                    encoder.loader());
 
             return new EncoderContextMapping(
                     encoder.config().dictionary(),
@@ -38,20 +40,19 @@ public class ContextMappingProvider implements EncoderMappingProvider, DecoderMa
     @Override
     public Mapping getDecoderMapping(DataItem document, DocumentDictionary dictionary, Decoder decoder) throws ContextError {
         try {
-            final DecoderContextMapping mapping = new DecoderContextMapping(dictionary, decoder.config().valueDecoders());
-
-//          final Data data = CborAdapter.of(
-//          document,
-//          mapping::decodeKey,
-//          mapping::encodeKey,
-//          mapping::decodeValue);
+            var mapping = new DecoderContextMapping(dictionary, decoder.config().valueDecoders());
 
             var adapter = new CborMapping(
                     mapping::decodeTerm,
                     mapping::encodeTerm,
                     mapping::decodeValue);
 
-            final Context context = Context.from(document, NodeAdapter.withNativeTypes(adapter), decoder.base(), decoder.loader(), mapping::add, mapping.typeKeyNameMap());
+            var context = Context.from(document,
+                    adapter,
+                    decoder.base(),
+                    decoder.loader(),
+                    mapping::add,
+                    mapping.typeKeyNameMap());
 
             mapping.typeMap(context.getTypeMapping());
 

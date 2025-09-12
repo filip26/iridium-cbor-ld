@@ -12,26 +12,27 @@ import co.nstant.in.cbor.model.DataItem;
 import co.nstant.in.cbor.model.MajorType;
 import co.nstant.in.cbor.model.UnsignedInteger;
 
-public class CborMapping extends CborAdapter {
+class CborMapping extends CborAdapter {
 
-    protected final Function<DataItem, String> dataToTerm;
-    protected final Function<String, DataItem> termToData;
-    protected final BiFunction<DataItem, String, DataItem> decodeValue;
-    
-    protected CborMapping(
-            Function<DataItem, String> dataToTerm,
-            Function<String, DataItem> termToData,
+    final Function<DataItem, String> decodeTerm;
+    final Function<String, DataItem> encodeTerm;
+
+    final BiFunction<DataItem, String, DataItem> decodeValue;
+
+    CborMapping(
+            Function<DataItem, String> decodeTerm,
+            Function<String, DataItem> encodeTerm,
             BiFunction<DataItem, String, DataItem> decodeValue) {
-        this.dataToTerm = dataToTerm;
-        this.termToData = termToData;
+        this.decodeTerm = decodeTerm;
+        this.encodeTerm = encodeTerm;
         this.decodeValue = decodeValue;
     }
 
     @Override
-    public DataItem property(Object property, Object node) {        
+    public DataItem property(Object property, Object node) {
         if (property instanceof String term) {
-            
-            DataItem key = termToData.apply(term);
+
+            DataItem key = encodeTerm.apply(term);
             DataItem value = super.property(key, node);
             boolean arrayCode = false;
 
@@ -43,12 +44,6 @@ public class CborMapping extends CborAdapter {
                 }
             }
             if (value != null) {
-//FIXME                
-//                final Collection<String> path = stack.stream()
-//                        .filter(ss -> ss.key() != null)
-//                        .map(ss -> ss.key())
-//                        .collect(Collectors.toList());
-
                 if ((!arrayCode && MajorType.ARRAY.equals(value.getMajorType()))) {
 
                     value = decodeValue.apply(value, term);
@@ -73,10 +68,10 @@ public class CborMapping extends CborAdapter {
         }
         return super.property(property, node);
     }
-    
+
     @Override
     public String stringValue(Object node) {
-        return dataToTerm.apply((DataItem)node);
+        return decodeTerm.apply((DataItem) node);
     }
 
 }
