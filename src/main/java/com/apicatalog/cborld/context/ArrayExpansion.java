@@ -23,8 +23,7 @@ import com.apicatalog.cborld.mapping.TypeKeyNameMapper;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.json.JsonUtils;
-import com.apicatalog.lq.Data;
-import com.apicatalog.lq.Q;
+import com.apicatalog.tree.io.NodeAdapter;
 
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
@@ -35,9 +34,11 @@ final class ArrayExpansion {
 
     // mandatory
     private ActiveContext activeContext;
-    private Data element;
     private String activeProperty;
     private URI baseUrl;
+
+    private Object element;
+    private final NodeAdapter adapter;
 
     private final Consumer<Collection<String>> appliedContexts;
     private final TypeKeyNameMapper typeMapper;
@@ -46,10 +47,11 @@ final class ArrayExpansion {
     private boolean ordered;
     private boolean fromMap;
 
-    private ArrayExpansion(final ActiveContext activeContext, final Data element, final String activeProperty,
+    private ArrayExpansion(final ActiveContext activeContext, final Object element, NodeAdapter adapter, final String activeProperty,
             final URI baseUrl, Consumer<Collection<String>> appliedContexts, TypeKeyNameMapper typeMapper) {
         this.activeContext = activeContext;
         this.element = element;
+        this.adapter = adapter;
         this.activeProperty = activeProperty;
         this.baseUrl = baseUrl;
 
@@ -61,9 +63,9 @@ final class ArrayExpansion {
         this.fromMap = false;
     }
 
-    public static final ArrayExpansion with(final ActiveContext activeContext, final Data element,
+    public static final ArrayExpansion with(final ActiveContext activeContext, final Object element, NodeAdapter adapter,
             final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts, TypeKeyNameMapper typeMapper) {
-        return new ArrayExpansion(activeContext, element, activeProperty, baseUrl, appliedContexts, typeMapper);
+        return new ArrayExpansion(activeContext, element, adapter, activeProperty, baseUrl, appliedContexts, typeMapper);
     }
 
     public ArrayExpansion ordered(boolean value) {
@@ -78,18 +80,18 @@ final class ArrayExpansion {
 
     public JsonArray expand() throws JsonLdError {
 
-        if (Q.isEmpty(element)) {
+        if (adapter.isEmpty(element)) {
             return JsonValue.EMPTY_JSON_ARRAY;
         }
 
         final JsonArrayBuilder result = Json.createArrayBuilder();
 
         // 5.2.
-        for (final Data item : Q.iterable(element)) {
+        for (final Object item : adapter.items(element)) {
 
             // 5.2.1
             JsonValue expanded = Expansion
-                    .with(activeContext, item, activeProperty, baseUrl, appliedContexts, typeMapper)
+                    .with(activeContext, item, adapter, activeProperty, baseUrl, appliedContexts, typeMapper)
                     .ordered(ordered)
                     .fromMap(fromMap)
                     .compute();

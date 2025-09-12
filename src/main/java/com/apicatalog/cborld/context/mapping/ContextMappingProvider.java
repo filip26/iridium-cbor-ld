@@ -11,9 +11,9 @@ import com.apicatalog.cborld.mapping.EncoderMappingProvider;
 import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.cborld.registry.DocumentDictionary;
 import com.apicatalog.jsonld.JsonLdError;
-import com.apicatalog.lq.Data;
-import com.apicatalog.lq.cbor.CborAdapter;
-import com.apicatalog.lq.jakarta.JakartaAdapter;
+import com.apicatalog.tree.io.CborAdapter;
+import com.apicatalog.tree.io.JakartaAdapter;
+import com.apicatalog.tree.io.NodeAdapter;
 
 import co.nstant.in.cbor.model.DataItem;
 import jakarta.json.JsonObject;
@@ -24,9 +24,7 @@ public class ContextMappingProvider implements EncoderMappingProvider, DecoderMa
     public Mapping getEncoderMapping(JsonObject document, Encoder encoder) throws ContextError {
         try {
 
-            final Data value = JakartaAdapter.of(document);
-
-            final Context context = Context.from(value, encoder.base(), encoder.loader());
+            final Context context = Context.from(document, NodeAdapter.withNativeTypes(JakartaAdapter.instance()), encoder.base(), encoder.loader());
 
             return new EncoderContextMapping(
                     encoder.config().dictionary(),
@@ -43,13 +41,7 @@ public class ContextMappingProvider implements EncoderMappingProvider, DecoderMa
         try {
             final DecoderContextMapping mapping = new DecoderContextMapping(dictionary, decoder.config().valueDecoders());
 
-            final Data data = CborAdapter.of(
-                    document,
-                    mapping::decodeKey,
-                    mapping::encodeKey,
-                    mapping::decodeValue);
-
-            final Context context = Context.from(data, decoder.base(), decoder.loader(), mapping::add, mapping.typeKeyNameMap());
+            final Context context = Context.from(document, NodeAdapter.withNativeTypes(CborAdapter.instance()), decoder.base(), decoder.loader(), mapping::add, mapping.typeKeyNameMap());
 
             mapping.typeMap(context.getTypeMapping());
 

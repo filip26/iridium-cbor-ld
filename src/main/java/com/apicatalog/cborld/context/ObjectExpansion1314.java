@@ -31,9 +31,8 @@ import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.ListObject;
 import com.apicatalog.jsonld.lang.Utils;
 import com.apicatalog.jsonld.lang.ValueObject;
-import com.apicatalog.lq.Data;
-import com.apicatalog.lq.DataType;
-import com.apicatalog.lq.Q;
+import com.apicatalog.tree.io.NodeAdapter;
+import com.apicatalog.tree.io.NodeType;
 
 import jakarta.json.Json;
 import jakarta.json.JsonValue;
@@ -43,7 +42,9 @@ final class ObjectExpansion1314 {
     // mandatory
     private ActiveContext activeContext;
 
-    private final Data element;
+    private final Object element;
+    private final NodeAdapter adapter;
+
     private final String activeProperty;
     private final URI baseUrl;
 
@@ -55,11 +56,17 @@ final class ObjectExpansion1314 {
     // optional
     private boolean ordered;
 
-    private ObjectExpansion1314(final ActiveContext activeContext, final Data element,
-            final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts,
-            TypeKeyNameMapper typeMapper) {
+    private ObjectExpansion1314(
+            final ActiveContext activeContext,
+            final Object element,
+            final NodeAdapter adapter,
+            final String activeProperty,
+            final URI baseUrl,
+            final Consumer<Collection<String>> appliedContexts,
+            final TypeKeyNameMapper typeMapper) {
         this.activeContext = activeContext;
         this.element = element;
+        this.adapter = adapter;
         this.activeProperty = activeProperty;
         this.baseUrl = baseUrl;
 
@@ -70,9 +77,15 @@ final class ObjectExpansion1314 {
         this.ordered = false;
     }
 
-    public static final ObjectExpansion1314 with(final ActiveContext activeContext, final Data element,
-            final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts, TypeKeyNameMapper typeMapper) {
-        return new ObjectExpansion1314(activeContext, element, activeProperty, baseUrl, appliedContexts, typeMapper);
+    public static final ObjectExpansion1314 with(
+            final ActiveContext activeContext,
+            final Object element,
+            final NodeAdapter adapter,
+            final String activeProperty,
+            final URI baseUrl,
+            final Consumer<Collection<String>> appliedContexts,
+            final TypeKeyNameMapper typeMapper) {
+        return new ObjectExpansion1314(activeContext, element, adapter, activeProperty, baseUrl, appliedContexts, typeMapper);
     }
 
     public ObjectExpansion1314 ordered(boolean value) {
@@ -87,11 +100,14 @@ final class ObjectExpansion1314 {
 
     public void expand() throws JsonLdError {
 
-        if (Q.isEmpty(element)) {
+        if (adapter.isEmpty(element)) {
             return;
         }
 
-        final Collection<String> keys = Q.keys(element);
+        final Collection<String> keys = adapter.properties(element)
+                .stream()
+                .map(adapter::stringValue)
+                .toList();
 
         // 13.
         for (final String key : Utils.index(keys, ordered)) {
@@ -113,16 +129,16 @@ final class ObjectExpansion1314 {
                 continue;
             }
 
-            final Data value = Q.value(element, key);
-            final DataType valueType = Q.type(value);
+            final Object value = adapter.propertyValue(key, element);
+            final NodeType valueType = adapter.typeOf(value);
 
             // 13.4. If expanded property is a keyword:
             if (Keywords.contains(expandedProperty)) {
 
                 JsonValue expandedType = null;
 
-                if (DataType.STRING == valueType) {
-                    expandedType = Json.createValue(Q.string(value));
+                if (NodeType.STRING == valueType) {
+                    expandedType = Json.createValue(adapter.stringValue(value));
                 }
 
                 // 13.4.1
@@ -156,7 +172,7 @@ final class ObjectExpansion1314 {
                     }
 
                     expandedType = Expansion
-                            .with(activeContext, value, null, baseUrl, appliedContexts, typeMapper)
+                            .with(activeContext, value, adapter, null, baseUrl, appliedContexts, typeMapper)
                             .ordered(ordered)
                             .compute();
                 }
@@ -206,16 +222,16 @@ final class ObjectExpansion1314 {
                 expandedType = Json.createValue(Keywords.JSON);
 
                 // 13.7.
-            } else if (containerMapping.contains(Keywords.LANGUAGE) && (DataType.MAP == valueType)) {
+            } else if (containerMapping.contains(Keywords.LANGUAGE) && (NodeType.MAP == valueType)) {
 
                 // 13.8.
             } else if ((containerMapping.contains(Keywords.INDEX) || containerMapping.contains(Keywords.TYPE)
-                    || containerMapping.contains(Keywords.ID)) && (DataType.MAP == valueType)) {
+                    || containerMapping.contains(Keywords.ID)) && (NodeType.MAP == valueType)) {
 
                 // 13.9.
             } else {
                 expandedType = Expansion
-                        .with(activeContext, value, key, baseUrl, appliedContexts, typeMapper)
+                        .with(activeContext, value, adapter, key, baseUrl, appliedContexts, typeMapper)
                         .ordered(ordered)
                         .compute();
             }

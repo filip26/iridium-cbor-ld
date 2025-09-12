@@ -25,9 +25,8 @@ import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.DirectionType;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.lq.Data;
-import com.apicatalog.lq.DataType;
-import com.apicatalog.lq.Q;
+import com.apicatalog.tree.io.NodeAdapter;
+import com.apicatalog.tree.io.NodeType;
 
 import jakarta.json.Json;
 import jakarta.json.JsonObjectBuilder;
@@ -52,9 +51,9 @@ final class ValueExpasion {
         return new ValueExpasion(activeContext, appliedContexts);
     }
 
-    public JsonValue expand(final Data value, final String activeProperty) throws JsonLdError {
+    public JsonValue expand(final Object value, final NodeAdapter adapter, final String activeProperty) throws JsonLdError {
 
-        final DataType valueType = Q.type(value);
+        final NodeType valueType = adapter.typeOf(value);
 
         definition = activeContext.getTerm(activeProperty);
 
@@ -66,8 +65,8 @@ final class ValueExpasion {
 
                 String idValue = null;
 
-                if (DataType.STRING == valueType) {
-                    idValue = Q.string(value);
+                if (NodeType.STRING == valueType) {
+                    idValue = adapter.stringValue(value);
                 }
 
                 if (idValue != null) {
@@ -80,24 +79,24 @@ final class ValueExpasion {
                     return Json.createObjectBuilder().add(Keywords.ID, expandedValue)
                             .add(Keywords.TYPE, Keywords.ID).build();
 
-                } else if (Q.isNumber(valueType)) {
+                } else if (NodeType.NUMBER == valueType) {
                     return Json.createObjectBuilder()
                             .add(Keywords.TYPE, Keywords.ID).build();
                 }
 
                 // 2.
-            } else if (Keywords.VOCAB.equals(typeMapping.get()) && (DataType.STRING == valueType)) {
+            } else if (Keywords.VOCAB.equals(typeMapping.get()) && (NodeType.STRING == valueType)) {
 
                 String expandedValue = UriExpansion
                         .with(activeContext, appliedContexts)
                         .documentRelative(true)
                         .vocab(true)
-                        .expand(Q.string(value));
+                        .expand(adapter.stringValue(value));
 
                 return Json.createObjectBuilder().add(Keywords.ID, expandedValue)
                         .add(Keywords.TYPE, Keywords.VOCAB).build();
 
-            } else if (Keywords.VOCAB.equals(typeMapping.get()) && Q.isNumber(valueType)) {
+            } else if (Keywords.VOCAB.equals(typeMapping.get()) && (NodeType.NUMBER == valueType)) {
                 return Json.createObjectBuilder()
                         .add(Keywords.TYPE, Keywords.VOCAB).build();
             }
@@ -114,7 +113,7 @@ final class ValueExpasion {
             result.add(Keywords.TYPE, typeMapping.get());
             return result.build();
 
-        } else if (DataType.STRING == valueType) {
+        } else if (NodeType.STRING == valueType) {
             buildStringValue(result);
             return result.build();
         }

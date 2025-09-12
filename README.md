@@ -199,7 +199,7 @@ Fork and clone the project repository.
 
 ```bash
 > cd iridium-cbor-ld
-> mvn clean package
+> mvn package
 ```
 
 ## Resources
