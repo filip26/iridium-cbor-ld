@@ -30,7 +30,7 @@ public interface ValueEncoder {
      *
      * @param mapping   the current {@link Mapping} context containing dictionaries
      *                  and type mappings
-     * @param jsonValue the value to encode
+     * @param value the value to encode, never <code>null</code>
      * @param term      the JSON-LD term (property) associated with the value
      * @param types     the set of semantic types associated with the term
      * @return a CBOR {@link DataItem} representing the encoded value

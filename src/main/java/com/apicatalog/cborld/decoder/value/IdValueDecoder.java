@@ -7,7 +7,6 @@ import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.jsonld.lang.Keywords;
 
 import co.nstant.in.cbor.model.DataItem;
-import co.nstant.in.cbor.model.MajorType;
 import co.nstant.in.cbor.model.UnsignedInteger;
 
 public class IdValueDecoder implements ValueDecoder {
@@ -17,9 +16,9 @@ public class IdValueDecoder implements ValueDecoder {
         if (mapping != null
                 && types != null
                 && types.contains(Keywords.ID)
-                && MajorType.UNSIGNED_INTEGER.equals(value.getMajorType())) {
+                && value instanceof UnsignedInteger integer) {
 
-            int code = ((UnsignedInteger) value).getValue().intValueExact();
+            int code = integer.getValue().intValueExact();
 
             String id = mapping.dictionary() != null && mapping.dictionary().uris() != null
                     ? mapping.dictionary().uris().getValue(code)

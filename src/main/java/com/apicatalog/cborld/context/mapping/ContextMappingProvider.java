@@ -11,7 +11,6 @@ import com.apicatalog.cborld.mapping.EncoderMappingProvider;
 import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.cborld.registry.DocumentDictionary;
 import com.apicatalog.jsonld.JsonLdError;
-import com.apicatalog.tree.io.CborAdapter;
 import com.apicatalog.tree.io.JakartaAdapter;
 import com.apicatalog.tree.io.NodeAdapter;
 
@@ -47,8 +46,12 @@ public class ContextMappingProvider implements EncoderMappingProvider, DecoderMa
 //          mapping::encodeKey,
 //          mapping::decodeValue);
 
-            
-            final Context context = Context.from(document, NodeAdapter.withNativeTypes(CborAdapter.instance()), decoder.base(), decoder.loader(), mapping::add, mapping.typeKeyNameMap());
+            var adapter = new CborMapping(
+                    mapping::decodeTerm,
+                    mapping::encodeTerm,
+                    mapping::decodeValue);
+
+            final Context context = Context.from(document, NodeAdapter.withNativeTypes(adapter), decoder.base(), decoder.loader(), mapping::add, mapping.typeKeyNameMap());
 
             mapping.typeMap(context.getTypeMapping());
 

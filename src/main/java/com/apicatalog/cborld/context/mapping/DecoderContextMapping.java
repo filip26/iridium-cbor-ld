@@ -61,7 +61,7 @@ class DecoderContextMapping implements Mapping {
         return value;
     }
 
-    final DataItem encodeKey(String key) {
+    final DataItem encodeTerm(String key) {
 
         final Integer encodedProperty = termMap.getCode(key);
 
@@ -71,7 +71,7 @@ class DecoderContextMapping implements Mapping {
         return new UnicodeString(key);
     }
 
-    final String decodeKey(final DataItem data) {
+    final String decodeTerm(final DataItem data) {
 
         if (data == null) {
             throw new IllegalArgumentException("The data parameter must not be null.");

@@ -19,7 +19,7 @@ public class UuidValueEncoder implements ValueEncoder {
     @Override
     public DataItem encode(Mapping mapping, String value, String term, Collection<String> types) {
 
-        if (value != null && value.toLowerCase().startsWith(PREFIX)) {
+        if (value.toLowerCase().startsWith(PREFIX)) {
 
             String rest = value.substring(PREFIX.length());
 

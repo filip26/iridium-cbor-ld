@@ -18,8 +18,7 @@ public class DidKeyValueEncoder implements ValueEncoder {
     @Override
     public DataItem encode(Mapping mapping, String value, String term, Collection<String> types) {
 
-        if (value == null
-                || !(value.toLowerCase().startsWith(PREFIX))) {
+        if (!(value.toLowerCase().startsWith(PREFIX))) {
             return null;
         }
 

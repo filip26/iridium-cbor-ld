@@ -7,7 +7,6 @@ import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.jsonld.lang.Keywords;
 
 import co.nstant.in.cbor.model.DataItem;
-import co.nstant.in.cbor.model.MajorType;
 import co.nstant.in.cbor.model.UnsignedInteger;
 
 public class ContextValueDecoder implements ValueDecoder {
@@ -18,8 +17,8 @@ public class ContextValueDecoder implements ValueDecoder {
                 && mapping.dictionary() != null
                 && mapping.dictionary().contexts() != null
                 && Keywords.CONTEXT.equals(term)
-                && MajorType.UNSIGNED_INTEGER.equals(value.getMajorType())) {
-            return mapping.dictionary().contexts().getValue(((UnsignedInteger) value).getValue().intValueExact());
+                && value instanceof UnsignedInteger integer) {
+            return mapping.dictionary().contexts().getValue(integer.getValue().intValueExact());
         }
         return null;
     }

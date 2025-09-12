@@ -7,7 +7,6 @@ import com.apicatalog.cborld.dictionary.Dictionary;
 import com.apicatalog.cborld.mapping.Mapping;
 
 import co.nstant.in.cbor.model.DataItem;
-import co.nstant.in.cbor.model.MajorType;
 import co.nstant.in.cbor.model.UnsignedInteger;
 
 public class CustomTypeValueDecoder implements ValueDecoder {
@@ -19,7 +18,7 @@ public class CustomTypeValueDecoder implements ValueDecoder {
                 && mapping.dictionary() != null
                 && mapping.dictionary().types() != null
                 && types != null
-                && MajorType.UNSIGNED_INTEGER.equals(value.getMajorType())) {
+                && value instanceof UnsignedInteger integer) {
 
             var typeMap = mapping.dictionary().types();
 
@@ -30,7 +29,7 @@ public class CustomTypeValueDecoder implements ValueDecoder {
                 if (dictionary == null) {
                     continue;
                 }
-                final String decoded = dictionary.getValue(((UnsignedInteger) value).getValue().intValueExact());
+                final String decoded = dictionary.getValue(integer.getValue().intValueExact());
                 if (decoded != null) {
                     return decoded;
                 }
