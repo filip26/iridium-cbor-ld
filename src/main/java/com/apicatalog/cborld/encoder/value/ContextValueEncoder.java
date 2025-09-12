@@ -3,24 +3,20 @@ package com.apicatalog.cborld.encoder.value;
 import java.util.Collection;
 
 import com.apicatalog.cborld.mapping.Mapping;
-import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 
 import co.nstant.in.cbor.model.DataItem;
 import co.nstant.in.cbor.model.UnsignedInteger;
-import jakarta.json.JsonString;
-import jakarta.json.JsonValue;
 
 public class ContextValueEncoder implements ValueEncoder {
 
     @Override
-    public DataItem encode(final Mapping mapping, final JsonValue jsonValue, final String term, Collection<String> types) {
+    public DataItem encode(final Mapping mapping, final String value, final String term, Collection<String> types) {
         if (Keywords.CONTEXT.equals(term)
-                && JsonUtils.isString(jsonValue)
                 && mapping.dictionary() != null
                 && mapping.dictionary().contexts() != null) {
 
-            final Integer code = mapping.dictionary().contexts().getCode(((JsonString) jsonValue).getString());
+            final Integer code = mapping.dictionary().contexts().getCode(value);
 
             if (code != null) {
                 return new UnsignedInteger(code);

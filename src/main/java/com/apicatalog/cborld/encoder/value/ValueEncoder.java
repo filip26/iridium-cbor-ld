@@ -30,13 +30,13 @@ public interface ValueEncoder {
      *
      * @param mapping   the current {@link Mapping} context containing dictionaries
      *                  and type mappings
-     * @param jsonValue the JSON value to encode
+     * @param jsonValue the value to encode
      * @param term      the JSON-LD term (property) associated with the value
      * @param types     the set of semantic types associated with the term
      * @return a CBOR {@link DataItem} representing the encoded value
      * @throws EncoderException if encoding fails due to invalid structure,
      *                          unsupported type, or configuration issues
      */
-    DataItem encode(Mapping mapping, JsonValue jsonValue, String term, Collection<String> types) throws EncoderException;
+    DataItem encode(Mapping mapping, String value, String term, Collection<String> types) throws EncoderException;
 
 }

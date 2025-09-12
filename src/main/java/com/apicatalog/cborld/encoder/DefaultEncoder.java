@@ -245,7 +245,7 @@ public class DefaultEncoder implements Encoder {
                 final Collection<String> types = typeMapping.getType(term);
 
                 for (final ValueEncoder valueEncoder : config.valueEncoders()) {
-                    final DataItem dataItem = valueEncoder.encode(mapping, jsonValue, term, types);
+                    final DataItem dataItem = valueEncoder.encode(mapping, ((JsonString)jsonValue).getString(), term, types);
                     if (dataItem != null) {
                         return dataItem;
                     }

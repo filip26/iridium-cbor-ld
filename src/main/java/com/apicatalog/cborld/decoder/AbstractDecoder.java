@@ -218,10 +218,10 @@ abstract class AbstractDecoder implements Decoder {
             final Collection<String> types = def.getType(term);
 
             for (final ValueDecoder decoder : config.valueDecoders()) {
-                final JsonValue decoded = decoder.decode(mapping, value, term, types);
+                var decoded = decoder.decode(mapping, value, term, types);
 
                 if (decoded != null) {
-                    return decoded;
+                    return Json.createValue(decoded);
                 }
             }
         }
