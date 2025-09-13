@@ -17,8 +17,7 @@ public class MultibaseValueDecoder implements ValueDecoder {
 
     @Override
     public String decode(Mapping mapping, DataItem value, String term, Collection<String> types) throws DecoderException {
-
-        if (types != null && types.contains(MultibaseValueEncoder.TYPE)
+        if (types.contains(MultibaseValueEncoder.TYPE)
                 && MajorType.BYTE_STRING.equals(value.getMajorType())) {
 
             byte[] byteString = ((ByteString) value).getBytes();

@@ -13,11 +13,10 @@ public class CustomTypeValueDecoder implements ValueDecoder {
 
     @Override
     public String decode(final Mapping mapping, DataItem value, String term, Collection<String> types) throws DecoderException {
-
-        if (mapping != null
+        if (!types.isEmpty()
+                && mapping != null
                 && mapping.dictionary() != null
                 && mapping.dictionary().types() != null
-                && types != null
                 && value instanceof UnsignedInteger uint) {
 
             var typeMap = mapping.dictionary().types();

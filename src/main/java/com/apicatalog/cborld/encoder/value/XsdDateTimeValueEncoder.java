@@ -14,8 +14,7 @@ public class XsdDateTimeValueEncoder implements ValueEncoder {
 
     @Override
     public DataItem encode(Mapping mapping, String value, String term, Collection<String> types) {
-
-        if (types != null && types.contains(DATE_TIME)) {
+        if (types.contains(DATE_TIME)) {
 
             final Instant instant = Instant.parse(value);
 

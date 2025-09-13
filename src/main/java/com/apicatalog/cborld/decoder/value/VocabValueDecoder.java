@@ -14,11 +14,9 @@ public class VocabValueDecoder implements ValueDecoder {
 
     @Override
     public String decode(Mapping mapping, DataItem value, String term, Collection<String> types) throws DecoderException {
-
-        if (mapping != null 
-                && mapping.termMap() != null 
-                && types != null 
-                && types.contains(Keywords.VOCAB)
+        if (types.contains(Keywords.VOCAB)
+                && mapping != null
+                && mapping.termMap() != null
                 && MajorType.UNSIGNED_INTEGER.equals(value.getMajorType())) {
 
             return mapping.termMap().getValue(((UnsignedInteger) value).getValue().intValueExact());

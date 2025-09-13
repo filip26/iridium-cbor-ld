@@ -17,8 +17,7 @@ public class XsdDateValueEncoder implements ValueEncoder {
 
     @Override
     public DataItem encode(Mapping mapping, String value, String term, Collection<String> types) {
-
-        if (types != null && types.contains(DATE)) {
+        if (types.contains(DATE)) {
 
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             LocalDate date = LocalDate.parse(value, formatter);

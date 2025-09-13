@@ -16,7 +16,7 @@ public class MultibaseValueEncoder implements ValueEncoder {
 
     @Override
     public DataItem encode(Mapping mapping, String value, String term, Collection<String> types) {
-        if (types != null && types.contains(TYPE)) {
+        if (types.contains(TYPE)) {
 
             final String encoded = value;
 

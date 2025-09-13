@@ -16,8 +16,7 @@ public class XsdDateTimeValueDecoder implements ValueDecoder {
 
     @Override
     public String decode(Mapping mapping, DataItem value, String term, Collection<String> types) throws DecoderException {
-        if (types != null
-                && types.contains(DATE_TIME)
+        if (types.contains(DATE_TIME)
                 && MajorType.UNSIGNED_INTEGER.equals(value.getMajorType())) {
 
             long epochSeconds = ((UnsignedInteger) value).getValue().longValueExact();

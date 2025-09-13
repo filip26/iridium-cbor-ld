@@ -13,9 +13,8 @@ public class IdValueDecoder implements ValueDecoder {
 
     @Override
     public String decode(Mapping mapping, DataItem value, String term, Collection<String> types) throws DecoderException {
-        if (mapping != null
-                && types != null
-                && types.contains(Keywords.ID)
+        if (types.contains(Keywords.ID)
+                && mapping != null 
                 && value instanceof UnsignedInteger integer) {
 
             int code = integer.getValue().intValueExact();
