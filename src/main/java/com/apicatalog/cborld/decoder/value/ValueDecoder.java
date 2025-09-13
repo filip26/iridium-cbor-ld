@@ -34,7 +34,7 @@ public interface ValueDecoder {
      *                and type maps
      * @param value   the CBOR value to decode
      * @param term    the JSON-LD term (property) associated with the value
-     * @param types   a collection of JSON-LD type IRIs associated with the term
+     * @param types   a collection of semantic type IRIs associated with the term
      * @return the decoded value
      * @throws DecoderException if decoding fails due to unsupported structure, type
      *                          mismatch, or malformed data

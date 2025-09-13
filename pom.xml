@@ -56,12 +56,10 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <tree.version>1.0.0-SNAPSHOT</tree.version>
+        <tree.version>0.7.0-SNAPSHOT</tree.version>
         <jakarta.json.version>2.0.1</jakarta.json.version>
 
         <copper-multibase>4.1.0</copper-multibase>
-
-        <cbor-java.version>0.9</cbor-java.version>
 
         <argLine>-Dfile.encoding=UTF-8</argLine>
 
@@ -81,13 +79,13 @@
 
         <dependency>
             <groupId>com.apicatalog</groupId>
-            <artifactId>tree-io-jakarta-json-api</artifactId>
+            <artifactId>tree-io-jakarta-adapter</artifactId>
             <version>${tree.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.apicatalog</groupId>
-            <artifactId>tree-io-nstant-in-cbor</artifactId>
+            <artifactId>tree-io-cbor-adapter</artifactId>
             <version>${tree.version}</version>
         </dependency>
 

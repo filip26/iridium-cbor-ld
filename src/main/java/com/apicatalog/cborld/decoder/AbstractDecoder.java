@@ -213,12 +213,12 @@ abstract class AbstractDecoder implements Decoder {
         return Json.createValue(((UnsignedInteger) number).getValue());
     }
 
-    protected final JsonValue decodeValue(final DataItem value, final String term, final TypeMap def, final Mapping mapping) throws DecoderException {
+    protected final JsonValue decodeValue(final DataItem value, final String property, final TypeMap def, final Mapping mapping) throws DecoderException {
         if (def != null) {
-            final Collection<String> types = def.getType(term);
+            final Collection<String> types = def.getType(property);
 
             for (final ValueDecoder decoder : config.valueDecoders()) {
-                var decoded = decoder.decode(mapping, value, term, types);
+                var decoded = decoder.decode(mapping, value, property, types);
 
                 if (decoded != null) {
                     return Json.createValue(decoded);

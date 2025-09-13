@@ -40,7 +40,7 @@ public class LegacyConfigV05 implements EncoderConfig, DecoderConfig {
     static final Collection<ValueEncoder> VALUE_ENCODERS = new ArrayList<>();
 
     static {
-        // term driven
+        // property driven
         VALUE_ENCODERS.add(new ContextValueEncoder());
 
         // type driven
@@ -58,7 +58,7 @@ public class LegacyConfigV05 implements EncoderConfig, DecoderConfig {
     static final Collection<ValueDecoder> VALUE_DECODERS = new ArrayList<>();
 
     static {
-        // term driven
+        // property driven
         VALUE_DECODERS.add(new ContextValueDecoder());
 
         // type driven

@@ -106,7 +106,7 @@ final class ObjectExpansion1314 {
 
         final Collection<String> keys = adapter.properties(element)
                 .stream()
-                .map(adapter::stringValue)
+                .map(adapter::asString)
                 .toList();
 
         // 13.

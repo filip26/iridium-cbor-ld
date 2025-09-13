@@ -24,9 +24,9 @@ class DecoderContextMapping implements Mapping {
     final DocumentDictionary dictionary;
     final CodeTermMap termMap;
     final TypeKeyNameMapper typeKeyNameMap;
-    TypeMap typeMap;
+    final Collection<ValueDecoder> valueDecoders;
 
-    private final Collection<ValueDecoder> valueDecoders;
+    TypeMap typeMap;
 
     DecoderContextMapping(DocumentDictionary dictionary, Collection<ValueDecoder> valueDecoders) {
         this.dictionary = dictionary;
@@ -36,14 +36,14 @@ class DecoderContextMapping implements Mapping {
         this.typeMap = null;
     }
 
-    final DataItem decodeValue(final DataItem value, String term) {
+    final DataItem decodeValue(final DataItem value, String property) {
 
         var type = Arrays.asList(Keywords.TYPE);
 
         for (final ValueDecoder decoder : valueDecoders) {
             try {
-                final String decoded = decoder.decode(this, value, term,
-                        typeKeyNameMap.isTypeKey(term)
+                final String decoded = decoder.decode(this, value, property,
+                        typeKeyNameMap.isTypeKey(property)
                                 ? type
                                 : Collections.emptySet());
 
@@ -61,14 +61,14 @@ class DecoderContextMapping implements Mapping {
         return value;
     }
 
-    final DataItem encodeTerm(String key) {
+    final DataItem encodeTerm(String term) {
 
-        final Integer encodedProperty = termMap.getCode(key);
+        final Integer encodedTerm = termMap.getCode(term);
 
-        if (encodedProperty != null) {
-            return new UnsignedInteger(encodedProperty);
+        if (encodedTerm != null) {
+            return new UnsignedInteger(encodedTerm);
         }
-        return new UnicodeString(key);
+        return new UnicodeString(term);
     }
 
     final String decodeTerm(final DataItem data) {
@@ -82,23 +82,23 @@ class DecoderContextMapping implements Mapping {
             return ((UnicodeString) data).getString();
 
         case UNSIGNED_INTEGER:
-            return decodeKey(((UnsignedInteger) data).getValue());
+            return decodeTerm(((UnsignedInteger) data).getValue());
 
         default:
             return data.toString();
         }
     }
 
-    final String decodeKey(final BigInteger key) {
+    final String decodeTerm(final BigInteger term) {
 
-        if (key.mod(BigInteger.ONE.add(BigInteger.ONE)).equals(BigInteger.ZERO)) {
-            String result = termMap.getValue(key.intValueExact());
-            return result != null ? result : key.toString();
+        if (term.mod(BigInteger.ONE.add(BigInteger.ONE)).equals(BigInteger.ZERO)) {
+            String result = termMap.getValue(term.intValueExact());
+            return result != null ? result : term.toString();
         }
 
-        String result = termMap.getValue(key.subtract(BigInteger.ONE).intValueExact());
+        String result = termMap.getValue(term.subtract(BigInteger.ONE).intValueExact());
 
-        return result != null ? result : key.toString();
+        return result != null ? result : term.toString();
     }
 
     @Override

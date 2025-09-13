@@ -13,6 +13,7 @@ public class ContextValueEncoder implements ValueEncoder {
     @Override
     public DataItem encode(final Mapping mapping, final String value, final String term, Collection<String> types) {
         if (Keywords.CONTEXT.equals(term)
+                && mapping != null
                 && mapping.dictionary() != null
                 && mapping.dictionary().contexts() != null) {
 

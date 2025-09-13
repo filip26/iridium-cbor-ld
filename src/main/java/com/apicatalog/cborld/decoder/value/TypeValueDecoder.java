@@ -14,7 +14,10 @@ public class TypeValueDecoder implements ValueDecoder {
 
     @Override
     public String decode(Mapping mapping, DataItem value, String term, Collection<String> types) throws DecoderException {
-        if (mapping != null && mapping.termMap() != null && types != null && types.contains(Keywords.TYPE)
+        if (mapping != null
+                && mapping.termMap() != null
+                && types != null
+                && types.contains(Keywords.TYPE)
                 && MajorType.UNSIGNED_INTEGER.equals(value.getMajorType())) {
             return mapping.termMap().getValue(((UnsignedInteger) value).getValue().intValueExact());
         }

@@ -18,7 +18,7 @@ public class CustomTypeValueDecoder implements ValueDecoder {
                 && mapping.dictionary() != null
                 && mapping.dictionary().types() != null
                 && types != null
-                && value instanceof UnsignedInteger integer) {
+                && value instanceof UnsignedInteger uint) {
 
             var typeMap = mapping.dictionary().types();
 
@@ -29,7 +29,7 @@ public class CustomTypeValueDecoder implements ValueDecoder {
                 if (dictionary == null) {
                     continue;
                 }
-                final String decoded = dictionary.getValue(integer.getValue().intValueExact());
+                final String decoded = dictionary.getValue(uint.getValue().intValueExact());
                 if (decoded != null) {
                     return decoded;
                 }

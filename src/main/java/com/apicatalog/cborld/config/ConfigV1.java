@@ -49,7 +49,7 @@ public class ConfigV1 implements EncoderConfig, DecoderConfig {
         
         Collection<ValueEncoder> valueEncoders = new ArrayList<>();
         
-        // term driven
+        // property driven
         valueEncoders.add(new ContextValueEncoder());
 
         // type driven
@@ -71,7 +71,7 @@ public class ConfigV1 implements EncoderConfig, DecoderConfig {
     static final Collection<ValueDecoder> VALUE_DECODERS = new ArrayList<>();
 
     static {
-        // term driven
+        // property driven
         VALUE_DECODERS.add(new ContextValueDecoder());
 
         // type driven

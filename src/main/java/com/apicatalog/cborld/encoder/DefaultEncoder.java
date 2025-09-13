@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URI;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map.Entry;
 
 import com.apicatalog.cborld.CborLd;
@@ -241,16 +242,18 @@ public class DefaultEncoder implements Encoder {
         }
 
         if (JsonUtils.isString(jsonValue)) {
-            if (typeMapping != null) {
-                final Collection<String> types = typeMapping.getType(term);
+//            if (typeMapping != null) {
+            final Collection<String> types = typeMapping != null
+                    ? typeMapping.getType(term)
+                    : Collections.emptySet();
 
-                for (final ValueEncoder valueEncoder : config.valueEncoders()) {
-                    final DataItem dataItem = valueEncoder.encode(mapping, ((JsonString)jsonValue).getString(), term, types);
-                    if (dataItem != null) {
-                        return dataItem;
-                    }
+            for (final ValueEncoder valueEncoder : config.valueEncoders()) {
+                final DataItem dataItem = valueEncoder.encode(mapping, ((JsonString) jsonValue).getString(), term, types);
+                if (dataItem != null) {
+                    return dataItem;
                 }
             }
+//            }
             return new UnicodeString(((JsonString) jsonValue).getString());
         }
 

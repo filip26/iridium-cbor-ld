@@ -148,7 +148,7 @@ final class ObjectExpansion {
 
             for (final String key : adapter.properties(element)
                     .stream()
-                    .map(adapter::stringValue)
+                    .map(adapter::asString)
                     .sorted()
                     .toList()) {
 
@@ -201,7 +201,7 @@ final class ObjectExpansion {
 
         for (final String key : adapter.properties(element)
                 .stream()
-                .map(adapter::stringValue)
+                .map(adapter::asString)
                 .sorted()
                 .toList()) {
 
@@ -222,8 +222,6 @@ final class ObjectExpansion {
             }
 
             final Object entry = adapter.property(key, element);
-
-//            final JsonValue entryValue = JakartaAdapter.toJson(entry);
 
             // 11.2
             final List<String> terms = adapter.asStream(entry)

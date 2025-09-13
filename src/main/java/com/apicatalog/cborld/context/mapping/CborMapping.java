@@ -63,15 +63,18 @@ class CborMapping extends CborAdapter {
                 } else {
                     value = decodeValue.apply(value, term);
                 }
+                return value;
             }
-            return value;
         }
         return super.property(property, node);
     }
 
     @Override
-    public String stringValue(Object node) {
-        return decodeTerm.apply((DataItem) node);
+    public String asString(Object node) {
+        if (node instanceof DataItem) {
+            return decodeTerm.apply((DataItem) node);
+        }
+        return super.asString(node);
     }
 
 }

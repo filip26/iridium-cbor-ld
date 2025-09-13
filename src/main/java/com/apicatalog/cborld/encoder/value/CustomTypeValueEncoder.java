@@ -15,6 +15,7 @@ public class CustomTypeValueEncoder implements ValueEncoder {
     @Override
     public DataItem encode(Mapping mapping, String value, String term, Collection<String> types) throws EncoderException {
         if (types != null
+                && mapping != null
                 && mapping.dictionary() != null
                 && mapping.dictionary().types() != null) {
 
