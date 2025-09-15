@@ -28,13 +28,15 @@ import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.tree.io.JakartaAdapter;
+import com.apicatalog.tree.io.JakartaMaterializer;
 import com.apicatalog.tree.io.NodeAdapter;
 
 import jakarta.json.JsonValue;
 
 final class ObjectExpansion {
 
+    final JakartaMaterializer jakarta = new JakartaMaterializer();
+    
     // mandatory
     private ActiveContext activeContext;
     private JsonValue propertyContext;
@@ -176,7 +178,9 @@ final class ObjectExpansion {
 
         if (contextElement != null) {
 
-            final JsonValue jsonContext = JakartaAdapter.adapt(contextElement, adapter);
+            jakarta.accept(contextElement, adapter);
+            
+            final JsonValue jsonContext = jakarta.value();
 
             for (final JsonValue context : JsonUtils.toJsonArray(jsonContext)) {
                 final ActiveContext ac = new ActiveContext(activeContext.getBaseUri(), activeContext.getBaseUrl(), activeContext.runtime())

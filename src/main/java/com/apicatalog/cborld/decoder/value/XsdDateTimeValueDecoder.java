@@ -12,11 +12,11 @@ import co.nstant.in.cbor.model.UnsignedInteger;
 
 public class XsdDateTimeValueDecoder implements ValueDecoder {
 
-    public static final String DATE_TIME = "http://www.w3.org/2001/XMLSchema#dateTime";
+    public static final String DATE_TIME_TYPE = "http://www.w3.org/2001/XMLSchema#dateTime";
 
     @Override
     public String decode(Mapping mapping, DataItem value, String term, Collection<String> types) throws DecoderException {
-        if (types.contains(DATE_TIME)
+        if (types.contains(DATE_TIME_TYPE)
                 && MajorType.UNSIGNED_INTEGER.equals(value.getMajorType())) {
 
             long epochSeconds = ((UnsignedInteger) value).getValue().longValueExact();
