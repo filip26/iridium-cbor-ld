@@ -7,26 +7,18 @@ import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.jsonld.lang.Keywords;
 
 import co.nstant.in.cbor.model.DataItem;
-import co.nstant.in.cbor.model.MajorType;
 import co.nstant.in.cbor.model.UnsignedInteger;
-import jakarta.json.Json;
-import jakarta.json.JsonValue;
 
 public class ContextValueDecoder implements ValueDecoder {
 
     @Override
-    public JsonValue decode(Mapping mapping, DataItem value, String term, Collection<String> types) throws DecoderException {
-        if (mapping != null
+    public String decode(Mapping mapping, DataItem value, String term, Collection<String> types) throws DecoderException {
+        if (Keywords.CONTEXT.equals(term)
+                && mapping != null
                 && mapping.dictionary() != null
-                && mapping.dictionary().contexts() != null
-                && Keywords.CONTEXT.equals(term)
-                && MajorType.UNSIGNED_INTEGER.equals(value.getMajorType())) {
-
-            final String decoded = mapping.dictionary().contexts().getValue(((UnsignedInteger) value).getValue().intValueExact());
-
-            if (decoded != null) {
-                return Json.createValue(decoded);
-            }
+                && mapping.dictionary().contexts() != null 
+                && value instanceof UnsignedInteger integer) {
+            return mapping.dictionary().contexts().getValue(integer.getValue().intValueExact());
         }
         return null;
     }

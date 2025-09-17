@@ -12,17 +12,14 @@ import com.apicatalog.cborld.mapping.Mapping;
 import co.nstant.in.cbor.model.DataItem;
 import co.nstant.in.cbor.model.MajorType;
 import co.nstant.in.cbor.model.UnsignedInteger;
-import jakarta.json.Json;
-import jakarta.json.JsonValue;
 
 public class XsdDateValueDecoder implements ValueDecoder {
 
-    public static final String DATE = "http://www.w3.org/2001/XMLSchema#date";
+    public static final String DATE_TYPE = "http://www.w3.org/2001/XMLSchema#date";
 
     @Override
-    public JsonValue decode(Mapping mapping, DataItem value, String term, Collection<String> types) throws DecoderException {
-        if (types != null
-                && types.contains(DATE)
+    public String decode(Mapping mapping, DataItem value, String term, Collection<String> types) throws DecoderException {
+        if (types.contains(DATE_TYPE)
                 && MajorType.UNSIGNED_INTEGER.equals(value.getMajorType())) {
 
             long epochSeconds = ((UnsignedInteger) value).getValue().longValueExact();
@@ -31,7 +28,7 @@ public class XsdDateValueDecoder implements ValueDecoder {
 
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-            return Json.createValue(formatter.format(LocalDate.ofInstant(date, ZoneOffset.UTC)));
+            return formatter.format(LocalDate.ofInstant(date, ZoneOffset.UTC));
         }
         return null;
     }

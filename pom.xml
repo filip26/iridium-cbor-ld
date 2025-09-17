@@ -7,7 +7,7 @@
 
     <groupId>com.apicatalog</groupId>
     <artifactId>iridium-cbor-ld</artifactId>
-    <version>0.7.3</version>
+    <version>0.8.0-SNAPSHOT</version>
 
     <packaging>jar</packaging>
     <name>Iridium CBOR-LD</name>
@@ -56,11 +56,10 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
+        <tree.version>0.7.5</tree.version>
         <jakarta.json.version>2.0.1</jakarta.json.version>
 
         <copper-multibase>4.1.0</copper-multibase>
-
-        <cbor-java.version>0.9</cbor-java.version>
 
         <argLine>-Dfile.encoding=UTF-8</argLine>
 
@@ -79,16 +78,28 @@
         </dependency>
 
         <dependency>
+            <groupId>com.apicatalog</groupId>
+            <artifactId>tree-io-api</artifactId>
+            <version>${tree.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.apicatalog</groupId>
+            <artifactId>tree-io-jakarta</artifactId>
+            <version>${tree.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.apicatalog</groupId>
+            <artifactId>tree-io-cbor</artifactId>
+            <version>${tree.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>jakarta.json</groupId>
             <artifactId>jakarta.json-api</artifactId>
             <version>${jakarta.json.version}</version>
             <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>co.nstant.in</groupId>
-            <artifactId>cbor</artifactId>
-            <version>${cbor-java.version}</version>
         </dependency>
 
         <dependency>

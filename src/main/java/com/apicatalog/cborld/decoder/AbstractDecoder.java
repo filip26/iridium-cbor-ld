@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.math.BigInteger;
 import java.net.URI;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -46,7 +47,7 @@ abstract class AbstractDecoder implements Decoder {
     static final byte COMPRESSED_BYTE = 0x01;
 
     final DecoderMappingProvider mappingProvider;
-    
+
     final DecoderConfig config;
     final DocumentLoader loader;
     final URI base;
@@ -213,16 +214,16 @@ abstract class AbstractDecoder implements Decoder {
         return Json.createValue(((UnsignedInteger) number).getValue());
     }
 
-    protected final JsonValue decodeValue(final DataItem value, final String term, final TypeMap def, final Mapping mapping) throws DecoderException {
-        if (def != null) {
-            final Collection<String> types = def.getType(term);
+    protected final JsonValue decodeValue(final DataItem value, final String property, final TypeMap def, final Mapping mapping) throws DecoderException {
+        final Collection<String> types = def != null
+                ? def.getType(property)
+                : Collections.emptySet();
 
-            for (final ValueDecoder decoder : config.valueDecoders()) {
-                final JsonValue decoded = decoder.decode(mapping, value, term, types);
+        for (final ValueDecoder decoder : config.valueDecoders()) {
+            var decoded = decoder.decode(mapping, value, property, types);
 
-                if (decoded != null) {
-                    return decoded;
-                }
+            if (decoded != null) {
+                return Json.createValue(decoded);
             }
         }
         return null;
@@ -246,7 +247,7 @@ abstract class AbstractDecoder implements Decoder {
             break;
         }
 
-        throw new IllegalStateException("Unsupported CBOR special type [" + value.getSpecialType() + "].");
+        throw new IllegalArgumentException("Unsupported CBOR special type [" + value.getSpecialType() + "].");
     }
 
     protected static final JsonValue decode(final SimpleValue value) {
@@ -264,9 +265,8 @@ abstract class AbstractDecoder implements Decoder {
             break;
         }
 
-        throw new IllegalStateException("Unsupported CBOR simple value type [" + value.getSimpleValueType() + "].");
+        throw new IllegalArgumentException("Unsupported CBOR simple value type [" + value.getSimpleValueType() + "].");
     }
-
 
     // legacy support
     protected final JsonValue decode(final DocumentDictionary dictionary, byte[] encoded) throws ContextError, DecoderException {

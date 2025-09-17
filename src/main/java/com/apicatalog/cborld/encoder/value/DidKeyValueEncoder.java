@@ -3,15 +3,12 @@ package com.apicatalog.cborld.encoder.value;
 import java.util.Collection;
 
 import com.apicatalog.cborld.mapping.Mapping;
-import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.multibase.Multibase;
 
 import co.nstant.in.cbor.model.Array;
 import co.nstant.in.cbor.model.ByteString;
 import co.nstant.in.cbor.model.DataItem;
 import co.nstant.in.cbor.model.UnsignedInteger;
-import jakarta.json.JsonString;
-import jakarta.json.JsonValue;
 
 public class DidKeyValueEncoder implements ValueEncoder {
 
@@ -19,14 +16,13 @@ public class DidKeyValueEncoder implements ValueEncoder {
     public static final int CODE = 1025;
 
     @Override
-    public DataItem encode(Mapping mapping, JsonValue jsonValue, String term, Collection<String> types) {
+    public DataItem encode(Mapping mapping, String value, String term, Collection<String> types) {
 
-        if (JsonUtils.isNotString(jsonValue)
-                || !((JsonString) jsonValue).getString().toLowerCase().startsWith(PREFIX)) {
+        if (!(value.toLowerCase().startsWith(PREFIX))) {
             return null;
         }
 
-        String encoded = ((JsonString) jsonValue).getString().substring(PREFIX.length());
+        String encoded = value.substring(PREFIX.length());
 
         String fragment = null;
 

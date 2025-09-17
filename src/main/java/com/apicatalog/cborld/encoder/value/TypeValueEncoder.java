@@ -7,16 +7,13 @@ import com.apicatalog.jsonld.lang.Keywords;
 
 import co.nstant.in.cbor.model.DataItem;
 import co.nstant.in.cbor.model.UnsignedInteger;
-import jakarta.json.JsonString;
-import jakarta.json.JsonValue;
 
 public class TypeValueEncoder implements ValueEncoder {
 
     @Override
-    public DataItem encode(Mapping mapping, JsonValue jsonValue, String term, Collection<String> types) {
-
-        if (types != null && types.contains(Keywords.TYPE)) {
-            final Integer code = mapping.termMap().getCode(((JsonString) jsonValue).getString());
+    public DataItem encode(Mapping mapping, String value, String term, Collection<String> types) {
+        if (types.contains(Keywords.TYPE)) {
+            final Integer code = mapping.termMap().getCode(value);
 
             if (code != null) {
                 return new UnsignedInteger(code);

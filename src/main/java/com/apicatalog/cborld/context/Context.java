@@ -12,7 +12,7 @@ import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.processor.ProcessingRuntime;
-import com.apicatalog.lq.Data;
+import com.apicatalog.tree.io.NodeAdapter;
 
 public class Context {
 
@@ -24,7 +24,7 @@ public class Context {
         this.appliedContextKeys = appliedContextKeys;
     }
 
-    public static Context from(Data document, URI base, DocumentLoader loader) throws JsonLdError {
+    public static Context from(Object document, NodeAdapter adapter, URI base, DocumentLoader loader) throws JsonLdError {
 
         final JsonLdOptions options = new JsonLdOptions();
         options.setOrdered(false);
@@ -38,7 +38,9 @@ public class Context {
         final TypeMap typeMapping = Expansion.with(
                 activeContext,
                 document,
-                null, base,
+                adapter,
+                null,
+                base,
                 appliedContextKeys::add,
                 null)
                 .typeMapping();
@@ -47,7 +49,9 @@ public class Context {
 
     }
 
-    public static Context from(Data document,
+    public static Context from(
+            Object document,
+            NodeAdapter adapter,
             URI base,
             DocumentLoader loader,
             Consumer<Collection<String>> appliedContexts,
@@ -65,7 +69,9 @@ public class Context {
         final TypeMap typeMapping = Expansion.with(
                 activeContext,
                 document,
-                null, base,
+                adapter,
+                null,
+                base,
                 appliedContexts.andThen(appliedContextKeys::add),
                 typeMapper)
                 .typeMapping();

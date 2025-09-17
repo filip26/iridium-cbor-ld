@@ -5,14 +5,11 @@ import java.util.Collection;
 import java.util.UUID;
 
 import com.apicatalog.cborld.mapping.Mapping;
-import com.apicatalog.jsonld.json.JsonUtils;
 
 import co.nstant.in.cbor.model.Array;
 import co.nstant.in.cbor.model.ByteString;
 import co.nstant.in.cbor.model.DataItem;
 import co.nstant.in.cbor.model.UnsignedInteger;
-import jakarta.json.JsonString;
-import jakarta.json.JsonValue;
 
 public class UuidValueEncoder implements ValueEncoder {
 
@@ -20,11 +17,11 @@ public class UuidValueEncoder implements ValueEncoder {
     public static final int CODE = 3;
 
     @Override
-    public DataItem encode(Mapping mapping, JsonValue jsonValue, String term, Collection<String> types) {
+    public DataItem encode(Mapping mapping, String value, String term, Collection<String> types) {
 
-        if (JsonUtils.isString(jsonValue) && ((JsonString) jsonValue).getString().toLowerCase().startsWith(PREFIX)) {
+        if (value.toLowerCase().startsWith(PREFIX)) {
 
-            String rest = ((JsonString) jsonValue).getString().substring(PREFIX.length());
+            String rest = value.substring(PREFIX.length());
 
             Array result = new Array();
 

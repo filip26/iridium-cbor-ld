@@ -7,24 +7,19 @@ import com.apicatalog.jsonld.lang.Keywords;
 
 import co.nstant.in.cbor.model.DataItem;
 import co.nstant.in.cbor.model.UnsignedInteger;
-import jakarta.json.JsonString;
-import jakarta.json.JsonValue;
 
 public class IdValueEncoder implements ValueEncoder {
 
     @Override
-    public DataItem encode(Mapping mapping, JsonValue jsonValue, String term, Collection<String> types) {
-        if (types != null
-                && types.contains(Keywords.ID)
+    public DataItem encode(Mapping mapping, String value, String term, Collection<String> types) {
+        if (types.contains(Keywords.ID)
                 && mapping.dictionary() != null
                 && mapping.dictionary().uris() != null) {
 
-            final String id = ((JsonString) jsonValue).getString();
-
-            Integer code = mapping.dictionary().uris().getCode(id);
+            Integer code = mapping.dictionary().uris().getCode(value);
 
             if (code == null) {
-                code = mapping.termMap().getCode(id);
+                code = mapping.termMap().getCode(value);
             }
 
             if (code != null) {

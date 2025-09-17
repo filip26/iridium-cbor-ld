@@ -10,17 +10,14 @@ import com.apicatalog.multibase.MultibaseDecoder;
 import co.nstant.in.cbor.model.ByteString;
 import co.nstant.in.cbor.model.DataItem;
 import co.nstant.in.cbor.model.MajorType;
-import jakarta.json.Json;
-import jakarta.json.JsonValue;
 
 public class MultibaseValueDecoder implements ValueDecoder {
 
     static final MultibaseDecoder MULTIBASE = MultibaseDecoder.getInstance();
 
     @Override
-    public JsonValue decode(Mapping mapping, DataItem value, String term, Collection<String> types) throws DecoderException {
-
-        if (types != null && types.contains(MultibaseValueEncoder.TYPE)
+    public String decode(Mapping mapping, DataItem value, String term, Collection<String> types) throws DecoderException {
+        if (types.contains(MultibaseValueEncoder.TYPE)
                 && MajorType.BYTE_STRING.equals(value.getMajorType())) {
 
             byte[] byteString = ((ByteString) value).getBytes();
@@ -33,14 +30,7 @@ public class MultibaseValueDecoder implements ValueDecoder {
                     .map(base -> {
                         byte[] data = new byte[byteString.length - 1];
                         System.arraycopy(byteString, 1, data, 0, byteString.length - 1);
-
-                        String encoded = base.encode(data);
-                        if (encoded != null) {
-                            return Json.createValue(encoded);
-                        }
-
-                        return null;
-
+                        return base.encode(data);
                     })
                     .orElse(null);
         }

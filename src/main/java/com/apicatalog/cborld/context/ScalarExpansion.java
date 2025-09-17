@@ -22,7 +22,7 @@ import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.lq.Data;
+import com.apicatalog.tree.io.NodeAdapter;
 
 import jakarta.json.JsonValue;
 
@@ -31,23 +31,25 @@ final class ScalarExpansion {
     // mandatory
     private ActiveContext activeContext;
     private JsonValue propertyContext;
-    private Data element;
+    private Object element;
+    private final NodeAdapter adapter;
     private String activeProperty;
 
     private final Consumer<Collection<String>> appliedContexts;
 
     private ScalarExpansion(final ActiveContext activeContext, final JsonValue propertyContext,
-            final Data element, final String activeProperty, Consumer<Collection<String>> appliedContexts) {
+            final Object element, final NodeAdapter adapter, final String activeProperty, Consumer<Collection<String>> appliedContexts) {
         this.activeContext = activeContext;
         this.propertyContext = propertyContext;
         this.element = element;
+        this.adapter = adapter;
         this.activeProperty = activeProperty;
         this.appliedContexts = appliedContexts;
     }
 
     public static final ScalarExpansion with(final ActiveContext activeContext, final JsonValue propertyContext,
-            final Data element, final String activeProperty, Consumer<Collection<String>> appliedContexts) {
-        return new ScalarExpansion(activeContext, propertyContext, element, activeProperty, appliedContexts);
+            final Object element, final NodeAdapter adapter, final String activeProperty, Consumer<Collection<String>> appliedContexts) {
+        return new ScalarExpansion(activeContext, propertyContext, element, adapter, activeProperty, appliedContexts);
     }
 
     public JsonValue expand() throws JsonLdError {
@@ -74,6 +76,6 @@ final class ScalarExpansion {
                             activeContext.getTerm(activeProperty).map(TermDefinition::getBaseUrl).orElse(null));
         }
 
-        return ValueExpasion.with(activeContext, appliedContexts).expand(element, activeProperty);
+        return ValueExpasion.with(activeContext, appliedContexts).expand(element, adapter, activeProperty);
     }
 }

@@ -28,22 +28,23 @@ import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.lang.Utils;
-import com.apicatalog.lq.Data;
-import com.apicatalog.lq.Q;
-import com.apicatalog.lq.jakarta.JakartaAdapter;
+import com.apicatalog.tree.io.JakartaMaterializer;
+import com.apicatalog.tree.io.NodeAdapter;
 
-import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 
 final class ObjectExpansion {
 
+    final JakartaMaterializer jakarta = new JakartaMaterializer();
+    
     // mandatory
     private ActiveContext activeContext;
     private JsonValue propertyContext;
-    private Data element;
     private String activeProperty;
     private URI baseUrl;
+
+    private Object element;
+    private final NodeAdapter adapter;
 
     private Consumer<Collection<String>> appliedContexts;
     private TypeKeyNameMapper typeMapper;
@@ -52,11 +53,15 @@ final class ObjectExpansion {
     private boolean ordered;
     private boolean fromMap;
 
-    private ObjectExpansion(final ActiveContext activeContext, final JsonValue propertyContext, final Data element,
-            final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts, TypeKeyNameMapper typeMapper) {
+    private ObjectExpansion(final ActiveContext activeContext, final JsonValue propertyContext,
+            final Object element, final NodeAdapter adapter,
+            final String activeProperty, final URI baseUrl, 
+            Consumer<Collection<String>> appliedContexts, 
+            TypeKeyNameMapper typeMapper) {
         this.activeContext = activeContext;
         this.propertyContext = propertyContext;
         this.element = element;
+        this.adapter = adapter;
         this.activeProperty = activeProperty;
         this.baseUrl = baseUrl;
 
@@ -69,8 +74,8 @@ final class ObjectExpansion {
     }
 
     public static final ObjectExpansion with(final ActiveContext activeContext, final JsonValue propertyContext,
-            final Data element, final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts, TypeKeyNameMapper typeMapper) {
-        return new ObjectExpansion(activeContext, propertyContext, element, activeProperty, baseUrl, appliedContexts, typeMapper);
+            final Object element, final NodeAdapter adapter, final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts, TypeKeyNameMapper typeMapper) {
+        return new ObjectExpansion(activeContext, propertyContext, element, adapter, activeProperty, baseUrl, appliedContexts, typeMapper);
     }
 
     public ObjectExpansion ordered(boolean value) {
@@ -103,7 +108,7 @@ final class ObjectExpansion {
         final JsonMapBuilder result = JsonMapBuilder.create();
 
         ObjectExpansion1314
-                .with(activeContext, element, activeProperty, baseUrl, appliedContexts, typeMapper)
+                .with(activeContext, element, adapter, activeProperty, baseUrl, appliedContexts, typeMapper)
                 .result(result)
                 .ordered(ordered)
                 .expand();
@@ -145,14 +150,18 @@ final class ObjectExpansion {
 
             boolean revert = true;
 
-            for (final String key : Utils.index(Q.keys(element), true)) {
+            for (final String key : adapter.keys(element)
+                    .stream()
+                    .map(adapter::asString)
+                    .sorted()
+                    .toList()) {
 
                 final String expandedKey = UriExpansion
                         .with(activeContext, appliedContexts)
                         .vocab(true)
                         .expand(key);
 
-                if (Keywords.VALUE.equals(expandedKey) || (Keywords.ID.equals(expandedKey) && (Q.size(element) == 1))) {
+                if (Keywords.VALUE.equals(expandedKey) || (Keywords.ID.equals(expandedKey) && (adapter.size(element) == 1))) {
                     revert = false;
                     break;
                 }
@@ -167,9 +176,13 @@ final class ObjectExpansion {
     private void initLocalContext() throws JsonLdError {
 
         // 9.
-        if (Q.contains(element, Keywords.CONTEXT)) {
+        final Object contextElement = adapter.property(Keywords.CONTEXT, element);
 
-            final JsonValue jsonContext = JakartaAdapter.toJson(Q.value(element, Keywords.CONTEXT));
+        if (contextElement != null) {
+
+            jakarta.node(contextElement, adapter);
+            
+            final JsonValue jsonContext = jakarta.json();
 
             for (final JsonValue context : JsonUtils.toJsonArray(jsonContext)) {
                 final ActiveContext ac = new ActiveContext(activeContext.getBaseUri(), activeContext.getBaseUrl(), activeContext.runtime())
@@ -186,15 +199,17 @@ final class ObjectExpansion {
 
     private String processTypeScoped(final ActiveContext typeContext) throws JsonLdError {
 
-        if (Q.isEmpty(element)) {
+        if (adapter.isEmpty(element)) {
             return null;
         }
 
         String typeKey = null;
 
-        final Collection<String> keys = Q.keys(element);
-
-        for (final String key : Utils.index(keys, true)) {
+        for (final String key : adapter.keys(element)
+                .stream()
+                .map(adapter::asString)
+                .sorted()
+                .toList()) {
 
             final String expandedKey = UriExpansion
                     .with(activeContext, appliedContexts)
@@ -212,15 +227,12 @@ final class ObjectExpansion {
                 typeMapper.typeKeyName(key);
             }
 
-            final Data entry = Q.value(element, key);
-
-            final JsonValue entryValue = JakartaAdapter.toJson(entry);
+            final Object entry = adapter.property(key, element);
 
             // 11.2
-            final List<String> terms = JsonUtils.toStream(entryValue)
-                    .filter(JsonUtils::isString)
-                    .map(JsonString.class::cast)
-                    .map(JsonString::getString)
+            final List<String> terms = adapter.asStream(entry)
+                    .filter(adapter::isString)
+                    .map(adapter::stringValue)
                     .sorted()
                     .collect(Collectors.toList());
 

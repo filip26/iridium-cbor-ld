@@ -3,22 +3,18 @@ package com.apicatalog.cborld.encoder.value;
 import java.util.Collection;
 
 import com.apicatalog.cborld.mapping.Mapping;
-import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 
 import co.nstant.in.cbor.model.DataItem;
 import co.nstant.in.cbor.model.UnsignedInteger;
-import jakarta.json.JsonString;
-import jakarta.json.JsonValue;
 
 public class VocabValueEncoder implements ValueEncoder {
 
     @Override
-    public DataItem encode(Mapping mapping, JsonValue jsonValue, String term, Collection<String> types) {
+    public DataItem encode(Mapping mapping, String value, String term, Collection<String> types) {
+        if (types.contains(Keywords.VOCAB)) {
 
-        if (JsonUtils.isString(jsonValue) && types != null && types.contains(Keywords.VOCAB)) {
-
-            Integer code = mapping.termMap().getCode(((JsonString) jsonValue).getString());
+            Integer code = mapping.termMap().getCode(value);
 
             if (code != null) {
                 return new UnsignedInteger(code);

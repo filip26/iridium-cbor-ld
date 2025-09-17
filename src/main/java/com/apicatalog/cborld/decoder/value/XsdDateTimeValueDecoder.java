@@ -9,22 +9,19 @@ import com.apicatalog.cborld.mapping.Mapping;
 import co.nstant.in.cbor.model.DataItem;
 import co.nstant.in.cbor.model.MajorType;
 import co.nstant.in.cbor.model.UnsignedInteger;
-import jakarta.json.Json;
-import jakarta.json.JsonValue;
 
 public class XsdDateTimeValueDecoder implements ValueDecoder {
 
-    public static final String DATE_TIME = "http://www.w3.org/2001/XMLSchema#dateTime";
+    public static final String DATE_TIME_TYPE = "http://www.w3.org/2001/XMLSchema#dateTime";
 
     @Override
-    public JsonValue decode(Mapping mapping, DataItem value, String term, Collection<String> types) throws DecoderException {
-        if (types != null
-                && types.contains(DATE_TIME)
+    public String decode(Mapping mapping, DataItem value, String term, Collection<String> types) throws DecoderException {
+        if (types.contains(DATE_TIME_TYPE)
                 && MajorType.UNSIGNED_INTEGER.equals(value.getMajorType())) {
 
             long epochSeconds = ((UnsignedInteger) value).getValue().longValueExact();
 
-            return Json.createValue(Instant.ofEpochSecond(epochSeconds).toString());
+            return Instant.ofEpochSecond(epochSeconds).toString();
         }
         return null;
 

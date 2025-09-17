@@ -27,17 +27,17 @@ import jakarta.json.JsonValue;
 public interface ValueDecoder {
 
     /**
-     * Decodes a CBOR {@link DataItem} into a corresponding JSON-LD
-     * {@link JsonValue}, using the provided context and type information.
+     * Decodes a CBOR {@link DataItem} into a corresponding string value, using the
+     * provided context and type information.
      *
      * @param mapping the current {@link Mapping} context containing dictionaries
      *                and type maps
      * @param value   the CBOR value to decode
      * @param term    the JSON-LD term (property) associated with the value
-     * @param types   a collection of type IRIs associated with the term
-     * @return the decoded {@code JsonValue}
+     * @param types   a collection of semantic type IRIs associated with the term
+     * @return the decoded value
      * @throws DecoderException if decoding fails due to unsupported structure, type
      *                          mismatch, or malformed data
      */
-    JsonValue decode(Mapping mapping, DataItem value, String term, Collection<String> types) throws DecoderException;
+    String decode(Mapping mapping, DataItem value, String term, Collection<String> types) throws DecoderException;
 }
