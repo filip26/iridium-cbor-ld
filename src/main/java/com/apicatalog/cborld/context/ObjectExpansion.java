@@ -148,7 +148,7 @@ final class ObjectExpansion {
 
             boolean revert = true;
 
-            for (final String key : adapter.properties(element)
+            for (final String key : adapter.keys(element)
                     .stream()
                     .map(adapter::asString)
                     .sorted()
@@ -178,9 +178,9 @@ final class ObjectExpansion {
 
         if (contextElement != null) {
 
-            jakarta.accept(contextElement, adapter);
+            jakarta.node(contextElement, adapter);
             
-            final JsonValue jsonContext = jakarta.value();
+            final JsonValue jsonContext = jakarta.json();
 
             for (final JsonValue context : JsonUtils.toJsonArray(jsonContext)) {
                 final ActiveContext ac = new ActiveContext(activeContext.getBaseUri(), activeContext.getBaseUrl(), activeContext.runtime())
@@ -203,7 +203,7 @@ final class ObjectExpansion {
 
         String typeKey = null;
 
-        for (final String key : adapter.properties(element)
+        for (final String key : adapter.keys(element)
                 .stream()
                 .map(adapter::asString)
                 .sorted()

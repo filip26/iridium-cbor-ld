@@ -56,7 +56,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <tree.version>0.7.0-SNAPSHOT</tree.version>
+        <tree.version>0.7.1-SNAPSHOT</tree.version>
         <jakarta.json.version>2.0.1</jakarta.json.version>
 
         <copper-multibase>4.1.0</copper-multibase>
@@ -79,13 +79,19 @@
 
         <dependency>
             <groupId>com.apicatalog</groupId>
-            <artifactId>tree-io-jakarta-adapter</artifactId>
+            <artifactId>tree-io-api</artifactId>
             <version>${tree.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.apicatalog</groupId>
-            <artifactId>tree-io-cbor-adapter</artifactId>
+            <artifactId>tree-io-jakarta</artifactId>
+            <version>${tree.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.apicatalog</groupId>
+            <artifactId>tree-io-cbor</artifactId>
             <version>${tree.version}</version>
         </dependency>
 
