@@ -55,7 +55,9 @@ final class ObjectExpansion {
 
     private ObjectExpansion(final ActiveContext activeContext, final JsonValue propertyContext,
             final Object element, final NodeAdapter adapter,
-            final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts, TypeKeyNameMapper typeMapper) {
+            final String activeProperty, final URI baseUrl, 
+            Consumer<Collection<String>> appliedContexts, 
+            TypeKeyNameMapper typeMapper) {
         this.activeContext = activeContext;
         this.propertyContext = propertyContext;
         this.element = element;

@@ -242,7 +242,6 @@ public class DefaultEncoder implements Encoder {
         }
 
         if (JsonUtils.isString(jsonValue)) {
-//            if (typeMapping != null) {
             final Collection<String> types = typeMapping != null
                     ? typeMapping.getType(term)
                     : Collections.emptySet();
@@ -253,7 +252,6 @@ public class DefaultEncoder implements Encoder {
                     return dataItem;
                 }
             }
-//            }
             return new UnicodeString(((JsonString) jsonValue).getString());
         }
 
