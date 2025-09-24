@@ -18,6 +18,8 @@ package com.apicatalog.cborld.context;
 import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -29,9 +31,9 @@ import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.ListObject;
-import com.apicatalog.jsonld.lang.Utils;
 import com.apicatalog.jsonld.lang.ValueObject;
 import com.apicatalog.tree.io.NodeAdapter;
+import com.apicatalog.tree.io.NodeModel;
 import com.apicatalog.tree.io.NodeType;
 
 import jakarta.json.Json;
@@ -104,13 +106,17 @@ final class ObjectExpansion1314 {
             return;
         }
 
-        final Collection<String> keys = adapter.keys(element)
-                .stream()
-                .map(adapter::asString)
-                .toList();
+        final Iterator<Entry<?, ?>> entries = adapter.streamEntries(element)
+                .sorted(ordered 
+                        ? NodeModel.comparingEntry(e -> adapter.asString(e.getKey()))
+                        : (a, b) -> 0        
+                        )
+                .iterator();
+        
+        while (entries.hasNext()) {
 
-        // 13.
-        for (final String key : Utils.index(keys, ordered)) {
+            final Entry<?, ?> entry = entries.next();
+            final String key = adapter.asString(entry.getKey());
 
             // 13.1.
             if (Keywords.CONTEXT.equals(key)) {
@@ -129,8 +135,7 @@ final class ObjectExpansion1314 {
                 continue;
             }
 
-            final Object value = adapter.property(key, element);
-            final NodeType valueType = adapter.type(value);
+            final NodeType valueType = adapter.type(entry.getValue());
 
             // 13.4. If expanded property is a keyword:
             if (Keywords.contains(expandedProperty)) {
@@ -138,7 +143,7 @@ final class ObjectExpansion1314 {
                 JsonValue expandedType = null;
 
                 if (NodeType.STRING == valueType) {
-                    expandedType = Json.createValue(adapter.stringValue(value));
+                    expandedType = Json.createValue(adapter.stringValue(entry.getValue()));
                 }
 
                 // 13.4.1
@@ -172,7 +177,7 @@ final class ObjectExpansion1314 {
                     }
 
                     expandedType = Expansion
-                            .with(activeContext, value, adapter, null, baseUrl, appliedContexts, typeMapper)
+                            .with(activeContext, entry.getValue(), adapter, null, baseUrl, appliedContexts, typeMapper)
                             .ordered(ordered)
                             .compute();
                 }
@@ -231,7 +236,7 @@ final class ObjectExpansion1314 {
                 // 13.9.
             } else {
                 expandedType = Expansion
-                        .with(activeContext, value, adapter, key, baseUrl, appliedContexts, typeMapper)
+                        .with(activeContext, entry.getValue(), adapter, key, baseUrl, appliedContexts, typeMapper)
                         .ordered(ordered)
                         .compute();
             }

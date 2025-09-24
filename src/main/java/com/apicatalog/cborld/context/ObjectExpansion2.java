@@ -34,10 +34,10 @@ import com.apicatalog.tree.io.NodeModel;
 
 import jakarta.json.JsonValue;
 
-final class ObjectExpansion {
+final class ObjectExpansion2 {
 
     final JakartaMaterializer jakarta = new JakartaMaterializer();
-
+    
     // mandatory
     private ActiveContext activeContext;
     private JsonValue propertyContext;
@@ -54,10 +54,10 @@ final class ObjectExpansion {
     private boolean ordered;
     private boolean fromMap;
 
-    private ObjectExpansion(final ActiveContext activeContext, final JsonValue propertyContext,
+    private ObjectExpansion2(final ActiveContext activeContext, final JsonValue propertyContext,
             final Object element, final NodeAdapter adapter,
-            final String activeProperty, final URI baseUrl,
-            Consumer<Collection<String>> appliedContexts,
+            final String activeProperty, final URI baseUrl, 
+            Consumer<Collection<String>> appliedContexts, 
             TypeKeyNameMapper typeMapper) {
         this.activeContext = activeContext;
         this.propertyContext = propertyContext;
@@ -74,17 +74,17 @@ final class ObjectExpansion {
         this.fromMap = false;
     }
 
-    public static final ObjectExpansion with(final ActiveContext activeContext, final JsonValue propertyContext,
+    public static final ObjectExpansion2 with(final ActiveContext activeContext, final JsonValue propertyContext,
             final Object element, final NodeAdapter adapter, final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts, TypeKeyNameMapper typeMapper) {
-        return new ObjectExpansion(activeContext, propertyContext, element, adapter, activeProperty, baseUrl, appliedContexts, typeMapper);
+        return new ObjectExpansion2(activeContext, propertyContext, element, adapter, activeProperty, baseUrl, appliedContexts, typeMapper);
     }
 
-    public ObjectExpansion ordered(boolean value) {
+    public ObjectExpansion2 ordered(boolean value) {
         this.ordered = value;
         return this;
     }
 
-    public ObjectExpansion fromMap(boolean value) {
+    public ObjectExpansion2 fromMap(boolean value) {
         this.fromMap = value;
         return this;
     }
@@ -154,11 +154,11 @@ final class ObjectExpansion {
             final Iterator<Entry<?, ?>> entries = adapter.streamEntries(element)
                     .sorted(NodeModel.comparingEntry(e -> adapter.asString(e.getKey())))
                     .iterator();
-
+            
             while (entries.hasNext()) {
 
                 final Entry<?, ?> entry = entries.next();
-
+                
                 final String expandedKey = UriExpansion
                         .with(activeContext, appliedContexts)
                         .vocab(true)
@@ -180,17 +180,18 @@ final class ObjectExpansion {
 
         // 9.
         final Object contextElement = adapter.property(Keywords.CONTEXT, element);
-
+System.out.println(">> " + contextElement + ", " + element);
         if (contextElement != null) {
 
             jakarta.node(contextElement, adapter);
-
+            
             final JsonValue jsonContext = jakarta.json();
-
+            System.out.println("> " + jsonContext);
             for (final JsonValue context : JsonUtils.toJsonArray(jsonContext)) {
                 final ActiveContext ac = new ActiveContext(activeContext.getBaseUri(), activeContext.getBaseUrl(), activeContext.runtime())
                         .newContext()
                         .create(context, baseUrl);
+                System.out.println(": " + context + ", " + ac.getTerms());
                 appliedContexts.accept(ac.getTerms());
             }
 
@@ -208,21 +209,21 @@ final class ObjectExpansion {
 
         String typeKey = null;
 
-        final Iterator<String> keys = adapter.keys(element)
-                .stream()
-                .map(adapter::asString)
-                .sorted()
+        final Iterator<Entry<?, ?>> entries = adapter.streamEntries(element)
+                .sorted(NodeModel.comparingEntry(e -> adapter.asString(e.getKey())))
                 .iterator();
+        
+        while (entries.hasNext()) {
 
-        while (keys.hasNext()) {
+            final Entry<?, ?> entry = entries.next();
 
-            final String key = keys.next();
-
+            final String key = adapter.asString(entry.getKey());
+            
             final String expandedKey = UriExpansion
                     .with(activeContext, appliedContexts)
                     .vocab(true)
                     .expand(key);
-
+System.out.println("::>>  " + key + ", " + expandedKey);
             if (!Keywords.TYPE.equals(expandedKey)) {
                 continue;
 
@@ -234,17 +235,15 @@ final class ObjectExpansion {
                 typeMapper.typeKeyName(key);
             }
 
-            final Object value = adapter.property(key, element);
-
             // 11.2
-            final Iterator<String> terms = adapter.asStream(value)
+            final Iterator<String> terms = adapter.asStream(entry.getValue())
                     .filter(adapter::isString)
                     .map(adapter::stringValue)
                     .sorted()
                     .iterator();
 
             while (terms.hasNext()) {
-
+                
                 final String term = terms.next();
 
                 Optional<JsonValue> localContext = typeContext.getTerm(term).map(TermDefinition::getLocalContext);
