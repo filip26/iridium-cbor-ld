@@ -91,7 +91,7 @@ final class Expansion {
             return JsonValue.NULL;
         }
 
-        final NodeType dataType = adapter.type(element);
+        final NodeType dataType = adapter.typeOf(element);
 
         // 5. If element is an array,
         if (NodeType.COLLECTION == dataType) {

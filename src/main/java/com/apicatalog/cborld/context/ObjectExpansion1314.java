@@ -106,7 +106,7 @@ final class ObjectExpansion1314 {
             return;
         }
 
-        final Iterator<Entry<?, ?>> entries = adapter.streamEntries(element)
+        final Iterator<Entry<?, ?>> entries = adapter.propertyStream(element)
                 .sorted(ordered 
                         ? NodeModel.comparingEntry(e -> adapter.asString(e.getKey()))
                         : (a, b) -> 0        
@@ -135,7 +135,7 @@ final class ObjectExpansion1314 {
                 continue;
             }
 
-            final NodeType valueType = adapter.type(entry.getValue());
+            final NodeType valueType = adapter.typeOf(entry.getValue());
 
             // 13.4. If expanded property is a keyword:
             if (Keywords.contains(expandedProperty)) {

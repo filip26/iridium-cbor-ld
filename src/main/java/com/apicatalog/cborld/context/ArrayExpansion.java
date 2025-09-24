@@ -93,7 +93,7 @@ final class ArrayExpansion {
         final JsonArrayBuilder result = Json.createArrayBuilder();
 
         // 5.2.
-        for (final Object item : adapter.items(element)) {
+        for (final Object item : adapter.elements(element)) {
 
             // 5.2.1
             JsonValue expanded = Expansion

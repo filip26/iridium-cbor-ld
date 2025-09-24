@@ -151,7 +151,7 @@ final class ObjectExpansion {
 
             boolean revert = true;
 
-            final Iterator<Entry<?, ?>> entries = adapter.streamEntries(element)
+            final Iterator<Entry<?, ?>> entries = adapter.propertyStream(element)
                     .sorted(NodeModel.comparingEntry(e -> adapter.asString(e.getKey())))
                     .iterator();
 
@@ -208,15 +208,15 @@ final class ObjectExpansion {
 
         String typeKey = null;
 
-        final Iterator<String> keys = adapter.keys(element)
-                .stream()
-                .map(adapter::asString)
-                .sorted()
+        final Iterator<Entry<?, ?>> entries = adapter.propertyStream(element)
+                .sorted(NodeModel.comparingEntry(e -> adapter.asString(e.getKey())))
                 .iterator();
 
-        while (keys.hasNext()) {
+        while (entries.hasNext()) {
 
-            final String key = keys.next();
+            final Entry<?, ?> entry = entries.next();
+
+            final String key = adapter.asString(entry.getKey());
 
             final String expandedKey = UriExpansion
                     .with(activeContext, appliedContexts)
@@ -234,7 +234,7 @@ final class ObjectExpansion {
                 typeMapper.typeKeyName(key);
             }
 
-            final Object value = adapter.property(key, element);
+            final Object value = entry.getValue();// adapter.property(key, element);
 
             // 11.2
             final Iterator<String> terms = adapter.asStream(value)

@@ -2,7 +2,6 @@ package com.apicatalog.cborld.context.mapping;
 
 import java.math.BigInteger;
 import java.util.Collection;
-import java.util.AbstractMap.SimpleEntry;
 import java.util.Map.Entry;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -46,8 +45,31 @@ class CborMapping extends CborAdapter {
     }
 
     @Override
-    public Stream<Entry<?, ?>> streamEntries(Object node) {
-        return keys(node).stream().map(key -> new SimpleEntry<>(key, property(key, node)));
+    public Stream<Entry<?, ?>> propertyStream(Object node) {
+        return super.propertyStream(node).map(e -> new Entry<Object, Object>() {
+
+            @Override
+            public Object getKey() {
+                if (e.getKey() instanceof DataItem keyCode) {
+                    return decodeTerm.apply(keyCode);
+                }
+                return e.getKey();
+            }
+
+            @Override
+            public Object getValue() {
+                if (isNumber(e.getKey()) && e.getKey() instanceof DataItem key) {
+                    String term = decodeTerm.apply(key);
+                    return get(term, key, node);
+                }
+                return e.getValue();
+            }
+
+            @Override
+            public Object setValue(Object value) {
+                throw new UnsupportedOperationException();
+            }
+        });
     }
 
     @Override
@@ -62,8 +84,8 @@ class CborMapping extends CborAdapter {
         boolean arrayCode = false;
         DataItem value = super.property(key, node);
 
-        if (value == null && MajorType.UNSIGNED_INTEGER.equals(key.getMajorType())) {
-            key = new UnsignedInteger(((UnsignedInteger) key).getValue().add(BigInteger.ONE));
+        if (value == null && key instanceof UnsignedInteger keyCode) {
+            key = new UnsignedInteger((keyCode).getValue().add(BigInteger.ONE));
             value = super.property(key, node);
             if (value != null) {
                 arrayCode = true;
@@ -71,13 +93,13 @@ class CborMapping extends CborAdapter {
         }
 
         if (value != null) {
-            if ((!arrayCode && MajorType.ARRAY.equals(value.getMajorType()))) {
+            if ((!arrayCode && MajorType.ARRAY == value.getMajorType())) {
 
                 value = decodeValue.apply(value, term);
 
-            } else if (MajorType.ARRAY.equals(value.getMajorType())) {
+            } else if (value instanceof Array array) {
 
-                Collection<DataItem> items = ((Array) value).getDataItems();
+                Collection<DataItem> items = array.getDataItems();
 
                 Array newValues = new Array(items.size());
 
@@ -95,5 +117,5 @@ class CborMapping extends CborAdapter {
 
         return super.property(new UnicodeString(term), node);
     }
-    
+
 }

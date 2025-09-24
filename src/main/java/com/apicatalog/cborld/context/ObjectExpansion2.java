@@ -151,7 +151,7 @@ final class ObjectExpansion2 {
 
             boolean revert = true;
 
-            final Iterator<Entry<?, ?>> entries = adapter.streamEntries(element)
+            final Iterator<Entry<?, ?>> entries = adapter.propertyStream(element)
                     .sorted(NodeModel.comparingEntry(e -> adapter.asString(e.getKey())))
                     .iterator();
             
@@ -209,7 +209,7 @@ System.out.println(">> " + contextElement + ", " + element);
 
         String typeKey = null;
 
-        final Iterator<Entry<?, ?>> entries = adapter.streamEntries(element)
+        final Iterator<Entry<?, ?>> entries = adapter.propertyStream(element)
                 .sorted(NodeModel.comparingEntry(e -> adapter.asString(e.getKey())))
                 .iterator();
         
