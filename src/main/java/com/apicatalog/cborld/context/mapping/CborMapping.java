@@ -28,7 +28,7 @@ class CborMapping extends CborAdapter {
         this.encodeTerm = encodeTerm;
         this.decodeValue = decodeValue;
     }
-    
+
     @Override
     public DataItem property(Object property, Object node) {
         if (property instanceof String term) {
@@ -55,8 +55,7 @@ class CborMapping extends CborAdapter {
         DataItem value = super.property(key, node);
 
         if (value == null && key instanceof UnsignedInteger keyCode) {
-            key = new UnsignedInteger((keyCode).getValue().add(BigInteger.ONE));
-            value = super.property(key, node);
+            value = super.property(new UnsignedInteger((keyCode).getValue().add(BigInteger.ONE)), node);
             if (value != null) {
                 arrayCode = true;
             }
