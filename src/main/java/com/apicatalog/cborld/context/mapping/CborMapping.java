@@ -10,6 +10,7 @@ import com.apicatalog.tree.io.CborAdapter;
 import co.nstant.in.cbor.model.Array;
 import co.nstant.in.cbor.model.DataItem;
 import co.nstant.in.cbor.model.MajorType;
+import co.nstant.in.cbor.model.UnicodeString;
 import co.nstant.in.cbor.model.UnsignedInteger;
 
 class CborMapping extends CborAdapter {
@@ -31,50 +32,59 @@ class CborMapping extends CborAdapter {
     @Override
     public DataItem property(Object property, Object node) {
         if (property instanceof String term) {
-
             DataItem key = encodeTerm.apply(term);
-            DataItem value = super.property(key, node);
-            boolean arrayCode = false;
-
-            if (value == null && MajorType.UNSIGNED_INTEGER.equals(key.getMajorType())) {
-                key = new UnsignedInteger(((UnsignedInteger) key).getValue().add(BigInteger.ONE));
-                value = super.property(key, node);
-                if (value != null) {
-                    arrayCode = true;
-                }
-            }
-            if (value != null) {
-                if ((!arrayCode && MajorType.ARRAY.equals(value.getMajorType()))) {
-
-                    value = decodeValue.apply(value, term);
-
-                } else if (MajorType.ARRAY.equals(value.getMajorType())) {
-
-                    Collection<DataItem> items = ((Array) value).getDataItems();
-
-                    Array newValues = new Array(items.size());
-
-                    for (DataItem item : items) {
-                        newValues.add(decodeValue.apply(item, term));
-                    }
-
-                    value = newValues;
-
-                } else {
-                    value = decodeValue.apply(value, term);
-                }
-                return value;
-            }
+            return get(term, key, node);
+        }
+        if (isNumber(property) && property instanceof DataItem key) {
+            String term = decodeTerm.apply(key);
+            return get(term, key, node);
         }
         return super.property(property, node);
     }
 
     @Override
     public String asString(Object node) {
-        if (node instanceof DataItem) {
-            return decodeTerm.apply((DataItem) node);
+        if (node instanceof DataItem data) {
+            return decodeTerm.apply(data);
         }
         return super.asString(node);
+    }
+
+    protected DataItem get(String term, DataItem key, Object node) {
+        boolean arrayCode = false;
+        DataItem value = super.property(key, node);
+
+        if (value == null && key instanceof UnsignedInteger keyCode) {
+            value = super.property(new UnsignedInteger((keyCode).getValue().add(BigInteger.ONE)), node);
+            if (value != null) {
+                arrayCode = true;
+            }
+        }
+
+        if (value != null) {
+            if ((!arrayCode && MajorType.ARRAY == value.getMajorType())) {
+
+                value = decodeValue.apply(value, term);
+
+            } else if (value instanceof Array array) {
+
+                Collection<DataItem> items = array.getDataItems();
+
+                Array newValues = new Array(items.size());
+
+                for (DataItem item : items) {
+                    newValues.add(decodeValue.apply(item, term));
+                }
+
+                value = newValues;
+
+            } else {
+                value = decodeValue.apply(value, term);
+            }
+            return value;
+        }
+
+        return super.property(new UnicodeString(term), node);
     }
 
 }

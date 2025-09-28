@@ -100,14 +100,12 @@ abstract class AbstractDecoder implements Decoder {
 
         case BYTE_STRING:
             JsonValue decoded = decodeValue(data, term, def, mapping);
-            if (decoded == null) {
-                throw new DecoderException(Code.InvalidDocument, "Unknown encoded value [" + data.getMajorType() + "] at key [" + term + "].");
+            if (decoded != null) {
+                return decoded;
             }
 
-            return decoded;
-
         default:
-            throw new IllegalStateException("An unexpected data item type [" + data.getMajorType() + "].");
+            throw new IllegalStateException("An unexpected data item type " + data.getMajorType() + " at " + term + ".");
         }
     }
 
@@ -225,7 +223,7 @@ abstract class AbstractDecoder implements Decoder {
             if (decoded != null) {
                 return Json.createValue(decoded);
             }
-        }
+        }        
         return null;
     }
 

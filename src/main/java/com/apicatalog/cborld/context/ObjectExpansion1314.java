@@ -18,6 +18,7 @@ package com.apicatalog.cborld.context;
 import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -29,7 +30,6 @@ import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.ListObject;
-import com.apicatalog.jsonld.lang.Utils;
 import com.apicatalog.jsonld.lang.ValueObject;
 import com.apicatalog.tree.io.NodeAdapter;
 import com.apicatalog.tree.io.NodeType;
@@ -104,13 +104,15 @@ final class ObjectExpansion1314 {
             return;
         }
 
-        final Collection<String> keys = adapter.keys(element)
+        final Iterator<String> keys = adapter.keys(element)
                 .stream()
                 .map(adapter::asString)
-                .toList();
+                .sorted()
+                .iterator();
+        
+        while (keys.hasNext()) {
 
-        // 13.
-        for (final String key : Utils.index(keys, ordered)) {
+            final String key = keys.next();
 
             // 13.1.
             if (Keywords.CONTEXT.equals(key)) {
@@ -130,6 +132,7 @@ final class ObjectExpansion1314 {
             }
 
             final Object value = adapter.property(key, element);
+            
             final NodeType valueType = adapter.type(value);
 
             // 13.4. If expanded property is a keyword:
