@@ -2,10 +2,8 @@ package com.apicatalog.cborld.context.mapping;
 
 import java.math.BigInteger;
 import java.util.Collection;
-import java.util.Map.Entry;
 import java.util.function.BiFunction;
 import java.util.function.Function;
-import java.util.stream.Stream;
 
 import com.apicatalog.tree.io.CborAdapter;
 
@@ -30,7 +28,7 @@ class CborMapping extends CborAdapter {
         this.encodeTerm = encodeTerm;
         this.decodeValue = decodeValue;
     }
-
+    
     @Override
     public DataItem property(Object property, Object node) {
         if (property instanceof String term) {
@@ -42,34 +40,6 @@ class CborMapping extends CborAdapter {
             return get(term, key, node);
         }
         return super.property(property, node);
-    }
-
-    @Override
-    public Stream<Entry<?, ?>> propertyStream(Object node) {
-        return super.propertyStream(node).map(e -> new Entry<Object, Object>() {
-
-            @Override
-            public Object getKey() {
-                if (e.getKey() instanceof DataItem keyCode) {
-                    return decodeTerm.apply(keyCode);
-                }
-                return e.getKey();
-            }
-
-            @Override
-            public Object getValue() {
-                if (isNumber(e.getKey()) && e.getKey() instanceof DataItem key) {
-                    String term = decodeTerm.apply(key);
-                    return get(term, key, node);
-                }
-                return e.getValue();
-            }
-
-            @Override
-            public Object setValue(Object value) {
-                throw new UnsupportedOperationException();
-            }
-        });
     }
 
     @Override

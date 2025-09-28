@@ -15,22 +15,22 @@
  */
 package com.apicatalog.cborld.context;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.function.Consumer;
 
 import com.apicatalog.cborld.mapping.TypeKeyNameMapper;
 import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdErrorCode;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.tree.io.JakartaMaterializer;
 import com.apicatalog.tree.io.NodeAdapter;
-import com.apicatalog.tree.io.NodeModel;
 
 import jakarta.json.JsonValue;
 
@@ -99,7 +99,11 @@ final class ObjectExpansion {
 
         initPropertyContext();
 
-        initLocalContext();
+        try {
+            initLocalContext();
+        } catch (IOException e) {
+            throw new JsonLdError(JsonLdErrorCode.UNSPECIFIED, e);
+        }
 
         // 10.
         final ActiveContext typeContext = activeContext;
@@ -151,18 +155,20 @@ final class ObjectExpansion {
 
             boolean revert = true;
 
-            final Iterator<Entry<?, ?>> entries = adapter.propertyStream(element)
-                    .sorted(NodeModel.comparingEntry(e -> adapter.asString(e.getKey())))
+            final Iterator<String> keys = adapter.keys(element)
+                    .stream()
+                    .map(adapter::asString)
+                    .sorted()
                     .iterator();
 
-            while (entries.hasNext()) {
+            while (keys.hasNext()) {
 
-                final Entry<?, ?> entry = entries.next();
+                final String key = keys.next();
 
                 final String expandedKey = UriExpansion
                         .with(activeContext, appliedContexts)
                         .vocab(true)
-                        .expand(adapter.asString(entry.getKey()));
+                        .expand(adapter.asString(key));
 
                 if (Keywords.VALUE.equals(expandedKey) || (Keywords.ID.equals(expandedKey) && (adapter.size(element) == 1))) {
                     revert = false;
@@ -176,7 +182,7 @@ final class ObjectExpansion {
         }
     }
 
-    private void initLocalContext() throws JsonLdError {
+    private void initLocalContext() throws JsonLdError, IOException {
 
         // 9.
         final Object contextElement = adapter.property(Keywords.CONTEXT, element);
@@ -208,15 +214,15 @@ final class ObjectExpansion {
 
         String typeKey = null;
 
-        final Iterator<Entry<?, ?>> entries = adapter.propertyStream(element)
-                .sorted(NodeModel.comparingEntry(e -> adapter.asString(e.getKey())))
+        final Iterator<String> keys = adapter.keys(element)
+                .stream()
+                .map(adapter::asString)
+                .sorted()
                 .iterator();
 
-        while (entries.hasNext()) {
+        while (keys.hasNext()) {
 
-            final Entry<?, ?> entry = entries.next();
-
-            final String key = adapter.asString(entry.getKey());
+            final String key = keys.next();
 
             final String expandedKey = UriExpansion
                     .with(activeContext, appliedContexts)
@@ -234,7 +240,7 @@ final class ObjectExpansion {
                 typeMapper.typeKeyName(key);
             }
 
-            final Object value = entry.getValue();// adapter.property(key, element);
+            final Object value = adapter.property(key, element);
 
             // 11.2
             final Iterator<String> terms = adapter.asStream(value)

@@ -19,7 +19,6 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -33,7 +32,6 @@ import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.ListObject;
 import com.apicatalog.jsonld.lang.ValueObject;
 import com.apicatalog.tree.io.NodeAdapter;
-import com.apicatalog.tree.io.NodeModel;
 import com.apicatalog.tree.io.NodeType;
 
 import jakarta.json.Json;
@@ -106,17 +104,15 @@ final class ObjectExpansion1314 {
             return;
         }
 
-        final Iterator<Entry<?, ?>> entries = adapter.propertyStream(element)
-                .sorted(ordered 
-                        ? NodeModel.comparingEntry(e -> adapter.asString(e.getKey()))
-                        : (a, b) -> 0        
-                        )
+        final Iterator<String> keys = adapter.keys(element)
+                .stream()
+                .map(adapter::asString)
+                .sorted()
                 .iterator();
         
-        while (entries.hasNext()) {
+        while (keys.hasNext()) {
 
-            final Entry<?, ?> entry = entries.next();
-            final String key = adapter.asString(entry.getKey());
+            final String key = keys.next();
 
             // 13.1.
             if (Keywords.CONTEXT.equals(key)) {
@@ -135,7 +131,9 @@ final class ObjectExpansion1314 {
                 continue;
             }
 
-            final NodeType valueType = adapter.typeOf(entry.getValue());
+            final Object value = adapter.property(key, element);
+            
+            final NodeType valueType = adapter.type(value);
 
             // 13.4. If expanded property is a keyword:
             if (Keywords.contains(expandedProperty)) {
@@ -143,7 +141,7 @@ final class ObjectExpansion1314 {
                 JsonValue expandedType = null;
 
                 if (NodeType.STRING == valueType) {
-                    expandedType = Json.createValue(adapter.stringValue(entry.getValue()));
+                    expandedType = Json.createValue(adapter.stringValue(value));
                 }
 
                 // 13.4.1
@@ -177,7 +175,7 @@ final class ObjectExpansion1314 {
                     }
 
                     expandedType = Expansion
-                            .with(activeContext, entry.getValue(), adapter, null, baseUrl, appliedContexts, typeMapper)
+                            .with(activeContext, value, adapter, null, baseUrl, appliedContexts, typeMapper)
                             .ordered(ordered)
                             .compute();
                 }
@@ -236,7 +234,7 @@ final class ObjectExpansion1314 {
                 // 13.9.
             } else {
                 expandedType = Expansion
-                        .with(activeContext, entry.getValue(), adapter, key, baseUrl, appliedContexts, typeMapper)
+                        .with(activeContext, value, adapter, key, baseUrl, appliedContexts, typeMapper)
                         .ordered(ordered)
                         .compute();
             }

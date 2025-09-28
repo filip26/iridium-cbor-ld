@@ -53,7 +53,7 @@ final class ValueExpasion {
 
     public JsonValue expand(final Object value, final NodeAdapter adapter, final String activeProperty) throws JsonLdError {
 
-        final NodeType valueType = adapter.typeOf(value);
+        final NodeType valueType = adapter.type(value);
 
         definition = activeContext.getTerm(activeProperty);
 
