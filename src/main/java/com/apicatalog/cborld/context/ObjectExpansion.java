@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import com.apicatalog.cborld.mapping.TypeKeyNameMapper;
 import com.apicatalog.jsonld.JsonLdError;
@@ -155,22 +156,21 @@ final class ObjectExpansion {
 
             boolean revert = true;
 
-            final Iterator<String> keys = adapter.keys(element)
+            var keys = adapter.keys(element)
                     .stream()
                     .map(adapter::asString)
                     .sorted()
-                    .iterator();
+                    .collect(Collectors.toUnmodifiableList());
 
-            while (keys.hasNext()) {
+            for (var key : keys) {
 
-                final String key = keys.next();
-
-                final String expandedKey = UriExpansion
+                var expandedKey = UriExpansion
                         .with(activeContext, appliedContexts)
                         .vocab(true)
                         .expand(adapter.asString(key));
 
-                if (Keywords.VALUE.equals(expandedKey) || (Keywords.ID.equals(expandedKey) && !keys.hasNext())) {
+                if (Keywords.VALUE.equals(expandedKey)
+                        || (Keywords.ID.equals(expandedKey) && keys.size() == 1)) {
                     revert = false;
                     break;
                 }
@@ -185,7 +185,7 @@ final class ObjectExpansion {
     private void initLocalContext() throws JsonLdError, IOException {
 
         // 9.
-        final Object contextElement = adapter.property(Keywords.CONTEXT, element);
+        var contextElement = adapter.property(Keywords.CONTEXT, element);
 
         if (contextElement != null) {
 
@@ -268,10 +268,9 @@ final class ObjectExpansion {
                     activeContext = activeContext
                             .newContext()
                             .propagate(false)
-                            .create(lc,
-                                    valueDefinition
-                                            .map(TermDefinition::getBaseUrl)
-                                            .orElse(null));
+                            .create(lc, valueDefinition
+                                    .map(TermDefinition::getBaseUrl)
+                                    .orElse(null));
                 }
             }
         }

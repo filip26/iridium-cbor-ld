@@ -19,11 +19,11 @@ class CborLdDocument implements Document {
         this.encoded = encoded;
     }
 
-    public static final CborLdDocument from(InputStream is) throws IOException {
-        return from(readAllBytes(is));
+    public static final CborLdDocument of(InputStream is) throws IOException {
+        return of(readAllBytes(is));
     }
 
-    public static final CborLdDocument from(byte[] cborLd) {
+    public static final CborLdDocument of(byte[] cborLd) {
         return new CborLdDocument(cborLd);
     }
 

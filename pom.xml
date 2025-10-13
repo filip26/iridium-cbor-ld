@@ -50,13 +50,12 @@
     <inceptionYear>2022</inceptionYear>
 
     <properties>
-        <maven.compiler.target>17</maven.compiler.target>
-        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.release>17</maven.compiler.release>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <tree.version>0.9.1</tree.version>
+        <tree.version>0.10.0-SNAPSHOT</tree.version>
         <jakarta.json.version>2.0.1</jakarta.json.version>
 
         <copper-multibase>4.1.0</copper-multibase>
