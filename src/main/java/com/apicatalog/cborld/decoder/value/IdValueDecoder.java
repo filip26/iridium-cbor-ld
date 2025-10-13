@@ -14,10 +14,10 @@ public class IdValueDecoder implements ValueDecoder {
     @Override
     public String decode(Mapping mapping, DataItem value, String term, Collection<String> types) throws DecoderException {
         if (types.contains(Keywords.ID)
-                && mapping != null 
-                && value instanceof UnsignedInteger integer) {
+                && mapping != null
+                && value instanceof UnsignedInteger uint) {
 
-            var code = integer.getValue().intValueExact();
+            var code = uint.getValue().intValueExact();
 
             var id = mapping.dictionary() != null && mapping.dictionary().uris() != null
                     ? mapping.dictionary().uris().getValue(code)
@@ -27,9 +27,7 @@ public class IdValueDecoder implements ValueDecoder {
                 id = mapping.termMap().getValue(code);
             }
 
-            if (id != null) {
-                return id;
-            }
+            return id;
         }
         return null;
     }

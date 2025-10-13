@@ -17,7 +17,7 @@ public class ContextValueEncoder implements ValueEncoder {
                 && mapping.dictionary() != null
                 && mapping.dictionary().contexts() != null) {
 
-            final Integer code = mapping.dictionary().contexts().getCode(value);
+            var code = mapping.dictionary().contexts().getCode(value);
 
             if (code != null) {
                 return new UnsignedInteger(code);
