@@ -46,7 +46,7 @@ public class Debug {
     protected DocumentDictionary dictionary;
     protected Mapping mapping;
 
-    protected JsonValue decoded;
+    protected Object decoded;
     protected byte[] encoded;
 
     protected Exception error;
@@ -138,9 +138,9 @@ public class Debug {
     /**
      * Returns the decoded JSON-LD document.
      *
-     * @return the decoded {@link JsonValue}, or {@code null}
+     * @return the decoded value, or {@code null}
      */
-    public JsonValue decoded() {
+    public Object decoded() {
         return decoded;
     }
 

@@ -3,10 +3,14 @@ package com.apicatalog.cborld.decoder;
 import java.io.ByteArrayInputStream;
 import java.math.BigInteger;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import com.apicatalog.cborld.CborLdVersion;
 import com.apicatalog.cborld.context.ContextError;
@@ -16,7 +20,6 @@ import com.apicatalog.cborld.mapping.DecoderMappingProvider;
 import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.cborld.mapping.TypeMap;
 import com.apicatalog.cborld.registry.DocumentDictionary;
-import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 
 import co.nstant.in.cbor.CborDecoder;
@@ -25,19 +28,12 @@ import co.nstant.in.cbor.model.Array;
 import co.nstant.in.cbor.model.DataItem;
 import co.nstant.in.cbor.model.DoublePrecisionFloat;
 import co.nstant.in.cbor.model.HalfPrecisionFloat;
-import co.nstant.in.cbor.model.MajorType;
 import co.nstant.in.cbor.model.NegativeInteger;
 import co.nstant.in.cbor.model.SimpleValue;
 import co.nstant.in.cbor.model.SinglePrecisionFloat;
 import co.nstant.in.cbor.model.Special;
 import co.nstant.in.cbor.model.UnicodeString;
 import co.nstant.in.cbor.model.UnsignedInteger;
-import jakarta.json.Json;
-import jakarta.json.JsonArray;
-import jakarta.json.JsonArrayBuilder;
-import jakarta.json.JsonObject;
-import jakarta.json.JsonObjectBuilder;
-import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 
 abstract class AbstractDecoder implements Decoder {
@@ -60,7 +56,7 @@ abstract class AbstractDecoder implements Decoder {
     }
 
     @Override
-    public JsonValue decode(byte[] encoded) throws ContextError, DecoderException {
+    public Object decode(byte[] encoded) throws ContextError, DecoderException {
         final CborLdVersion version = Decoder.assertCborLd(encoded);
 
         if (version != config.version()) {
@@ -70,12 +66,12 @@ abstract class AbstractDecoder implements Decoder {
         return decode(version, encoded);
     }
 
-    protected final JsonValue decode(final DocumentDictionary dictionary, final DataItem data) throws DecoderException, ContextError {
+    protected final Object decode(final DocumentDictionary dictionary, final DataItem data) throws DecoderException, ContextError {
         final Mapping mapping = mappingProvider.getDecoderMapping(data, dictionary, this);
         return decodeData(data, null, mapping.typeMap(), mapping);
     }
 
-    protected final JsonValue decodeData(final DataItem data, final String term, final TypeMap def, Mapping mapping) throws DecoderException, ContextError {
+    protected final Object decodeData(final DataItem data, final String term, final TypeMap def, Mapping mapping) throws DecoderException, ContextError {
 
         Objects.requireNonNull(data);
 
@@ -96,40 +92,41 @@ abstract class AbstractDecoder implements Decoder {
             return decode((Special) data);
 
         case NEGATIVE_INTEGER:
-            return Json.createValue(((NegativeInteger) data).getValue());
+            return ((NegativeInteger) data).getValue();
 
         case BYTE_STRING:
-            JsonValue decoded = decodeValue(data, term, def, mapping);
+            String decoded = decodeValue(data, term, def, mapping);
             if (decoded != null) {
                 return decoded;
             }
 
         default:
-            throw new IllegalStateException("An unexpected data item type " + data.getMajorType() + " at " + term + ".");
+            throw new IllegalStateException("An unexpected data item type " + data + " at " + term + ".");
         }
     }
 
-    protected final JsonObject decodeMap(final co.nstant.in.cbor.model.Map map, final TypeMap def, final Mapping mapping) throws DecoderException, ContextError {
+    protected final Map<String, ?> decodeMap(final co.nstant.in.cbor.model.Map map, final TypeMap def, final Mapping mapping) throws DecoderException, ContextError {
 
         Objects.requireNonNull(map);
 
         if (map.getKeys().isEmpty()) {
-            return JsonValue.EMPTY_JSON_OBJECT;
+            return Collections.emptyMap();
         }
 
-        final JsonObjectBuilder builder = Json.createObjectBuilder();
+        var result = new LinkedHashMap<String, Object>();
 
-        for (final DataItem key : map.getKeys()) {
+        for (var key : map.getKeys()) {
 
             final DataItem value = map.get(key);
 
-            boolean isArray = MajorType.UNSIGNED_INTEGER.equals(key.getMajorType())
-                    && !((UnsignedInteger) key).getValue().mod(BigInteger.ONE.add(BigInteger.ONE)).equals(BigInteger.ZERO);
+            boolean isArray = key instanceof UnsignedInteger uint
+                    && !uint.getValue().mod(BigInteger.ONE.add(BigInteger.ONE)).equals(BigInteger.ZERO);
 
-            JsonValue json = null;
+            var json = (Object) null;
+
             final String term = decodeKey(key, mapping);
 
-            if (!isArray && MajorType.ARRAY.equals(value.getMajorType())) {
+            if (!isArray && value instanceof Array) {
                 json = decodeValue(value, term, def, mapping);
             }
 
@@ -138,17 +135,17 @@ abstract class AbstractDecoder implements Decoder {
 
                 if (isArray
                         && config.isCompactArrays()
-                        && (JsonUtils.isNotArray(json)
-                                || json.asJsonArray().size() == 1)) {
+                        && (!(json instanceof Collection c)
+                                || c.size() == 1)) {
 
-                    json = Json.createArrayBuilder().add(json).build();
+                    json = Set.of(json);
                 }
             }
 
-            builder.add(term, json);
+            result.put(term, json);
         }
 
-        return builder.build();
+        return result;
     }
 
     protected static final String decodeKey(final DataItem data, final Mapping mapping) {
@@ -176,7 +173,7 @@ abstract class AbstractDecoder implements Decoder {
         return result != null ? result : key.toString();
     }
 
-    protected final JsonArray decodeArray(final Collection<DataItem> items, final String key, final TypeMap def, final Mapping mapping) throws DecoderException, ContextError {
+    protected final Collection<?> decodeArray(final Collection<DataItem> items, final String key, final TypeMap def, final Mapping mapping) throws DecoderException, ContextError {
 
         Objects.requireNonNull(items);
 
@@ -184,35 +181,35 @@ abstract class AbstractDecoder implements Decoder {
             return JsonValue.EMPTY_JSON_ARRAY;
         }
 
-        final JsonArrayBuilder builder = Json.createArrayBuilder();
+        var result = new ArrayList<Object>(items.size());
 
         for (final DataItem item : items) {
-            builder.add(decodeData(item, key, def, mapping));
+            result.add(decodeData(item, key, def, mapping));
         }
 
-        return builder.build();
+        return result;
     }
 
-    protected static final JsonString decodeString(final UnicodeString string) {
+    protected static final String decodeString(final UnicodeString string) {
         Objects.requireNonNull(string);
-        return Json.createValue(string.getString());
+        return string.getString();
     }
 
-    protected final JsonValue decodeInteger(final DataItem number, final String key, final TypeMap def, final Mapping mapping) throws DecoderException {
+    protected final Object decodeInteger(final DataItem number, final String key, final TypeMap def, final Mapping mapping) throws DecoderException {
 
         Objects.requireNonNull(number);
 
-        JsonValue decoded = decodeValue(number, key, def, mapping);
+        String decoded = decodeValue(number, key, def, mapping);
 
         if (decoded != null) {
             return decoded;
         }
 
         // fallback
-        return Json.createValue(((UnsignedInteger) number).getValue());
+        return ((UnsignedInteger) number).getValue();
     }
 
-    protected final JsonValue decodeValue(final DataItem value, final String property, final TypeMap def, final Mapping mapping) throws DecoderException {
+    protected final String decodeValue(final DataItem value, final String property, final TypeMap def, final Mapping mapping) throws DecoderException {
         final Collection<String> types = def != null
                 ? def.getType(property)
                 : Collections.emptySet();
@@ -221,22 +218,22 @@ abstract class AbstractDecoder implements Decoder {
             var decoded = decoder.decode(mapping, value, property, types);
 
             if (decoded != null) {
-                return Json.createValue(decoded);
+                return decoded;
             }
-        }        
+        }
         return null;
     }
 
-    protected static final JsonValue decode(final Special value) {
+    protected static final Object decode(final Special value) {
         switch (value.getSpecialType()) {
         case IEEE_754_DOUBLE_PRECISION_FLOAT:
-            return Json.createValue(((DoublePrecisionFloat) value).getValue());
+            return ((DoublePrecisionFloat) value).getValue();
 
         case IEEE_754_HALF_PRECISION_FLOAT:
-            return Json.createValue(((HalfPrecisionFloat) value).getValue());
+            return ((HalfPrecisionFloat) value).getValue();
 
         case IEEE_754_SINGLE_PRECISION_FLOAT:
-            return Json.createValue(((SinglePrecisionFloat) value).getValue());
+            return ((SinglePrecisionFloat) value).getValue();
 
         case SIMPLE_VALUE:
             return decode((SimpleValue) value);
@@ -248,16 +245,16 @@ abstract class AbstractDecoder implements Decoder {
         throw new IllegalArgumentException("Unsupported CBOR special type [" + value.getSpecialType() + "].");
     }
 
-    protected static final JsonValue decode(final SimpleValue value) {
+    protected static final Object decode(final SimpleValue value) {
         switch (value.getSimpleValueType()) {
         case FALSE:
-            return JsonValue.FALSE;
+            return false;
 
         case TRUE:
-            return JsonValue.TRUE;
+            return true;
 
         case NULL:
-            return JsonValue.NULL;
+            return null;
 
         default:
             break;
@@ -267,7 +264,7 @@ abstract class AbstractDecoder implements Decoder {
     }
 
     // legacy support
-    protected final JsonValue decode(final DocumentDictionary dictionary, byte[] encoded) throws ContextError, DecoderException {
+    protected final Object decode(final DocumentDictionary dictionary, byte[] encoded) throws ContextError, DecoderException {
         try {
             final ByteArrayInputStream bais = new ByteArrayInputStream(encoded);
             final List<DataItem> dataItems = new CborDecoder(bais).decode();
@@ -283,13 +280,13 @@ abstract class AbstractDecoder implements Decoder {
             }
 
             // decode as an array of objects
-            final JsonArrayBuilder builder = Json.createArrayBuilder();
+            var list = new ArrayList<Object>(dataItems.size());
 
             for (final DataItem item : dataItems) {
-                builder.add(decode(dictionary, item));
+                list.add(decode(dictionary, item));
             }
 
-            return builder.build();
+            return list;
 
         } catch (final CborException e) {
             throw new DecoderException(Code.InvalidDocument, e);

@@ -32,7 +32,7 @@ public interface Decoder {
      * @throws DecoderException if the version is unsupported or if a decoding error
      *                          occurs
      */
-    JsonValue decode(byte[] encoded) throws ContextError, DecoderException;
+    Object decode(byte[] encoded) throws ContextError, DecoderException;
 
     /**
      * Decodes a CBOR-LD document into a JSON-LD document using the specified
@@ -47,7 +47,7 @@ public interface Decoder {
      * @throws ContextError     if a context-related error occurs during decoding
      * @throws DecoderException if a decoding error occurs
      */
-    JsonValue decode(CborLdVersion version, byte[] encoded) throws ContextError, DecoderException;
+    Object decode(CborLdVersion version, byte[] encoded) throws ContextError, DecoderException;
 
     /**
      * Returns the decoder configuration in use.

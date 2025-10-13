@@ -30,6 +30,8 @@ import com.apicatalog.jsonld.json.JsonLdComparison;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
 import com.apicatalog.multibase.Multibase;
+import com.apicatalog.tree.io.JakartaMaterializer;
+import com.apicatalog.tree.io.NativeAdapter;
 
 import co.nstant.in.cbor.CborDecoder;
 import co.nstant.in.cbor.CborException;
@@ -180,7 +182,7 @@ class CborLdTestRunnerJunit {
 
                 final Decoder decoder = getDecoder(testCase.config, testCase.compactArrays);
 
-                final JsonValue result = decoder.decode(((CborLdDocument) document).getByteArray());
+                final Object result = decoder.decode(((CborLdDocument) document).getByteArray());
 
                 if (testCase.type.stream().noneMatch(o -> o.endsWith("PositiveEvaluationTest"))) {
                     fail("Expected error code [" + testCase.result + "].");
@@ -192,11 +194,13 @@ class CborLdTestRunnerJunit {
                 final JsonStructure expected = LOADER.loadDocument(testCase.result, new DocumentLoaderOptions()).getJsonContent().orElse(null);
 
                 assertNotNull(expected);
+                
+                var json = new JakartaMaterializer().node(result, NativeAdapter.instance());
 
-                final boolean match = JsonLdComparison.equals(expected, result);
+                final boolean match = JsonLdComparison.equals(expected, json);
 
                 if (!match) {
-                    write(testCase, result, expected);
+                    write(testCase, json, expected);
                 }
 
                 assertTrue(match, "The expected result does not match.");
@@ -264,7 +268,7 @@ class CborLdTestRunnerJunit {
                 return;
             }
 
-        } catch (CborException e) {
+        } catch (IOException | CborException e) {
             fail(e);
 
         } catch (ContextError e) {
