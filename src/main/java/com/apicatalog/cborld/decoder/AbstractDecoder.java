@@ -34,7 +34,6 @@ import co.nstant.in.cbor.model.SinglePrecisionFloat;
 import co.nstant.in.cbor.model.Special;
 import co.nstant.in.cbor.model.UnicodeString;
 import co.nstant.in.cbor.model.UnsignedInteger;
-import jakarta.json.JsonValue;
 
 abstract class AbstractDecoder implements Decoder {
 
@@ -178,7 +177,7 @@ abstract class AbstractDecoder implements Decoder {
         Objects.requireNonNull(items);
 
         if (items.isEmpty()) {
-            return JsonValue.EMPTY_JSON_ARRAY;
+            return Collections.emptyList();
         }
 
         var result = new ArrayList<Object>(items.size());
