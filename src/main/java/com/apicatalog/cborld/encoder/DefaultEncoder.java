@@ -16,8 +16,9 @@ import com.apicatalog.cborld.mapping.EncoderMappingProvider;
 import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.cborld.mapping.TypeMap;
 import com.apicatalog.jsonld.JsonLdError;
-import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.loader.DocumentLoader;
+import com.apicatalog.tree.io.NodeAdapter;
+import com.apicatalog.tree.io.NodeType;
 
 import co.nstant.in.cbor.CborBuilder;
 import co.nstant.in.cbor.CborEncoder;
@@ -30,11 +31,6 @@ import co.nstant.in.cbor.model.NegativeInteger;
 import co.nstant.in.cbor.model.SimpleValue;
 import co.nstant.in.cbor.model.UnicodeString;
 import co.nstant.in.cbor.model.UnsignedInteger;
-import jakarta.json.JsonArray;
-import jakarta.json.JsonNumber;
-import jakarta.json.JsonObject;
-import jakarta.json.JsonString;
-import jakarta.json.JsonValue;
 
 public class DefaultEncoder implements Encoder {
 
@@ -54,12 +50,13 @@ public class DefaultEncoder implements Encoder {
      * Encodes JSON-LD document as CBOR-LD document.
      * 
      * @param document JSON-LD document to encode
+     * @param adapter
      * @return a byte array representing the encoded CBOR-LD document.
      * 
      * @throws EncoderException
      * @throws ContextError
      */
-    public final byte[] encode(JsonObject document) throws EncoderException, ContextError {
+    public final byte[] encode(Object document, NodeAdapter adapter) throws EncoderException, ContextError {
 
         if (document == null) {
             throw new IllegalArgumentException("The 'document' parameter must not be null.");
@@ -67,13 +64,13 @@ public class DefaultEncoder implements Encoder {
 
         try {
 
-            final Collection<String> contexts = EncoderContext.get(document);
+            final Collection<String> contexts = EncoderContext.get(document, adapter);
 
             if (contexts.isEmpty()) { // is not JSON-LD document
                 throw new EncoderException(Code.InvalidDocument, "Not a valid JSON-LD document in a compacted form. @context declaration is missing");
             }
 
-            return compress(document, contexts);
+            return compress(document, adapter, contexts);
 
             // non compressible context
         } catch (IllegalArgumentException e) {
@@ -92,6 +89,7 @@ public class DefaultEncoder implements Encoder {
      * Compress the given JSON-LD document into CBOR-LD byte array.
      *
      * @param document    the document to compress
+     * @param adapter
      * @param contextUrls a set of URLs of <code>@context</code> referenced by the
      *                    document
      * @return the compressed document as byte array
@@ -100,7 +98,7 @@ public class DefaultEncoder implements Encoder {
      * @throws ContextError
      * @throws EncoderException
      */
-    final byte[] compress(final JsonObject document, Collection<String> contextUrls) throws ContextError, EncoderException {
+    final byte[] compress(final Object document, NodeAdapter adapter, Collection<String> contextUrls) throws ContextError, EncoderException {
 
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
@@ -136,11 +134,11 @@ public class DefaultEncoder implements Encoder {
 
             // if no compression
             if (config.dictionary() == null) {
-                encode(document, mapBuilder, null, null).end();
+                encode(document, adapter, mapBuilder, null, null).end();
 
             } else {
-                final Mapping mapping = mappingProvider.getEncoderMapping(document, this);
-                encode(document, mapBuilder, mapping.typeMap(), mapping).end();
+                final Mapping mapping = mappingProvider.getEncoderMapping(document, adapter, this);
+                encode(document, adapter, mapBuilder, mapping.typeMap(), mapping).end();
             }
 
             new CborEncoder(baos).encode(builder.build());
@@ -155,51 +153,55 @@ public class DefaultEncoder implements Encoder {
         }
     }
 
-    final MapBuilder<?> encode(final JsonObject object, final MapBuilder<?> builder, TypeMap typeMapping, Mapping mapping) throws EncoderException, JsonLdError {
+    final MapBuilder<?> encode(final Object object, final NodeAdapter adapter, final MapBuilder<?> builder, TypeMap typeMapping, Mapping mapping) throws EncoderException, JsonLdError {
 
-        if (object.isEmpty()) {
+        if (adapter.isEmpty(object)) {
             return builder;
         }
 
         MapBuilder<?> flow = builder;
 
-        for (final Entry<String, JsonValue> entry : object.entrySet()) {
-            final String property = entry.getKey();
+        for (final Entry<?, ?> entry : adapter.entries(object)) {
+
+            final String property = adapter.stringValue(entry.getKey());
 
             final Integer encodedProperty = mapping != null
                     ? mapping.termMap().getCode(property)
                     : null;
 
-            if (JsonUtils.isArray(entry.getValue())) {
+            if (adapter.isCollection(entry.getValue())) {
 
                 final DataItem key = encodedProperty != null
                         ? new UnsignedInteger(encodedProperty + 1)
                         : new UnicodeString(property);
 
-                if (config.isCompactArrays() && entry.getValue().asJsonArray().size() == 1) {
+                var items = adapter.elements(entry.getValue());
 
-                    final JsonValue value = entry.getValue().asJsonArray().iterator().next();
+                if (config.isCompactArrays() && adapter.size(entry.getValue()) == 1) {
 
-                    if (JsonUtils.isObject(value)) {
+                    var value = items.iterator().next();
+
+                    if (adapter.isMap(value)) {
                         final TypeMap propertyTypeMapping = typeMapping.getMapping(property);
-                        flow = (MapBuilder<?>) encode(value.asJsonObject(), flow.putMap(key), propertyTypeMapping, mapping).end();
+                        flow = (MapBuilder<?>) encode(value, adapter, flow.putMap(key), propertyTypeMapping, mapping).end();
 
-                    } else if (JsonUtils.isArray(value)) {
+                    } else if (adapter.isCollection(value)) {
                         flow = (MapBuilder<?>) encode(
-                                value.asJsonArray(),
+                                adapter.elements(value),
+                                adapter,
                                 flow.putArray(key),
                                 property,
                                 typeMapping,
                                 mapping).end();
 
                     } else {
-                        final DataItem dataItem = encode(value, property, typeMapping, mapping);
-
-                        flow = flow.put(key, dataItem);
+                        flow = flow.put(key, encode(value, adapter, property, typeMapping, mapping));
                     }
 
                 } else {
-                    flow = (MapBuilder<?>) encode(entry.getValue().asJsonArray(), flow.putArray(key),
+                    flow = (MapBuilder<?>) encode(items,
+                            adapter,
+                            flow.putArray(key),
                             property,
                             typeMapping, mapping).end();
                 }
@@ -210,16 +212,19 @@ public class DefaultEncoder implements Encoder {
                     ? new UnsignedInteger(encodedProperty)
                     : new UnicodeString(property);
 
-            if (JsonUtils.isObject(entry.getValue())) {
+            if (adapter.isMap(entry.getValue())) {
                 final TypeMap propertyTypeMapping = typeMapping != null
                         ? typeMapping.getMapping(property)
                         : null;
-                flow = (MapBuilder<?>) encode(entry.getValue().asJsonObject(), flow.putMap(key),
-                        propertyTypeMapping, mapping).end();
+                flow = (MapBuilder<?>) encode(entry.getValue(),
+                        adapter,
+                        flow.putMap(key),
+                        propertyTypeMapping,
+                        mapping).end();
                 continue;
             }
 
-            final DataItem value = encode(entry.getValue(), property, typeMapping, mapping);
+            final DataItem value = encode(entry.getValue(), adapter, property, typeMapping, mapping);
 
             flow = flow.put(key, value);
         }
@@ -227,41 +232,41 @@ public class DefaultEncoder implements Encoder {
         return flow;
     }
 
-    final DataItem encode(final JsonValue jsonValue, final String term, TypeMap typeMapping, Mapping mapping) throws EncoderException {
+    final DataItem encode(final Object jsonValue, final NodeAdapter adapter, final String term, TypeMap typeMapping, Mapping mapping) throws EncoderException {
 
-        if (JsonUtils.isNull(jsonValue)) {
+        // TODO use adapter.type();
+
+        if (adapter.isNull(jsonValue)) {
             return SimpleValue.NULL;
         }
 
-        if (JsonUtils.isTrue(jsonValue)) {
-            return SimpleValue.TRUE;
+        if (adapter.isBoolean(jsonValue)) {
+            return adapter.type(jsonValue) == NodeType.TRUE
+                    ? SimpleValue.TRUE
+                    : SimpleValue.FALSE;
         }
 
-        if (JsonUtils.isFalse(jsonValue)) {
-            return SimpleValue.FALSE;
-        }
-
-        if (JsonUtils.isString(jsonValue)) {
+        if (adapter.isString(jsonValue)) {
             final Collection<String> types = typeMapping != null
                     ? typeMapping.getType(term)
                     : Collections.emptySet();
 
+            var stringValue = adapter.stringValue(jsonValue);
+
             for (final ValueEncoder valueEncoder : config.valueEncoders()) {
-                final DataItem dataItem = valueEncoder.encode(mapping, ((JsonString) jsonValue).getString(), term, types);
+                final DataItem dataItem = valueEncoder.encode(mapping, stringValue, term, types);
                 if (dataItem != null) {
                     return dataItem;
                 }
             }
-            return new UnicodeString(((JsonString) jsonValue).getString());
+            return new UnicodeString(stringValue);
         }
 
-        if (JsonUtils.isNumber(jsonValue)) {
+        if (adapter.isNumber(jsonValue)) {
 
-            final JsonNumber jsonNumber = ((JsonNumber) jsonValue);
+            if (adapter.isIntegral(jsonValue)) {
 
-            if (jsonNumber.isIntegral()) {
-
-                BigInteger integer = jsonNumber.bigIntegerValueExact();
+                BigInteger integer = adapter.bigIntegerValue(jsonValue);
 
                 switch (integer.signum()) {
                 case -1:
@@ -274,34 +279,35 @@ public class DefaultEncoder implements Encoder {
 
                 // then it's decimal
             } else {
-                return new DoublePrecisionFloat(jsonNumber.bigDecimalValue().doubleValue());
+                return new DoublePrecisionFloat(adapter.doubleValue(jsonValue));
             }
         }
 
         throw new IllegalStateException();
     }
 
-    final ArrayBuilder<?> encode(final JsonArray jsonArray, final ArrayBuilder<?> builder, String property, TypeMap typeMapping, Mapping mapping) throws EncoderException, JsonLdError {
+    final ArrayBuilder<?> encode(final Iterable<?> jsonArray, final NodeAdapter adapter, final ArrayBuilder<?> builder, String property, TypeMap typeMapping, Mapping mapping)
+            throws EncoderException, JsonLdError {
 
-        if (jsonArray.isEmpty()) {
+        if (adapter.isEmpty(jsonArray)) {
             return builder;
         }
 
         ArrayBuilder<?> flow = builder;
 
-        for (final JsonValue item : jsonArray) {
+        for (final Object item : adapter.elements(jsonArray)) {
 
-            if (JsonUtils.isObject(item)) {
-                flow = (ArrayBuilder<?>) encode(item.asJsonObject(), flow.startMap(), typeMapping, mapping).end();
+            if (adapter.isMap(item)) {
+                flow = (ArrayBuilder<?>) encode(item, adapter, flow.startMap(), typeMapping, mapping).end();
                 continue;
             }
 
-            if (JsonUtils.isArray(item)) {
-                flow = (ArrayBuilder<?>) encode(item.asJsonArray(), flow.startArray(), property, typeMapping, mapping).end();
+            if (adapter.isCollection(item)) {
+                flow = (ArrayBuilder<?>) encode(adapter.elements(item), adapter, flow.startArray(), property, typeMapping, mapping).end();
                 continue;
             }
 
-            final DataItem value = encode(item, property, typeMapping, mapping);
+            final DataItem value = encode(item, adapter, property, typeMapping, mapping);
 
             flow = flow.add(value);
         }

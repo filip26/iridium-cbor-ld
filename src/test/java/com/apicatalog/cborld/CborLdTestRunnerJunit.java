@@ -30,6 +30,7 @@ import com.apicatalog.jsonld.json.JsonLdComparison;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
 import com.apicatalog.multibase.Multibase;
+import com.apicatalog.tree.io.JakartaAdapter;
 import com.apicatalog.tree.io.JakartaMaterializer;
 import com.apicatalog.tree.io.NativeAdapter;
 
@@ -150,7 +151,7 @@ class CborLdTestRunnerJunit {
 
                 Encoder encoder = getEncoder(testCase.config, testCase.compactArrays);
 
-                byte[] bytes = encoder.encode(object);
+                byte[] bytes = encoder.encode(object, JakartaAdapter.instance());
 
                 if (testCase.type.stream().noneMatch(o -> o.endsWith("PositiveEvaluationTest"))) {
                     fail("Expected error code [" + testCase.result + "].");
@@ -213,7 +214,7 @@ class CborLdTestRunnerJunit {
 
                 var debug = getDebugEncoder(testCase.config);
 
-                debug.encode(object);
+                debug.encode(object, JakartaAdapter.instance());
 
                 if (testCase.type.stream().noneMatch(o -> o.endsWith("PositiveEvaluationTest"))) {
                     fail("Expected error code [" + testCase.result + "].");

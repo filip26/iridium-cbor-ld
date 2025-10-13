@@ -11,20 +11,19 @@ import com.apicatalog.cborld.mapping.EncoderMappingProvider;
 import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.cborld.registry.DocumentDictionary;
 import com.apicatalog.jsonld.JsonLdError;
-import com.apicatalog.tree.io.JakartaAdapter;
+import com.apicatalog.tree.io.NodeAdapter;
 
 import co.nstant.in.cbor.model.DataItem;
-import jakarta.json.JsonObject;
 
 public class ContextMappingProvider implements EncoderMappingProvider, DecoderMappingProvider {
 
     @Override
-    public Mapping getEncoderMapping(JsonObject document, Encoder encoder) throws ContextError {
+    public Mapping getEncoderMapping(Object document, NodeAdapter adapter, Encoder encoder) throws ContextError {
         try {
 
-            final Context context = Context.from(document, 
-                    JakartaAdapter.instance(), 
-                    encoder.base(), 
+            final Context context = Context.from(document,
+                    adapter,
+                    encoder.base(),
                     encoder.loader());
 
             return new EncoderContextMapping(
