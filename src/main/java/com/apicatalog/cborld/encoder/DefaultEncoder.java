@@ -18,7 +18,6 @@ import com.apicatalog.cborld.mapping.TypeMap;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.tree.io.NodeAdapter;
-import com.apicatalog.tree.io.NodeType;
 
 import co.nstant.in.cbor.CborBuilder;
 import co.nstant.in.cbor.CborEncoder;
@@ -179,15 +178,15 @@ public class DefaultEncoder implements Encoder {
 
                 if (config.isCompactArrays() && adapter.isSingleElement(entryValue)) {
 
-                    var value = adapter.singleElement(entryValue);
+                    var singleton = adapter.singleElement(entryValue);
 
-                    if (adapter.isMap(value)) {
+                    if (adapter.isMap(singleton)) {
                         final TypeMap propertyTypeMapping = typeMapping.getMapping(property);
-                        flow = (MapBuilder<?>) encode(value, adapter, flow.putMap(key), propertyTypeMapping, mapping).end();
+                        flow = (MapBuilder<?>) encode(singleton, adapter, flow.putMap(key), propertyTypeMapping, mapping).end();
 
-                    } else if (adapter.isCollection(value)) {
+                    } else if (adapter.isCollection(singleton)) {
                         flow = (MapBuilder<?>) encode(
-                                adapter.elements(value),
+                                adapter.elements(singleton),
                                 adapter,
                                 flow.putArray(key),
                                 property,
@@ -195,7 +194,7 @@ public class DefaultEncoder implements Encoder {
                                 mapping).end();
 
                     } else {
-                        flow = flow.put(key, encode(value, adapter, property, typeMapping, mapping));
+                        flow = flow.put(key, encode(singleton, adapter, property, typeMapping, mapping));
                     }
 
                 } else {
@@ -235,19 +234,21 @@ public class DefaultEncoder implements Encoder {
 
     final DataItem encode(final Object jsonValue, final NodeAdapter adapter, final String term, TypeMap typeMapping, Mapping mapping) throws EncoderException {
 
-        // TODO use adapter.type();
-
-        if (adapter.isNull(jsonValue)) {
+        if (jsonValue == null) {
             return SimpleValue.NULL;
         }
 
-        if (adapter.isBoolean(jsonValue)) {
-            return adapter.type(jsonValue) == NodeType.TRUE
-                    ? SimpleValue.TRUE
-                    : SimpleValue.FALSE;
-        }
+        switch (adapter.type(jsonValue)) {
+        case NULL:
+            return SimpleValue.NULL;
 
-        if (adapter.isString(jsonValue)) {
+        case TRUE:
+            return SimpleValue.TRUE;
+
+        case FALSE:
+            return SimpleValue.FALSE;
+
+        case STRING:
             final Collection<String> types = typeMapping != null
                     ? typeMapping.getType(term)
                     : Collections.emptySet();
@@ -261,10 +262,8 @@ public class DefaultEncoder implements Encoder {
                 }
             }
             return new UnicodeString(stringValue);
-        }
 
-        if (adapter.isNumber(jsonValue)) {
-
+        case NUMBER:
             if (adapter.isIntegral(jsonValue)) {
 
                 BigInteger integer = adapter.bigIntegerValue(jsonValue);
@@ -282,9 +281,9 @@ public class DefaultEncoder implements Encoder {
             } else {
                 return new DoublePrecisionFloat(adapter.doubleValue(jsonValue));
             }
+        default:
+            throw new IllegalStateException();
         }
-
-        throw new IllegalStateException();
     }
 
     final ArrayBuilder<?> encode(final Iterable<?> jsonArray, final NodeAdapter adapter, final ArrayBuilder<?> builder, String property, TypeMap typeMapping, Mapping mapping)
