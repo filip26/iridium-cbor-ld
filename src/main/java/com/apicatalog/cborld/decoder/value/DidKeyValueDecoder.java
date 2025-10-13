@@ -1,7 +1,6 @@
 package com.apicatalog.cborld.decoder.value;
 
 import java.util.Collection;
-import java.util.List;
 
 import com.apicatalog.cborld.decoder.DecoderException;
 import com.apicatalog.cborld.encoder.value.DidKeyValueEncoder;
@@ -20,28 +19,25 @@ public class DidKeyValueDecoder implements ValueDecoder {
 
         if (value instanceof Array array) {
 
-            final List<DataItem> items = array.getDataItems();
+            var items = array.getDataItems();
 
             if (items.size() < 2 || items.size() > 3) {
                 return null;
             }
 
-            final DataItem code = items.get(0);
-            final DataItem part1 = items.get(1);
-            final DataItem part2 = items.size() == 3 ? items.get(2) : null;
+            if (items.get(0) instanceof UnsignedInteger code
+                    && DidKeyValueEncoder.CODE == code.getValue().longValueExact()
+                    && items.get(1) instanceof ByteString part1) {
 
-            if (code instanceof UnsignedInteger uint
-                    && DidKeyValueEncoder.CODE == uint.getValue().longValueExact()
-                    && part1 instanceof ByteString stringKey
-                    && (part2 == null || part2 instanceof ByteString)) {
+                var key = decode(part1);
 
-                var key = decode(stringKey);
+                if (items.size() == 2) {
+                    return DidKeyValueEncoder.PREFIX + key;
+                }
 
-                var fragment = part2 != null
-                        ? "#" + decode((ByteString) part2)
-                        : "";
-
-                return DidKeyValueEncoder.PREFIX + key + fragment;
+                if (items.get(2) instanceof ByteString part2) {
+                    return DidKeyValueEncoder.PREFIX + key + "#" + decode(part2);
+                }
             }
         }
         return null;

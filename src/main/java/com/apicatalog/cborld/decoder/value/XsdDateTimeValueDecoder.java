@@ -7,7 +7,6 @@ import com.apicatalog.cborld.decoder.DecoderException;
 import com.apicatalog.cborld.mapping.Mapping;
 
 import co.nstant.in.cbor.model.DataItem;
-import co.nstant.in.cbor.model.MajorType;
 import co.nstant.in.cbor.model.UnsignedInteger;
 
 public class XsdDateTimeValueDecoder implements ValueDecoder {
@@ -16,14 +15,9 @@ public class XsdDateTimeValueDecoder implements ValueDecoder {
 
     @Override
     public String decode(Mapping mapping, DataItem value, String term, Collection<String> types) throws DecoderException {
-        if (types.contains(DATE_TIME_TYPE)
-                && MajorType.UNSIGNED_INTEGER.equals(value.getMajorType())) {
-
-            long epochSeconds = ((UnsignedInteger) value).getValue().longValueExact();
-
-            return Instant.ofEpochSecond(epochSeconds).toString();
-        }
-        return null;
-
+        return (types.contains(DATE_TIME_TYPE)
+                && value instanceof UnsignedInteger epochSeconds)
+                        ? Instant.ofEpochSecond(epochSeconds.getValue().longValueExact()).toString()
+                        : null;
     }
 }
