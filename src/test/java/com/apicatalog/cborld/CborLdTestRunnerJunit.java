@@ -194,7 +194,7 @@ class CborLdTestRunnerJunit {
                 final JsonStructure expected = LOADER.loadDocument(testCase.result, new DocumentLoaderOptions()).getJsonContent().orElse(null);
 
                 assertNotNull(expected);
-                
+
                 var json = new JakartaMaterializer().node(result, NativeAdapter.instance());
 
                 final boolean match = JsonLdComparison.equals(expected, json);
@@ -220,11 +220,14 @@ class CborLdTestRunnerJunit {
                     return;
                 }
 
-                var result = debug.dump();
+                var dump = debug.dump();
 
                 var expected = LOADER.loadDocument(testCase.result, new DocumentLoaderOptions()).getJsonContent().orElse(null);
 
                 assertNotNull(expected);
+
+                // TODO use Jcs v2.0 with adapters
+                var result = new JakartaMaterializer().node(dump, NativeAdapter.instance());
 
                 var match = JsonLdComparison.equals(expected, result);
 
@@ -249,11 +252,14 @@ class CborLdTestRunnerJunit {
                     return;
                 }
 
-                var result = debug.dump();
+                var dump = debug.dump();
 
                 var expected = LOADER.loadDocument(testCase.result, new DocumentLoaderOptions()).getJsonContent().orElse(null);
 
                 assertNotNull(expected);
+
+                // TODO use Jcs v2.0 with adapters
+                var result = new JakartaMaterializer().node(dump, NativeAdapter.instance());
 
                 var match = JsonLdComparison.equals(expected, result);
 
