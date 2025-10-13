@@ -68,10 +68,11 @@ class DecoderV1 extends AbstractDecoder {
                 if (code > 0 && dictionary == null) {
                     throw new DecoderException(Code.UnknownDictionary,
                             "Unknown CBOR-LD v1.0 document terms dictionary code = "
-                                    + registryId
+                                    + code
                                     + ", hex = "
-                                    + Hex.toString(((UnsignedInteger) registryId).getValue().intValueExact()) + ".");
+                                    + Hex.toString(code) + ".");
                 }
+
                 return decode(dictionary, it.next());
             }
             throw new DecoderException(Code.InvalidDocument, "The document is not CBOR-LD v1.0 document. Registry Entry ID is not an unsigned integer but " + registryId + ".");

@@ -15,6 +15,7 @@ import co.nstant.in.cbor.model.DataItem;
  * on their location and associated RDF types into compact CBOR representations.
  * </p>
  */
+@FunctionalInterface
 public interface ValueEncoder {
 
     /**

@@ -36,22 +36,23 @@ class DecoderContextMapping implements Mapping {
         this.typeMap = null;
     }
 
-    final DataItem decodeValue(final DataItem value, String property) {
+    final DataItem decodeValue(final DataItem value, final String property) {
 
         var type = Arrays.asList(Keywords.TYPE);
 
-        for (final ValueDecoder decoder : valueDecoders) {
+        for (var decoder : valueDecoders) {
             try {
-                final String decoded = decoder.decode(this, value, property,
+                var decoded = decoder.decode(
+                        this,
+                        value,
+                        property,
                         typeKeyNameMap.isTypeKey(property)
                                 ? type
                                 : Collections.emptySet());
 
-                if (decoded == null) {
-                    continue;
+                if (decoded != null) {
+                    return new UnicodeString(decoded);
                 }
-
-                return new UnicodeString(decoded);
 
             } catch (DecoderException e) {
                 /* ignored */

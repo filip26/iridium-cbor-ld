@@ -50,7 +50,6 @@ public class StaticContextLoader implements DocumentLoader {
         set("https://w3id.org/security/data-integrity/v2", "data-integrity-v2.jsonld");
         set("https://www.w3.org/ns/credentials/examples/v2", "credentials-examples-v2.jsonld");
         set("https://www.w3.org/ns/activitystreams", "activitystreams.jsonld");
-
     }
 
     protected final DocumentLoader defaultLoader;
