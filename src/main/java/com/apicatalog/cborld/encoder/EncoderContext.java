@@ -10,8 +10,6 @@ import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.jsonld.uri.UriValidationPolicy;
 import com.apicatalog.tree.io.NodeAdapter;
 
-import jakarta.json.JsonString;
-
 class EncoderContext {
 
     public static final Collection<String> get(final Object document, final NodeAdapter adapter) throws EncoderException {
@@ -35,7 +33,7 @@ class EncoderContext {
     static final void processContextValue(final Object jsonValue, NodeAdapter adapter, final Collection<String> result) throws EncoderException {
 
         if (adapter.isString(jsonValue)) {
-            final String uri = ((JsonString) jsonValue).getString();
+            final String uri = adapter.stringValue(jsonValue);
 
             if (UriUtils.isAbsoluteUri(uri, UriValidationPolicy.Full)) {
                 result.add(uri);
