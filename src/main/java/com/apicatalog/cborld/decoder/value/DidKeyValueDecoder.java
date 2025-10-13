@@ -11,7 +11,6 @@ import com.apicatalog.multibase.Multibase;
 import co.nstant.in.cbor.model.Array;
 import co.nstant.in.cbor.model.ByteString;
 import co.nstant.in.cbor.model.DataItem;
-import co.nstant.in.cbor.model.MajorType;
 import co.nstant.in.cbor.model.UnsignedInteger;
 
 public class DidKeyValueDecoder implements ValueDecoder {
@@ -19,9 +18,9 @@ public class DidKeyValueDecoder implements ValueDecoder {
     @Override
     public String decode(Mapping mapping, DataItem value, String term, Collection<String> types) throws DecoderException {
 
-        if (MajorType.ARRAY.equals(value.getMajorType())) {
+        if (value instanceof Array array) {
 
-            final List<DataItem> items = ((Array) value).getDataItems();
+            final List<DataItem> items = array.getDataItems();
 
             if (items.size() < 2 || items.size() > 3) {
                 return null;
@@ -31,22 +30,20 @@ public class DidKeyValueDecoder implements ValueDecoder {
             final DataItem part1 = items.get(1);
             final DataItem part2 = items.size() == 3 ? items.get(2) : null;
 
-            if (!MajorType.UNSIGNED_INTEGER.equals(code.getMajorType())
-                    || DidKeyValueEncoder.CODE != ((UnsignedInteger) code).getValue().longValueExact()
-                    || !MajorType.BYTE_STRING.equals(part1.getMajorType())
-                    || (part2 != null && !MajorType.BYTE_STRING.equals(part2.getMajorType()))) {
-                return null;
+            if (code instanceof UnsignedInteger uint
+                    && DidKeyValueEncoder.CODE == uint.getValue().longValueExact()
+                    && part1 instanceof ByteString stringKey
+                    && (part2 == null || part2 instanceof ByteString)) {
+
+                var key = decode(stringKey);
+
+                var fragment = part2 != null
+                        ? "#" + decode((ByteString) part2)
+                        : "";
+
+                return DidKeyValueEncoder.PREFIX + key + fragment;
             }
-
-            final String key = decode((ByteString) part1);
-
-            final String fragment = part2 != null
-                    ? "#" + decode((ByteString) part2)
-                    : "";
-
-            return DidKeyValueEncoder.PREFIX + key + fragment;
         }
-
         return null;
     }
 

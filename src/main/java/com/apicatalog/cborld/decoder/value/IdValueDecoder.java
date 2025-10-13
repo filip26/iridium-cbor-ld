@@ -17,9 +17,9 @@ public class IdValueDecoder implements ValueDecoder {
                 && mapping != null 
                 && value instanceof UnsignedInteger integer) {
 
-            int code = integer.getValue().intValueExact();
+            var code = integer.getValue().intValueExact();
 
-            String id = mapping.dictionary() != null && mapping.dictionary().uris() != null
+            var id = mapping.dictionary() != null && mapping.dictionary().uris() != null
                     ? mapping.dictionary().uris().getValue(code)
                     : null;
 

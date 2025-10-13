@@ -12,31 +12,18 @@ import com.apicatalog.cborld.mapping.Mapping;
 import co.nstant.in.cbor.model.Array;
 import co.nstant.in.cbor.model.ByteString;
 import co.nstant.in.cbor.model.DataItem;
-import co.nstant.in.cbor.model.MajorType;
 import co.nstant.in.cbor.model.UnsignedInteger;
 
 public class UuidValueDecoder implements ValueDecoder {
 
     @Override
     public String decode(Mapping mapping, DataItem value, String term, Collection<String> types) throws DecoderException {
-
-        if (MajorType.ARRAY.equals(value.getMajorType())) {
-
-            final Array data = (Array) value;
-
-            if (data.getDataItems().size() == 2) {
-
-                final DataItem code = data.getDataItems().get(0);
-                final DataItem uuid = data.getDataItems().get(1);
-
-                if (MajorType.UNSIGNED_INTEGER.equals(code.getMajorType())
-                        && ((UnsignedInteger) code).getValue().equals(BigInteger.valueOf(3))
-                        && MajorType.BYTE_STRING.equals(uuid.getMajorType())) {
-                    return UuidValueEncoder.PREFIX + of(((ByteString) uuid).getBytes()).toString();
-                }
-            }
-        }
-        return null;
+        return (value instanceof Array array && array.getDataItems().size() == 2
+                && array.getDataItems().get(0) instanceof UnsignedInteger code
+                && code.getValue().equals(BigInteger.valueOf(3))
+                && array.getDataItems().get(1) instanceof ByteString uuid)
+                        ? UuidValueEncoder.PREFIX + of(uuid.getBytes()).toString()
+                        : null;
     }
 
     public static UUID of(byte[] bytes) {

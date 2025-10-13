@@ -3,7 +3,6 @@ package com.apicatalog.cborld.decoder.value;
 import java.util.Collection;
 
 import com.apicatalog.cborld.decoder.DecoderException;
-import com.apicatalog.cborld.dictionary.Dictionary;
 import com.apicatalog.cborld.mapping.Mapping;
 
 import co.nstant.in.cbor.model.DataItem;
@@ -23,12 +22,14 @@ public class CustomTypeValueDecoder implements ValueDecoder {
 
             for (final String type : types) {
 
-                final Dictionary dictionary = typeMap.get(type);
+                var dictionary = typeMap.get(type);
 
                 if (dictionary == null) {
                     continue;
                 }
-                final String decoded = dictionary.getValue(uint.getValue().intValueExact());
+                
+                var decoded = dictionary.getValue(uint.getValue().intValueExact());
+                
                 if (decoded != null) {
                     return decoded;
                 }
