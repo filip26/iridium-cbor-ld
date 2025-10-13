@@ -170,7 +170,7 @@ final class ObjectExpansion {
                         .vocab(true)
                         .expand(adapter.asString(key));
 
-                if (Keywords.VALUE.equals(expandedKey) || (Keywords.ID.equals(expandedKey) && (adapter.size(element) == 1))) {
+                if (Keywords.VALUE.equals(expandedKey) || (Keywords.ID.equals(expandedKey) && !keys.hasNext())) {
                     revert = false;
                     break;
                 }
