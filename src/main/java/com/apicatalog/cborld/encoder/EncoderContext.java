@@ -47,11 +47,11 @@ class EncoderContext {
             }
             return;
 
-        } else if (adapter.isMap(jsonValue)) {
+        } else if (adapter.isMap(jsonValue) && adapter.isSingleEntry(jsonValue)) {
 
             var idNode = adapter.property(Keywords.ID, jsonValue);
-            
-            if (adapter.size(jsonValue) == 1 && adapter.isString(idNode)) {
+
+            if (adapter.isString(idNode)) {
 
                 final String id = adapter.stringValue(idNode);
 

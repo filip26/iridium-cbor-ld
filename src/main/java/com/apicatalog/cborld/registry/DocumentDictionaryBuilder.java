@@ -67,7 +67,7 @@ public class DocumentDictionaryBuilder {
                         .entrySet()
                         .stream()
                         .map(e -> new AbstractMap.SimpleEntry<>(e.getKey(), DictionaryBuilder.of(e.getValue())))
-                        .collect(Collectors.toMap(
+                        .collect(Collectors.toUnmodifiableMap(
                                 Map.Entry::getKey,
                                 Map.Entry::getValue)),
                 dictionary.uris() != null

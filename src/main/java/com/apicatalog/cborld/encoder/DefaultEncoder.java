@@ -171,15 +171,15 @@ public class DefaultEncoder implements Encoder {
 
             if (adapter.isCollection(entry.getValue())) {
 
-                final DataItem key = encodedProperty != null
+                var key = encodedProperty != null
                         ? new UnsignedInteger(encodedProperty + 1)
                         : new UnicodeString(property);
 
-                var items = adapter.elements(entry.getValue());
+                var entryValue = entry.getValue();
 
-                if (config.isCompactArrays() && adapter.size(entry.getValue()) == 1) {
+                if (config.isCompactArrays() && adapter.isSingleElement(entryValue)) {
 
-                    var value = items.iterator().next();
+                    var value = adapter.singleElement(entryValue);
 
                     if (adapter.isMap(value)) {
                         final TypeMap propertyTypeMapping = typeMapping.getMapping(property);
@@ -199,7 +199,8 @@ public class DefaultEncoder implements Encoder {
                     }
 
                 } else {
-                    flow = (MapBuilder<?>) encode(items,
+                    flow = (MapBuilder<?>) encode(
+                            adapter.elements(entryValue),
                             adapter,
                             flow.putArray(key),
                             property,
