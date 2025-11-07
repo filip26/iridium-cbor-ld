@@ -1,6 +1,6 @@
 package com.apicatalog.cborld.context.mapping;
 
-import com.apicatalog.cborld.context.Context;
+import com.apicatalog.cborld.context.ContextMap;
 import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.context.ContextError.Code;
 import com.apicatalog.cborld.decoder.Decoder;
@@ -11,17 +11,17 @@ import com.apicatalog.cborld.mapping.EncoderMappingProvider;
 import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.cborld.registry.DocumentDictionary;
 import com.apicatalog.jsonld.JsonLdError;
-import com.apicatalog.tree.io.NodeAdapter;
+import com.apicatalog.tree.io.TreeAdapter;
 
 import co.nstant.in.cbor.model.DataItem;
 
 public class ContextMappingProvider implements EncoderMappingProvider, DecoderMappingProvider {
 
     @Override
-    public Mapping getEncoderMapping(Object document, NodeAdapter adapter, Encoder encoder) throws ContextError {
+    public Mapping getEncoderMapping(Object document, TreeAdapter adapter, Encoder encoder) throws ContextError {
         try {
 
-            final Context context = Context.from(document,
+            final ContextMap context = ContextMap.from(document,
                     adapter,
                     encoder.base(),
                     encoder.loader());
@@ -46,7 +46,7 @@ public class ContextMappingProvider implements EncoderMappingProvider, DecoderMa
                     mapping::encodeTerm,
                     mapping::decodeValue);
 
-            var context = Context.from(document,
+            var context = ContextMap.from(document,
                     adapter,
                     decoder.base(),
                     decoder.loader(),

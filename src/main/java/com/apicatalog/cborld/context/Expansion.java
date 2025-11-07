@@ -25,7 +25,7 @@ import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.json.JsonUtils;
-import com.apicatalog.tree.io.NodeAdapter;
+import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.tree.io.NodeType;
 
 import jakarta.json.JsonValue;
@@ -38,7 +38,7 @@ final class Expansion {
     private URI baseUrl;
 
     private Object element;
-    private final NodeAdapter adapter;
+    private final TreeAdapter adapter;
 
     // optional
     private boolean ordered;
@@ -47,7 +47,7 @@ final class Expansion {
     private Consumer<Collection<String>> appliedContexts;
     private TypeKeyNameMapper typeMapper;
 
-    private Expansion(final ActiveContext activeContext, final Object element, final NodeAdapter adapter, final String activeProperty,
+    private Expansion(final ActiveContext activeContext, final Object element, final TreeAdapter adapter, final String activeProperty,
             final URI baseUrl, Consumer<Collection<String>> appliedContexts, TypeKeyNameMapper typeMapper) {
         this.activeContext = activeContext;
         this.element = element;
@@ -66,7 +66,7 @@ final class Expansion {
     public static final Expansion with(
             final ActiveContext activeContext,
             final Object element,
-            final NodeAdapter adapter,
+            final TreeAdapter adapter,
             final String activeProperty,
             final URI baseUrl, Consumer<Collection<String>> appliedContexts,
             final TypeKeyNameMapper typeMapper) {
@@ -125,7 +125,10 @@ final class Expansion {
 
         // 6. Otherwise element is a map
         return ObjectExpansion
-                .with(activeContext, propertyContext, element, adapter, activeProperty, baseUrl, appliedContexts, typeMapper)
+                .with(activeContext, propertyContext, element, adapter, 
+                        activeProperty, baseUrl,
+                        appliedContexts,
+                        typeMapper)
                 .ordered(ordered)
                 .fromMap(fromMap)
                 .expand();

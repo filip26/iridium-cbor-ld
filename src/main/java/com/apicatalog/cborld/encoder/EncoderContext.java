@@ -8,15 +8,15 @@ import com.apicatalog.cborld.encoder.EncoderException.Code;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.uri.UriUtils;
 import com.apicatalog.jsonld.uri.UriValidationPolicy;
-import com.apicatalog.tree.io.NodeAdapter;
+import com.apicatalog.tree.io.TreeAdapter;
 
 class EncoderContext {
 
-    public static final Collection<String> get(final Object document, final NodeAdapter adapter) throws EncoderException {
+    public static final Collection<String> get(final Object document, final TreeAdapter adapter) throws EncoderException {
         return get(document, adapter, new LinkedHashSet<>());
     }
 
-    static final Collection<String> get(final Object document, final NodeAdapter adapter, Collection<String> contexts) throws EncoderException {
+    static final Collection<String> get(final Object document, final TreeAdapter adapter, Collection<String> contexts) throws EncoderException {
 
         for (final Entry<?, ?> entry : adapter.entries(document)) {
 
@@ -30,7 +30,7 @@ class EncoderContext {
         return contexts;
     }
 
-    static final void processContextValue(final Object jsonValue, NodeAdapter adapter, final Collection<String> result) throws EncoderException {
+    static final void processContextValue(final Object jsonValue, TreeAdapter adapter, final Collection<String> result) throws EncoderException {
 
         if (adapter.isString(jsonValue)) {
             final String uri = adapter.stringValue(jsonValue);

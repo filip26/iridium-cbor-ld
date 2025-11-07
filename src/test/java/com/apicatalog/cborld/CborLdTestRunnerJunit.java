@@ -30,9 +30,9 @@ import com.apicatalog.jsonld.json.JsonLdComparison;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
 import com.apicatalog.multibase.Multibase;
-import com.apicatalog.tree.io.JakartaAdapter;
-import com.apicatalog.tree.io.JakartaMaterializer;
-import com.apicatalog.tree.io.NativeAdapter;
+import com.apicatalog.tree.io.jakarta.JakartaAdapter;
+import com.apicatalog.tree.io.jakarta.JakartaMaterializer;
+import com.apicatalog.tree.io.java.NativeAdapter;
 
 import co.nstant.in.cbor.CborDecoder;
 import co.nstant.in.cbor.CborException;

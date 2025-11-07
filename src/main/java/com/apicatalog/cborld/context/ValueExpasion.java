@@ -25,7 +25,7 @@ import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.DirectionType;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.tree.io.NodeAdapter;
+import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.tree.io.NodeType;
 
 import jakarta.json.Json;
@@ -51,7 +51,7 @@ final class ValueExpasion {
         return new ValueExpasion(activeContext, appliedContexts);
     }
 
-    public JsonValue expand(final Object value, final NodeAdapter adapter, final String activeProperty) throws JsonLdError {
+    public JsonValue expand(final Object value, final TreeAdapter adapter, final String activeProperty) throws JsonLdError {
 
         final NodeType valueType = adapter.type(value);
 

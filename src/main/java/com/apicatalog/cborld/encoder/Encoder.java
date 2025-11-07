@@ -4,7 +4,7 @@ import java.net.URI;
 
 import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.jsonld.loader.DocumentLoader;
-import com.apicatalog.tree.io.NodeAdapter;
+import com.apicatalog.tree.io.TreeAdapter;
 
 /**
  * Interface for encoding JSON-LD documents into CBOR-LD format.
@@ -32,7 +32,7 @@ public interface Encoder {
      *                          error
      * @throws ContextError     if a context resolution or validation issue occurs
      */
-    byte[] encode(Object document, NodeAdapter adapter) throws EncoderException, ContextError;
+    byte[] encode(Object document, TreeAdapter adapter) throws EncoderException, ContextError;
 
     /**
      * Returns the base URI used for relative IRI resolution during encoding.

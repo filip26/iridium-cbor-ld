@@ -30,8 +30,8 @@ import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.tree.io.JakartaMaterializer;
-import com.apicatalog.tree.io.NodeAdapter;
+import com.apicatalog.tree.io.TreeAdapter;
+import com.apicatalog.tree.io.jakarta.JakartaMaterializer;
 
 import jakarta.json.JsonValue;
 
@@ -46,7 +46,7 @@ final class ObjectExpansion {
     private URI baseUrl;
 
     private Object element;
-    private final NodeAdapter adapter;
+    private final TreeAdapter adapter;
 
     private Consumer<Collection<String>> appliedContexts;
     private TypeKeyNameMapper typeMapper;
@@ -56,7 +56,7 @@ final class ObjectExpansion {
     private boolean fromMap;
 
     private ObjectExpansion(final ActiveContext activeContext, final JsonValue propertyContext,
-            final Object element, final NodeAdapter adapter,
+            final Object element, final TreeAdapter adapter,
             final String activeProperty, final URI baseUrl,
             Consumer<Collection<String>> appliedContexts,
             TypeKeyNameMapper typeMapper) {
@@ -76,7 +76,7 @@ final class ObjectExpansion {
     }
 
     public static final ObjectExpansion with(final ActiveContext activeContext, final JsonValue propertyContext,
-            final Object element, final NodeAdapter adapter, final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts, TypeKeyNameMapper typeMapper) {
+            final Object element, final TreeAdapter adapter, final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts, TypeKeyNameMapper typeMapper) {
         return new ObjectExpansion(activeContext, propertyContext, element, adapter, activeProperty, baseUrl, appliedContexts, typeMapper);
     }
 

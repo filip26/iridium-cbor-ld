@@ -6,13 +6,13 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.apicatalog.cborld.dictionary.Dictionary;
-import com.apicatalog.cborld.dictionary.DictionaryBuilder;
+import com.apicatalog.cborld.dictionary.Dictionary.Builder;
 
 /**
  * Builder class for creating immutable {@link DocumentDictionary} instances.
  *
  * <p>
- * A {@code DocumentDictionaryBuilder} allows configuring:
+ * A {@code DocumentDictionary.Builder} allows configuring:
  * </p>
  * <ul>
  * <li>Context URIs</li>
@@ -28,11 +28,11 @@ import com.apicatalog.cborld.dictionary.DictionaryBuilder;
 public class DocumentDictionaryBuilder {
 
     protected final int code;
-    protected final DictionaryBuilder contexts;
-    protected final Map<String, DictionaryBuilder> types;
-    protected final DictionaryBuilder uris;
+    protected final Dictionary.Builder contexts;
+    protected final Map<String, Dictionary.Builder> types;
+    protected final Dictionary.Builder uris;
 
-    protected DocumentDictionaryBuilder(int code, DictionaryBuilder contexts, Map<String, DictionaryBuilder> types, final DictionaryBuilder uris) {
+    protected DocumentDictionaryBuilder(int code, Dictionary.Builder contexts, Map<String, Dictionary.Builder> types, final Dictionary.Builder uris) {
         this.code = code;
         this.contexts = contexts;
         this.types = types;
@@ -47,7 +47,11 @@ public class DocumentDictionaryBuilder {
      * @return a new builder instance
      */
     public static DocumentDictionaryBuilder create(int code) {
-        return new DocumentDictionaryBuilder(code, DictionaryBuilder.create(), new HashMap<>(), DictionaryBuilder.create());
+        return new DocumentDictionaryBuilder(
+                code,
+                Dictionary.newBuilder(),
+                new HashMap<>(),
+                Dictionary.newBuilder());
     }
 
     /**
@@ -61,18 +65,18 @@ public class DocumentDictionaryBuilder {
         return new DocumentDictionaryBuilder(
                 dictionary.code(),
                 dictionary.contexts() != null
-                        ? DictionaryBuilder.of(dictionary.contexts())
-                        : DictionaryBuilder.create(),
+                        ? Dictionary.copyOf(dictionary.contexts())
+                        : Dictionary.newBuilder(),
                 dictionary.types()
                         .entrySet()
                         .stream()
-                        .map(e -> new AbstractMap.SimpleEntry<>(e.getKey(), DictionaryBuilder.of(e.getValue())))
+                        .map(e -> new AbstractMap.SimpleEntry<>(e.getKey(), Dictionary.copyOf(e.getValue())))
                         .collect(Collectors.toUnmodifiableMap(
                                 Map.Entry::getKey,
                                 Map.Entry::getValue)),
                 dictionary.uris() != null
-                        ? DictionaryBuilder.of(dictionary.uris())
-                        : DictionaryBuilder.create());
+                        ? Dictionary.copyOf(dictionary.uris())
+                        : Dictionary.newBuilder());
     }
 
     /**
@@ -126,9 +130,9 @@ public class DocumentDictionaryBuilder {
      * @return this builder instance
      */
     public DocumentDictionaryBuilder type(String name, int code, String value) {
-        DictionaryBuilder dictionary = types.get(name);
+        Dictionary.Builder dictionary = types.get(name);
         if (dictionary == null) {
-            dictionary = DictionaryBuilder.create();
+            dictionary = Dictionary.newBuilder();
             types.put(name, dictionary);
         }
         dictionary.set(code, value);
@@ -142,7 +146,7 @@ public class DocumentDictionaryBuilder {
      * @param builder the dictionary builder to assign
      * @return this builder instance
      */
-    public DocumentDictionaryBuilder type(String name, DictionaryBuilder builder) {
+    public DocumentDictionaryBuilder type(String name, Builder builder) {
         types.put(name, builder);
         return this;
     }

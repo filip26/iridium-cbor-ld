@@ -17,7 +17,7 @@ import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.cborld.mapping.TypeMap;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.loader.DocumentLoader;
-import com.apicatalog.tree.io.NodeAdapter;
+import com.apicatalog.tree.io.TreeAdapter;
 
 import co.nstant.in.cbor.CborBuilder;
 import co.nstant.in.cbor.CborEncoder;
@@ -55,7 +55,7 @@ public class DefaultEncoder implements Encoder {
      * @throws EncoderException
      * @throws ContextError
      */
-    public final byte[] encode(Object document, NodeAdapter adapter) throws EncoderException, ContextError {
+    public final byte[] encode(Object document, TreeAdapter adapter) throws EncoderException, ContextError {
 
         if (document == null) {
             throw new IllegalArgumentException("The 'document' parameter must not be null.");
@@ -97,7 +97,7 @@ public class DefaultEncoder implements Encoder {
      * @throws ContextError
      * @throws EncoderException
      */
-    final byte[] compress(final Object document, NodeAdapter adapter, Collection<String> contextUrls) throws ContextError, EncoderException {
+    final byte[] compress(final Object document, TreeAdapter adapter, Collection<String> contextUrls) throws ContextError, EncoderException {
 
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
@@ -133,11 +133,23 @@ public class DefaultEncoder implements Encoder {
 
             // if no compression
             if (config.dictionary() == null) {
-                encode(document, adapter, mapBuilder, null, null).end();
+                encode(
+                        adapter.entries(document),
+                        adapter,
+                        mapBuilder,
+                        null,
+                        null)
+                        .end();
 
             } else {
                 final Mapping mapping = mappingProvider.getEncoderMapping(document, adapter, this);
-                encode(document, adapter, mapBuilder, mapping.typeMap(), mapping).end();
+                encode(
+                        adapter.entries(document),
+                        adapter,
+                        mapBuilder,
+                        mapping.typeMap(),
+                        mapping)
+                        .end();
             }
 
             new CborEncoder(baos).encode(builder.build());
@@ -152,15 +164,11 @@ public class DefaultEncoder implements Encoder {
         }
     }
 
-    final MapBuilder<?> encode(final Object object, final NodeAdapter adapter, final MapBuilder<?> builder, TypeMap typeMapping, Mapping mapping) throws EncoderException, JsonLdError {
-
-        if (adapter.isEmpty(object)) {
-            return builder;
-        }
+    final MapBuilder<?> encode(final Iterable<Entry<?, ?>> entries, final TreeAdapter adapter, final MapBuilder<?> builder, TypeMap typeMapping, Mapping mapping) throws EncoderException, JsonLdError {
 
         MapBuilder<?> flow = builder;
 
-        for (final Entry<?, ?> entry : adapter.entries(object)) {
+        for (final Entry<?, ?> entry : entries) {
 
             final String property = adapter.stringValue(entry.getKey());
 
@@ -182,7 +190,7 @@ public class DefaultEncoder implements Encoder {
 
                     if (adapter.isMap(singleton)) {
                         final TypeMap propertyTypeMapping = typeMapping.getMapping(property);
-                        flow = (MapBuilder<?>) encode(singleton, adapter, flow.putMap(key), propertyTypeMapping, mapping).end();
+                        flow = (MapBuilder<?>) encode(adapter.entries(singleton), adapter, flow.putMap(key), propertyTypeMapping, mapping).end();
 
                     } else if (adapter.isCollection(singleton)) {
                         flow = (MapBuilder<?>) encode(
@@ -213,26 +221,30 @@ public class DefaultEncoder implements Encoder {
                     : new UnicodeString(property);
 
             if (adapter.isMap(entry.getValue())) {
+
                 final TypeMap propertyTypeMapping = typeMapping != null
                         ? typeMapping.getMapping(property)
                         : null;
-                flow = (MapBuilder<?>) encode(entry.getValue(),
+
+                flow = (MapBuilder<?>) encode(
+                        adapter.entries(entry.getValue()),
                         adapter,
                         flow.putMap(key),
                         propertyTypeMapping,
                         mapping).end();
+
                 continue;
             }
 
-            final DataItem value = encode(entry.getValue(), adapter, property, typeMapping, mapping);
-
-            flow = flow.put(key, value);
+            flow = flow.put(
+                    key,
+                    encode(entry.getValue(), adapter, property, typeMapping, mapping));
         }
 
         return flow;
     }
 
-    final DataItem encode(final Object jsonValue, final NodeAdapter adapter, final String term, TypeMap typeMapping, Mapping mapping) throws EncoderException {
+    final DataItem encode(final Object jsonValue, final TreeAdapter adapter, final String term, TypeMap typeMapping, Mapping mapping) throws EncoderException {
 
         if (jsonValue == null) {
             return SimpleValue.NULL;
@@ -266,7 +278,7 @@ public class DefaultEncoder implements Encoder {
         case NUMBER:
             if (adapter.isIntegral(jsonValue)) {
 
-                BigInteger integer = adapter.bigIntegerValue(jsonValue);
+                var integer = adapter.bigIntegerValue(jsonValue);
 
                 switch (integer.signum()) {
                 case -1:
@@ -277,39 +289,47 @@ public class DefaultEncoder implements Encoder {
                     return new UnsignedInteger(integer);
                 }
 
-                // then it's decimal
             } else {
+                // then it's decimal
                 return new DoublePrecisionFloat(adapter.doubleValue(jsonValue));
             }
+
         default:
             throw new IllegalStateException();
         }
     }
 
-    final ArrayBuilder<?> encode(final Iterable<?> jsonArray, final NodeAdapter adapter, final ArrayBuilder<?> builder, String property, TypeMap typeMapping, Mapping mapping)
+    final ArrayBuilder<?> encode(final Iterable<?> jsonArray, final TreeAdapter adapter, final ArrayBuilder<?> builder, String property, TypeMap typeMapping, Mapping mapping)
             throws EncoderException, JsonLdError {
-
-        if (adapter.isEmpty(jsonArray)) {
-            return builder;
-        }
 
         ArrayBuilder<?> flow = builder;
 
-        for (final Object item : adapter.elements(jsonArray)) {
+        for (var item : adapter.elements(jsonArray)) {
 
             if (adapter.isMap(item)) {
-                flow = (ArrayBuilder<?>) encode(item, adapter, flow.startMap(), typeMapping, mapping).end();
+                flow = (ArrayBuilder<?>) encode(
+                        adapter.entries(item),
+                        adapter,
+                        flow.startMap(),
+                        typeMapping,
+                        mapping)
+                        .end();
                 continue;
             }
 
             if (adapter.isCollection(item)) {
-                flow = (ArrayBuilder<?>) encode(adapter.elements(item), adapter, flow.startArray(), property, typeMapping, mapping).end();
+                flow = (ArrayBuilder<?>) encode(
+                        adapter.elements(item),
+                        adapter,
+                        flow.startArray(),
+                        property,
+                        typeMapping,
+                        mapping)
+                        .end();
                 continue;
             }
 
-            final DataItem value = encode(item, adapter, property, typeMapping, mapping);
-
-            flow = flow.add(value);
+            flow = flow.add(encode(item, adapter, property, typeMapping, mapping));
         }
 
         return flow;

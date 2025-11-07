@@ -1,6 +1,6 @@
 package com.apicatalog.cborld;
 
-import com.apicatalog.cborld.dictionary.DictionaryBuilder;
+import com.apicatalog.cborld.dictionary.Dictionary;
 import com.apicatalog.cborld.registry.DocumentDictionary;
 import com.apicatalog.cborld.registry.DocumentDictionaryBuilder;
 
@@ -13,7 +13,7 @@ public class UtopiaBarcodeExtended {
             .context("https://www.w3.org/ns/credentials/v2", 1)
             .context("https://w3id.org/vc-barcodes/v1", 2)
             .type("https://w3id.org/security#cryptosuiteString",
-                    DictionaryBuilder.create()
+                    Dictionary.newBuilder()
                             .set("ecdsa-rdfc-2019", 1)
                             .set("ecdsa-sd-2023", 2)
                             .set("eddsa-rdfc-2022", 3)

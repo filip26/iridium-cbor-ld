@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import com.apicatalog.tree.io.CborAdapter;
+import com.apicatalog.tree.io.cbor.CborAdapter;
 
 import co.nstant.in.cbor.model.Array;
 import co.nstant.in.cbor.model.DataItem;
