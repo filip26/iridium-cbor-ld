@@ -40,7 +40,7 @@ public class LegacyDictionary {
             // 0x34 - 0x36 Reserved for future use.
             .build();
 
-    public static final DocumentDictionary DICTIONARY = DocumentDictionaryBuilder.create(CODE)
+    public static final DocumentDictionary DICTIONARY = DocumentDictionary.newBuilder(CODE)
             .context(CONTEXTS)
             .build();
 
