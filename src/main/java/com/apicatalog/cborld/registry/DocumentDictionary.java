@@ -58,8 +58,6 @@ public interface DocumentDictionary {
      */
     Dictionary uris();
 
-    
-
     /**
      * Creates a new empty {@code DocumentDictionaryBuilder} with the given
      * dictionary code.
@@ -100,7 +98,6 @@ public interface DocumentDictionary {
                         : Dictionary.newBuilder());
     }
 
-    
     /**
      * Builder class for creating immutable {@link DocumentDictionary} instances.
      *
@@ -139,7 +136,7 @@ public interface DocumentDictionary {
          * @return a new {@code DocumentDictionary} instance
          */
         public DocumentDictionary build() {
-            return new DocumentDictionaryImpl(
+            return new DictionaryImpl(
                     code,
                     contexts.build(),
                     types.entrySet()
@@ -230,11 +227,16 @@ public interface DocumentDictionary {
         /**
          * Immutable implementation of the {@link DocumentDictionary} interface.
          */
-        record DocumentDictionaryImpl(
+        record DictionaryImpl(
                 int code,
                 Dictionary contexts,
                 Map<String, Dictionary> types,
                 Dictionary uris) implements DocumentDictionary {
+
+            DictionaryImpl {
+                types = types != null ? Map.copyOf(types) : Map.of();
+            }
+
         }
     }
 }

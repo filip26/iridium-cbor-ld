@@ -46,7 +46,7 @@ public interface Dictionary extends Iterable<Map.Entry<String, Integer>> {
      * Creates a new {@code DictionaryBuilder} from an existing {@link Dictionary}.
      *
      * <p>
-     * If the given dictionary is an instance of {@link BidirectionalDictionary},
+     * If the given dictionary is an instance of {@link BiDirectionalDictionary},
      * its internal structure is preserved. Otherwise, entries are merged.
      * </p>
      *
@@ -54,8 +54,8 @@ public interface Dictionary extends Iterable<Map.Entry<String, Integer>> {
      * @return a new builder instance
      */
     public static Builder copyOf(Dictionary dictionary) {
-        if (dictionary instanceof BidirectionalDictionary) {
-            return new Builder((BidirectionalDictionary) dictionary);
+        if (dictionary instanceof BiDirectionalDictionary) {
+            return new Builder((BiDirectionalDictionary) dictionary);
         }
         return new Builder().merge(dictionary);
     }
@@ -84,11 +84,11 @@ public interface Dictionary extends Iterable<Map.Entry<String, Integer>> {
 
         /**
          * Creates a new {@code DictionaryBuilder} initialized from an existing
-         * {@link BidirectionalDictionary}.
+         * {@link BiDirectionalDictionary}.
          *
          * @param dictionary the source dictionary
          */
-        Builder(BidirectionalDictionary dictionary) {
+        Builder(BiDirectionalDictionary dictionary) {
             this.reverse = new LinkedHashMap<>(dictionary.reverse());
         }
 
@@ -136,7 +136,7 @@ public interface Dictionary extends Iterable<Map.Entry<String, Integer>> {
          * @return a new {@link Dictionary} instance
          */
         public Dictionary build() {
-            return new BidirectionalDictionary(
+            return new BiDirectionalDictionary(
                     reverse.entrySet()
                             .stream()
                             .collect(Collectors.toUnmodifiableMap(Entry::getValue, Entry::getKey)),

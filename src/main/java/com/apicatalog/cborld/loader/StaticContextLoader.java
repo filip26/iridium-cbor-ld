@@ -1,7 +1,6 @@
 package com.apicatalog.cborld.loader;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
@@ -116,8 +115,7 @@ public class StaticContextLoader implements DocumentLoader {
      * @return the loaded {@code JsonDocument}, or {@code null} if loading failed
      */
     protected static JsonDocument get(Class<?> clazz, String name) {
-        try (final InputStream is = clazz.getResourceAsStream(name)) {
-
+        try (final var is = clazz.getResourceAsStream(name)) {
             return JsonDocument.of(is);
 
         } catch (IOException | JsonLdError e) {

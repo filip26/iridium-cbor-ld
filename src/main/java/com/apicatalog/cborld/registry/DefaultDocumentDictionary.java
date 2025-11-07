@@ -5,6 +5,8 @@ import java.util.Map;
 
 import com.apicatalog.cborld.dictionary.Dictionary;
 
+// use builder
+@Deprecated
 public record DefaultDocumentDictionary(int code) implements DocumentDictionary {
 
     @Override
