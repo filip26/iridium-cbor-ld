@@ -34,7 +34,7 @@ public interface Dictionary extends Iterable<Map.Entry<String, Integer>> {
     String getValue(Integer code);
 
     /**
-     * Creates a new, empty {@code DictionaryBuilder}.
+     * Creates a new, empty {@code Builder}.
      *
      * @return a new builder instance
      */
@@ -43,7 +43,7 @@ public interface Dictionary extends Iterable<Map.Entry<String, Integer>> {
     }
 
     /**
-     * Creates a new {@code DictionaryBuilder} from an existing {@link Dictionary}.
+     * Creates a new {@code Builder} from an existing {@link Dictionary}.
      *
      * <p>
      * If the given dictionary is an instance of {@link BiDirectionalDictionary},
@@ -78,7 +78,7 @@ public interface Dictionary extends Iterable<Map.Entry<String, Integer>> {
         /**
          * Creates a new, empty {@code DictionaryBuilder}.
          */
-        Builder() {
+        private Builder() {
             this.reverse = new LinkedHashMap<>();
         }
 
@@ -88,7 +88,7 @@ public interface Dictionary extends Iterable<Map.Entry<String, Integer>> {
          *
          * @param dictionary the source dictionary
          */
-        Builder(BiDirectionalDictionary dictionary) {
+        private Builder(BiDirectionalDictionary dictionary) {
             this.reverse = new LinkedHashMap<>(dictionary.reverse());
         }
 

@@ -59,8 +59,7 @@ public interface DocumentDictionary {
     Dictionary uris();
 
     /**
-     * Creates a new empty {@code DocumentDictionaryBuilder} with the given
-     * dictionary code.
+     * Creates a new empty {@code Builder} with the given dictionary code.
      *
      * @param code the unique dictionary code
      * @return a new builder instance
@@ -74,8 +73,7 @@ public interface DocumentDictionary {
     }
 
     /**
-     * Creates a new {@code DocumentDictionaryBuilder} initialized from an existing
-     * dictionary.
+     * Creates a new {@code Builder} initialized from an existing dictionary.
      *
      * @param dictionary the dictionary to copy
      * @return a new builder instance pre-filled with existing mappings
@@ -102,7 +100,7 @@ public interface DocumentDictionary {
      * Builder class for creating immutable {@link DocumentDictionary} instances.
      *
      * <p>
-     * A {@code DocumentDictionary.Builder} allows configuring:
+     * A {@code Document.newBuilder()} allows configuring:
      * </p>
      * <ul>
      * <li>Context URIs</li>
@@ -122,7 +120,11 @@ public interface DocumentDictionary {
         private final Map<String, Dictionary.Builder> types;
         private final Dictionary.Builder uris;
 
-        Builder(int code, Dictionary.Builder contexts, Map<String, Dictionary.Builder> types, final Dictionary.Builder uris) {
+        private Builder(
+                int code,
+                Dictionary.Builder contexts,
+                Map<String, Dictionary.Builder> types,
+                final Dictionary.Builder uris) {
             this.code = code;
             this.contexts = contexts;
             this.types = types;
@@ -227,7 +229,7 @@ public interface DocumentDictionary {
         /**
          * Immutable implementation of the {@link DocumentDictionary} interface.
          */
-        record DictionaryImpl(
+        private record DictionaryImpl(
                 int code,
                 Dictionary contexts,
                 Map<String, Dictionary> types,
@@ -236,7 +238,6 @@ public interface DocumentDictionary {
             DictionaryImpl {
                 types = types != null ? Map.copyOf(types) : Map.of();
             }
-
         }
     }
 }

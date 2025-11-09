@@ -76,7 +76,7 @@ public class DebugEncoder extends Debug {
      * @param provider the original mapping provider
      * @param debug    the debug container to populate
      */
-    record DebugMapping(
+    private static record DebugMapping(
             EncoderMappingProvider provider,
             Debug debug) implements EncoderMappingProvider {
 

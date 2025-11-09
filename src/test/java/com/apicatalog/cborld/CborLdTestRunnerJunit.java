@@ -30,6 +30,7 @@ import com.apicatalog.jsonld.json.JsonLdComparison;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
 import com.apicatalog.multibase.Multibase;
+import com.apicatalog.tree.io.TreeIOException;
 import com.apicatalog.tree.io.jakarta.JakartaAdapter;
 import com.apicatalog.tree.io.jakarta.JakartaMaterializer;
 import com.apicatalog.tree.io.java.NativeAdapter;
@@ -275,7 +276,7 @@ class CborLdTestRunnerJunit {
                 return;
             }
 
-        } catch (IOException | CborException e) {
+        } catch (TreeIOException | CborException e) {
             fail(e);
 
         } catch (ContextError e) {

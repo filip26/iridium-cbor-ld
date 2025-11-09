@@ -85,7 +85,7 @@ public class DebugDecoder extends Debug {
      * Internal {@link DecoderMappingProvider} used to intercept dictionary and
      * mapping creation during decoding to populate the debug structure.
      */
-    record DebugMapping(
+    private static record DebugMapping(
             DecoderMappingProvider provider,
             Debug debug) implements DecoderMappingProvider {
 

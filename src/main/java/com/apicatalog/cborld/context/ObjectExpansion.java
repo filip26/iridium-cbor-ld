@@ -31,6 +31,7 @@ import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.tree.io.TreeAdapter;
+import com.apicatalog.tree.io.TreeIOException;
 import com.apicatalog.tree.io.jakarta.JakartaMaterializer;
 
 import jakarta.json.JsonValue;
@@ -102,7 +103,7 @@ final class ObjectExpansion {
 
         try {
             initLocalContext();
-        } catch (IOException e) {
+        } catch (TreeIOException e) {
             throw new JsonLdError(JsonLdErrorCode.UNSPECIFIED, e);
         }
 
@@ -182,7 +183,7 @@ final class ObjectExpansion {
         }
     }
 
-    private void initLocalContext() throws JsonLdError, IOException {
+    private void initLocalContext() throws JsonLdError, TreeIOException {
 
         // 9.
         var contextElement = adapter.property(Keywords.CONTEXT, element);
