@@ -55,12 +55,11 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <tree.version>0.11.0</tree.version>
-        <jakarta.json.version>2.0.1</jakarta.json.version>
-
-        <copper-multibase>4.1.0</copper-multibase>
-
         <argLine>-Dfile.encoding=UTF-8</argLine>
+
+        <tree.version>0.12.0-SNAPSHOT</tree.version>
+        <copper-multibase>4.1.0</copper-multibase>
+        <jakarta.json.version>2.0.1</jakarta.json.version>
 
         <!-- test resources -->
         <junit.version>6.0.1</junit.version>
