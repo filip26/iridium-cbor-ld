@@ -10,8 +10,7 @@ import com.apicatalog.cborld.encoder.EncoderException;
 import com.apicatalog.cborld.mapping.EncoderMappingProvider;
 import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.jsonld.loader.DocumentLoader;
-
-import jakarta.json.JsonObject;
+import com.apicatalog.tree.io.TreeAdapter;
 
 /**
  * A debug-oriented implementation of the CBOR-LD encoder.
@@ -52,7 +51,7 @@ public class DebugEncoder extends Debug {
      *
      * @param object the JSON-LD input to encode
      */
-    public void encode(JsonObject object) {
+    public void encode(Object object, TreeAdapter adapter) {
         try {
 
             var debug = new DefaultEncoder(
@@ -63,7 +62,7 @@ public class DebugEncoder extends Debug {
 
             version = config.version();
             dictionary = config.dictionary();
-            encoded = debug.encode(object);
+            encoded = debug.encode(object, adapter);
 
         } catch (ContextError | EncoderException e) {
             this.error = e;
@@ -77,13 +76,13 @@ public class DebugEncoder extends Debug {
      * @param provider the original mapping provider
      * @param debug    the debug container to populate
      */
-    record DebugMapping(
+    private static record DebugMapping(
             EncoderMappingProvider provider,
             Debug debug) implements EncoderMappingProvider {
 
         @Override
-        public Mapping getEncoderMapping(JsonObject document, Encoder encoder) throws ContextError {
-            debug.mapping = provider.getEncoderMapping(document, encoder);
+        public Mapping getEncoderMapping(Object document, TreeAdapter adapter, Encoder encoder) throws ContextError {
+            debug.mapping = provider.getEncoderMapping(document, adapter, encoder);
             return debug.mapping;
         }
     }

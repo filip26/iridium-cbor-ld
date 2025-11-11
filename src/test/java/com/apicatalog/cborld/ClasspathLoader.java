@@ -40,7 +40,7 @@ class ClasspathLoader implements DocumentLoader {
 
         } else if (url.toString().endsWith(".cborld")) {
             try {
-                return CborLdDocument.from(is);
+                return CborLdDocument.of(is.readAllBytes());
             } catch (IOException e) {
                 throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED, e);
             }

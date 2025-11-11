@@ -13,13 +13,12 @@ public class ContextValueDecoder implements ValueDecoder {
 
     @Override
     public String decode(Mapping mapping, DataItem value, String term, Collection<String> types) throws DecoderException {
-        if (Keywords.CONTEXT.equals(term)
+        return (Keywords.CONTEXT.equals(term)
                 && mapping != null
                 && mapping.dictionary() != null
-                && mapping.dictionary().contexts() != null 
-                && value instanceof UnsignedInteger integer) {
-            return mapping.dictionary().contexts().getValue(integer.getValue().intValueExact());
-        }
-        return null;
+                && mapping.dictionary().contexts() != null
+                && value instanceof UnsignedInteger integer)
+                        ? mapping.dictionary().contexts().getValue(integer.getValue().intValueExact())
+                        : null;
     }
 }

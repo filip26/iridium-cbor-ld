@@ -20,11 +20,11 @@ public class CborLd {
     public static final byte LEADING_BYTE = (byte) 0xD9;
 
     /** CBOR-LD version 1 identifier. */
-    static final byte[] VERSION_1_BYTES = new byte[] { (byte) 0xCB, 0x1D };
+    public static final byte[] VERSION_1_BYTES = new byte[] { (byte) 0xCB, 0x1D };
     /** CBOR-LD legacy version 0.6 identifier. */
-    static final byte VERSION_06_BYTE = (byte) 0x06;
+    public static final byte VERSION_06_BYTE = (byte) 0x06;
     /** CBOR-LD legacy version 0.5 identifier. */
-    static final byte VERSION_05_BYTE = (byte) 0x05;
+    public static final byte VERSION_05_BYTE = (byte) 0x05;
 
     /** Utility class — not meant to be instantiated. */
     protected CborLd() {

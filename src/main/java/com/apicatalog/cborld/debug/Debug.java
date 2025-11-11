@@ -1,7 +1,10 @@
 package com.apicatalog.cborld.debug;
 
 import java.net.URI;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Spliterators;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -11,10 +14,6 @@ import com.apicatalog.cborld.dictionary.Dictionary;
 import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.cborld.registry.DocumentDictionary;
 import com.apicatalog.jsonld.loader.DocumentLoader;
-
-import jakarta.json.Json;
-import jakarta.json.JsonObject;
-import jakarta.json.JsonValue;
 
 /**
  * A debugging utility for inspecting the internals of a CBOR-LD encoding or
@@ -46,7 +45,7 @@ public class Debug {
     protected DocumentDictionary dictionary;
     protected Mapping mapping;
 
-    protected JsonValue decoded;
+    protected Object decoded;
     protected byte[] encoded;
 
     protected Exception error;
@@ -138,54 +137,59 @@ public class Debug {
     /**
      * Returns the decoded JSON-LD document.
      *
-     * @return the decoded {@link JsonValue}, or {@code null}
+     * @return the decoded value, or {@code null}
      */
-    public JsonValue decoded() {
+    public Object decoded() {
         return decoded;
     }
 
     /**
-     * Creates a human-readable JSON representation of the current debug state.
+     * Creates a human-readable representation of the current debug state.
      *
-     * @return a {@link JsonObject} summarizing version, dictionary, and term
+     * @return a {@link Map} summarizing version, dictionary, and term
      *         mappings
      */
-    public JsonObject dump() {
-        return Json.createObjectBuilder()
-                .add("version", version != null ? Json.createValue(version.name()) : JsonValue.NULL)
-                .add("dictionary", dictionary != null ? dump(dictionary) : JsonValue.NULL)
-
-                .add("terms", mapping != null && mapping.termMap() != null
+    public Map<String, ?> dump() {
+        return Map.of(
+                "version", version != null
+                        ? version.name()
+                        : null,
+                "dictionary", dictionary != null
+                        ? dump(dictionary)
+                        : Collections.emptyMap(),
+                "terms", mapping != null && mapping.termMap() != null
                         ? dump(mapping.termMap())
-                        : JsonValue.NULL)
-                .build();
+                        : Collections.emptyMap());
     }
 
-    static final JsonObject dump(DocumentDictionary dictionary) {
-        var builder = Json.createObjectBuilder()
-                .add("code", dictionary.code())
-                .add("context", dictionary.contexts() != null
+    static final Map<String, ?> dump(DocumentDictionary dictionary) {
+        var result = new LinkedHashMap<>(Map.of(
+                "code", dictionary.code(),
+                "context", dictionary.contexts() != null
                         ? dump(dictionary.contexts())
-                        : JsonValue.NULL);
+                        : Collections.emptyMap()));
 
         if (dictionary.types() != null) {
-            dictionary.types().entrySet().forEach(typeEntry -> builder.add(typeEntry.getKey(), dump(typeEntry.getValue())));
-        }
-        if (dictionary.uris() != null) {
-            builder.add("uri", dump(dictionary.uris()));
+            dictionary.types()
+                    .entrySet()
+                    .forEach(typeEntry -> result.put(typeEntry.getKey(), dump(typeEntry.getValue())));
         }
 
-        return builder.build();
+        if (dictionary.uris() != null) {
+            result.put("uri", dump(dictionary.uris()));
+        }
+
+        return result;
     }
 
-    static final JsonObject dump(Dictionary dictionary) {
-        var builder = Json.createObjectBuilder();
+    static final Map<String, ?> dump(Dictionary dictionary) {
+        var result = new LinkedHashMap<String, Object>();
 
         toStream(dictionary.iterator())
                 .sorted((o1, o2) -> o1.getValue() - o2.getValue())
-                .forEach(e -> builder.add(e.getKey(), e.getValue()));
+                .forEach(e -> result.put(e.getKey(), e.getValue()));
 
-        return builder.build();
+        return result;
     }
 
     static <T> Stream<T> toStream(Iterator<T> iterator) {

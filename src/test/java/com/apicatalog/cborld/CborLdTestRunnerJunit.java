@@ -30,6 +30,10 @@ import com.apicatalog.jsonld.json.JsonLdComparison;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
 import com.apicatalog.multibase.Multibase;
+import com.apicatalog.tree.io.TreeIOException;
+import com.apicatalog.tree.io.jakarta.JakartaAdapter;
+import com.apicatalog.tree.io.jakarta.JakartaMaterializer;
+import com.apicatalog.tree.io.java.NativeAdapter;
 
 import co.nstant.in.cbor.CborDecoder;
 import co.nstant.in.cbor.CborException;
@@ -148,7 +152,7 @@ class CborLdTestRunnerJunit {
 
                 Encoder encoder = getEncoder(testCase.config, testCase.compactArrays);
 
-                byte[] bytes = encoder.encode(object);
+                byte[] bytes = encoder.encode(object, JakartaAdapter.instance());
 
                 if (testCase.type.stream().noneMatch(o -> o.endsWith("PositiveEvaluationTest"))) {
                     fail("Expected error code [" + testCase.result + "].");
@@ -180,7 +184,7 @@ class CborLdTestRunnerJunit {
 
                 final Decoder decoder = getDecoder(testCase.config, testCase.compactArrays);
 
-                final JsonValue result = decoder.decode(((CborLdDocument) document).getByteArray());
+                final Object result = decoder.decode(((CborLdDocument) document).getByteArray());
 
                 if (testCase.type.stream().noneMatch(o -> o.endsWith("PositiveEvaluationTest"))) {
                     fail("Expected error code [" + testCase.result + "].");
@@ -193,10 +197,12 @@ class CborLdTestRunnerJunit {
 
                 assertNotNull(expected);
 
-                final boolean match = JsonLdComparison.equals(expected, result);
+                var json = new JakartaMaterializer().node(result, NativeAdapter.instance());
+
+                final boolean match = JsonLdComparison.equals(expected, json);
 
                 if (!match) {
-                    write(testCase, result, expected);
+                    write(testCase, json, expected);
                 }
 
                 assertTrue(match, "The expected result does not match.");
@@ -209,18 +215,21 @@ class CborLdTestRunnerJunit {
 
                 var debug = getDebugEncoder(testCase.config);
 
-                debug.encode(object);
+                debug.encode(object, JakartaAdapter.instance());
 
                 if (testCase.type.stream().noneMatch(o -> o.endsWith("PositiveEvaluationTest"))) {
                     fail("Expected error code [" + testCase.result + "].");
                     return;
                 }
 
-                var result = debug.dump();
+                var dump = debug.dump();
 
                 var expected = LOADER.loadDocument(testCase.result, new DocumentLoaderOptions()).getJsonContent().orElse(null);
 
                 assertNotNull(expected);
+
+                // TODO use Jcs v2.0 with adapters
+                var result = new JakartaMaterializer().node(dump, NativeAdapter.instance());
 
                 var match = JsonLdComparison.equals(expected, result);
 
@@ -245,11 +254,14 @@ class CborLdTestRunnerJunit {
                     return;
                 }
 
-                var result = debug.dump();
+                var dump = debug.dump();
 
                 var expected = LOADER.loadDocument(testCase.result, new DocumentLoaderOptions()).getJsonContent().orElse(null);
 
                 assertNotNull(expected);
+
+                // TODO use Jcs v2.0 with adapters
+                var result = new JakartaMaterializer().node(dump, NativeAdapter.instance());
 
                 var match = JsonLdComparison.equals(expected, result);
 
@@ -264,7 +276,7 @@ class CborLdTestRunnerJunit {
                 return;
             }
 
-        } catch (CborException e) {
+        } catch (TreeIOException | CborException e) {
             fail(e);
 
         } catch (ContextError e) {

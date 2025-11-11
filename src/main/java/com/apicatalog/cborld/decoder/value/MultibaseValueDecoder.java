@@ -9,7 +9,6 @@ import com.apicatalog.multibase.MultibaseDecoder;
 
 import co.nstant.in.cbor.model.ByteString;
 import co.nstant.in.cbor.model.DataItem;
-import co.nstant.in.cbor.model.MajorType;
 
 public class MultibaseValueDecoder implements ValueDecoder {
 
@@ -18,9 +17,9 @@ public class MultibaseValueDecoder implements ValueDecoder {
     @Override
     public String decode(Mapping mapping, DataItem value, String term, Collection<String> types) throws DecoderException {
         if (types.contains(MultibaseValueEncoder.TYPE)
-                && MajorType.BYTE_STRING.equals(value.getMajorType())) {
+                && value instanceof ByteString stringValue) {
 
-            byte[] byteString = ((ByteString) value).getBytes();
+            byte[] byteString = stringValue.getBytes();
 
             if (byteString.length <= 1) {
                 return null;

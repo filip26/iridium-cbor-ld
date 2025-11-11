@@ -4,16 +4,15 @@ import java.net.URI;
 
 import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.jsonld.loader.DocumentLoader;
-
-import jakarta.json.JsonObject;
+import com.apicatalog.tree.io.TreeAdapter;
 
 /**
  * Interface for encoding JSON-LD documents into CBOR-LD format.
  *
  * <p>
- * Implementations of this interface transform JSON-LD {@link JsonObject}s into
- * compact binary CBOR-LD representations, using dictionary compression and
- * context optimization.
+ * Implementations of this interface transform JSON-LD into compact binary
+ * CBOR-LD representations, using dictionary compression and context
+ * optimization.
  * </p>
  *
  * <p>
@@ -27,12 +26,13 @@ public interface Encoder {
      * Encodes the given JSON-LD document into CBOR-LD format.
      *
      * @param document the JSON-LD document to encode
+     * @param adapter
      * @return a byte array representing the encoded CBOR-LD document
      * @throws EncoderException if encoding fails due to an internal or semantic
      *                          error
      * @throws ContextError     if a context resolution or validation issue occurs
      */
-    byte[] encode(JsonObject document) throws EncoderException, ContextError;
+    byte[] encode(Object document, TreeAdapter adapter) throws EncoderException, ContextError;
 
     /**
      * Returns the base URI used for relative IRI resolution during encoding.

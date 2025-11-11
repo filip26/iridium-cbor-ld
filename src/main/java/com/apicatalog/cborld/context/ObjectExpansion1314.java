@@ -31,7 +31,7 @@ import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.lang.ListObject;
 import com.apicatalog.jsonld.lang.ValueObject;
-import com.apicatalog.tree.io.NodeAdapter;
+import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.tree.io.NodeType;
 
 import jakarta.json.Json;
@@ -43,7 +43,7 @@ final class ObjectExpansion1314 {
     private ActiveContext activeContext;
 
     private final Object element;
-    private final NodeAdapter adapter;
+    private final TreeAdapter adapter;
 
     private final String activeProperty;
     private final URI baseUrl;
@@ -59,7 +59,7 @@ final class ObjectExpansion1314 {
     private ObjectExpansion1314(
             final ActiveContext activeContext,
             final Object element,
-            final NodeAdapter adapter,
+            final TreeAdapter adapter,
             final String activeProperty,
             final URI baseUrl,
             final Consumer<Collection<String>> appliedContexts,
@@ -80,7 +80,7 @@ final class ObjectExpansion1314 {
     public static final ObjectExpansion1314 with(
             final ActiveContext activeContext,
             final Object element,
-            final NodeAdapter adapter,
+            final TreeAdapter adapter,
             final String activeProperty,
             final URI baseUrl,
             final Consumer<Collection<String>> appliedContexts,

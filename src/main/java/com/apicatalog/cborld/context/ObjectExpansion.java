@@ -15,12 +15,12 @@
  */
 package com.apicatalog.cborld.context;
 
-import java.io.IOException;
 import java.net.URI;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import com.apicatalog.cborld.mapping.TypeKeyNameMapper;
 import com.apicatalog.jsonld.JsonLdError;
@@ -29,14 +29,13 @@ import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.context.TermDefinition;
 import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.tree.io.JakartaMaterializer;
-import com.apicatalog.tree.io.NodeAdapter;
+import com.apicatalog.tree.io.TreeAdapter;
+import com.apicatalog.tree.io.TreeIOException;
+import com.apicatalog.tree.io.jakarta.JakartaMaterializer;
 
 import jakarta.json.JsonValue;
 
 final class ObjectExpansion {
-
-    final JakartaMaterializer jakarta = new JakartaMaterializer();
 
     // mandatory
     private ActiveContext activeContext;
@@ -45,7 +44,7 @@ final class ObjectExpansion {
     private URI baseUrl;
 
     private Object element;
-    private final NodeAdapter adapter;
+    private final TreeAdapter adapter;
 
     private Consumer<Collection<String>> appliedContexts;
     private TypeKeyNameMapper typeMapper;
@@ -55,7 +54,7 @@ final class ObjectExpansion {
     private boolean fromMap;
 
     private ObjectExpansion(final ActiveContext activeContext, final JsonValue propertyContext,
-            final Object element, final NodeAdapter adapter,
+            final Object element, final TreeAdapter adapter,
             final String activeProperty, final URI baseUrl,
             Consumer<Collection<String>> appliedContexts,
             TypeKeyNameMapper typeMapper) {
@@ -75,7 +74,7 @@ final class ObjectExpansion {
     }
 
     public static final ObjectExpansion with(final ActiveContext activeContext, final JsonValue propertyContext,
-            final Object element, final NodeAdapter adapter, final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts, TypeKeyNameMapper typeMapper) {
+            final Object element, final TreeAdapter adapter, final String activeProperty, final URI baseUrl, Consumer<Collection<String>> appliedContexts, TypeKeyNameMapper typeMapper) {
         return new ObjectExpansion(activeContext, propertyContext, element, adapter, activeProperty, baseUrl, appliedContexts, typeMapper);
     }
 
@@ -101,7 +100,7 @@ final class ObjectExpansion {
 
         try {
             initLocalContext();
-        } catch (IOException e) {
+        } catch (TreeIOException e) {
             throw new JsonLdError(JsonLdErrorCode.UNSPECIFIED, e);
         }
 
@@ -155,22 +154,21 @@ final class ObjectExpansion {
 
             boolean revert = true;
 
-            final Iterator<String> keys = adapter.keys(element)
+            var keys = adapter.keys(element)
                     .stream()
                     .map(adapter::asString)
                     .sorted()
-                    .iterator();
+                    .collect(Collectors.toUnmodifiableList());
 
-            while (keys.hasNext()) {
+            for (var key : keys) {
 
-                final String key = keys.next();
-
-                final String expandedKey = UriExpansion
+                var expandedKey = UriExpansion
                         .with(activeContext, appliedContexts)
                         .vocab(true)
                         .expand(adapter.asString(key));
 
-                if (Keywords.VALUE.equals(expandedKey) || (Keywords.ID.equals(expandedKey) && (adapter.size(element) == 1))) {
+                if (Keywords.VALUE.equals(expandedKey)
+                        || (Keywords.ID.equals(expandedKey) && keys.size() == 1)) {
                     revert = false;
                     break;
                 }
@@ -182,16 +180,14 @@ final class ObjectExpansion {
         }
     }
 
-    private void initLocalContext() throws JsonLdError, IOException {
+    private void initLocalContext() throws JsonLdError, TreeIOException {
 
         // 9.
-        final Object contextElement = adapter.property(Keywords.CONTEXT, element);
+        var contextElement = adapter.property(Keywords.CONTEXT, element);
 
         if (contextElement != null) {
 
-            jakarta.node(contextElement, adapter);
-
-            final JsonValue jsonContext = jakarta.json();
+            final JsonValue jsonContext = new JakartaMaterializer().node(contextElement, adapter);
 
             for (final JsonValue context : JsonUtils.toJsonArray(jsonContext)) {
                 final ActiveContext ac = new ActiveContext(activeContext.getBaseUri(), activeContext.getBaseUrl(), activeContext.runtime())
@@ -268,10 +264,9 @@ final class ObjectExpansion {
                     activeContext = activeContext
                             .newContext()
                             .propagate(false)
-                            .create(lc,
-                                    valueDefinition
-                                            .map(TermDefinition::getBaseUrl)
-                                            .orElse(null));
+                            .create(lc, valueDefinition
+                                    .map(TermDefinition::getBaseUrl)
+                                    .orElse(null));
                 }
             }
         }

@@ -10,7 +10,6 @@ import com.apicatalog.cborld.decoder.DecoderException;
 import com.apicatalog.cborld.mapping.Mapping;
 
 import co.nstant.in.cbor.model.DataItem;
-import co.nstant.in.cbor.model.MajorType;
 import co.nstant.in.cbor.model.UnsignedInteger;
 
 public class XsdDateValueDecoder implements ValueDecoder {
@@ -19,17 +18,13 @@ public class XsdDateValueDecoder implements ValueDecoder {
 
     @Override
     public String decode(Mapping mapping, DataItem value, String term, Collection<String> types) throws DecoderException {
-        if (types.contains(DATE_TYPE)
-                && MajorType.UNSIGNED_INTEGER.equals(value.getMajorType())) {
-
-            long epochSeconds = ((UnsignedInteger) value).getValue().longValueExact();
-
-            final Instant date = Instant.ofEpochSecond(epochSeconds);
-
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-            return formatter.format(LocalDate.ofInstant(date, ZoneOffset.UTC));
-        }
-        return null;
+        return (types.contains(DATE_TYPE)
+                && value instanceof UnsignedInteger epochSeconds)
+                        ? DateTimeFormatter
+                                .ofPattern("yyyy-MM-dd")
+                                .format(LocalDate.ofInstant(
+                                        Instant.ofEpochSecond(epochSeconds.getValue().longValueExact()),
+                                        ZoneOffset.UTC))
+                        : null;
     }
 }

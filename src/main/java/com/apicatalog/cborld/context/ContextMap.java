@@ -12,19 +12,19 @@ import com.apicatalog.jsonld.JsonLdOptions;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.processor.ProcessingRuntime;
-import com.apicatalog.tree.io.NodeAdapter;
+import com.apicatalog.tree.io.TreeAdapter;
 
-public class Context {
+public class ContextMap {
 
     private final TypeMap typeMapping;
     private final Collection<Collection<String>> appliedContextKeys;
 
-    protected Context(TypeMap typeMapping, Collection<Collection<String>> appliedContextKeys) {
+    protected ContextMap(TypeMap typeMapping, Collection<Collection<String>> appliedContextKeys) {
         this.typeMapping = typeMapping;
         this.appliedContextKeys = appliedContextKeys;
     }
 
-    public static Context from(Object document, NodeAdapter adapter, URI base, DocumentLoader loader) throws JsonLdError {
+    public static ContextMap from(Object node, TreeAdapter adapter, URI base, DocumentLoader loader) throws JsonLdError {
 
         final JsonLdOptions options = new JsonLdOptions();
         options.setOrdered(false);
@@ -37,7 +37,7 @@ public class Context {
 
         final TypeMap typeMapping = Expansion.with(
                 activeContext,
-                document,
+                node,
                 adapter,
                 null,
                 base,
@@ -45,13 +45,13 @@ public class Context {
                 null)
                 .typeMapping();
 
-        return new Context(typeMapping, appliedContextKeys);
+        return new ContextMap(typeMapping, appliedContextKeys);
 
     }
 
-    public static Context from(
+    public static ContextMap from(
             Object document,
-            NodeAdapter adapter,
+            TreeAdapter adapter,
             URI base,
             DocumentLoader loader,
             Consumer<Collection<String>> appliedContexts,
@@ -76,7 +76,7 @@ public class Context {
                 typeMapper)
                 .typeMapping();
 
-        return new Context(typeMapping, appliedContextKeys);
+        return new ContextMap(typeMapping, appliedContextKeys);
 
     }
 

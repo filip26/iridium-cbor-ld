@@ -23,7 +23,7 @@ import com.apicatalog.cborld.mapping.TypeKeyNameMapper;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.context.ActiveContext;
 import com.apicatalog.jsonld.json.JsonUtils;
-import com.apicatalog.tree.io.NodeAdapter;
+import com.apicatalog.tree.io.TreeAdapter;
 
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
@@ -38,7 +38,7 @@ final class ArrayExpansion {
     private URI baseUrl;
 
     private final Object element;
-    private final NodeAdapter adapter;
+    private final TreeAdapter adapter;
 
     private final Consumer<Collection<String>> appliedContexts;
     private final TypeKeyNameMapper typeMapper;
@@ -47,7 +47,7 @@ final class ArrayExpansion {
     private boolean ordered;
     private boolean fromMap;
 
-    private ArrayExpansion(final ActiveContext activeContext, final Object element, NodeAdapter adapter, final String activeProperty,
+    private ArrayExpansion(final ActiveContext activeContext, final Object element, TreeAdapter adapter, final String activeProperty,
             final URI baseUrl, Consumer<Collection<String>> appliedContexts, TypeKeyNameMapper typeMapper) {
         this.activeContext = activeContext;
         this.element = element;
@@ -66,7 +66,7 @@ final class ArrayExpansion {
     public static final ArrayExpansion with(
             final ActiveContext activeContext, 
             final Object element,
-            final NodeAdapter adapter,
+            final TreeAdapter adapter,
             final String activeProperty, 
             final URI baseUrl, 
             final Consumer<Collection<String>> appliedContexts, 

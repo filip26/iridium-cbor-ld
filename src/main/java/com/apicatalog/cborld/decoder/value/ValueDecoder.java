@@ -24,6 +24,7 @@ import jakarta.json.JsonValue;
  * configuration.
  * </p>
  */
+@FunctionalInterface
 public interface ValueDecoder {
 
     /**

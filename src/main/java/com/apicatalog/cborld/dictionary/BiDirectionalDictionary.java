@@ -4,10 +4,15 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-record BidirectionalDictionary(
+record BiDirectionalDictionary(
         Map<String, Integer> index,
         Map<Integer, String> reverse) implements Dictionary {
 
+    BiDirectionalDictionary {
+        index = index != null ? Map.copyOf(index) : Map.of();
+        reverse = reverse != null ? Map.copyOf(reverse) : Map.of();
+    }
+    
     @Override
     public Integer getCode(String value) {
         return index.get(value);

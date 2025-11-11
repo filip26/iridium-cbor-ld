@@ -9,8 +9,6 @@ import com.apicatalog.cborld.mapping.DecoderMappingProvider;
 import com.apicatalog.cborld.registry.LegacyDictionary;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 
-import jakarta.json.JsonValue;
-
 class LegacyDecoderV05 extends AbstractDecoder {
 
     public LegacyDecoderV05(DecoderConfig config, DecoderMappingProvider mapping, DocumentLoader loader, URI base) {
@@ -18,7 +16,7 @@ class LegacyDecoderV05 extends AbstractDecoder {
     }
 
     @Override
-    public JsonValue decode(CborLdVersion version, byte[] encoded) throws ContextError, DecoderException {
+    public Object decode(CborLdVersion version, byte[] encoded) throws ContextError, DecoderException {
         if (encoded[2] == UNCOMPRESSED_BYTE) {
             throw new DecoderException(Code.Unsupported, "Uncompressed CBOR-LD v0.5 is not supported.");
         }

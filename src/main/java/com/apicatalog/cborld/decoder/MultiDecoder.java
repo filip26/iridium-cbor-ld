@@ -9,8 +9,6 @@ import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.decoder.DecoderException.Code;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 
-import jakarta.json.JsonValue;
-
 class MultiDecoder implements Decoder {
 
     protected final Map<CborLdVersion, Decoder> decoders;
@@ -24,12 +22,12 @@ class MultiDecoder implements Decoder {
     }
 
     @Override
-    public JsonValue decode(byte[] encoded) throws ContextError, DecoderException {
+    public Object decode(byte[] encoded) throws ContextError, DecoderException {
         return decode(Decoder.assertCborLd(encoded), encoded);
     }
 
     @Override
-    public JsonValue decode(CborLdVersion version, byte[] encoded) throws ContextError, DecoderException {
+    public Object decode(CborLdVersion version, byte[] encoded) throws ContextError, DecoderException {
         final Decoder decoder = decoders.get(version);
 
         if (decoder == null) {

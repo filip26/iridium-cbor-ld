@@ -1,7 +1,6 @@
 package com.apicatalog.cborld.encoder.value;
 
 import java.util.Collection;
-import java.util.Map;
 
 import com.apicatalog.cborld.dictionary.Dictionary;
 import com.apicatalog.cborld.encoder.EncoderException;
@@ -19,7 +18,7 @@ public class CustomTypeValueEncoder implements ValueEncoder {
                 && mapping.dictionary() != null
                 && mapping.dictionary().types() != null) {
 
-            final Map<String, Dictionary> typeMap = mapping.dictionary().types();
+            var typeMap = mapping.dictionary().types();
 
             for (final String type : types) {
 
@@ -28,14 +27,14 @@ public class CustomTypeValueEncoder implements ValueEncoder {
                 if (dictionary == null) {
                     continue;
                 }
-                final Integer code = dictionary.getCode(value);
+
+                var code = dictionary.getCode(value);
+
                 if (code != null) {
                     return new UnsignedInteger(code);
                 }
             }
         }
-
         return null;
     }
-
 }
