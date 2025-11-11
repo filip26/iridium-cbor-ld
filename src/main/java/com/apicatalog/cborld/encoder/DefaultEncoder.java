@@ -278,7 +278,7 @@ public class DefaultEncoder implements Encoder {
         case NUMBER:
             if (adapter.isIntegral(jsonValue)) {
 
-                var integer = adapter.bigIntegerValue(jsonValue);
+                var integer = adapter.integerValue(jsonValue);
 
                 switch (integer.signum()) {
                 case -1:

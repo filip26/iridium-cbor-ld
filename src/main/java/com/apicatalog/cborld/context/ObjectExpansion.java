@@ -15,7 +15,6 @@
  */
 package com.apicatalog.cborld.context;
 
-import java.io.IOException;
 import java.net.URI;
 import java.util.Collection;
 import java.util.Iterator;
@@ -37,8 +36,6 @@ import com.apicatalog.tree.io.jakarta.JakartaMaterializer;
 import jakarta.json.JsonValue;
 
 final class ObjectExpansion {
-
-    final JakartaMaterializer jakarta = new JakartaMaterializer();
 
     // mandatory
     private ActiveContext activeContext;
@@ -190,9 +187,7 @@ final class ObjectExpansion {
 
         if (contextElement != null) {
 
-            jakarta.node(contextElement, adapter);
-
-            final JsonValue jsonContext = jakarta.json();
+            final JsonValue jsonContext = new JakartaMaterializer().node(contextElement, adapter);
 
             for (final JsonValue context : JsonUtils.toJsonArray(jsonContext)) {
                 final ActiveContext ac = new ActiveContext(activeContext.getBaseUri(), activeContext.getBaseUrl(), activeContext.runtime())

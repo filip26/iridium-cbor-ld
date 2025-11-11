@@ -24,7 +24,7 @@ public class ContextMap {
         this.appliedContextKeys = appliedContextKeys;
     }
 
-    public static ContextMap from(Object document, TreeAdapter adapter, URI base, DocumentLoader loader) throws JsonLdError {
+    public static ContextMap from(Object node, TreeAdapter adapter, URI base, DocumentLoader loader) throws JsonLdError {
 
         final JsonLdOptions options = new JsonLdOptions();
         options.setOrdered(false);
@@ -37,7 +37,7 @@ public class ContextMap {
 
         final TypeMap typeMapping = Expansion.with(
                 activeContext,
-                document,
+                node,
                 adapter,
                 null,
                 base,
