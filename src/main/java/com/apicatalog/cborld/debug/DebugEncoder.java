@@ -11,6 +11,7 @@ import com.apicatalog.cborld.mapping.EncoderMappingProvider;
 import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.tree.io.TreeAdapter;
+import com.apicatalog.tree.io.TreeIO;
 
 /**
  * A debug-oriented implementation of the CBOR-LD encoder.
@@ -67,6 +68,10 @@ public class DebugEncoder extends Debug {
         } catch (ContextError | EncoderException e) {
             this.error = e;
         }
+    }
+    
+    public void encode(TreeIO node) {
+        encode(node.node(), node.adapter());
     }
 
     /**

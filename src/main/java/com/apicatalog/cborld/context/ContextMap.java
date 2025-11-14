@@ -1,17 +1,24 @@
 package com.apicatalog.cborld.context;
 
 import java.net.URI;
+import java.util.ArrayDeque;
 import java.util.Collection;
+import java.util.Deque;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 import com.apicatalog.cborld.mapping.TypeKeyNameMapper;
 import com.apicatalog.cborld.mapping.TypeMap;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.Options;
+import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.processor.Execution;
 import com.apicatalog.jsonld.processor.Expander;
+import com.apicatalog.jsonld.processor.KeyTypeMapper;
 import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.tree.io.TreeIO;
 
@@ -32,37 +39,16 @@ public class ContextMap {
                 .loader(loader)
                 .base(base);
 
-        final var keyTypeMapper = new KeyTypeMapperImpl();
-
         final var appliedContextKeys = new LinkedHashSet<Collection<String>>();
-        
+        final var keyTypeMapper = new TypeMapperImpl();
+
         final var runtime = Execution.of(options)
                 .contextKeyCollector(appliedContextKeys::add)
-                .keyTypeMapper(keyTypeMapper)
-                ;
-        
+                .keyTypeMapper(keyTypeMapper);
+
         Expander.expand(new TreeIO(node, adapter), options, runtime);
 
-//        
-//        final ActiveContext activeContext = new ActiveContext(null, null, ProcessingRuntime.of(options));
-//
-//        final TypeMap typeMapping = Expansion.with(
-//                activeContext,
-//                node,
-//                adapter,
-//                null,
-//                base,
-//                appliedContextKeys::add,
-//                null)
-//                .typeMapping();
-//        try {
-//            System.out.println("> " + new JakartaMaterializer().node(appliedContextKeys, NativeAdapter.instance()));
-//        } catch (TreeIOException e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        }
         return new ContextMap(keyTypeMapper.typeMap(), appliedContextKeys);
-
     }
 
     public static ContextMap from(
@@ -81,16 +67,14 @@ public class ContextMap {
 //        final ActiveContext activeContext = new ActiveContext(null, null, ProcessingRuntime.of(options));
 
         final var appliedContextKeys = new LinkedHashSet<Collection<String>>();
-        final var keyTypeMapper = new KeyTypeMapperImpl();
-        
-        
+        final var keyTypeMapper = new TypeMapperImpl();
+
         final var runtime = Execution.of(options)
                 .contextKeyCollector(appliedContexts.andThen(appliedContextKeys::add))
-                .keyTypeMapper(keyTypeMapper)
-                ;
-        
+                .keyTypeMapper(keyTypeMapper);
+
         Expander.expand(new TreeIO(document, adapter), options, runtime);
-        
+
 //        final TypeMap typeMapping = Expansion.with(
 //                activeContext,
 //                document,
@@ -111,5 +95,85 @@ public class ContextMap {
 
     public Collection<Collection<String>> getContextKeySets() {
         return appliedContextKeys;
+    }
+
+    private static class TypeMapperImpl implements KeyTypeMapper {
+
+        final Deque<Map<String, Object>> stack;
+
+        public TypeMapperImpl() {
+            this.stack = new ArrayDeque<>();
+            this.stack.push(new LinkedHashMap<String, Object>());
+        }
+
+        @Override
+        public void beginMap(String key) {
+            var map = new LinkedHashMap<String, Object>();
+            stack.peek().put(key, map);
+            stack.push(map);
+        }
+
+        @Override
+        public void endMap() {
+            stack.pop();
+        }
+
+        @Override
+        public void mapProperty(String key, String id) {
+            stack.peek().put(key, id);
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public void mapProperty(String key, String type, String value) {
+            ((Map<String, Object>) stack.peek()
+                    .computeIfAbsent(key, (k) -> new LinkedHashMap<String, Object>()))
+                    .put(type, value);
+        }
+
+        public TypeMap typeMap() {
+            return new TypeMapImpl(stack.peek());
+        }
+    }
+
+    private static class TypeMapImpl implements TypeMap {
+
+        final Map<String, Object> typeMap;
+
+        TypeMapImpl(final Map<String, Object> typeMap) {
+            this.typeMap = typeMap;
+        }
+
+        @Override
+        public Collection<String> getType(String term) {
+            System.out.println("GET T: " + term);
+            System.out.println("     : " + typeMap);
+
+            var type = typeMap.get(term);
+            if (type instanceof Map map) {
+                type = map.get(Keywords.TYPE);
+            }
+
+            if (type instanceof String string) {
+                return List.of(string);
+
+            } else if (type instanceof Collection<?> array) {
+                return array.stream().map(String.class::cast).toList();
+            }
+
+            return List.of();
+        }
+
+        @Override
+        public TypeMap getMapping(String term) {
+            System.out.println("GET M: " + term);
+            System.out.println("     : " + typeMap);
+
+            var type = typeMap.get(term);
+            if (type instanceof Map map) {
+                return new TypeMapImpl((Map<String, Object>)map);
+            }
+            return null;
+        }
     }
 }

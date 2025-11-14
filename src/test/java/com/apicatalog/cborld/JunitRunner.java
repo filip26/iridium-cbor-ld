@@ -21,27 +21,31 @@ import com.apicatalog.cborld.decoder.Decoder;
 import com.apicatalog.cborld.encoder.Encoder;
 import com.apicatalog.cborld.encoder.EncoderException;
 import com.apicatalog.cborld.hex.Hex;
+import com.apicatalog.jsonld.Comparison;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.loader.ClasspathLoader;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.StaticLoader;
 import com.apicatalog.multibase.Multibase;
+import com.apicatalog.tree.io.TreeIO;
+import com.apicatalog.tree.io.TreeIOException;
 import com.apicatalog.tree.io.TreeParser;
 import com.apicatalog.tree.io.cbor.CborParser;
+import com.apicatalog.tree.io.jakarta.JakartaMaterializer;
 import com.apicatalog.tree.io.jakarta.JakartaParser;
+import com.apicatalog.tree.io.java.NativeAdapter;
 import com.apicatalog.web.media.MediaType;
 
 import co.nstant.in.cbor.CborDecoder;
 import co.nstant.in.cbor.CborException;
 import co.nstant.in.cbor.model.DataItem;
 import jakarta.json.Json;
-import jakarta.json.JsonStructure;
 import jakarta.json.JsonValue;
 import jakarta.json.JsonWriter;
 import jakarta.json.JsonWriterFactory;
 import jakarta.json.stream.JsonGenerator;
 
-class JunitTestRunner {
+class JunitRunner {
 
     private final TestCase testCase;
 
@@ -143,7 +147,7 @@ class JunitTestRunner {
                 .debug();
     }
 
-    public JunitTestRunner(TestCase testCase) {
+    public JunitRunner(TestCase testCase) {
         this.testCase = testCase;
     }
 
@@ -217,35 +221,35 @@ class JunitTestRunner {
 
             } else if (testCase.type.contains(TestSuite.VOCAB + "DebugEncoderTest")) {
 
-//                var document = LOADER.loadDocument(testCase.input, new DocumentLoaderOptions());
-//
-//                var object = document.getJsonContent().orElseThrow(IllegalStateException::new).asJsonObject();
-//
-//                var debug = getDebugEncoder(testCase.config);
-//
-//                debug.encode(object, JakartaAdapter.instance());
-//
-//                if (testCase.type.stream().noneMatch(o -> o.endsWith("PositiveEvaluationTest"))) {
-//                    fail("Expected error code [" + testCase.result + "].");
-//                    return;
-//                }
-//
-//                var dump = debug.dump();
-//
-//                var expected = LOADER.loadDocument(testCase.result, new DocumentLoaderOptions()).getJsonContent().orElse(null);
-//
-//                assertNotNull(expected);
-//
-//                // TODO use Jcs v2.0 with adapters
-//                var result = new JakartaMaterializer().node(dump, NativeAdapter.instance());
-//
-//                var match = JsonLdComparison.equals(expected, result);
-//
-//                if (!match) {
-//                    write(testCase, result, expected);
-//                }
-//
-//                assertTrue(match, "The expected result does not match.");
+                var document = LOADER.loadDocument(testCase.input, DocumentLoader.defaultOptions());
+
+                var debug = getDebugEncoder(testCase.config);
+
+                debug.encode(document.content());
+
+                if (testCase.type.stream().noneMatch(o -> o.endsWith("PositiveEvaluationTest"))) {
+                    fail("Expected error code [" + testCase.result + "].");
+                    return;
+                }
+
+                var dump = debug.dump();
+
+                var expected = LOADER.loadDocument(testCase.result, DocumentLoader.defaultOptions());
+
+                assertNotNull(expected);
+
+                // TODO use Jcs v2.0 with adapters
+
+                var match = Comparison.equals(
+                        expected.content().node(),
+                        expected.content().adapter(),
+                        dump,
+                        NativeAdapter.instance());
+
+                if (!match) {
+                    write(testCase, dump, expected.content());
+                }
+                assertTrue(match, "The expected result does not match.");
 
             } else if (testCase.type.contains(TestSuite.VOCAB + "DebugDecoderTest")) {
 
@@ -296,7 +300,7 @@ class JunitTestRunner {
 //        } catch (DecoderException e) {
 //            assertException(e.code().name(), e);
 
-        } catch (JsonLdException | CborException | IOException e) {
+        } catch (JsonLdException | CborException | IOException | TreeIOException e) {
             fail(e);
         }
     }
@@ -321,7 +325,7 @@ class JunitTestRunner {
         return testCase.type.stream().anyMatch(o -> o.endsWith("NegativeEvaluationTest"));
     }
 
-    public static void write(final TestCase testCase, final JsonValue result, final JsonStructure expected) {
+    public static void write(final TestCase testCase, final Object result, final TreeIO expected) throws TreeIOException {
         final StringWriter stringWriter = new StringWriter();
 
         try (final PrintWriter writer = new PrintWriter(stringWriter)) {
@@ -330,12 +334,12 @@ class JunitTestRunner {
             final JsonWriterFactory writerFactory = Json.createWriterFactory(Collections.singletonMap(JsonGenerator.PRETTY_PRINTING, true));
 
             if (expected != null) {
-                write(writer, writerFactory, "Expected", expected);
+                write(writer, writerFactory, "Expected", new JakartaMaterializer().node(expected));
                 writer.println();
             }
 
             if (result != null) {
-                write(writer, writerFactory, "Actual", result);
+                write(writer, writerFactory, "Actual", new JakartaMaterializer().node(result, NativeAdapter.instance()));
                 writer.println();
             }
         }

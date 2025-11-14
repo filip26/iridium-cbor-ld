@@ -30,7 +30,7 @@ class TestSuite {
     @MethodSource({ "encoderManifest" })
     @Order(1)
     void encode(TestCase testCase) {
-        new JunitTestRunner(testCase).execute();
+        new JunitRunner(testCase).execute();
     }
 
     @DisplayName("Decoder")
@@ -38,7 +38,7 @@ class TestSuite {
     @MethodSource({ "decoderManifest" })
     @Order(2)
     void decode(TestCase testCase) {
-        new JunitTestRunner(testCase).execute();
+        new JunitRunner(testCase).execute();
     }
 
     static final Stream<TestCase> encoderManifest() throws JsonLdException, IOException, TreeIOException {
@@ -51,9 +51,9 @@ class TestSuite {
 
     static final Stream<TestCase> manifest(String name) throws JsonLdException, IOException, TreeIOException {
         try (final var is = TestSuite.class.getResourceAsStream(name)) {
-            final var manifest = JsonLd.expand(JunitTestRunner.JSON_PARSER.parse(is), Options.newOptions()
+            final var manifest = JsonLd.expand(JunitRunner.JSON_PARSER.parse(is), Options.newOptions()
                     .base(BASE)
-                    .loader(JunitTestRunner.TEST_LOADER));
+                    .loader(JunitRunner.TEST_LOADER));
 
             return ((Collection<?>) ((Map<?, ?>) ((Collection<?>) manifest).iterator().next()).get(
                     "http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#entries")).stream()
