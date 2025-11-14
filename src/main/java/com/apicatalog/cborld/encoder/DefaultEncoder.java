@@ -5,13 +5,13 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URI;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 import com.apicatalog.cborld.CborLd;
 import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.encoder.EncoderException.Code;
-import com.apicatalog.cborld.encoder.value.ValueEncoder;
 import com.apicatalog.cborld.mapping.EncoderMappingProvider;
 import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.cborld.mapping.TypeMap;
@@ -266,14 +266,15 @@ public class DefaultEncoder implements Encoder {
             return SimpleValue.FALSE;
 
         case STRING:
-            final Collection<String> types = typeMapping != null
-                    ? typeMapping.getType(term)
-                    : Collections.emptySet();
+            final var types = Optional
+                    .ofNullable(typeMapping)
+                    .map(tm -> tm.getType(term))
+                    .orElse(List.of());
 
-            var stringValue = adapter.stringValue(jsonValue);
+            final var stringValue = adapter.stringValue(jsonValue);
 
-            for (final ValueEncoder valueEncoder : config.valueEncoders()) {
-                final DataItem dataItem = valueEncoder.encode(mapping, stringValue, term, types);
+            for (final var valueEncoder : config.valueEncoders()) {
+                final var dataItem = valueEncoder.encode(mapping, stringValue, term, types);
                 if (dataItem != null) {
                     return dataItem;
                 }
@@ -304,10 +305,16 @@ public class DefaultEncoder implements Encoder {
         }
     }
 
-    final ArrayBuilder<?> encode(final Iterable<?> jsonArray, final TreeAdapter adapter, final ArrayBuilder<?> builder, String property, TypeMap typeMapping, Mapping mapping)
+    final ArrayBuilder<?> encode(
+            final Iterable<?> jsonArray,
+            final TreeAdapter adapter,
+            final ArrayBuilder<?> builder,
+            String property,
+            TypeMap typeMapping,
+            Mapping mapping)
             throws EncoderException, JsonLdException {
 
-        ArrayBuilder<?> flow = builder;
+        var flow = builder;
 
         for (var item : adapter.elements(jsonArray)) {
 

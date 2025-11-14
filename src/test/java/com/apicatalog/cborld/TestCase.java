@@ -1,18 +1,18 @@
 package com.apicatalog.cborld;
 
 import java.net.URI;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.apicatalog.cborld.config.ConfigV1;
 import com.apicatalog.jsonld.lang.Keywords;
+import com.apicatalog.tree.io.TreeAdapter;
 
 import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 
-class CborLdTestCase {
+class TestCase {
 
     public URI id;
 
@@ -28,14 +28,48 @@ class CborLdTestCase {
 
     public String config;
 
-    public static CborLdTestCase of(Map<String, Object> test) {
-        
-        return null;
-    }
-    
-    public static CborLdTestCase of(JsonObject test) {
+    public static TestCase of(Object test, TreeAdapter adapter) {
 
-        final CborLdTestCase testCase = new CborLdTestCase();
+        final TestCase testCase = new TestCase();
+
+        testCase.id = URI.create(adapter.stringValue(adapter.property(Keywords.ID, test)));
+
+        testCase.type = adapter.asStream(adapter.property(Keywords.TYPE, test))
+                .map(adapter::asString)
+                .collect(Collectors.toUnmodifiableSet());
+
+        testCase.name = adapter.stringValue(
+                adapter.property(Keywords.VALUE,
+                        adapter.singleElement(
+                                adapter.property("http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#name",
+                                        test))));
+
+        testCase.input = URI.create(adapter.stringValue(
+                adapter.property(Keywords.ID,
+                        adapter.singleElement(
+                                adapter.property("http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#action",
+                                        test)))));
+
+        var result = adapter.property("http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#result", test);
+        if (result != null) {
+            result = adapter.singleElement(result);
+
+            var value = adapter.property(Keywords.ID, result);
+            if (value == null) {
+                value = adapter.property(Keywords.VALUE, result);
+            }
+
+            if (adapter.isString(value)) {
+                testCase.result = URI.create(adapter.stringValue(value));
+            }
+        }
+
+        return testCase;
+    }
+
+    public static TestCase of(JsonObject test) {
+
+        final TestCase testCase = new TestCase();
 
         testCase.id = URI.create(test.getString(Keywords.ID));
 
