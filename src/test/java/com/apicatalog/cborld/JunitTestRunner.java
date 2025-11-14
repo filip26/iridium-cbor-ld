@@ -177,11 +177,11 @@ class JunitTestRunner {
 
                 final boolean match = equalCborLdHeader(expected, encoded)
                         && CborComparison.equals(expected, encoded);
-//
+
                 if (!match) {
-//                    write(testCase, bytes, ((CborLdDocument) expected).getByteArray());
+                    write(testCase, encoded, expected);
                 }
-//
+
                 assertTrue(match, "The expected result does not match.");
 
             } else if (testCase.type.contains(TestSuite.VOCAB + "DecoderTest")) {

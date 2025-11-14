@@ -8,10 +8,6 @@ import com.apicatalog.cborld.config.ConfigV1;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.tree.io.TreeAdapter;
 
-import jakarta.json.JsonObject;
-import jakarta.json.JsonString;
-import jakarta.json.JsonValue;
-
 class TestCase {
 
     public URI id;
@@ -64,54 +60,28 @@ class TestCase {
             }
         }
 
-        return testCase;
-    }
+        var options = adapter.property("https://github.com/filip26/iridium-cbor-ld/tests/vocab#option", test);
+        if (options != null) {
+            options = adapter.singleElement(options);
 
-    public static TestCase of(JsonObject test) {
+            var compactArrays = adapter.property("https://github.com/filip26/iridium-cbor-ld/tests/vocab#compactArrays", options);
+            if (compactArrays != null) {
+                compactArrays = adapter.singleElement(compactArrays);
+                compactArrays = adapter.property(Keywords.VALUE, compactArrays);
+                if (adapter.isNull(compactArrays)) {
+                    testCase.compactArrays = ConfigV1.INSTANCE.isCompactArrays();
+                } else {
+                    testCase.compactArrays = adapter.isTrue(compactArrays);
+                }
+            }
 
-        final TestCase testCase = new TestCase();
+            var config = adapter.property("https://github.com/filip26/iridium-cbor-ld/tests/vocab#config", options);
+            if (config != null) {
+                config = adapter.singleElement(config);
 
-        testCase.id = URI.create(test.getString(Keywords.ID));
-
-        testCase.type = test.getJsonArray(Keywords.TYPE).stream().map(JsonString.class::cast).map(JsonString::getString)
-                .collect(Collectors.toSet());
-
-        testCase.name = test.getJsonArray("http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#name")
-                .getJsonObject(0).getString(Keywords.VALUE);
-
-        testCase.input = URI.create(test.getJsonArray("http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#action")
-                .getJsonObject(0).getString(Keywords.ID));
-
-        if (test.containsKey("http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#result")) {
-            final JsonObject result = test
-                    .getJsonArray("http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#result").getJsonObject(0);
-
-            JsonValue resultValue = result.getOrDefault(Keywords.ID, result.getOrDefault(Keywords.VALUE, null));
-
-            if (resultValue instanceof JsonString jsonString) {
-                testCase.result = URI.create(jsonString.getString());
-
-            } else {
-                // testCase.result =
-                // !JsonValue.ValueType.FALSE.equals(resultValue.getValueType());
+                testCase.config = adapter.stringValue(adapter.property(Keywords.VALUE, config));
             }
         }
-
-        if (test.containsKey("https://github.com/filip26/iridium-cbor-ld/tests/vocab#option")) {
-
-            final JsonObject options = test
-                    .getJsonArray("https://github.com/filip26/iridium-cbor-ld/tests/vocab#option")
-                    .getJsonObject(0);
-
-            if (options.containsKey("https://github.com/filip26/iridium-cbor-ld/tests/vocab#compactArrays")) {
-                testCase.compactArrays = options.getJsonArray("https://github.com/filip26/iridium-cbor-ld/tests/vocab#compactArrays").getJsonObject(0).getBoolean("@value",
-                        ConfigV1.INSTANCE.isCompactArrays());
-            }
-            if (options.containsKey("https://github.com/filip26/iridium-cbor-ld/tests/vocab#config")) {
-                testCase.config = options.getJsonArray("https://github.com/filip26/iridium-cbor-ld/tests/vocab#config").getJsonObject(0).getString("@value", null);
-            }
-        }
-
         return testCase;
     }
 
