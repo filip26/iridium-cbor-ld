@@ -15,110 +15,95 @@
  */
 package com.apicatalog.cborld.context;
 
-import java.net.URI;
-import java.util.Collection;
-import java.util.function.Consumer;
-
-import com.apicatalog.cborld.mapping.TypeKeyNameMapper;
-import com.apicatalog.jsonld.JsonLdError;
-import com.apicatalog.jsonld.context.ActiveContext;
-import com.apicatalog.jsonld.json.JsonUtils;
-import com.apicatalog.tree.io.TreeAdapter;
-
-import jakarta.json.Json;
-import jakarta.json.JsonArray;
-import jakarta.json.JsonArrayBuilder;
-import jakarta.json.JsonValue;
-
 final class ArrayExpansion {
 
-    // mandatory
-    private ActiveContext activeContext;
-    private String activeProperty;
-    private URI baseUrl;
-
-    private final Object element;
-    private final TreeAdapter adapter;
-
-    private final Consumer<Collection<String>> appliedContexts;
-    private final TypeKeyNameMapper typeMapper;
-
-    // optional
-    private boolean ordered;
-    private boolean fromMap;
-
-    private ArrayExpansion(final ActiveContext activeContext, final Object element, TreeAdapter adapter, final String activeProperty,
-            final URI baseUrl, Consumer<Collection<String>> appliedContexts, TypeKeyNameMapper typeMapper) {
-        this.activeContext = activeContext;
-        this.element = element;
-        this.adapter = adapter;
-        this.activeProperty = activeProperty;
-        this.baseUrl = baseUrl;
-
-        this.appliedContexts = appliedContexts;
-        this.typeMapper = typeMapper;
-
-        // default values
-        this.ordered = false;
-        this.fromMap = false;
-    }
-
-    public static final ArrayExpansion with(
-            final ActiveContext activeContext, 
-            final Object element,
-            final TreeAdapter adapter,
-            final String activeProperty, 
-            final URI baseUrl, 
-            final Consumer<Collection<String>> appliedContexts, 
-            final TypeKeyNameMapper typeMapper) {
-        return new ArrayExpansion(activeContext, element, adapter, activeProperty, baseUrl, appliedContexts, typeMapper);
-    }
-
-    public ArrayExpansion ordered(boolean value) {
-        this.ordered = value;
-        return this;
-    }
-
-    public ArrayExpansion fromMap(boolean value) {
-        this.fromMap = value;
-        return this;
-    }
-
-    public JsonArray expand() throws JsonLdError {
-
-        if (adapter.isEmpty(element)) {
-            return JsonValue.EMPTY_JSON_ARRAY;
-        }
-
-        final JsonArrayBuilder result = Json.createArrayBuilder();
-
-        // 5.2.
-        for (final Object item : adapter.elements(element)) {
-
-            // 5.2.1
-            JsonValue expanded = Expansion
-                    .with(activeContext, item, adapter, activeProperty, baseUrl, appliedContexts, typeMapper)
-                    .ordered(ordered)
-                    .fromMap(fromMap)
-                    .compute();
-
-            // 5.2.3
-            if (JsonUtils.isArray(expanded)) {
-
-                // append array
-                expanded
-                        .asJsonArray()
-                        .stream()
-                        .filter(JsonUtils::isNotNull)
-                        .forEach(result::add);
-
-                // append non-null element
-            } else if (JsonUtils.isNotNull(expanded)) {
-                result.add(expanded);
-            }
-        }
-
-        // 5.3
-        return result.build();
-    }
+//    // mandatory
+//    private ActiveContext activeContext;
+//    private String activeProperty;
+//    private URI baseUrl;
+//
+//    private final Object element;
+//    private final TreeAdapter adapter;
+//
+//    private final Consumer<Collection<String>> appliedContexts;
+//    private final TypeKeyNameMapper typeMapper;
+//
+//    // optional
+//    private boolean ordered;
+//    private boolean fromMap;
+//
+//    private ArrayExpansion(final ActiveContext activeContext, final Object element, TreeAdapter adapter, final String activeProperty,
+//            final URI baseUrl, Consumer<Collection<String>> appliedContexts, TypeKeyNameMapper typeMapper) {
+//        this.activeContext = activeContext;
+//        this.element = element;
+//        this.adapter = adapter;
+//        this.activeProperty = activeProperty;
+//        this.baseUrl = baseUrl;
+//
+//        this.appliedContexts = appliedContexts;
+//        this.typeMapper = typeMapper;
+//
+//        // default values
+//        this.ordered = false;
+//        this.fromMap = false;
+//    }
+//
+//    public static final ArrayExpansion with(
+//            final ActiveContext activeContext, 
+//            final Object element,
+//            final TreeAdapter adapter,
+//            final String activeProperty, 
+//            final URI baseUrl, 
+//            final Consumer<Collection<String>> appliedContexts, 
+//            final TypeKeyNameMapper typeMapper) {
+//        return new ArrayExpansion(activeContext, element, adapter, activeProperty, baseUrl, appliedContexts, typeMapper);
+//    }
+//
+//    public ArrayExpansion ordered(boolean value) {
+//        this.ordered = value;
+//        return this;
+//    }
+//
+//    public ArrayExpansion fromMap(boolean value) {
+//        this.fromMap = value;
+//        return this;
+//    }
+//
+//    public JsonArray expand() throws JsonLdError {
+//
+//        if (adapter.isEmpty(element)) {
+//            return JsonValue.EMPTY_JSON_ARRAY;
+//        }
+//
+//        final JsonArrayBuilder result = Json.createArrayBuilder();
+//
+//        // 5.2.
+//        for (final Object item : adapter.elements(element)) {
+//
+//            // 5.2.1
+//            JsonValue expanded = Expansion
+//                    .with(activeContext, item, adapter, activeProperty, baseUrl, appliedContexts, typeMapper)
+//                    .ordered(ordered)
+//                    .fromMap(fromMap)
+//                    .compute();
+//
+//            // 5.2.3
+//            if (JsonUtils.isArray(expanded)) {
+//
+//                // append array
+//                expanded
+//                        .asJsonArray()
+//                        .stream()
+//                        .filter(JsonUtils::isNotNull)
+//                        .forEach(result::add);
+//
+//                // append non-null element
+//            } else if (JsonUtils.isNotNull(expanded)) {
+//                result.add(expanded);
+//            }
+//        }
+//
+//        // 5.3
+//        return result.build();
+//    }
 }

@@ -6,9 +6,9 @@ import java.util.Map.Entry;
 
 import com.apicatalog.cborld.encoder.EncoderException.Code;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.uri.UriUtils;
-import com.apicatalog.jsonld.uri.UriValidationPolicy;
 import com.apicatalog.tree.io.TreeAdapter;
+import com.apicatalog.web.uri.UriUtils;
+import com.apicatalog.web.uri.UriValidationPolicy;
 
 class EncoderContext {
 

@@ -2,11 +2,10 @@ package com.apicatalog.cborld;
 
 import java.net.URI;
 
-import com.apicatalog.jsonld.JsonLdError;
-import com.apicatalog.jsonld.JsonLdErrorCode;
-import com.apicatalog.jsonld.document.Document;
+import com.apicatalog.jsonld.Document;
+import com.apicatalog.jsonld.JsonLdException;
+import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.jsonld.loader.DocumentLoader;
-import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
 
 final class UriBaseRewriter implements DocumentLoader {
 
@@ -23,7 +22,7 @@ final class UriBaseRewriter implements DocumentLoader {
     }
 
     @Override
-    public Document loadDocument(final URI url, final DocumentLoaderOptions options) throws JsonLdError {
+    public Document loadDocument(final URI url, final Options options) throws JsonLdException {
 
         final String sourceUrl = url.toString();
 
@@ -36,14 +35,14 @@ final class UriBaseRewriter implements DocumentLoader {
         final Document remoteDocument = loader.loadDocument(URI.create(targetBase + relativePath), options);
 
         if (remoteDocument == null) {
-            throw new JsonLdError(JsonLdErrorCode.LOADING_DOCUMENT_FAILED);
+            throw new JsonLdException(ErrorCode.LOADING_DOCUMENT_FAILED);
         }
-
-        if (remoteDocument.getDocumentUrl() != null && remoteDocument.getDocumentUrl().toString().startsWith(targetBase)) {
-
-            final String remoteRelativePath = remoteDocument.getDocumentUrl().toString().substring(targetBase.length());
-            remoteDocument.setDocumentUrl(URI.create(sourceBase + remoteRelativePath));
-        }
+//TODO
+//        if (remoteDocument.getDocumentUrl() != null && remoteDocument.getDocumentUrl().toString().startsWith(targetBase)) {
+//
+//            final String remoteRelativePath = remoteDocument.getDocumentUrl().toString().substring(targetBase.length());
+//            remoteDocument.setDocumentUrl(URI.create(sourceBase + remoteRelativePath));
+//        }
 
         return remoteDocument;
     }

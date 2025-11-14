@@ -7,12 +7,13 @@ import java.util.function.Consumer;
 
 import com.apicatalog.cborld.mapping.TypeKeyNameMapper;
 import com.apicatalog.cborld.mapping.TypeMap;
-import com.apicatalog.jsonld.JsonLdError;
-import com.apicatalog.jsonld.JsonLdOptions;
-import com.apicatalog.jsonld.context.ActiveContext;
+import com.apicatalog.jsonld.JsonLdException;
+import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.loader.DocumentLoader;
-import com.apicatalog.jsonld.processor.ProcessingRuntime;
+import com.apicatalog.jsonld.processor.Execution;
+import com.apicatalog.jsonld.processor.Expander;
 import com.apicatalog.tree.io.TreeAdapter;
+import com.apicatalog.tree.io.TreeIO;
 
 public class ContextMap {
 
@@ -24,28 +25,43 @@ public class ContextMap {
         this.appliedContextKeys = appliedContextKeys;
     }
 
-    public static ContextMap from(Object node, TreeAdapter adapter, URI base, DocumentLoader loader) throws JsonLdError {
+    public static ContextMap from(Object node, TreeAdapter adapter, URI base, DocumentLoader loader) throws JsonLdException {
 
-        final JsonLdOptions options = new JsonLdOptions();
-        options.setOrdered(false);
-        options.setDocumentLoader(loader);
-        options.setBase(base);
+        final var options = Options.newOptions()
+                .ordered(false)
+                .loader(loader)
+                .base(base);
 
-        final ActiveContext activeContext = new ActiveContext(null, null, ProcessingRuntime.of(options));
+        final var keyTypeMapper = new KeyTypeMapperImpl();
 
-        Collection<Collection<String>> appliedContextKeys = new LinkedHashSet<>();
+        final var appliedContextKeys = new LinkedHashSet<Collection<String>>();
+        
+        final var runtime = Execution.of(options)
+                .contextKeyCollector(appliedContextKeys::add)
+                .keyTypeMapper(keyTypeMapper)
+                ;
+        
+        Expander.expand(new TreeIO(node, adapter), options, runtime);
 
-        final TypeMap typeMapping = Expansion.with(
-                activeContext,
-                node,
-                adapter,
-                null,
-                base,
-                appliedContextKeys::add,
-                null)
-                .typeMapping();
-
-        return new ContextMap(typeMapping, appliedContextKeys);
+//        
+//        final ActiveContext activeContext = new ActiveContext(null, null, ProcessingRuntime.of(options));
+//
+//        final TypeMap typeMapping = Expansion.with(
+//                activeContext,
+//                node,
+//                adapter,
+//                null,
+//                base,
+//                appliedContextKeys::add,
+//                null)
+//                .typeMapping();
+//        try {
+//            System.out.println("> " + new JakartaMaterializer().node(appliedContextKeys, NativeAdapter.instance()));
+//        } catch (TreeIOException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
+        return new ContextMap(keyTypeMapper, appliedContextKeys);
 
     }
 
@@ -55,28 +71,37 @@ public class ContextMap {
             URI base,
             DocumentLoader loader,
             Consumer<Collection<String>> appliedContexts,
-            TypeKeyNameMapper typeMapper) throws JsonLdError {
+            TypeKeyNameMapper typeMapper) throws JsonLdException {
 
-        final JsonLdOptions options = new JsonLdOptions();
-        options.setOrdered(false);
-        options.setDocumentLoader(loader);
-        options.setBase(base);
+        final var options = Options.newOptions()
+                .ordered(false)
+                .loader(loader)
+                .base(base);
 
-        final ActiveContext activeContext = new ActiveContext(null, null, ProcessingRuntime.of(options));
+//        final ActiveContext activeContext = new ActiveContext(null, null, ProcessingRuntime.of(options));
 
-        Collection<Collection<String>> appliedContextKeys = new LinkedHashSet<>();
+        final var appliedContextKeys = new LinkedHashSet<Collection<String>>();
+        final var keyTypeMapper = new KeyTypeMapperImpl();
+        
+        
+        final var runtime = Execution.of(options)
+                .contextKeyCollector(appliedContexts.andThen(appliedContextKeys::add))
+                .keyTypeMapper(keyTypeMapper)
+                ;
+        
+        Expander.expand(new TreeIO(document, adapter), options, runtime);
+        
+//        final TypeMap typeMapping = Expansion.with(
+//                activeContext,
+//                document,
+//                adapter,
+//                null,
+//                base,
+//                appliedContexts.andThen(appliedContextKeys::add),
+//                typeMapper)
+//                .typeMapping();
 
-        final TypeMap typeMapping = Expansion.with(
-                activeContext,
-                document,
-                adapter,
-                null,
-                base,
-                appliedContexts.andThen(appliedContextKeys::add),
-                typeMapper)
-                .typeMapping();
-
-        return new ContextMap(typeMapping, appliedContextKeys);
+        return new ContextMap(keyTypeMapper, appliedContextKeys);
 
     }
 

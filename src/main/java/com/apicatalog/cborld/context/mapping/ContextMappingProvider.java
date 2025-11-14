@@ -1,8 +1,8 @@
 package com.apicatalog.cborld.context.mapping;
 
-import com.apicatalog.cborld.context.ContextMap;
 import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.context.ContextError.Code;
+import com.apicatalog.cborld.context.ContextMap;
 import com.apicatalog.cborld.decoder.Decoder;
 import com.apicatalog.cborld.dictionary.CodeTermMap;
 import com.apicatalog.cborld.encoder.Encoder;
@@ -10,7 +10,7 @@ import com.apicatalog.cborld.mapping.DecoderMappingProvider;
 import com.apicatalog.cborld.mapping.EncoderMappingProvider;
 import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.cborld.registry.DocumentDictionary;
-import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.tree.io.TreeAdapter;
 
 import co.nstant.in.cbor.model.DataItem;
@@ -31,7 +31,7 @@ public class ContextMappingProvider implements EncoderMappingProvider, DecoderMa
                     CodeTermMap.of(context.getContextKeySets()),
                     context.getTypeMapping());
 
-        } catch (JsonLdError e) {
+        } catch (JsonLdException e) {
             throw new ContextError(Code.InvalidContext, e);
         }
     }
@@ -57,7 +57,7 @@ public class ContextMappingProvider implements EncoderMappingProvider, DecoderMa
 
             return mapping;
 
-        } catch (JsonLdError e) {
+        } catch (JsonLdException e) {
             throw new ContextError(Code.InvalidContext, e);
         }
     }

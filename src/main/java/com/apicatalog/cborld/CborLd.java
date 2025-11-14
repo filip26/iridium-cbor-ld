@@ -1,5 +1,7 @@
 package com.apicatalog.cborld;
 
+import java.util.Map;
+
 import com.apicatalog.cborld.config.ConfigV1;
 import com.apicatalog.cborld.decoder.Decoder;
 import com.apicatalog.cborld.decoder.DecoderBuilder;
@@ -25,6 +27,47 @@ public class CborLd {
     public static final byte VERSION_06_BYTE = (byte) 0x06;
     /** CBOR-LD legacy version 0.5 identifier. */
     public static final byte VERSION_05_BYTE = (byte) 0x05;
+
+    public static final Map<String, String> CONTEXT_RESOURCES = Map.ofEntries(
+            Map.entry(
+                    "https://www.w3.org/2018/credentials/examples/v1",
+                    "/com/apicatalog/cborld/loader/2018-credentials-examples-v1.jsonld"),
+            Map.entry(
+                    "https://www.w3.org/2018/credentials/v1",
+                    "/com/apicatalog/cborld/loader/2018-credentials-v1.jsonld"),
+            Map.entry(
+                    "https://w3id.org/security/suites/ed25519-2020/v1",
+                    "/com/apicatalog/cborld/loader/security-suites-ed25519-2020-v1.jsonld"),
+            Map.entry(
+                    "https://www.w3.org/ns/odrl.jsonld",
+                    "/com/apicatalog/cborld/loader/odrl.jsonld"),
+            Map.entry(
+                    "https://www.w3.org/ns/did/v1",
+                    "/com/apicatalog/cborld/loader/did-v1.jsonld"),
+            Map.entry(
+                    "https://www.w3.org/ns/credentials/v2",
+                    "/com/apicatalog/cborld/loader/credentials-v2.jsonld"),
+            Map.entry(
+                    "https://www.w3.org/ns/cid/v1",
+                    "/com/apicatalog/cborld/loader/cid-v1.jsonld"),
+            Map.entry(
+                    "https://w3id.org/vc-barcodes/v1",
+                    "/com/apicatalog/cborld/loader/vc-barcodes-v1.jsonld"),
+            Map.entry(
+                    "https://w3id.org/security/data-integrity/v1",
+                    "/com/apicatalog/cborld/loader/data-integrity-v1.jsonld"),
+            Map.entry(
+                    "https://w3id.org/security/multikey/v1",
+                    "/com/apicatalog/cborld/loader/multikey-v1.jsonld"),
+            Map.entry(
+                    "https://w3id.org/security/data-integrity/v2",
+                    "/com/apicatalog/cborld/loader/data-integrity-v2.jsonld"),
+            Map.entry(
+                    "https://www.w3.org/ns/credentials/examples/v2",
+                    "/com/apicatalog/cborld/loader/credentials-examples-v2.jsonld"),
+            Map.entry(
+                    "https://www.w3.org/ns/activitystreams",
+                    "/com/apicatalog/cborld/loader/activitystreams.jsonld"));
 
     /** Utility class — not meant to be instantiated. */
     protected CborLd() {

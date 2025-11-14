@@ -15,7 +15,7 @@ import com.apicatalog.cborld.encoder.value.ValueEncoder;
 import com.apicatalog.cborld.mapping.EncoderMappingProvider;
 import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.cborld.mapping.TypeMap;
-import com.apicatalog.jsonld.JsonLdError;
+import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.tree.io.TreeAdapter;
 
@@ -159,12 +159,17 @@ public class DefaultEncoder implements Encoder {
         } catch (CborException e) {
             throw new EncoderException(Code.InvalidDocument, e);
 
-        } catch (JsonLdError e) {
+        } catch (JsonLdException e) {
             throw new EncoderException(Code.Internal, e);
         }
     }
 
-    final MapBuilder<?> encode(final Iterable<Entry<?, ?>> entries, final TreeAdapter adapter, final MapBuilder<?> builder, TypeMap typeMapping, Mapping mapping) throws EncoderException, JsonLdError {
+    final MapBuilder<?> encode(
+            final Iterable<Entry<?, ?>> entries,
+            final TreeAdapter adapter,
+            final MapBuilder<?> builder,
+            final TypeMap typeMapping,
+            final Mapping mapping) throws EncoderException, JsonLdException {
 
         MapBuilder<?> flow = builder;
 
@@ -300,7 +305,7 @@ public class DefaultEncoder implements Encoder {
     }
 
     final ArrayBuilder<?> encode(final Iterable<?> jsonArray, final TreeAdapter adapter, final ArrayBuilder<?> builder, String property, TypeMap typeMapping, Mapping mapping)
-            throws EncoderException, JsonLdError {
+            throws EncoderException, JsonLdException {
 
         ArrayBuilder<?> flow = builder;
 

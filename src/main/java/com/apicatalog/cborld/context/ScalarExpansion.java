@@ -15,67 +15,56 @@
  */
 package com.apicatalog.cborld.context;
 
-import java.util.Collection;
-import java.util.function.Consumer;
-
-import com.apicatalog.jsonld.JsonLdError;
-import com.apicatalog.jsonld.context.ActiveContext;
-import com.apicatalog.jsonld.context.TermDefinition;
-import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.tree.io.TreeAdapter;
-
-import jakarta.json.JsonValue;
-
 final class ScalarExpansion {
-
-    // mandatory
-    private ActiveContext activeContext;
-    private JsonValue propertyContext;
-    private Object element;
-    private final TreeAdapter adapter;
-    private String activeProperty;
-
-    private final Consumer<Collection<String>> appliedContexts;
-
-    private ScalarExpansion(final ActiveContext activeContext, final JsonValue propertyContext,
-            final Object element, final TreeAdapter adapter, final String activeProperty, Consumer<Collection<String>> appliedContexts) {
-        this.activeContext = activeContext;
-        this.propertyContext = propertyContext;
-        this.element = element;
-        this.adapter = adapter;
-        this.activeProperty = activeProperty;
-        this.appliedContexts = appliedContexts;
-    }
-
-    public static final ScalarExpansion with(final ActiveContext activeContext, final JsonValue propertyContext,
-            final Object element, final TreeAdapter adapter, final String activeProperty, Consumer<Collection<String>> appliedContexts) {
-        return new ScalarExpansion(activeContext, propertyContext, element, adapter, activeProperty, appliedContexts);
-    }
-
-    public JsonValue expand() throws JsonLdError {
-
-        /*
-         * 4.1. If active property is null or @graph, drop the free-floating scalar by
-         * returning null.
-         */
-        if (activeProperty == null || Keywords.GRAPH.equals(activeProperty)) {
-            return JsonValue.NULL;
-        }
-
-        /*
-         * 4.2. If property-scoped context is defined, set active context to the result
-         * of the Context Processing algorithm, passing active context, property-scoped
-         * context as local context, and base URL from the term definition for active
-         * property in active context.
-         */
-        if (propertyContext != null) {
-            activeContext = activeContext
-                    .newContext()
-                    .create(
-                            propertyContext,
-                            activeContext.getTerm(activeProperty).map(TermDefinition::getBaseUrl).orElse(null));
-        }
-
-        return ValueExpasion.with(activeContext, appliedContexts).expand(element, adapter, activeProperty);
-    }
+//
+//    // mandatory
+//    private ActiveContext activeContext;
+//    private JsonValue propertyContext;
+//    private Object element;
+//    private final TreeAdapter adapter;
+//    private String activeProperty;
+//
+//    private final Consumer<Collection<String>> appliedContexts;
+//
+//    private ScalarExpansion(final ActiveContext activeContext, final JsonValue propertyContext,
+//            final Object element, final TreeAdapter adapter, final String activeProperty, Consumer<Collection<String>> appliedContexts) {
+//        this.activeContext = activeContext;
+//        this.propertyContext = propertyContext;
+//        this.element = element;
+//        this.adapter = adapter;
+//        this.activeProperty = activeProperty;
+//        this.appliedContexts = appliedContexts;
+//    }
+//
+//    public static final ScalarExpansion with(final ActiveContext activeContext, final JsonValue propertyContext,
+//            final Object element, final TreeAdapter adapter, final String activeProperty, Consumer<Collection<String>> appliedContexts) {
+//        return new ScalarExpansion(activeContext, propertyContext, element, adapter, activeProperty, appliedContexts);
+//    }
+//
+//    public JsonValue expand() throws JsonLdError {
+//
+//        /*
+//         * 4.1. If active property is null or @graph, drop the free-floating scalar by
+//         * returning null.
+//         */
+//        if (activeProperty == null || Keywords.GRAPH.equals(activeProperty)) {
+//            return JsonValue.NULL;
+//        }
+//
+//        /*
+//         * 4.2. If property-scoped context is defined, set active context to the result
+//         * of the Context Processing algorithm, passing active context, property-scoped
+//         * context as local context, and base URL from the term definition for active
+//         * property in active context.
+//         */
+//        if (propertyContext != null) {
+//            activeContext = activeContext
+//                    .newContext()
+//                    .create(
+//                            propertyContext,
+//                            activeContext.getTerm(activeProperty).map(TermDefinition::getBaseUrl).orElse(null));
+//        }
+//
+//        return ValueExpasion.with(activeContext, appliedContexts).expand(element, adapter, activeProperty);
+//    }
 }

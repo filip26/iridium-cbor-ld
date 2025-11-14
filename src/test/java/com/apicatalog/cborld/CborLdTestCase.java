@@ -1,11 +1,11 @@
 package com.apicatalog.cborld;
 
 import java.net.URI;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.apicatalog.cborld.config.ConfigV1;
-import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.jsonld.lang.Keywords;
 
 import jakarta.json.JsonObject;
@@ -28,6 +28,11 @@ class CborLdTestCase {
 
     public String config;
 
+    public static CborLdTestCase of(Map<String, Object> test) {
+        
+        return null;
+    }
+    
     public static CborLdTestCase of(JsonObject test) {
 
         final CborLdTestCase testCase = new CborLdTestCase();
@@ -49,8 +54,8 @@ class CborLdTestCase {
 
             JsonValue resultValue = result.getOrDefault(Keywords.ID, result.getOrDefault(Keywords.VALUE, null));
 
-            if (JsonUtils.isString(resultValue)) {
-                testCase.result = URI.create(((JsonString) resultValue).getString());
+            if (resultValue instanceof JsonString jsonString) {
+                testCase.result = URI.create(jsonString.getString());
 
             } else {
                 // testCase.result =

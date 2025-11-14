@@ -11,14 +11,10 @@ import com.apicatalog.cborld.config.ConfigV1;
 import com.apicatalog.cborld.config.LegacyConfigV05;
 import com.apicatalog.cborld.config.LegacyConfigV06;
 import com.apicatalog.cborld.debug.DebugDecoder;
-import com.apicatalog.cborld.loader.StaticContextLoader;
 import com.apicatalog.cborld.mapping.DecoderMappingProvider;
 import com.apicatalog.cborld.registry.DocumentDictionary;
-import com.apicatalog.jsonld.JsonLdOptions;
-import com.apicatalog.jsonld.http.DefaultHttpClient;
-import com.apicatalog.jsonld.http.media.MediaType;
+import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.loader.DocumentLoader;
-import com.apicatalog.jsonld.loader.HttpLoader;
 
 /**
  * Builder class for creating and configuring {@link Decoder} instances.
@@ -111,7 +107,7 @@ public class DecoderBuilder {
 
     /**
      * Set {@link DocumentLoader} used to fetch referenced JSON-LD contexts. If not
-     * set then default document loader provided by {@link JsonLdOptions} is used.
+     * set then default document loader provided by {@link Options} is used.
      * 
      * @param loader a document loader to set
      * @return {@link DecoderBuilder} instance
@@ -201,12 +197,12 @@ public class DecoderBuilder {
     public Decoder build() {
 
         if (loader == null) {
-            loader = new HttpLoader(DefaultHttpClient.defaultInstance());
-            ((HttpLoader) loader).fallbackContentType(MediaType.JSON);
+//            loader = new HttpLoader(DefaultHttpClient.defaultInstance());
+//            ((HttpLoader) loader).fallbackContentType(MediaType.JSON);
         }
 
         if (bundledContexts) {
-            loader = new StaticContextLoader(loader);
+//            loader = new StaticContextLoader(loader);
         }
 
         // only one?
@@ -231,12 +227,12 @@ public class DecoderBuilder {
     public DebugDecoder debug() {
 
         if (loader == null) {
-            loader = new HttpLoader(DefaultHttpClient.defaultInstance());
-            ((HttpLoader) loader).fallbackContentType(MediaType.JSON);
+//            loader = new HttpLoader(DefaultHttpClient.defaultInstance());
+//            ((HttpLoader) loader).fallbackContentType(MediaType.JSON);
         }
 
         if (bundledContexts) {
-            loader = new StaticContextLoader(loader);
+//            loader = new StaticContextLoader(loader);
         }
 
         return new DebugDecoder(
