@@ -61,7 +61,7 @@ public class ContextMap {
 //            // TODO Auto-generated catch block
 //            e.printStackTrace();
 //        }
-        return new ContextMap(keyTypeMapper, appliedContextKeys);
+        return new ContextMap(keyTypeMapper.typeMap(), appliedContextKeys);
 
     }
 
@@ -101,7 +101,7 @@ public class ContextMap {
 //                typeMapper)
 //                .typeMapping();
 
-        return new ContextMap(keyTypeMapper, appliedContextKeys);
+        return new ContextMap(keyTypeMapper.typeMap(), appliedContextKeys);
 
     }
 

@@ -1,46 +1,48 @@
 package com.apicatalog.cborld.context;
 
-import java.util.Collection;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import com.apicatalog.cborld.mapping.TypeMap;
 import com.apicatalog.jsonld.processor.KeyTypeMapper;
 
-public class KeyTypeMapperImpl implements KeyTypeMapper, TypeMap {
+public class KeyTypeMapperImpl implements KeyTypeMapper {
 
-    @Override
-    public void beginMap(String property) {
-        // TODO Auto-generated method stub
-        
+    final Deque<Map<String, Object>> stack;
+
+    public KeyTypeMapperImpl() {
+        this.stack = new ArrayDeque<>();
+        this.stack.push(new LinkedHashMap<String, Object>());
     }
 
     @Override
-    public void mapProperty(String property, String id) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public void mapProperty(String property, String type, String id) {
-        // TODO Auto-generated method stub
-        
+    public void beginMap(String key) {
+        var map = new LinkedHashMap<String, Object>();
+        stack.peek().put(key, map);
+        stack.push(map);
     }
 
     @Override
     public void endMap() {
-        // TODO Auto-generated method stub
-        
+        stack.pop();
     }
 
     @Override
-    public Collection<String> getType(String term) {
-        // TODO Auto-generated method stub
-        return null;
+    public void mapProperty(String key, String id) {
+        stack.peek().put(key, id);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public TypeMap getMapping(String term) {
-        // TODO Auto-generated method stub
-        return null;
+    public void mapProperty(String key, String type, String value) {
+        ((Map<String, Object>) stack.peek()
+                .computeIfAbsent(key, (k) -> new LinkedHashMap<String, Object>()))
+                .put(type, value);
     }
 
+    public TypeMap typeMap() {
+        return new KeyTypeMapImpl(stack.peek());
+    }
 }
