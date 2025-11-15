@@ -27,6 +27,7 @@ import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.loader.ClasspathLoader;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.loader.StaticLoader;
+import com.apicatalog.jsonld.loader.UriRewriter;
 import com.apicatalog.multibase.Multibase;
 import com.apicatalog.tree.io.TreeIO;
 import com.apicatalog.tree.io.TreeIOException;
@@ -54,12 +55,8 @@ class JunitRunner {
     static final CborParser CBOR_PARSER = new CborParser();
 
     // test loader using only local resources
-    static final DocumentLoader TEST_LOADER = new UriBaseRewriter(
-            TestSuite.BASE,
-            "classpath:",
-            new UriBaseRewriter(
-                    "https://raw.githubusercontent.com/filip26/iridium-cbor-ld/main/src/test/resources/com/apicatalog/cborld/",
-                    "classpath:",
+    static final DocumentLoader TEST_LOADER = UriRewriter.newBuilder(
+            UriRewriter.newBuilder(
                     ClasspathLoader
                             .newBuilder()
                             .base(CborLd.class)
@@ -67,11 +64,19 @@ class JunitRunner {
                             .parser(MediaType.JSON_LD, JSON_PARSER)
                             .parser(MediaType.CBOR, CBOR_PARSER)
                             .parser(MediaType.CBOR_LD, CBOR_PARSER)
-                            .build()));
+                            .build())
+                    .rebase(
+                            "https://raw.githubusercontent.com/filip26/iridium-cbor-ld/main/src/test/resources/com/apicatalog/cborld/",
+                            "classpath:")
+                    .build())
+            .rebase(
+                    TestSuite.BASE,
+                    "classpath:")
+            .build();
 
     static final DocumentLoader LOADER = StaticLoader
             .newBuilder()
-            .parser(JSON_PARSER)
+            .parser(MediaType.JSON_LD, JSON_PARSER)
             // load bundled contexts
             .classpath(CborLd.CONTEXT_RESOURCES)
             // load from test resources
@@ -252,7 +257,6 @@ class JunitRunner {
 
             } else if (testCase.type.contains(TestSuite.VOCAB + "DebugDecoderTest")) {
 
-
                 var input = getResource(testCase.input.toString().substring(TestSuite.BASE.length()));
                 assertNotNull(input);
 
@@ -281,7 +285,6 @@ class JunitRunner {
                     write(testCase, dump, expected.content());
                 }
                 assertTrue(match, "The expected result does not match.");
-
 
             } else {
                 fail("Unknown test execution method: " + testCase.type);
