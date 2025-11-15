@@ -5,10 +5,9 @@ import java.net.URI;
 import java.util.ArrayList;
 
 import com.apicatalog.cborld.CborLdVersion;
-import com.apicatalog.cborld.decoder.DecoderException.Code;
+import com.apicatalog.cborld.decoder.DecoderException.DecoderCode;
 import com.apicatalog.cborld.hex.Hex;
 import com.apicatalog.cborld.mapping.DecoderMappingProvider;
-import com.apicatalog.cborld.mapping.context.ContextMappingException;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 
 import co.nstant.in.cbor.CborDecoder;
@@ -24,7 +23,7 @@ class DecoderV1 extends AbstractDecoder {
     }
 
     @Override
-    public Object decode(CborLdVersion version, byte[] encoded) throws ContextMappingException, DecoderException {
+    public Object decode(CborLdVersion version, byte[] encoded) throws DecoderException {
         try {
             var bais = new ByteArrayInputStream(encoded);
             var dataItems = new CborDecoder(bais).decode();
@@ -47,11 +46,11 @@ class DecoderV1 extends AbstractDecoder {
             return list;
 
         } catch (final CborException e) {
-            throw new DecoderException(Code.InvalidDocument, e);
+            throw new DecoderException(DecoderCode.InvalidDocument, e);
         }
     }
 
-    public Object decode(DataItem dataItem) throws ContextMappingException, DecoderException {
+    public Object decode(DataItem dataItem) throws DecoderException {
         if (dataItem instanceof Array array && array.getDataItems().size() == 2) {
 
             var it = array.getDataItems().iterator();
@@ -65,7 +64,7 @@ class DecoderV1 extends AbstractDecoder {
                 var dictionary = config.registry().get(code);
 
                 if (code > 0 && dictionary == null) {
-                    throw new DecoderException(Code.UnknownDictionary,
+                    throw new DecoderException(DecoderCode.UnknownDictionary,
                             "Unknown CBOR-LD v1.0 document dictionary code = "
                                     + code
                                     + ", hex = "
@@ -74,9 +73,9 @@ class DecoderV1 extends AbstractDecoder {
 
                 return decode(dictionary, it.next());
             }
-            throw new DecoderException(Code.InvalidDocument, "The document is not CBOR-LD v1.0 document. Registry Entry ID is not an unsigned integer but " + entryId + ".");
+            throw new DecoderException(DecoderCode.InvalidDocument, "The document is not CBOR-LD v1.0 document. Registry Entry ID is not an unsigned integer but " + entryId + ".");
         }
-        throw new DecoderException(Code.InvalidDocument, "The document is not CBOR-LD v1.0 document. Must start with array of two items, but is " + dataItem + ".");
+        throw new DecoderException(DecoderCode.InvalidDocument, "The document is not CBOR-LD v1.0 document. Must start with array of two items, but is " + dataItem + ".");
     }
 
 }

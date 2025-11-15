@@ -8,11 +8,10 @@ import java.util.Map.Entry;
 import java.util.Optional;
 
 import com.apicatalog.cborld.CborLd;
-import com.apicatalog.cborld.encoder.EncoderException.Code;
+import com.apicatalog.cborld.encoder.EncoderException.EncoderCode;
 import com.apicatalog.cborld.mapping.EncoderMappingProvider;
 import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.cborld.mapping.TypeMap;
-import com.apicatalog.cborld.mapping.context.ContextMappingException;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.tree.io.TreeAdapter;
@@ -51,9 +50,8 @@ public class DefaultEncoder implements Encoder {
      * @return a byte array representing the encoded CBOR-LD document.
      * 
      * @throws EncoderException
-     * @throws ContextMappingException
      */
-    public final byte[] encode(Object document, TreeAdapter adapter) throws EncoderException, ContextMappingException {
+    public final byte[] encode(Object document, TreeAdapter adapter) throws EncoderException {
 
         if (document == null) {
             throw new IllegalArgumentException("The 'document' parameter must not be null.");
@@ -75,7 +73,7 @@ public class DefaultEncoder implements Encoder {
         }
 
         throw new EncoderException(
-                Code.NonCompressible,
+                EncoderCode.NonCompressible,
                 """
                         Non-compressible document. Only JSON-LD documents containing referenced contexts can be compressed. \
                         Referenced contexts serve as a shared dictionary, which is not possible with inline contexts.
@@ -92,10 +90,9 @@ public class DefaultEncoder implements Encoder {
      * @return the compressed document as byte array
      *
      * @throws IOException
-     * @throws ContextMappingException
      * @throws EncoderException
      */
-    final byte[] compress(final Object document, final TreeAdapter adapter) throws ContextMappingException, EncoderException {
+    final byte[] compress(final Object document, final TreeAdapter adapter) throws EncoderException {
 
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
@@ -126,7 +123,7 @@ public class DefaultEncoder implements Encoder {
                 break;
 
             default:
-                throw new EncoderException(Code.Unsupported, "Unsupported CBOR-LD version " + config.version() + ".");
+                throw new EncoderException(EncoderCode.Unsupported, "Unsupported CBOR-LD version " + config.version() + ".");
             }
 
             // if no compression
@@ -155,10 +152,10 @@ public class DefaultEncoder implements Encoder {
             return baos.toByteArray();
 
         } catch (CborException e) {
-            throw new EncoderException(Code.InvalidDocument, e);
+            throw new EncoderException(EncoderCode.InvalidDocument, e);
 
         } catch (JsonLdException e) {
-            throw new EncoderException(Code.Internal, e);
+            throw new EncoderException(EncoderCode.Internal, e);
         }
     }
 

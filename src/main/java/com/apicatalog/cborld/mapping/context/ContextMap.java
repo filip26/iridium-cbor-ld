@@ -30,7 +30,7 @@ public class ContextMap {
         this.appliedContextKeys = appliedContextKeys;
     }
 
-    public static ContextMap from(Object node, TreeAdapter adapter, URI base, DocumentLoader loader) throws JsonLdException {
+    public static ContextMap newMap(Object node, TreeAdapter adapter, URI base, DocumentLoader loader) throws JsonLdException {
 
         final var options = Options.newOptions()
                 .ordered(false)

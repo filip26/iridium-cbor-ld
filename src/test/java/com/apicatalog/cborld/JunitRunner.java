@@ -21,7 +21,6 @@ import com.apicatalog.cborld.decoder.DecoderException;
 import com.apicatalog.cborld.encoder.Encoder;
 import com.apicatalog.cborld.encoder.EncoderException;
 import com.apicatalog.cborld.hex.Hex;
-import com.apicatalog.cborld.mapping.context.ContextMappingException;
 import com.apicatalog.jsonld.Comparison;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.loader.ClasspathLoader;
@@ -287,9 +286,6 @@ class JunitRunner {
                 fail("Unknown test execution method: " + testCase.type);
                 return;
             }
-
-        } catch (ContextMappingException e) {
-            assertException(e.getCode().name(), e);
 
         } catch (EncoderException e) {
             assertException(e.code().name(), e);

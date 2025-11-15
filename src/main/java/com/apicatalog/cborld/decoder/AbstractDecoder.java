@@ -13,12 +13,11 @@ import java.util.Objects;
 import java.util.Set;
 
 import com.apicatalog.cborld.CborLdVersion;
-import com.apicatalog.cborld.decoder.DecoderException.Code;
+import com.apicatalog.cborld.decoder.DecoderException.DecoderCode;
 import com.apicatalog.cborld.decoder.value.ValueDecoder;
 import com.apicatalog.cborld.mapping.DecoderMappingProvider;
 import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.cborld.mapping.TypeMap;
-import com.apicatalog.cborld.mapping.context.ContextMappingException;
 import com.apicatalog.cborld.registry.DocumentDictionary;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 
@@ -55,22 +54,22 @@ abstract class AbstractDecoder implements Decoder {
     }
 
     @Override
-    public Object decode(byte[] encoded) throws ContextMappingException, DecoderException {
+    public Object decode(byte[] encoded) throws DecoderException {
         final CborLdVersion version = Decoder.assertCborLd(encoded);
 
         if (version != config.version()) {
-            throw new DecoderException(Code.Unsupported, "The decoder does support " + version + " but " + config.version() + " .");
+            throw new DecoderException(DecoderCode.Unsupported, "The decoder does support " + version + " but " + config.version() + " .");
 
         }
         return decode(version, encoded);
     }
 
-    protected final Object decode(final DocumentDictionary dictionary, final DataItem data) throws DecoderException, ContextMappingException {
+    protected final Object decode(final DocumentDictionary dictionary, final DataItem data) throws DecoderException {
         final Mapping mapping = mappingProvider.getDecoderMapping(data, dictionary, this);
         return decodeData(data, null, mapping.typeMap(), mapping);
     }
 
-    protected final Object decodeData(final DataItem data, final String term, final TypeMap def, Mapping mapping) throws DecoderException, ContextMappingException {
+    protected final Object decodeData(final DataItem data, final String term, final TypeMap def, Mapping mapping) throws DecoderException {
 
         Objects.requireNonNull(data);
 
@@ -104,7 +103,7 @@ abstract class AbstractDecoder implements Decoder {
         }
     }
 
-    protected final Map<String, ?> decodeMap(final co.nstant.in.cbor.model.Map map, final TypeMap def, final Mapping mapping) throws DecoderException, ContextMappingException {
+    protected final Map<String, ?> decodeMap(final co.nstant.in.cbor.model.Map map, final TypeMap def, final Mapping mapping) throws DecoderException {
 
         Objects.requireNonNull(map);
 
@@ -172,7 +171,7 @@ abstract class AbstractDecoder implements Decoder {
         return result != null ? result : key.toString();
     }
 
-    protected final Collection<?> decodeArray(final Collection<DataItem> items, final String key, final TypeMap def, final Mapping mapping) throws DecoderException, ContextMappingException {
+    protected final Collection<?> decodeArray(final Collection<DataItem> items, final String key, final TypeMap def, final Mapping mapping) throws DecoderException {
 
         Objects.requireNonNull(items);
 
@@ -264,7 +263,7 @@ abstract class AbstractDecoder implements Decoder {
     }
 
     // legacy support
-    protected final Object decode(final DocumentDictionary dictionary, byte[] encoded) throws ContextMappingException, DecoderException {
+    protected final Object decode(final DocumentDictionary dictionary, byte[] encoded) throws DecoderException {
         try {
             final ByteArrayInputStream bais = new ByteArrayInputStream(encoded);
             final List<DataItem> dataItems = new CborDecoder(bais).decode();
@@ -289,7 +288,7 @@ abstract class AbstractDecoder implements Decoder {
             return list;
 
         } catch (final CborException e) {
-            throw new DecoderException(Code.InvalidDocument, e);
+            throw new DecoderException(DecoderCode.InvalidDocument, e);
         }
     }
 

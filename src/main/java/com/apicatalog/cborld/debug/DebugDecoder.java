@@ -8,10 +8,9 @@ import com.apicatalog.cborld.decoder.Decoder;
 import com.apicatalog.cborld.decoder.DecoderBuilder;
 import com.apicatalog.cborld.decoder.DecoderConfig;
 import com.apicatalog.cborld.decoder.DecoderException;
-import com.apicatalog.cborld.decoder.DecoderException.Code;
+import com.apicatalog.cborld.decoder.DecoderException.DecoderCode;
 import com.apicatalog.cborld.mapping.DecoderMappingProvider;
 import com.apicatalog.cborld.mapping.Mapping;
-import com.apicatalog.cborld.mapping.context.ContextMappingException;
 import com.apicatalog.cborld.registry.DocumentDictionary;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 
@@ -65,7 +64,7 @@ public class DebugDecoder extends Debug {
             var config = versions.get(version);
 
             if (config == null) {
-                throw new DecoderException(Code.Unsupported, "The decoder is not configured to support version " + version + " but " + versions.keySet() + ".");
+                throw new DecoderException(DecoderCode.Unsupported, "The decoder is not configured to support version " + version + " but " + versions.keySet() + ".");
             }
 
             var debug = DecoderBuilder.newInstance(
@@ -76,7 +75,7 @@ public class DebugDecoder extends Debug {
 
             decoded = debug.decode(encoded);
 
-        } catch (ContextMappingException | DecoderException e) {
+        } catch (DecoderException e) {
             this.error = e;
         }
     }
@@ -90,7 +89,7 @@ public class DebugDecoder extends Debug {
             Debug debug) implements DecoderMappingProvider {
 
         @Override
-        public Mapping getDecoderMapping(DataItem document, DocumentDictionary dictionary, Decoder decoder) throws DecoderException, ContextMappingException {
+        public Mapping getDecoderMapping(DataItem document, DocumentDictionary dictionary, Decoder decoder) throws DecoderException {
             debug.dictionary = dictionary;
             debug.mapping = provider.getDecoderMapping(document, dictionary, decoder);
             return debug.mapping;

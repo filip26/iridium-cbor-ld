@@ -3,7 +3,6 @@ package com.apicatalog.cborld.encoder;
 import java.net.URI;
 import java.util.Map;
 
-import com.apicatalog.cborld.mapping.context.ContextMappingException;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.tree.io.TreeIO;
@@ -28,24 +27,22 @@ public interface Encoder {
     /**
      * Encodes the given JSON-LD document into CBOR-LD format.
      *
-     * @param node the JSON-LD document to encode
+     * @param node    the JSON-LD document to encode
      * @param adapter
      * @return a byte array representing the encoded CBOR-LD document
      * @throws EncoderException if encoding fails due to an internal or semantic
      *                          error
-     * @throws ContextMappingException     if a context resolution or validation issue occurs
      */
-    byte[] encode(Object node, TreeAdapter adapter) throws EncoderException, ContextMappingException;
+    byte[] encode(Object node, TreeAdapter adapter) throws EncoderException;
 
-    default byte[] encode(TreeIO document) throws EncoderException, ContextMappingException {
+    default byte[] encode(TreeIO document) throws EncoderException {
         return encode(document.node(), document.adapter());
     }
 
-    default byte[] encode(Map<String, Object> document) throws EncoderException, ContextMappingException {
+    default byte[] encode(Map<String, Object> document) throws EncoderException {
         return encode(document, NativeAdapter.instance());
     }
 
-    
     /**
      * Returns the base URI used for relative IRI resolution during encoding.
      *

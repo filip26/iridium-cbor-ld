@@ -1,12 +1,15 @@
 package com.apicatalog.cborld.mapping.context;
 
 import com.apicatalog.cborld.decoder.Decoder;
+import com.apicatalog.cborld.decoder.DecoderException;
+import com.apicatalog.cborld.decoder.DecoderException.DecoderCode;
 import com.apicatalog.cborld.dictionary.CodeTermMap;
 import com.apicatalog.cborld.encoder.Encoder;
+import com.apicatalog.cborld.encoder.EncoderException;
+import com.apicatalog.cborld.encoder.EncoderException.EncoderCode;
 import com.apicatalog.cborld.mapping.DecoderMappingProvider;
 import com.apicatalog.cborld.mapping.EncoderMappingProvider;
 import com.apicatalog.cborld.mapping.Mapping;
-import com.apicatalog.cborld.mapping.context.ContextMappingException.Code;
 import com.apicatalog.cborld.registry.DocumentDictionary;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.JsonLdException.ErrorCode;
@@ -17,10 +20,10 @@ import co.nstant.in.cbor.model.DataItem;
 public class ContextMappingProvider implements EncoderMappingProvider, DecoderMappingProvider {
 
     @Override
-    public Mapping getEncoderMapping(Object document, TreeAdapter adapter, Encoder encoder) throws ContextMappingException {
+    public Mapping getEncoderMapping(Object document, TreeAdapter adapter, Encoder encoder) throws EncoderException {
         try {
 
-            final ContextMap context = ContextMap.from(document,
+            final ContextMap context = ContextMap.newMap(document,
                     adapter,
                     encoder.base(),
                     encoder.loader());
@@ -32,15 +35,15 @@ public class ContextMappingProvider implements EncoderMappingProvider, DecoderMa
 
         } catch (JsonLdException e) {
             if (ErrorCode.INLINE_CONTEXT_IS_NOT_ALLOWED == e.code()) {
-                throw new ContextMappingException(Code.NonCompressible, e);
+                throw new EncoderException(EncoderCode.NonCompressible, e);
             }
 
-            throw new ContextMappingException(Code.InvalidContext, e);
+            throw new EncoderException(EncoderCode.InvalidContext, e);
         }
     }
 
     @Override
-    public Mapping getDecoderMapping(DataItem document, DocumentDictionary dictionary, Decoder decoder) throws ContextMappingException {
+    public Mapping getDecoderMapping(DataItem document, DocumentDictionary dictionary, Decoder decoder) throws DecoderException {
         try {
             var mapping = new DecoderContextMapping(dictionary, decoder.config().valueDecoders());
 
@@ -61,7 +64,7 @@ public class ContextMappingProvider implements EncoderMappingProvider, DecoderMa
             return mapping;
 
         } catch (JsonLdException e) {
-            throw new ContextMappingException(Code.InvalidContext, e);
+            throw new DecoderException(DecoderCode.InvalidContext, e);
         }
     }
 }

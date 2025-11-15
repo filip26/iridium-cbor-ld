@@ -5,9 +5,8 @@ import java.util.Arrays;
 
 import com.apicatalog.cborld.CborLd;
 import com.apicatalog.cborld.CborLdVersion;
-import com.apicatalog.cborld.decoder.DecoderException.Code;
+import com.apicatalog.cborld.decoder.DecoderException.DecoderCode;
 import com.apicatalog.cborld.hex.Hex;
-import com.apicatalog.cborld.mapping.context.ContextMappingException;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 
 /**
@@ -26,11 +25,10 @@ public interface Decoder {
      *
      * @param encoded the CBOR-LD encoded document as a byte array
      * @return the decoded JSON-LD document
-     * @throws ContextMappingException     if a context-related error occurs during decoding
      * @throws DecoderException if the version is unsupported or if a decoding error
      *                          occurs
      */
-    Object decode(byte[] encoded) throws ContextMappingException, DecoderException;
+    Object decode(byte[] encoded) throws DecoderException;
 
     /**
      * Decodes a CBOR-LD document into a JSON-LD document using the specified
@@ -42,10 +40,9 @@ public interface Decoder {
      * @param version the {@link CborLdVersion} of the encoded document
      * @param encoded the CBOR-LD encoded document as a byte array
      * @return the decoded JSON-LD document
-     * @throws ContextMappingException     if a context-related error occurs during decoding
      * @throws DecoderException if a decoding error occurs
      */
-    Object decode(CborLdVersion version, byte[] encoded) throws ContextMappingException, DecoderException;
+    Object decode(CborLdVersion version, byte[] encoded) throws DecoderException;
 
     /**
      * Returns the decoder configuration in use.
@@ -67,19 +64,19 @@ public interface Decoder {
      * @return the {@link DocumentLoader} used by this decoder
      */
     DocumentLoader loader();
-    
+
     static CborLdVersion assertCborLd(byte[] encoded) throws DecoderException {
         if (encoded == null) {
             throw new IllegalArgumentException("The encoded document paramenter must not be null but byte array.");
         }
 
         if (encoded.length < 4) {
-            throw new DecoderException(Code.InvalidDocument,
+            throw new DecoderException(DecoderCode.InvalidDocument,
                     "The encoded document must be at least 4 bytes but is [" + encoded.length + "].");
         }
 
         if (encoded[0] != CborLd.LEADING_BYTE) {
-            throw new DecoderException(Code.InvalidDocument, "The document is not CBOR-LD document. Must start with "
+            throw new DecoderException(DecoderCode.InvalidDocument, "The document is not CBOR-LD document. Must start with "
                     + Hex.toString(CborLd.LEADING_BYTE)
                     + ", but is "
                     + Hex.toString(encoded[0])
@@ -89,7 +86,7 @@ public interface Decoder {
         final CborLdVersion version = CborLdVersion.of(encoded, 1); // skip leading byte
 
         if (version == null) {
-            throw new DecoderException(Code.InvalidDocument, "The document is not CBOR-LD document. A tag must start with: "
+            throw new DecoderException(DecoderCode.InvalidDocument, "The document is not CBOR-LD document. A tag must start with: "
                     + "v1.0 = "
                     + Hex.toString(CborLdVersion.V1.bytes())
                     + ", or v0.6 = "

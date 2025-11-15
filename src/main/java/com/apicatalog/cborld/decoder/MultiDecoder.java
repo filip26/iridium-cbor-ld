@@ -5,8 +5,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import com.apicatalog.cborld.CborLdVersion;
-import com.apicatalog.cborld.decoder.DecoderException.Code;
-import com.apicatalog.cborld.mapping.context.ContextMappingException;
+import com.apicatalog.cborld.decoder.DecoderException.DecoderCode;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 
 class MultiDecoder implements Decoder {
@@ -22,16 +21,16 @@ class MultiDecoder implements Decoder {
     }
 
     @Override
-    public Object decode(byte[] encoded) throws ContextMappingException, DecoderException {
+    public Object decode(byte[] encoded) throws DecoderException {
         return decode(Decoder.assertCborLd(encoded), encoded);
     }
 
     @Override
-    public Object decode(CborLdVersion version, byte[] encoded) throws ContextMappingException, DecoderException {
+    public Object decode(CborLdVersion version, byte[] encoded) throws DecoderException {
         final Decoder decoder = decoders.get(version);
 
         if (decoder == null) {
-            throw new DecoderException(Code.Unsupported, "The decoder is not configured to support version " + version + " but " + decoders.keySet() +  ".");
+            throw new DecoderException(DecoderCode.Unsupported, "The decoder is not configured to support version " + version + " but " + decoders.keySet() +  ".");
         }
 
         return decoder.decode(version, encoded);

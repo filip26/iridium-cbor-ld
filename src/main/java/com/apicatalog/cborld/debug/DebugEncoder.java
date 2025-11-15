@@ -8,7 +8,6 @@ import com.apicatalog.cborld.encoder.EncoderConfig;
 import com.apicatalog.cborld.encoder.EncoderException;
 import com.apicatalog.cborld.mapping.EncoderMappingProvider;
 import com.apicatalog.cborld.mapping.Mapping;
-import com.apicatalog.cborld.mapping.context.ContextMappingException;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.tree.io.TreeIO;
@@ -65,7 +64,7 @@ public class DebugEncoder extends Debug {
             dictionary = config.dictionary();
             encoded = debug.encode(object, adapter);
 
-        } catch (ContextMappingException | EncoderException e) {
+        } catch (EncoderException e) {
             this.error = e;
         }
     }
@@ -86,7 +85,7 @@ public class DebugEncoder extends Debug {
             Debug debug) implements EncoderMappingProvider {
 
         @Override
-        public Mapping getEncoderMapping(Object document, TreeAdapter adapter, Encoder encoder) throws ContextMappingException {
+        public Mapping getEncoderMapping(Object document, TreeAdapter adapter, Encoder encoder) throws EncoderException {
             debug.mapping = provider.getEncoderMapping(document, adapter, encoder);
             return debug.mapping;
         }

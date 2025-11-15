@@ -5,7 +5,7 @@ package com.apicatalog.cborld.encoder;
  *
  * <p>
  * The {@code EncoderException} provides additional context through the
- * {@link Code} enum, which indicates the specific type of failure (e.g. invalid
+ * {@link EncoderCode} enum, which indicates the specific type of failure (e.g. invalid
  * input, unsupported operation, or non-compressible structure).
  * </p>
  */
@@ -16,12 +16,15 @@ public class EncoderException extends Exception {
     /**
      * Error codes indicating the reason for an {@link EncoderException}.
      */
-    public enum Code {
+    public enum EncoderCode {
         /** An unexpected internal error occurred. */
         Internal,
 
         /** The input JSON-LD document is invalid. */
         InvalidDocument,
+
+        /** JSON-LD context to expand the input document is invalid. */
+        InvalidContext,
 
         /**
          * The document cannot be compressed, e.g., it contains inline contexts which
@@ -29,11 +32,11 @@ public class EncoderException extends Exception {
          */
         NonCompressible,
 
-        /** The operation is not supported. */
+        /** The document uses features or structures not supported by the encoder. */
         Unsupported,
     }
 
-    private final Code code;
+    private final EncoderCode code;
 
     /**
      * Constructs a new {@code EncoderException} with the specified error code and
@@ -42,7 +45,7 @@ public class EncoderException extends Exception {
      * @param code    the error code indicating the type of failure
      * @param message a human-readable error message
      */
-    public EncoderException(Code code, String message) {
+    public EncoderException(EncoderCode code, String message) {
         super(message);
         this.code = code;
     }
@@ -54,7 +57,7 @@ public class EncoderException extends Exception {
      * @param code  the error code indicating the type of failure
      * @param cause the underlying cause of the exception
      */
-    public EncoderException(Code code, Throwable cause) {
+    public EncoderException(EncoderCode code, Throwable cause) {
         super(cause);
         this.code = code;
     }
@@ -62,9 +65,9 @@ public class EncoderException extends Exception {
     /**
      * Returns the specific error code associated with this exception.
      *
-     * @return the {@link Code} representing the cause of the error
+     * @return the {@link EncoderCode} representing the cause of the error
      */
-    public Code code() {
+    public EncoderCode code() {
         return code;
     }
 }
