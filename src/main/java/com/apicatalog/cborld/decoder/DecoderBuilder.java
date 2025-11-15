@@ -1,12 +1,11 @@
 package com.apicatalog.cborld.decoder;
 
 import java.net.URI;
-import java.util.EnumMap;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.apicatalog.cborld.CborLdVersion;
+import com.apicatalog.cborld.CborLd.Version;
 import com.apicatalog.cborld.config.ConfigV1;
 import com.apicatalog.cborld.config.LegacyConfigV05;
 import com.apicatalog.cborld.config.LegacyConfigV06;
@@ -22,18 +21,19 @@ import com.apicatalog.jsonld.loader.DocumentLoader;
  * Supports configuration of multiple CBOR-LD versions, base URI, dictionary,
  * array compaction behavior, context loading strategy, and document loaders.
  */
-public class DecoderBuilder {
+public final class DecoderBuilder {
 
-    protected final CborLdVersion defaultVersion;
-    protected final Map<CborLdVersion, DecoderConfigBuilder> versions;
+    private final Version defaultVersion;
+    private final Map<Version, DecoderConfigBuilder> versions;
 
-    protected DocumentLoader loader;
-    protected boolean bundledContexts;
-    protected URI base;
+    private DocumentLoader loader;
+    private boolean bundledContexts;
+    private URI base;
+    private DecoderMappingProvider mapping;
 
-    protected DecoderBuilder(
-            CborLdVersion defaultVersion,
-            Map<CborLdVersion, DecoderConfigBuilder> decoders) {
+    DecoderBuilder(
+            Version defaultVersion,
+            Map<Version, DecoderConfigBuilder> decoders) {
         this.defaultVersion = defaultVersion;
         this.versions = decoders;
         this.base = null;
@@ -42,54 +42,12 @@ public class DecoderBuilder {
     }
 
     /**
-     * Creates a new {@code DecoderBuilder} instance with the given CBOR-LD format
-     * versions enabled.
-     *
-     * @param versions one or more CBOR-LD versions to support
-     * @return a new {@code DecoderBuilder} instance
-     * @throws IllegalArgumentException if {@code versions} is {@code null} or empty
-     */
-    public static final DecoderBuilder of(CborLdVersion... versions) {
-        if (versions == null || versions.length == 0) {
-            throw new IllegalArgumentException();
-        }
-
-        final Map<CborLdVersion, DecoderConfigBuilder> decoders = new EnumMap<>(CborLdVersion.class);
-        for (CborLdVersion version : versions) {
-            enable(decoders, version);
-        }
-
-        return new DecoderBuilder(versions[0], decoders);
-    }
-
-    /**
-     * Creates a new {@code DecoderBuilder} instance pre-configured with the given
-     * decoder configurations.
-     *
-     * @param configs one or more decoder configurations
-     * @return a new {@code DecoderBuilder} instance
-     * @throws IllegalArgumentException if {@code configs} is {@code null} or empty
-     */
-    public static final DecoderBuilder of(DecoderConfig... configs) {
-        if (configs == null || configs.length == 0) {
-            throw new IllegalArgumentException();
-        }
-
-        final Map<CborLdVersion, DecoderConfigBuilder> decoders = new EnumMap<>(CborLdVersion.class);
-        for (DecoderConfig config : configs) {
-            decoders.put(config.version(), DecoderConfigBuilder.of(config));
-        }
-
-        return new DecoderBuilder(configs[0].version(), decoders);
-    }
-
-    /**
      * Enables support for the specified CBOR-LD version.
      *
      * @param version the version to enable
      * @return this builder instance
      */
-    public DecoderBuilder enable(CborLdVersion version) {
+    public DecoderBuilder enable(Version version) {
         enable(versions, version);
         return this;
     }
@@ -100,7 +58,7 @@ public class DecoderBuilder {
      * @param version the version to disable
      * @return this builder instance
      */
-    public DecoderBuilder disable(CborLdVersion version) {
+    public DecoderBuilder disable(Version version) {
         versions.remove(version);
         return this;
     }
@@ -160,7 +118,7 @@ public class DecoderBuilder {
      * @param enable  {@code true} to enable array compaction
      * @return this builder instance
      */
-    public DecoderBuilder compactArray(CborLdVersion version, boolean enable) {
+    public DecoderBuilder compactArray(Version version, boolean enable) {
         versions.get(version).compactArrays = enable;
         return this;
     }
@@ -184,8 +142,17 @@ public class DecoderBuilder {
      * @param dictionary the dictionary to register
      * @return this builder instance
      */
-    public DecoderBuilder dictionary(CborLdVersion version, DocumentDictionary dictionary) {
+    public DecoderBuilder dictionary(Version version, DocumentDictionary dictionary) {
         versions.get(version).registry.put(dictionary.code(), dictionary);
+        return this;
+    }
+    
+    public DecoderMappingProvider mapping() {
+        return mapping;
+    }
+    
+    public DecoderBuilder mapping(DecoderMappingProvider mapping) {
+        this.mapping = mapping;
         return this;
     }
 
@@ -207,12 +174,12 @@ public class DecoderBuilder {
 
         // only one?
         if (versions.size() == 1) {
-            return newInstance(versions.values().iterator().next(), loader, base);
+            return newDecoder(versions.values().iterator().next(), loader, base);
         }
 
         return new MultiDecoder(
                 versions.values().stream()
-                        .map(c -> newInstance(c, loader, base))
+                        .map(c -> newDecoder(c, loader, base))
                         .collect(Collectors.toUnmodifiableMap(
                                 t -> t.config().version(),
                                 Function.identity())),
@@ -237,13 +204,14 @@ public class DecoderBuilder {
 
         return new DebugDecoder(
                 versions.values().stream()
+//                        .map(c -> newDecoder(c, loader, base))
                         .collect(Collectors.toUnmodifiableMap(
                                 DecoderConfig::version,
                                 Function.identity())),
                 loader, base);
     }
 
-    protected static final void enable(Map<CborLdVersion, DecoderConfigBuilder> decoders, CborLdVersion version) {
+    static final void enable(Map<Version, DecoderConfigBuilder> decoders, Version version) {
         switch (version) {
         case V1:
             decoders.put(version, DecoderConfigBuilder.of(ConfigV1.INSTANCE));
@@ -257,11 +225,11 @@ public class DecoderBuilder {
         }
     }
 
-    protected static final Decoder newInstance(DecoderConfig config, DocumentLoader loader, URI base) {
-        return newInstance(config, config.decoderMapping(), loader, base);
+    private static final Decoder newDecoder(DecoderConfig config, DocumentLoader loader, URI base) {
+        return newDecoder(config, config.decoderMapping(), loader, base);
     }
 
-    public static final Decoder newInstance(DecoderConfig config, DecoderMappingProvider mapping, DocumentLoader loader, URI base) {
+    public static final Decoder newDecoder(DecoderConfig config, DecoderMappingProvider mapping, DocumentLoader loader, URI base) {
         switch (config.version()) {
         case V1:
             return new DecoderV1(config, mapping, loader, base);

@@ -9,7 +9,7 @@ import java.util.Spliterators;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import com.apicatalog.cborld.CborLdVersion;
+import com.apicatalog.cborld.CborLd.Version;
 import com.apicatalog.cborld.dictionary.Dictionary;
 import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.cborld.registry.DocumentDictionary;
@@ -41,7 +41,7 @@ public class Debug {
     final DocumentLoader loader;
     final URI base;
 
-    protected CborLdVersion version;
+    protected Version version;
     protected DocumentDictionary dictionary;
     protected Mapping mapping;
 
@@ -73,9 +73,9 @@ public class Debug {
     /**
      * Returns the CBOR-LD version used for encoding/decoding.
      *
-     * @return the {@link CborLdVersion}, or {@code null} if unknown
+     * @return the {@link Version}, or {@code null} if unknown
      */
-    public CborLdVersion version() {
+    public Version version() {
         return version;
     }
 

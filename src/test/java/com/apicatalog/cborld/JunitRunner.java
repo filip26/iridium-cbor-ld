@@ -14,6 +14,7 @@ import java.util.Objects;
 
 import com.apicatalog.cbor.CborComparison;
 import com.apicatalog.cbor.CborWriter;
+import com.apicatalog.cborld.CborLd.Version;
 import com.apicatalog.cborld.debug.DebugDecoder;
 import com.apicatalog.cborld.debug.DebugEncoder;
 import com.apicatalog.cborld.decoder.Decoder;
@@ -94,56 +95,56 @@ class JunitRunner {
 
     static {
         // several test instances reflecting various configurations
-        ENCODER_V1 = CborLd.createEncoder()
+        ENCODER_V1 = CborLd.newEncoder()
                 .loader(LOADER)
                 .build();
 
-        ENCODER_V1_NOCP = CborLd.createEncoder()
+        ENCODER_V1_NOCP = CborLd.newEncoder()
                 .loader(LOADER)
                 .dictionary(null)
                 .build();
 
-        ENCODER_UTOPIA_V1 = CborLd.createEncoder()
+        ENCODER_UTOPIA_V1 = CborLd.newEncoder()
                 .loader(LOADER)
                 .dictionary(UtopiaBarcode.DICTIONARY)
                 .build();
 
-        ENCODER_UTOPIA_EXT_V1 = CborLd.createEncoder()
+        ENCODER_UTOPIA_EXT_V1 = CborLd.newEncoder()
                 .loader(LOADER)
                 .dictionary(UtopiaBarcodeExtended.DICTIONARY)
                 .build();
 
-        ENCODER_UTOPIA_V06 = CborLd.createEncoder(CborLdVersion.V06)
+        ENCODER_UTOPIA_V06 = CborLd.newEncoder(Version.V06)
                 .loader(LOADER)
                 .dictionary(UtopiaBarcode.DICTIONARY)
                 .build();
 
-        ENCODER_V05 = CborLd.createEncoder(CborLdVersion.V05)
+        ENCODER_V05 = CborLd.newEncoder(Version.V05)
                 .loader(LOADER)
                 .build();
 
-        ENCODER_V05_NOCA = CborLd.createEncoder(CborLdVersion.V05)
+        ENCODER_V05_NOCA = CborLd.newEncoder(Version.V05)
                 .loader(LOADER)
                 .compactArray(false)
                 .build();
 
-        DECODER = CborLd.createDecoder(CborLdVersion.V1, CborLdVersion.V06, CborLdVersion.V05)
+        DECODER = CborLd.newDecoder(Version.V1, Version.V06, Version.V05)
                 .loader(LOADER)
                 .dictionary(UtopiaBarcode.DICTIONARY)
                 .dictionary(UtopiaBarcodeExtended.DICTIONARY)
-                .dictionary(CborLdVersion.V06, UtopiaBarcode.DICTIONARY)
+                .dictionary(Version.V06, UtopiaBarcode.DICTIONARY)
                 .build();
 
-        DECODER_V05_NOCA = CborLd.createDecoder(CborLdVersion.V05)
+        DECODER_V05_NOCA = CborLd.newDecoder(Version.V05)
                 .loader(LOADER)
                 .compactArray(false)
                 .build();
 
-        DECODER_DEBUG = CborLd.createDecoder(CborLdVersion.V1, CborLdVersion.V06, CborLdVersion.V05)
+        DECODER_DEBUG = CborLd.newDecoder(Version.V1, Version.V06, Version.V05)
                 .loader(LOADER)
                 .dictionary(UtopiaBarcode.DICTIONARY)
                 .dictionary(UtopiaBarcodeExtended.DICTIONARY)
-                .dictionary(CborLdVersion.V06, UtopiaBarcode.DICTIONARY)
+                .dictionary(Version.V06, UtopiaBarcode.DICTIONARY)
                 .debug();
     }
 
@@ -425,18 +426,18 @@ class JunitRunner {
 
     static final DebugEncoder getDebugEncoder(String name) {
         if ("v1utopia".equals(name)) {
-            return CborLd.createEncoder()
+            return CborLd.newEncoder()
                     .loader(LOADER)
                     .dictionary(UtopiaBarcode.DICTIONARY)
                     .debug();
         }
         if ("v1utopiaext".equals(name)) {
-            return CborLd.createEncoder()
+            return CborLd.newEncoder()
                     .loader(LOADER)
                     .dictionary(UtopiaBarcodeExtended.DICTIONARY)
                     .debug();
         }
-        return CborLd.createEncoder()
+        return CborLd.newEncoder()
                 .loader(LOADER)
                 .debug();
     }

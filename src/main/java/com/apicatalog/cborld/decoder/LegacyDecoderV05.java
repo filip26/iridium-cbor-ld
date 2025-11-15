@@ -2,7 +2,7 @@ package com.apicatalog.cborld.decoder;
 
 import java.net.URI;
 
-import com.apicatalog.cborld.CborLdVersion;
+import com.apicatalog.cborld.CborLd.Version;
 import com.apicatalog.cborld.decoder.DecoderException.DecoderCode;
 import com.apicatalog.cborld.mapping.DecoderMappingProvider;
 import com.apicatalog.cborld.registry.LegacyDictionary;
@@ -15,7 +15,7 @@ class LegacyDecoderV05 extends AbstractDecoder {
     }
 
     @Override
-    public Object decode(CborLdVersion version, byte[] encoded) throws DecoderException {
+    public Object decode(Version version, byte[] encoded) throws DecoderException {
         if (encoded[2] == UNCOMPRESSED_BYTE) {
             throw new DecoderException(DecoderCode.Unsupported, "Uncompressed CBOR-LD v0.5 is not supported.");
         }

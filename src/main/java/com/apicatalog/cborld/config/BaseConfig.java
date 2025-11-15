@@ -1,10 +1,10 @@
 package com.apicatalog.cborld.config;
 
-import com.apicatalog.cborld.CborLdVersion;
+import com.apicatalog.cborld.CborLd.Version;
 
 public interface BaseConfig {
 
-    CborLdVersion version();
+    Version version();
 
     boolean isCompactArrays();    
 }

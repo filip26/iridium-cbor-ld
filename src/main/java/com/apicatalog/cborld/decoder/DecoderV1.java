@@ -4,7 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.net.URI;
 import java.util.ArrayList;
 
-import com.apicatalog.cborld.CborLdVersion;
+import com.apicatalog.cborld.CborLd.Version;
 import com.apicatalog.cborld.decoder.DecoderException.DecoderCode;
 import com.apicatalog.cborld.hex.Hex;
 import com.apicatalog.cborld.mapping.DecoderMappingProvider;
@@ -23,7 +23,7 @@ class DecoderV1 extends AbstractDecoder {
     }
 
     @Override
-    public Object decode(CborLdVersion version, byte[] encoded) throws DecoderException {
+    public Object decode(Version version, byte[] encoded) throws DecoderException {
         try {
             var bais = new ByteArrayInputStream(encoded);
             var dataItems = new CborDecoder(bais).decode();

@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-import com.apicatalog.cborld.CborLdVersion;
+import com.apicatalog.cborld.CborLd.Version;
 import com.apicatalog.cborld.decoder.DecoderException.DecoderCode;
 import com.apicatalog.cborld.decoder.value.ValueDecoder;
 import com.apicatalog.cborld.mapping.DecoderMappingProvider;
@@ -55,7 +55,7 @@ abstract class AbstractDecoder implements Decoder {
 
     @Override
     public Object decode(byte[] encoded) throws DecoderException {
-        final CborLdVersion version = Decoder.assertCborLd(encoded);
+        final Version version = Decoder.assertCborLd(encoded);
 
         if (version != config.version()) {
             throw new DecoderException(DecoderCode.Unsupported, "The decoder does support " + version + " but " + config.version() + " .");

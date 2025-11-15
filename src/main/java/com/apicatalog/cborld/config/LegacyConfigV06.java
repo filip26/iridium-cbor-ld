@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.apicatalog.cborld.CborLdVersion;
+import com.apicatalog.cborld.CborLd.Version;
 import com.apicatalog.cborld.decoder.DecoderConfig;
 import com.apicatalog.cborld.decoder.value.ContextValueDecoder;
 import com.apicatalog.cborld.decoder.value.CustomTypeValueDecoder;
@@ -124,8 +124,8 @@ public class LegacyConfigV06 implements EncoderConfig, DecoderConfig {
     }
 
     @Override
-    public CborLdVersion version() {
-        return CborLdVersion.V06;
+    public Version version() {
+        return Version.V06;
     }
     
     @Override
