@@ -209,6 +209,7 @@ abstract class AbstractDecoder implements Decoder {
     }
 
     protected final String decodeValue(final DataItem value, final String property, final TypeMap def, final Mapping mapping) throws DecoderException {
+        
         final Collection<String> types = def != null
                 ? def.getType(property)
                 : Collections.emptySet();

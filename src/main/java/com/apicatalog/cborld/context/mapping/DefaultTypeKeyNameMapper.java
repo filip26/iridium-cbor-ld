@@ -27,19 +27,18 @@ class DefaultTypeKeyNameMapper implements TypeKeyNameMapper {
     public void typeKeyName(String type) {
 
         final String index;
-
+    
         if (path.isEmpty()) {
             index = type;
 
         } else {
             index = pointer(type);
         }
-
         paths.add(index);
     }
 
     @Override
-    public void end() {
+    public void endMap() {
         path.pop();
     }
 

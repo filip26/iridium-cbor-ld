@@ -12,7 +12,6 @@ class DynamicTypeMap implements TypeMap {
     private final JsonValue mapping;
 
     public DynamicTypeMap(JsonValue mapping) {
-        System.out.println("CB2- TM " + mapping);
         this.mapping = mapping;
     }
 

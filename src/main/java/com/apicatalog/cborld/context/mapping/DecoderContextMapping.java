@@ -1,9 +1,8 @@
 package com.apicatalog.cborld.context.mapping;
 
 import java.math.BigInteger;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 
 import com.apicatalog.cborld.decoder.DecoderException;
 import com.apicatalog.cborld.decoder.value.ValueDecoder;
@@ -38,7 +37,7 @@ class DecoderContextMapping implements Mapping {
 
     final DataItem decodeValue(final DataItem value, final String property) {
 
-        var type = Arrays.asList(Keywords.TYPE);
+        var type = List.of(Keywords.TYPE);
 
         for (var decoder : valueDecoders) {
             try {
@@ -46,9 +45,9 @@ class DecoderContextMapping implements Mapping {
                         this,
                         value,
                         property,
-                        typeKeyNameMap.isTypeKey(property)
+                        Keywords.TYPE.equals(property) || typeKeyNameMap.isTypeKey(property)
                                 ? type
-                                : Collections.emptySet());
+                                : List.of());
 
                 if (decoded != null) {
                     return new UnicodeString(decoded);

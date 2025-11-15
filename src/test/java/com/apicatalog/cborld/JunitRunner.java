@@ -18,6 +18,7 @@ import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.debug.DebugDecoder;
 import com.apicatalog.cborld.debug.DebugEncoder;
 import com.apicatalog.cborld.decoder.Decoder;
+import com.apicatalog.cborld.decoder.DecoderException;
 import com.apicatalog.cborld.encoder.Encoder;
 import com.apicatalog.cborld.encoder.EncoderException;
 import com.apicatalog.cborld.hex.Hex;
@@ -190,34 +191,37 @@ class JunitRunner {
 
             } else if (testCase.type.contains(TestSuite.VOCAB + "DecoderTest")) {
 
+                var input = getResource(testCase.input.toString().substring(TestSuite.BASE.length()));
+
 //                Document document = LOADER.loadDocument(testCase.input, new DocumentLoaderOptions());
 //
-//                assertNotNull(document);
-//
-//                final Decoder decoder = getDecoder(testCase.config, testCase.compactArrays);
-//
-//                final Object result = decoder.decode(((CborLdDocument) document).getByteArray());
-//
-//                if (testCase.type.stream().noneMatch(o -> o.endsWith("PositiveEvaluationTest"))) {
-//                    fail("Expected error code [" + testCase.result + "].");
-//                    return;
-//                }
-//
-//                assertNotNull(result);
-//
-//                final JsonStructure expected = LOADER.loadDocument(testCase.result, new DocumentLoaderOptions()).getJsonContent().orElse(null);
-//
-//                assertNotNull(expected);
-//
-//                var json = new JakartaMaterializer().node(result, NativeAdapter.instance());
-//
-//                final boolean match = JsonLdComparison.equals(expected, json);
-//
-//                if (!match) {
-//                    write(testCase, json, expected);
-//                }
-//
-//                assertTrue(match, "The expected result does not match.");
+                assertNotNull(input);
+
+                final var decoder = getDecoder(testCase.config, testCase.compactArrays);
+
+                final var result = decoder.decode(input);
+
+                if (testCase.type.stream().noneMatch(o -> o.endsWith("PositiveEvaluationTest"))) {
+                    fail("Expected error code [" + testCase.result + "].");
+                    return;
+                }
+
+                assertNotNull(result);
+
+                final var expected = LOADER.loadDocument(testCase.result, DocumentLoader.defaultOptions());
+                assertNotNull(expected);
+
+                var match = Comparison.equals(
+                        expected.content().node(),
+                        expected.content().adapter(),
+                        result,
+                        NativeAdapter.instance());
+
+                if (!match) {
+                    write(testCase, result, expected.content());
+                }
+
+                assertTrue(match, "The expected result does not match.");
 
             } else if (testCase.type.contains(TestSuite.VOCAB + "DebugEncoderTest")) {
 
@@ -288,17 +292,14 @@ class JunitRunner {
                 return;
             }
 
-//        } catch (TreeIOException | CborException e) {
-//            fail(e);
-
         } catch (ContextError e) {
             assertException(e.getCode().name(), e);
 
         } catch (EncoderException e) {
             assertException(e.code().name(), e);
 
-//        } catch (DecoderException e) {
-//            assertException(e.code().name(), e);
+        } catch (DecoderException e) {
+            assertException(e.code().name(), e);
 
         } catch (JsonLdException | CborException | IOException | TreeIOException e) {
             fail(e);
@@ -369,18 +370,13 @@ class JunitRunner {
             writer.println("Actual");
             writer.print("header = " + Hex.toString(result, 3));
             writer.println(", hex = " + Multibase.BASE_16_UPPER.encode(result).substring(1));
-            List<DataItem> decodedResult = CborDecoder.decode(result);
-            assertNotNull(decodedResult);
 
-            if (decodedResult != null) {
-                cborWriter.write(decodedResult);
-                writer.println();
-            }
+            final var decodedResult = CborDecoder.decode(result);
 
-        } catch (IOException e) {
-            fail(e);
+            cborWriter.write(decodedResult);
+            writer.println();
 
-        } catch (CborException e) {
+        } catch (IOException | CborException e) {
             fail(e);
         }
 

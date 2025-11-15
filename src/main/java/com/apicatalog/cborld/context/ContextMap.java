@@ -12,13 +12,15 @@ import java.util.function.Consumer;
 
 import com.apicatalog.cborld.mapping.TypeKeyNameMapper;
 import com.apicatalog.cborld.mapping.TypeMap;
+import com.apicatalog.jsonld.JsonLd.Version;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.Options;
+import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.processor.Execution;
 import com.apicatalog.jsonld.processor.Expander;
-import com.apicatalog.jsonld.processor.KeyTypeMapper;
+import com.apicatalog.jsonld.processor.TypeMapper;
 import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.tree.io.TreeIO;
 
@@ -67,13 +69,16 @@ public class ContextMap {
 //        final ActiveContext activeContext = new ActiveContext(null, null, ProcessingRuntime.of(options));
 
         final var appliedContextKeys = new LinkedHashSet<Collection<String>>();
-        final var keyTypeMapper = new TypeMapperImpl();
+        final var keyTypeMapper = new TypeMapperImpl(typeMapper);
 
         final var runtime = Execution.of(options)
                 .contextKeyCollector(appliedContexts.andThen(appliedContextKeys::add))
                 .keyTypeMapper(keyTypeMapper);
 
-        Expander.expand(new TreeIO(document, adapter), options, runtime);
+        Expander.expand(new TreeIO(document, adapter),
+                new Context.Builder(Version.V1_1).build(),
+                base,
+                options, runtime);
 
 //        final TypeMap typeMapping = Expansion.with(
 //                activeContext,
@@ -97,17 +102,28 @@ public class ContextMap {
         return appliedContextKeys;
     }
 
-    private static class TypeMapperImpl implements KeyTypeMapper {
+    private static class TypeMapperImpl implements TypeMapper {
 
         final Deque<Map<String, Object>> stack;
+        TypeKeyNameMapper typeMapper;
 
         public TypeMapperImpl() {
             this.stack = new ArrayDeque<>();
             this.stack.push(new LinkedHashMap<String, Object>());
+            this.typeMapper = null;
+        }
+
+        public TypeMapperImpl(TypeKeyNameMapper typeMapper) {
+            this.stack = new ArrayDeque<>();
+            this.stack.push(new LinkedHashMap<String, Object>());
+            this.typeMapper = typeMapper;
         }
 
         @Override
         public void beginMap(String key) {
+            if (typeMapper != null) {
+                typeMapper.beginMap(key);
+            }
             var map = new LinkedHashMap<String, Object>();
             stack.peek().put(key, map);
             stack.push(map);
@@ -115,20 +131,24 @@ public class ContextMap {
 
         @Override
         public void endMap() {
+            if (typeMapper != null) {
+                typeMapper.endMap();
+            }
             stack.pop();
         }
 
         @Override
-        public void mapProperty(String key, String id) {
+        public void mapType(String key, String id) {
+            if (typeMapper != null) {
+//                typeMapper.beginMap(key);
+                typeMapper.typeKeyName(key);
+//                typeMapper.endMap();
+            }
             stack.peek().put(key, id);
         }
 
-        @SuppressWarnings("unchecked")
         @Override
         public void mapProperty(String key, String type, String value) {
-            ((Map<String, Object>) stack.peek()
-                    .computeIfAbsent(key, (k) -> new LinkedHashMap<String, Object>()))
-                    .put(type, value);
         }
 
         public TypeMap typeMap() {
@@ -146,8 +166,6 @@ public class ContextMap {
 
         @Override
         public Collection<String> getType(String term) {
-            System.out.println("GET T: " + term);
-            System.out.println("     : " + typeMap);
 
             var type = typeMap.get(term);
             if (type instanceof Map map) {
@@ -166,8 +184,6 @@ public class ContextMap {
 
         @Override
         public TypeMap getMapping(String term) {
-            System.out.println("GET M: " + term);
-            System.out.println("     : " + typeMap);
 
             var type = typeMap.get(term);
             if (type instanceof Map map) {

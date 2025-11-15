@@ -41,7 +41,7 @@ public class ContextMappingProvider implements EncoderMappingProvider, DecoderMa
         try {
             var mapping = new DecoderContextMapping(dictionary, decoder.config().valueDecoders());
 
-            var adapter = new CborMapping(
+            var adapter = new CborLdAdapter(
                     mapping::decodeTerm,
                     mapping::encodeTerm,
                     mapping::decodeValue);
