@@ -8,6 +8,7 @@ public class ContextMappingException extends Exception {
         InvalidContext,
         UnknownContextCode,
         Unsupported,
+        NonCompressible,
     }
 
     protected final Code code;

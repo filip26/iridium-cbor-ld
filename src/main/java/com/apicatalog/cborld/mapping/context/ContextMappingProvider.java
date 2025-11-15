@@ -9,6 +9,7 @@ import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.cborld.mapping.context.ContextMappingException.Code;
 import com.apicatalog.cborld.registry.DocumentDictionary;
 import com.apicatalog.jsonld.JsonLdException;
+import com.apicatalog.jsonld.JsonLdException.ErrorCode;
 import com.apicatalog.tree.io.TreeAdapter;
 
 import co.nstant.in.cbor.model.DataItem;
@@ -30,6 +31,10 @@ public class ContextMappingProvider implements EncoderMappingProvider, DecoderMa
                     context.getTypeMapping());
 
         } catch (JsonLdException e) {
+            if (ErrorCode.INLINE_CONTEXT_IS_NOT_ALLOWED == e.code()) {
+                throw new ContextMappingException(Code.NonCompressible, e);
+            }
+
             throw new ContextMappingException(Code.InvalidContext, e);
         }
     }

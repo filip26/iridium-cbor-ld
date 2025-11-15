@@ -11,11 +11,8 @@ import java.util.function.Consumer;
 
 import com.apicatalog.cborld.mapping.TypeKeyNameMapper;
 import com.apicatalog.cborld.mapping.TypeMap;
-import com.apicatalog.jsonld.JsonLd.Version;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.Options;
-import com.apicatalog.jsonld.context.Context;
-import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.processor.Execution;
 import com.apicatalog.jsonld.processor.Execution.KeyTypeMapper;
@@ -38,22 +35,24 @@ public class ContextMap {
         final var options = Options.newOptions()
                 .ordered(false)
                 .loader(loader)
+                .useInlineContexts(false)
                 .base(base);
 
         final var appliedContextKeys = new LinkedHashSet<Collection<String>>();
         final var keyTypeMapper = new TypeMapperImpl();
 
-        final var runtime = Execution.of(options)
-                .contextKeyCollector(appliedContextKeys::add)
-                .keyTypeMapper(keyTypeMapper);
-
-        Expander.expand(new TreeIO(node, adapter), options, runtime);
+        Expander.expand(
+                new TreeIO(node, adapter),
+                options,
+                Execution.of(options)
+                        .contextKeyCollector(appliedContextKeys::add)
+                        .keyTypeMapper(keyTypeMapper));
 
         return new ContextMap(keyTypeMapper.typeMap(), appliedContextKeys);
     }
 
     public static ContextMap from(
-            Object document,
+            Object node,
             TreeAdapter adapter,
             URI base,
             DocumentLoader loader,
@@ -65,29 +64,15 @@ public class ContextMap {
                 .loader(loader)
                 .base(base);
 
-//        final ActiveContext activeContext = new ActiveContext(null, null, ProcessingRuntime.of(options));
-
         final var appliedContextKeys = new LinkedHashSet<Collection<String>>();
         final var keyTypeMapper = new TypeMapperImpl(typeMapper);
 
-        final var runtime = Execution.of(options)
-                .contextKeyCollector(appliedContexts.andThen(appliedContextKeys::add))
-                .keyTypeMapper(keyTypeMapper);
-
-        Expander.expand(new TreeIO(document, adapter),
-                new Context.Builder(Version.V1_1).build(),
-                base,
-                options, runtime);
-
-//        final TypeMap typeMapping = Expansion.with(
-//                activeContext,
-//                document,
-//                adapter,
-//                null,
-//                base,
-//                appliedContexts.andThen(appliedContextKeys::add),
-//                typeMapper)
-//                .typeMapping();
+        Expander.expand(
+                new TreeIO(node, adapter),
+                options,
+                Execution.of(options)
+                        .contextKeyCollector(appliedContexts.andThen(appliedContextKeys::add))
+                        .keyTypeMapper(keyTypeMapper));
 
         return new ContextMap(keyTypeMapper.typeMap(), appliedContextKeys);
 
@@ -160,28 +145,18 @@ public class ContextMap {
         @Override
         public String getType(String term) {
 
-            var type = typeMap.get(term);
-            if (type instanceof Map map) {
-                type = map.get(Keywords.TYPE);
-            }
-
+            final var type = typeMap.get(term);
             if (type instanceof String string) {
                 return string;
-
-            } else if (type instanceof Collection<?> array) {
-                throw new IllegalStateException();
-//                return array.stream().map(String.class::cast).toList();
             }
-
             return null;
         }
 
         @Override
         public TypeMap getMapping(String term) {
-
             var type = typeMap.get(term);
             if (type instanceof Map map) {
-                return new TypeMapImpl((Map<String, Object>)map);
+                return new TypeMapImpl((Map<String, Object>) map);
             }
             return null;
         }

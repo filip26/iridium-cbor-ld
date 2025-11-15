@@ -4,7 +4,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URI;
-import java.util.Collection;
 import java.util.Map.Entry;
 import java.util.Optional;
 
@@ -62,13 +61,13 @@ public class DefaultEncoder implements Encoder {
 
         try {
 
-            final Collection<String> contexts = EncoderContext.get(document, adapter);
+//            final Collection<String> contexts = EncoderContext.get(document, adapter);
+//
+//            if (contexts.isEmpty()) { // is not JSON-LD document
+//                throw new EncoderException(Code.InvalidDocument, "Not a valid JSON-LD document in a compacted form. @context declaration is missing");
+//            }
 
-            if (contexts.isEmpty()) { // is not JSON-LD document
-                throw new EncoderException(Code.InvalidDocument, "Not a valid JSON-LD document in a compacted form. @context declaration is missing");
-            }
-
-            return compress(document, adapter, contexts);
+            return compress(document, adapter);
 
             // non compressible context
         } catch (IllegalArgumentException e) {
@@ -96,7 +95,7 @@ public class DefaultEncoder implements Encoder {
      * @throws ContextMappingException
      * @throws EncoderException
      */
-    final byte[] compress(final Object document, TreeAdapter adapter, Collection<String> contextUrls) throws ContextMappingException, EncoderException {
+    final byte[] compress(final Object document, final TreeAdapter adapter) throws ContextMappingException, EncoderException {
 
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
