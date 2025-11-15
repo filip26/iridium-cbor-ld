@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.apicatalog.cborld.CborLdVersion;
-import com.apicatalog.cborld.context.mapping.ContextMappingProvider;
 import com.apicatalog.cborld.decoder.DecoderConfig;
 import com.apicatalog.cborld.decoder.value.ContextValueDecoder;
 import com.apicatalog.cborld.decoder.value.CustomTypeValueDecoder;
@@ -33,6 +32,7 @@ import com.apicatalog.cborld.encoder.value.XsdDateTimeValueEncoder;
 import com.apicatalog.cborld.encoder.value.XsdDateValueEncoder;
 import com.apicatalog.cborld.mapping.DecoderMappingProvider;
 import com.apicatalog.cborld.mapping.EncoderMappingProvider;
+import com.apicatalog.cborld.mapping.context.ContextMappingProvider;
 import com.apicatalog.cborld.registry.DocumentDictionary;
 import com.apicatalog.cborld.registry.LegacyDictionary;
 

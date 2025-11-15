@@ -1,14 +1,12 @@
-package com.apicatalog.cborld.context.mapping;
+package com.apicatalog.cborld.mapping.context;
 
-import com.apicatalog.cborld.context.ContextError;
-import com.apicatalog.cborld.context.ContextError.Code;
-import com.apicatalog.cborld.context.ContextMap;
 import com.apicatalog.cborld.decoder.Decoder;
 import com.apicatalog.cborld.dictionary.CodeTermMap;
 import com.apicatalog.cborld.encoder.Encoder;
 import com.apicatalog.cborld.mapping.DecoderMappingProvider;
 import com.apicatalog.cborld.mapping.EncoderMappingProvider;
 import com.apicatalog.cborld.mapping.Mapping;
+import com.apicatalog.cborld.mapping.context.ContextMappingException.Code;
 import com.apicatalog.cborld.registry.DocumentDictionary;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.tree.io.TreeAdapter;
@@ -18,7 +16,7 @@ import co.nstant.in.cbor.model.DataItem;
 public class ContextMappingProvider implements EncoderMappingProvider, DecoderMappingProvider {
 
     @Override
-    public Mapping getEncoderMapping(Object document, TreeAdapter adapter, Encoder encoder) throws ContextError {
+    public Mapping getEncoderMapping(Object document, TreeAdapter adapter, Encoder encoder) throws ContextMappingException {
         try {
 
             final ContextMap context = ContextMap.from(document,
@@ -32,12 +30,12 @@ public class ContextMappingProvider implements EncoderMappingProvider, DecoderMa
                     context.getTypeMapping());
 
         } catch (JsonLdException e) {
-            throw new ContextError(Code.InvalidContext, e);
+            throw new ContextMappingException(Code.InvalidContext, e);
         }
     }
 
     @Override
-    public Mapping getDecoderMapping(DataItem document, DocumentDictionary dictionary, Decoder decoder) throws ContextError {
+    public Mapping getDecoderMapping(DataItem document, DocumentDictionary dictionary, Decoder decoder) throws ContextMappingException {
         try {
             var mapping = new DecoderContextMapping(dictionary, decoder.config().valueDecoders());
 
@@ -58,7 +56,7 @@ public class ContextMappingProvider implements EncoderMappingProvider, DecoderMa
             return mapping;
 
         } catch (JsonLdException e) {
-            throw new ContextError(Code.InvalidContext, e);
+            throw new ContextMappingException(Code.InvalidContext, e);
         }
     }
 }

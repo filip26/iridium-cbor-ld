@@ -1,4 +1,4 @@
-package com.apicatalog.cborld.context.mapping;
+package com.apicatalog.cborld.mapping.context;
 
 import java.math.BigInteger;
 import java.util.Collection;

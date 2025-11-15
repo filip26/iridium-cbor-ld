@@ -1,4 +1,4 @@
-package com.apicatalog.cborld.context;
+package com.apicatalog.cborld.mapping.context;
 
 import java.net.URI;
 import java.util.ArrayDeque;
@@ -19,8 +19,8 @@ import com.apicatalog.jsonld.context.Context;
 import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.processor.Execution;
+import com.apicatalog.jsonld.processor.Execution.KeyTypeMapper;
 import com.apicatalog.jsonld.processor.Expander;
-import com.apicatalog.jsonld.processor.TypeMapper;
 import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.tree.io.TreeIO;
 
@@ -102,7 +102,7 @@ public class ContextMap {
         return appliedContextKeys;
     }
 
-    private static class TypeMapperImpl implements TypeMapper {
+    private static class TypeMapperImpl implements KeyTypeMapper {
 
         final Deque<Map<String, Object>> stack;
         TypeKeyNameMapper typeMapper;
@@ -120,7 +120,7 @@ public class ContextMap {
         }
 
         @Override
-        public void beginMap(String key) {
+        public void onBeginMap(String key) {
             if (typeMapper != null) {
                 typeMapper.beginMap(key);
             }
@@ -130,7 +130,7 @@ public class ContextMap {
         }
 
         @Override
-        public void endMap() {
+        public void onEndMap() {
             if (typeMapper != null) {
                 typeMapper.endMap();
             }
@@ -138,17 +138,11 @@ public class ContextMap {
         }
 
         @Override
-        public void mapType(String key, String id) {
+        public void onKeyType(String key, String id) {
             if (typeMapper != null) {
-//                typeMapper.beginMap(key);
                 typeMapper.typeKeyName(key);
-//                typeMapper.endMap();
             }
             stack.peek().put(key, id);
-        }
-
-        @Override
-        public void mapProperty(String key, String type, String value) {
         }
 
         public TypeMap typeMap() {

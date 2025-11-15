@@ -2,13 +2,13 @@ package com.apicatalog.cborld.debug;
 
 import java.net.URI;
 
-import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.encoder.DefaultEncoder;
 import com.apicatalog.cborld.encoder.Encoder;
 import com.apicatalog.cborld.encoder.EncoderConfig;
 import com.apicatalog.cborld.encoder.EncoderException;
 import com.apicatalog.cborld.mapping.EncoderMappingProvider;
 import com.apicatalog.cborld.mapping.Mapping;
+import com.apicatalog.cborld.mapping.context.ContextMappingException;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.tree.io.TreeIO;
@@ -65,7 +65,7 @@ public class DebugEncoder extends Debug {
             dictionary = config.dictionary();
             encoded = debug.encode(object, adapter);
 
-        } catch (ContextError | EncoderException e) {
+        } catch (ContextMappingException | EncoderException e) {
             this.error = e;
         }
     }
@@ -86,7 +86,7 @@ public class DebugEncoder extends Debug {
             Debug debug) implements EncoderMappingProvider {
 
         @Override
-        public Mapping getEncoderMapping(Object document, TreeAdapter adapter, Encoder encoder) throws ContextError {
+        public Mapping getEncoderMapping(Object document, TreeAdapter adapter, Encoder encoder) throws ContextMappingException {
             debug.mapping = provider.getEncoderMapping(document, adapter, encoder);
             return debug.mapping;
         }

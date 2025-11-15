@@ -1,6 +1,6 @@
-package com.apicatalog.cborld.context;
+package com.apicatalog.cborld.mapping.context;
 
-public class ContextError extends Exception {
+public class ContextMappingException extends Exception {
 
     private static final long serialVersionUID = -1522925335270709947L;
 
@@ -12,12 +12,12 @@ public class ContextError extends Exception {
 
     protected final Code code;
 
-    public ContextError(Code code, String message) {
+    public ContextMappingException(Code code, String message) {
         super(message);
         this.code = code;
     }
 
-    public ContextError(Code code, Throwable cause) {
+    public ContextMappingException(Code code, Throwable cause) {
         super(cause);
         this.code = code;
     }

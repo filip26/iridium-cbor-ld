@@ -60,7 +60,6 @@
         <titanium.version>2.0.0-M2-SNAPSHOT</titanium.version>
         <tree.version>0.12.0-SNAPSHOT</tree.version>
         <copper-multibase>4.1.0</copper-multibase>
-        <jakarta.json.version>2.0.1</jakarta.json.version>
 
         <!-- test resources -->
         <junit.version>6.0.1</junit.version>
@@ -83,21 +82,8 @@
 
         <dependency>
             <groupId>com.apicatalog</groupId>
-            <artifactId>tree-io-jakarta</artifactId>
-            <version>${tree.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.apicatalog</groupId>
             <artifactId>tree-io-cbor</artifactId>
             <version>${tree.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>jakarta.json</groupId>
-            <artifactId>jakarta.json-api</artifactId>
-            <version>${jakarta.json.version}</version>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -111,6 +97,13 @@
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
             <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.apicatalog</groupId>
+            <artifactId>tree-io-jakarta</artifactId>
+            <version>${tree.version}</version>
             <scope>test</scope>
         </dependency>
 

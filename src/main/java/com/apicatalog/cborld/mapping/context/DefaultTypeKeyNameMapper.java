@@ -1,4 +1,4 @@
-package com.apicatalog.cborld.context.mapping;
+package com.apicatalog.cborld.mapping.context;
 
 import java.util.ArrayDeque;
 import java.util.Collection;

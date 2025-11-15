@@ -5,8 +5,8 @@ import java.util.Collection;
 import java.util.Map;
 
 import com.apicatalog.cborld.CborLdVersion;
-import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.decoder.DecoderException.Code;
+import com.apicatalog.cborld.mapping.context.ContextMappingException;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 
 class MultiDecoder implements Decoder {
@@ -22,12 +22,12 @@ class MultiDecoder implements Decoder {
     }
 
     @Override
-    public Object decode(byte[] encoded) throws ContextError, DecoderException {
+    public Object decode(byte[] encoded) throws ContextMappingException, DecoderException {
         return decode(Decoder.assertCborLd(encoded), encoded);
     }
 
     @Override
-    public Object decode(CborLdVersion version, byte[] encoded) throws ContextError, DecoderException {
+    public Object decode(CborLdVersion version, byte[] encoded) throws ContextMappingException, DecoderException {
         final Decoder decoder = decoders.get(version);
 
         if (decoder == null) {

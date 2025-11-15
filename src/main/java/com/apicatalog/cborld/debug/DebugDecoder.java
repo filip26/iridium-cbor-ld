@@ -4,7 +4,6 @@ import java.net.URI;
 import java.util.Map;
 
 import com.apicatalog.cborld.CborLdVersion;
-import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.decoder.Decoder;
 import com.apicatalog.cborld.decoder.DecoderBuilder;
 import com.apicatalog.cborld.decoder.DecoderConfig;
@@ -12,6 +11,7 @@ import com.apicatalog.cborld.decoder.DecoderException;
 import com.apicatalog.cborld.decoder.DecoderException.Code;
 import com.apicatalog.cborld.mapping.DecoderMappingProvider;
 import com.apicatalog.cborld.mapping.Mapping;
+import com.apicatalog.cborld.mapping.context.ContextMappingException;
 import com.apicatalog.cborld.registry.DocumentDictionary;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 
@@ -76,7 +76,7 @@ public class DebugDecoder extends Debug {
 
             decoded = debug.decode(encoded);
 
-        } catch (ContextError | DecoderException e) {
+        } catch (ContextMappingException | DecoderException e) {
             this.error = e;
         }
     }
@@ -90,7 +90,7 @@ public class DebugDecoder extends Debug {
             Debug debug) implements DecoderMappingProvider {
 
         @Override
-        public Mapping getDecoderMapping(DataItem document, DocumentDictionary dictionary, Decoder decoder) throws DecoderException, ContextError {
+        public Mapping getDecoderMapping(DataItem document, DocumentDictionary dictionary, Decoder decoder) throws DecoderException, ContextMappingException {
             debug.dictionary = dictionary;
             debug.mapping = provider.getDecoderMapping(document, dictionary, decoder);
             return debug.mapping;

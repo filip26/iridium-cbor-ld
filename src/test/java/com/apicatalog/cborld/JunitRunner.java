@@ -14,7 +14,6 @@ import java.util.Objects;
 
 import com.apicatalog.cbor.CborComparison;
 import com.apicatalog.cbor.CborWriter;
-import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.debug.DebugDecoder;
 import com.apicatalog.cborld.debug.DebugEncoder;
 import com.apicatalog.cborld.decoder.Decoder;
@@ -22,6 +21,7 @@ import com.apicatalog.cborld.decoder.DecoderException;
 import com.apicatalog.cborld.encoder.Encoder;
 import com.apicatalog.cborld.encoder.EncoderException;
 import com.apicatalog.cborld.hex.Hex;
+import com.apicatalog.cborld.mapping.context.ContextMappingException;
 import com.apicatalog.jsonld.Comparison;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.loader.ClasspathLoader;
@@ -192,9 +192,6 @@ class JunitRunner {
             } else if (testCase.type.contains(TestSuite.VOCAB + "DecoderTest")) {
 
                 var input = getResource(testCase.input.toString().substring(TestSuite.BASE.length()));
-
-//                Document document = LOADER.loadDocument(testCase.input, new DocumentLoaderOptions());
-//
                 assertNotNull(input);
 
                 final var decoder = getDecoder(testCase.config, testCase.compactArrays);
@@ -239,11 +236,9 @@ class JunitRunner {
                 var dump = debug.dump();
 
                 var expected = LOADER.loadDocument(testCase.result, DocumentLoader.defaultOptions());
-
                 assertNotNull(expected);
 
                 // TODO use Jcs v2.0 with adapters
-
                 var match = Comparison.equals(
                         expected.content().node(),
                         expected.content().adapter(),
@@ -257,42 +252,43 @@ class JunitRunner {
 
             } else if (testCase.type.contains(TestSuite.VOCAB + "DebugDecoderTest")) {
 
-//                var document = LOADER.loadDocument(testCase.input, new DocumentLoaderOptions());
-//
-//                assertNotNull(document);
-//
-//                var debug = DECODER_DEBUG;
-//
-//                debug.decode(((CborLdDocument) document).getByteArray());
-//
-//                if (testCase.type.stream().noneMatch(o -> o.endsWith("PositiveEvaluationTest"))) {
-//                    fail("Expected error code [" + testCase.result + "].");
-//                    return;
-//                }
-//
-//                var dump = debug.dump();
-//
-//                var expected = LOADER.loadDocument(testCase.result, new DocumentLoaderOptions()).getJsonContent().orElse(null);
-//
-//                assertNotNull(expected);
-//
-//                // TODO use Jcs v2.0 with adapters
-//                var result = new JakartaMaterializer().node(dump, NativeAdapter.instance());
-//
-//                var match = JsonLdComparison.equals(expected, result);
-//
-//                if (!match) {
-//                    write(testCase, result, expected);
-//                }
-//
-//                assertTrue(match, "The expected result does not match.");
+
+                var input = getResource(testCase.input.toString().substring(TestSuite.BASE.length()));
+                assertNotNull(input);
+
+                var debug = DECODER_DEBUG;
+
+                debug.decode(input);
+
+                if (testCase.type.stream().noneMatch(o -> o.endsWith("PositiveEvaluationTest"))) {
+                    fail("Expected error code [" + testCase.result + "].");
+                    return;
+                }
+
+                var dump = debug.dump();
+
+                var expected = LOADER.loadDocument(testCase.result, DocumentLoader.defaultOptions());
+                assertNotNull(expected);
+
+                // TODO use Jcs v2.0 with adapters
+                var match = Comparison.equals(
+                        expected.content().node(),
+                        expected.content().adapter(),
+                        dump,
+                        NativeAdapter.instance());
+
+                if (!match) {
+                    write(testCase, dump, expected.content());
+                }
+                assertTrue(match, "The expected result does not match.");
+
 
             } else {
                 fail("Unknown test execution method: " + testCase.type);
                 return;
             }
 
-        } catch (ContextError e) {
+        } catch (ContextMappingException e) {
             assertException(e.getCode().name(), e);
 
         } catch (EncoderException e) {

@@ -5,10 +5,10 @@ import java.net.URI;
 import java.util.ArrayList;
 
 import com.apicatalog.cborld.CborLdVersion;
-import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.decoder.DecoderException.Code;
 import com.apicatalog.cborld.hex.Hex;
 import com.apicatalog.cborld.mapping.DecoderMappingProvider;
+import com.apicatalog.cborld.mapping.context.ContextMappingException;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 
 import co.nstant.in.cbor.CborDecoder;
@@ -24,7 +24,7 @@ class DecoderV1 extends AbstractDecoder {
     }
 
     @Override
-    public Object decode(CborLdVersion version, byte[] encoded) throws ContextError, DecoderException {
+    public Object decode(CborLdVersion version, byte[] encoded) throws ContextMappingException, DecoderException {
         try {
             var bais = new ByteArrayInputStream(encoded);
             var dataItems = new CborDecoder(bais).decode();
@@ -51,7 +51,7 @@ class DecoderV1 extends AbstractDecoder {
         }
     }
 
-    public Object decode(DataItem dataItem) throws ContextError, DecoderException {
+    public Object decode(DataItem dataItem) throws ContextMappingException, DecoderException {
         if (dataItem instanceof Array array && array.getDataItems().size() == 2) {
 
             var it = array.getDataItems().iterator();

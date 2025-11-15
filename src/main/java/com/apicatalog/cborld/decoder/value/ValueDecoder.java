@@ -6,11 +6,9 @@ import com.apicatalog.cborld.decoder.DecoderException;
 import com.apicatalog.cborld.mapping.Mapping;
 
 import co.nstant.in.cbor.model.DataItem;
-import jakarta.json.JsonValue;
 
 /**
- * Interface for decoding CBOR {@link DataItem} values into JSON-LD
- * {@link JsonValue}s.
+ * Interface for decoding CBOR {@link DataItem} values into JSON-LD values.
  *
  * <p>
  * A {@code ValueDecoder} is responsible for interpreting a CBOR value based on

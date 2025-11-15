@@ -3,7 +3,7 @@ package com.apicatalog.cborld.encoder;
 import java.net.URI;
 import java.util.Map;
 
-import com.apicatalog.cborld.context.ContextError;
+import com.apicatalog.cborld.mapping.context.ContextMappingException;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.tree.io.TreeIO;
@@ -33,15 +33,15 @@ public interface Encoder {
      * @return a byte array representing the encoded CBOR-LD document
      * @throws EncoderException if encoding fails due to an internal or semantic
      *                          error
-     * @throws ContextError     if a context resolution or validation issue occurs
+     * @throws ContextMappingException     if a context resolution or validation issue occurs
      */
-    byte[] encode(Object node, TreeAdapter adapter) throws EncoderException, ContextError;
+    byte[] encode(Object node, TreeAdapter adapter) throws EncoderException, ContextMappingException;
 
-    default byte[] encode(TreeIO document) throws EncoderException, ContextError {
+    default byte[] encode(TreeIO document) throws EncoderException, ContextMappingException {
         return encode(document.node(), document.adapter());
     }
 
-    default byte[] encode(Map<String, Object> document) throws EncoderException, ContextError {
+    default byte[] encode(Map<String, Object> document) throws EncoderException, ContextMappingException {
         return encode(document, NativeAdapter.instance());
     }
 

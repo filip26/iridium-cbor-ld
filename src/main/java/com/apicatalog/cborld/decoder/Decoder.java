@@ -5,9 +5,9 @@ import java.util.Arrays;
 
 import com.apicatalog.cborld.CborLd;
 import com.apicatalog.cborld.CborLdVersion;
-import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.decoder.DecoderException.Code;
 import com.apicatalog.cborld.hex.Hex;
+import com.apicatalog.cborld.mapping.context.ContextMappingException;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 
 /**
@@ -26,11 +26,11 @@ public interface Decoder {
      *
      * @param encoded the CBOR-LD encoded document as a byte array
      * @return the decoded JSON-LD document
-     * @throws ContextError     if a context-related error occurs during decoding
+     * @throws ContextMappingException     if a context-related error occurs during decoding
      * @throws DecoderException if the version is unsupported or if a decoding error
      *                          occurs
      */
-    Object decode(byte[] encoded) throws ContextError, DecoderException;
+    Object decode(byte[] encoded) throws ContextMappingException, DecoderException;
 
     /**
      * Decodes a CBOR-LD document into a JSON-LD document using the specified
@@ -42,10 +42,10 @@ public interface Decoder {
      * @param version the {@link CborLdVersion} of the encoded document
      * @param encoded the CBOR-LD encoded document as a byte array
      * @return the decoded JSON-LD document
-     * @throws ContextError     if a context-related error occurs during decoding
+     * @throws ContextMappingException     if a context-related error occurs during decoding
      * @throws DecoderException if a decoding error occurs
      */
-    Object decode(CborLdVersion version, byte[] encoded) throws ContextError, DecoderException;
+    Object decode(CborLdVersion version, byte[] encoded) throws ContextMappingException, DecoderException;
 
     /**
      * Returns the decoder configuration in use.
