@@ -1,7 +1,6 @@
 package com.apicatalog.cborld.encoder.value;
 
 import java.nio.ByteBuffer;
-import java.util.Collection;
 import java.util.UUID;
 
 import com.apicatalog.cborld.mapping.Mapping;
@@ -17,7 +16,7 @@ public class UuidValueEncoder implements ValueEncoder {
     public static final int CODE = 3;
 
     @Override
-    public DataItem encode(Mapping mapping, String value, String term, Collection<String> types) {
+    public DataItem encode(Mapping mapping, String value, String term, String type) {
 
         if (value.toLowerCase().startsWith(PREFIX)) {
 

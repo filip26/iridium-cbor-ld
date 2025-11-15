@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URI;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map.Entry;
 import java.util.Optional;
 
@@ -269,7 +268,7 @@ public class DefaultEncoder implements Encoder {
             final var types = Optional
                     .ofNullable(typeMapping)
                     .map(tm -> tm.getType(term))
-                    .orElse(List.of());
+                    .orElse(null);
 
             final var stringValue = adapter.stringValue(jsonValue);
 

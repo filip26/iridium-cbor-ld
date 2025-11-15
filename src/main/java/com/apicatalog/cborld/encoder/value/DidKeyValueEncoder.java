@@ -1,7 +1,5 @@
 package com.apicatalog.cborld.encoder.value;
 
-import java.util.Collection;
-
 import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.multibase.Multibase;
 
@@ -16,7 +14,7 @@ public class DidKeyValueEncoder implements ValueEncoder {
     public static final int CODE = 1025;
 
     @Override
-    public DataItem encode(Mapping mapping, String value, String term, Collection<String> types) {
+    public DataItem encode(Mapping mapping, String value, String term, String type) {
 
         if (value == null || !(value.toLowerCase().startsWith(PREFIX))) {
             return null;

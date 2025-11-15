@@ -209,13 +209,13 @@ abstract class AbstractDecoder implements Decoder {
     }
 
     protected final String decodeValue(final DataItem value, final String property, final TypeMap def, final Mapping mapping) throws DecoderException {
-        
-        final Collection<String> types = def != null
+
+        final var type = def != null
                 ? def.getType(property)
-                : Collections.emptySet();
+                : null;
 
         for (final ValueDecoder decoder : config.valueDecoders()) {
-            var decoded = decoder.decode(mapping, value, property, types);
+            var decoded = decoder.decode(mapping, value, property, type);
 
             if (decoded != null) {
                 return decoded;

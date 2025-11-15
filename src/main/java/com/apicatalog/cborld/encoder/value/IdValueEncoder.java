@@ -1,7 +1,5 @@
 package com.apicatalog.cborld.encoder.value;
 
-import java.util.Collection;
-
 import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.jsonld.lang.Keywords;
 
@@ -11,8 +9,8 @@ import co.nstant.in.cbor.model.UnsignedInteger;
 public class IdValueEncoder implements ValueEncoder {
 
     @Override
-    public DataItem encode(Mapping mapping, String value, String term, Collection<String> types) {
-        if (types.contains(Keywords.ID)
+    public DataItem encode(Mapping mapping, String value, String term, String type) {
+        if (Keywords.ID.equals(type)
                 && mapping.dictionary() != null
                 && mapping.dictionary().uris() != null) {
 

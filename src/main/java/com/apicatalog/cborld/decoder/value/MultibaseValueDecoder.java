@@ -1,7 +1,5 @@
 package com.apicatalog.cborld.decoder.value;
 
-import java.util.Collection;
-
 import com.apicatalog.cborld.decoder.DecoderException;
 import com.apicatalog.cborld.encoder.value.MultibaseValueEncoder;
 import com.apicatalog.cborld.mapping.Mapping;
@@ -15,8 +13,8 @@ public class MultibaseValueDecoder implements ValueDecoder {
     static final MultibaseDecoder MULTIBASE = MultibaseDecoder.getInstance();
 
     @Override
-    public String decode(Mapping mapping, DataItem value, String term, Collection<String> types) throws DecoderException {
-        if (types.contains(MultibaseValueEncoder.TYPE)
+    public String decode(Mapping mapping, DataItem value, String term, String type) throws DecoderException {
+        if (MultibaseValueEncoder.TYPE.equals(type)
                 && value instanceof ByteString stringValue) {
 
             byte[] byteString = stringValue.getBytes();

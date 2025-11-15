@@ -1,7 +1,5 @@
 package com.apicatalog.cborld.decoder.value;
 
-import java.util.Collection;
-
 import com.apicatalog.cborld.decoder.DecoderException;
 import com.apicatalog.cborld.mapping.Mapping;
 
@@ -33,10 +31,10 @@ public interface ValueDecoder {
      *                and type maps
      * @param value   the CBOR value to decode
      * @param term    the JSON-LD term (property) associated with the value
-     * @param types   a collection of semantic type IRIs associated with the term
+     * @param type    JSON-LD type associated with the term
      * @return the decoded value
      * @throws DecoderException if decoding fails due to unsupported structure, type
      *                          mismatch, or malformed data
      */
-    String decode(Mapping mapping, DataItem value, String term, Collection<String> types) throws DecoderException;
+    String decode(Mapping mapping, DataItem value, String term, String type) throws DecoderException;
 }

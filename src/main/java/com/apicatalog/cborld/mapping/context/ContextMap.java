@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.Deque;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -159,7 +158,7 @@ public class ContextMap {
         }
 
         @Override
-        public Collection<String> getType(String term) {
+        public String getType(String term) {
 
             var type = typeMap.get(term);
             if (type instanceof Map map) {
@@ -167,13 +166,14 @@ public class ContextMap {
             }
 
             if (type instanceof String string) {
-                return List.of(string);
+                return string;
 
             } else if (type instanceof Collection<?> array) {
-                return array.stream().map(String.class::cast).toList();
+                throw new IllegalStateException();
+//                return array.stream().map(String.class::cast).toList();
             }
 
-            return List.of();
+            return null;
         }
 
         @Override
