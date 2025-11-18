@@ -75,7 +75,7 @@ abstract class AbstractDecoder implements Decoder {
 
         switch (data.getMajorType()) {
         case MAP:
-            return decodeMap((co.nstant.in.cbor.model.Map) data, term != null ? def.getMapping(term) : def, mapping);
+            return decodeMap((co.nstant.in.cbor.model.Map) data, term != null && def != null ? def.getMapping(term) : def, mapping);
 
         case ARRAY:
             return decodeArray(((Array) data).getDataItems(), term, def, mapping);

@@ -18,7 +18,7 @@ import com.apicatalog.cborld.encoder.EncoderConfig;
  * Provides static factory methods to configure and create CBOR-LD
  * {@link Encoder} and {@link Decoder} instances.
  */
-public class CborLd {
+public final class CborLd {
 
     /** CBOR tag leading byte. */
     public static final byte LEADING_BYTE = (byte) 0xD9;
@@ -133,8 +133,8 @@ public class CborLd {
     }
 
     /** Utility class — not meant to be instantiated. */
-    protected CborLd() {
-        /* protected */ }
+    private CborLd() {
+        /* private */ }
 
     /**
      * Creates a new {@link DecoderBuilder} instance with default configuration.
@@ -208,5 +208,5 @@ public class CborLd {
      */
     public static EncoderBuilder newEncoder(Version version) {
         return Encoder.newBuilder(version);
-    }
+    }    
 }

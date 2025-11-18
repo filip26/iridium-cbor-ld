@@ -14,8 +14,8 @@ import com.apicatalog.cborld.mapping.TypeMap;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.loader.DocumentLoader;
-import com.apicatalog.jsonld.processor.Execution;
-import com.apicatalog.jsonld.processor.Execution.KeyTypeMapper;
+import com.apicatalog.jsonld.processor.ExecutionEvents;
+import com.apicatalog.jsonld.processor.ExecutionEvents.TypeMapper;
 import com.apicatalog.jsonld.processor.Expander;
 import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.tree.io.TreeIO;
@@ -44,7 +44,7 @@ public class ContextMap {
         Expander.expand(
                 new TreeIO(node, adapter),
                 options,
-                Execution.of(options)
+                ExecutionEvents.of(options)
                         .contextKeyCollector(appliedContextKeys::add)
                         .keyTypeMapper(keyTypeMapper));
 
@@ -70,7 +70,7 @@ public class ContextMap {
         Expander.expand(
                 new TreeIO(node, adapter),
                 options,
-                Execution.of(options)
+                ExecutionEvents.of(options)
                         .contextKeyCollector(appliedContexts.andThen(appliedContextKeys::add))
                         .keyTypeMapper(keyTypeMapper));
 
@@ -86,7 +86,7 @@ public class ContextMap {
         return appliedContextKeys;
     }
 
-    private static class TypeMapperImpl implements KeyTypeMapper {
+    private static class TypeMapperImpl implements TypeMapper {
 
         final Deque<Map<String, Object>> stack;
         TypeKeyNameMapper typeMapper;
@@ -114,7 +114,7 @@ public class ContextMap {
         }
 
         @Override
-        public void onEndMap() {
+        public void onEndMap(String key) {
             if (typeMapper != null) {
                 typeMapper.endMap();
             }
@@ -122,7 +122,7 @@ public class ContextMap {
         }
 
         @Override
-        public void onKeyType(String key, String id) {
+        public void onType(String key, String id) {
             if (typeMapper != null) {
                 typeMapper.typeKeyName(key);
             }
