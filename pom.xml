@@ -83,7 +83,7 @@
         <dependency>
             <groupId>com.apicatalog</groupId>
             <artifactId>tree-io-cbor</artifactId>
-            <version>${tree.version}</version>
+            <version>0.12.0</version>
         </dependency>
 
         <dependency>
