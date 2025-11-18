@@ -57,8 +57,8 @@
 
         <argLine>-Dfile.encoding=UTF-8</argLine>
 
-        <titanium.version>2.0.0-M2-SNAPSHOT</titanium.version>
-        <tree.version>0.12.0-SNAPSHOT</tree.version>
+        <titanium.version>2.0.0-M2</titanium.version>
+        <tree.version>0.11.0</tree.version>
         <copper-multibase>4.1.0</copper-multibase>
 
         <!-- test resources -->
