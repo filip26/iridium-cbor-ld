@@ -1,54 +1,46 @@
 package com.apicatalog.cborld.mapping.context;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Deque;
 import java.util.HashSet;
+import java.util.List;
 
 import com.apicatalog.cborld.mapping.TypeKeyNameMapper;
 
 class DefaultTypeKeyNameMapper implements TypeKeyNameMapper {
 
-    final Collection<String> paths;
-
-    final Deque<String> path;
+    final Deque<Collection<String>> typeKeys;
 
     public DefaultTypeKeyNameMapper() {
-        this.paths = new HashSet<>();
-        this.path = new ArrayDeque<>(10);
+        this.typeKeys = new ArrayDeque<>(10);
+        typeKeys.push(List.of());
     }
 
     @Override
     public void beginMap(String key) {
-        path.push(key);
+        typeKeys.push(List.of());
     }
 
     @Override
-    public void typeKeyName(String type) {
+    public void typeKeyName(String key) {
 
-        final String index;
-    
-        if (path.isEmpty()) {
-            index = type;
-
-        } else {
-            index = pointer(type);
+        if (typeKeys.peek().isEmpty()) {
+            typeKeys.pop();
+            typeKeys.push(new HashSet<>());
         }
-        paths.add(index);
+
+        typeKeys.peek().add(key);
     }
 
     @Override
     public void endMap() {
-        path.pop();
+        typeKeys.pop();
     }
 
     @Override
     public boolean isTypeKey(String term) {
-        return paths.contains(term);
+        return !typeKeys.isEmpty() && typeKeys.peek().contains(term);
     }
-
-    final String pointer(String term) {
-        return term + ((path == null || path.isEmpty()) ? "" : "." + String.join(".", path));
-    }
-
 }

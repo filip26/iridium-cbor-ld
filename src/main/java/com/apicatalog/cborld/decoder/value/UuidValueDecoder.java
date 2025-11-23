@@ -17,7 +17,7 @@ import co.nstant.in.cbor.model.UnsignedInteger;
 public class UuidValueDecoder implements ValueDecoder {
 
     @Override
-    public String decode(Mapping mapping, DataItem value, String term, String types) throws DecoderException {
+    public String decode(Mapping mapping, DataItem value, String term, String type) throws DecoderException {
         if (value instanceof Array array
                 && array.getDataItems().size() == 2
                 && array.getDataItems().get(0) instanceof UnsignedInteger code

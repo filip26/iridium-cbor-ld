@@ -13,6 +13,7 @@ import com.apicatalog.cborld.mapping.TypeKeyNameMapper;
 import com.apicatalog.cborld.mapping.TypeMap;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.Options;
+import com.apicatalog.jsonld.lang.Keywords;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.jsonld.processor.ExecutionEvents;
 import com.apicatalog.jsonld.processor.ExecutionEvents.TypeMapper;
@@ -123,7 +124,7 @@ public class ContextMap {
 
         @Override
         public void onType(String key, String id) {
-            if (typeMapper != null) {
+            if (typeMapper != null && Keywords.TYPE.equals(id)) {
                 typeMapper.typeKeyName(key);
             }
             stack.peek().put(key, id);
