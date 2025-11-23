@@ -8,7 +8,7 @@ The CBOR-LD format makes Linked Data efficient to store, transmit, and embed in 
 
 Iridium CBOR-LD provides a full implementation of the [CBOR-LD 1.0 specification](https://json-ld.github.io/cbor-ld-spec/), including support for custom dictionaries and integration with Verifiable Credential Barcodes.
 
-[![Java 17 CI](https://github.com/filip26/iridium-cbor-ld/actions/workflows/java17-push.yml/badge.svg)](https://github.com/filip26/iridium-cbor-ld/actions/workflows/java17-push.yml)
+[![Java 17 CI](https://github.com/filip26/iridium-cbor-ld/actions/workflows/coverage.yml/badge.svg?branch=main)](https://github.com/filip26/iridium-cbor-ld/actions/workflows/coverage.yml)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/07fd47ee8fa64d68a47cc83365fa07d6)](https://app.codacy.com/gh/filip26/iridium-cbor-ld/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 [![Codacy Badge](https://app.codacy.com/project/badge/Coverage/07fd47ee8fa64d68a47cc83365fa07d6)](https://app.codacy.com/gh/filip26/iridium-cbor-ld/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_coverage)
 [![javadoc](https://javadoc.io/badge2/com.apicatalog/iridium-cbor-ld/javadoc.svg)](https://javadoc.io/doc/com.apicatalog/iridium-cbor-ld)
