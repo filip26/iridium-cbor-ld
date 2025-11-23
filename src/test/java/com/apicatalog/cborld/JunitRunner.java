@@ -1,6 +1,5 @@
 package com.apicatalog.cborld;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -15,7 +14,7 @@ import java.util.Objects;
 
 import com.apicatalog.cbor.CborComparison;
 import com.apicatalog.cbor.CborWriter;
-import com.apicatalog.cborld.context.ContextError;
+import com.apicatalog.cborld.CborLd.Version;
 import com.apicatalog.cborld.debug.DebugDecoder;
 import com.apicatalog.cborld.debug.DebugEncoder;
 import com.apicatalog.cborld.decoder.Decoder;
@@ -23,34 +22,68 @@ import com.apicatalog.cborld.decoder.DecoderException;
 import com.apicatalog.cborld.encoder.Encoder;
 import com.apicatalog.cborld.encoder.EncoderException;
 import com.apicatalog.cborld.hex.Hex;
-import com.apicatalog.cborld.loader.StaticContextLoader;
-import com.apicatalog.jsonld.JsonLdError;
-import com.apicatalog.jsonld.document.Document;
-import com.apicatalog.jsonld.json.JsonLdComparison;
+import com.apicatalog.jsonld.Comparison;
+import com.apicatalog.jsonld.JsonLdException;
+import com.apicatalog.jsonld.loader.ClasspathLoader;
 import com.apicatalog.jsonld.loader.DocumentLoader;
-import com.apicatalog.jsonld.loader.DocumentLoaderOptions;
+import com.apicatalog.jsonld.loader.StaticLoader;
+import com.apicatalog.jsonld.loader.UriRewriter;
 import com.apicatalog.multibase.Multibase;
+import com.apicatalog.tree.io.TreeIO;
 import com.apicatalog.tree.io.TreeIOException;
-import com.apicatalog.tree.io.jakarta.JakartaAdapter;
+import com.apicatalog.tree.io.TreeParser;
+import com.apicatalog.tree.io.cbor.CborParser;
 import com.apicatalog.tree.io.jakarta.JakartaMaterializer;
+import com.apicatalog.tree.io.jakarta.JakartaParser;
 import com.apicatalog.tree.io.java.NativeAdapter;
+import com.apicatalog.web.media.MediaType;
 
 import co.nstant.in.cbor.CborDecoder;
 import co.nstant.in.cbor.CborException;
 import co.nstant.in.cbor.model.DataItem;
 import jakarta.json.Json;
-import jakarta.json.JsonObject;
-import jakarta.json.JsonStructure;
 import jakarta.json.JsonValue;
 import jakarta.json.JsonWriter;
 import jakarta.json.JsonWriterFactory;
 import jakarta.json.stream.JsonGenerator;
 
-class CborLdTestRunnerJunit {
+class JunitRunner {
 
-    private final CborLdTestCase testCase;
+    private final TestCase testCase;
 
-    static final DocumentLoader LOADER;
+    static final TreeParser JSON_PARSER = new JakartaParser();
+    static final CborParser CBOR_PARSER = new CborParser();
+
+    // test loader using only local resources
+    static final DocumentLoader TEST_LOADER = UriRewriter.newBuilder(
+            UriRewriter.newBuilder(
+                    ClasspathLoader
+                            .newBuilder()
+                            .base(CborLd.class)
+                            .parser(MediaType.JSON, JSON_PARSER)
+                            .parser(MediaType.JSON_LD, JSON_PARSER)
+                            .parser(MediaType.CBOR, CBOR_PARSER)
+                            .parser(MediaType.CBOR_LD, CBOR_PARSER)
+                            .build())
+                    .rebase(
+                            "https://raw.githubusercontent.com/filip26/iridium-cbor-ld/main/src/test/resources/com/apicatalog/cborld/",
+                            "classpath:")
+                    .build())
+            .rebase(
+                    TestSuite.BASE,
+                    "classpath:")
+            .build();
+
+    static final DocumentLoader LOADER = StaticLoader
+            .newBuilder()
+            .parser(MediaType.JSON_LD, JSON_PARSER)
+            // load bundled contexts
+            .classpath(CborLd.CONTEXT_RESOURCES)
+            // load from test resources
+            .classpath("https://w3id.org/utopia/v2", "/com/apicatalog/cborld/context/utopia-v2-context.jsonld")
+            .classpath("https://w3id.org/age/v1", "/com/apicatalog/cborld/context/age-v1-context.jsonld")
+            .fallback(TEST_LOADER)
+            .build();
 
     static final Encoder ENCODER_V1;
     static final Encoder ENCODER_V1_NOCP;
@@ -66,72 +99,61 @@ class CborLdTestRunnerJunit {
     static final DebugDecoder DECODER_DEBUG;
 
     static {
-        // load from test resources
-        StaticContextLoader.set("https://w3id.org/utopia/v2", CborLdTestRunnerJunit.class, "context/utopia-v2-context.jsonld");
-        StaticContextLoader.set("https://w3id.org/age/v1", CborLdTestRunnerJunit.class, "context/age-v1-context.jsonld");
-
-        // test loader using only local resources
-        LOADER = new UriBaseRewriter(
-                CborLdTest.BASE,
-                "classpath:",
-                new UriBaseRewriter("https://raw.githubusercontent.com/filip26/iridium-cbor-ld/main/src/test/resources/com/apicatalog/cborld/",
-                        "classpath:", new ClasspathLoader()));
-
         // several test instances reflecting various configurations
-        ENCODER_V1 = CborLd.createEncoder()
+        ENCODER_V1 = CborLd.newEncoder()
                 .loader(LOADER)
                 .build();
 
-        ENCODER_V1_NOCP = CborLd.createEncoder()
+        ENCODER_V1_NOCP = CborLd.newEncoder()
                 .loader(LOADER)
                 .dictionary(null)
                 .build();
 
-        ENCODER_UTOPIA_V1 = CborLd.createEncoder()
+        ENCODER_UTOPIA_V1 = CborLd.newEncoder()
                 .loader(LOADER)
                 .dictionary(UtopiaBarcode.DICTIONARY)
                 .build();
 
-        ENCODER_UTOPIA_EXT_V1 = CborLd.createEncoder()
+        ENCODER_UTOPIA_EXT_V1 = CborLd.newEncoder()
                 .loader(LOADER)
                 .dictionary(UtopiaBarcodeExtended.DICTIONARY)
                 .build();
 
-        ENCODER_UTOPIA_V06 = CborLd.createEncoder(CborLdVersion.V06)
+        ENCODER_UTOPIA_V06 = CborLd.newEncoder(Version.V06)
                 .loader(LOADER)
                 .dictionary(UtopiaBarcode.DICTIONARY)
                 .build();
 
-        ENCODER_V05 = CborLd.createEncoder(CborLdVersion.V05)
+        ENCODER_V05 = CborLd.newEncoder(Version.V05)
                 .loader(LOADER)
                 .build();
 
-        ENCODER_V05_NOCA = CborLd.createEncoder(CborLdVersion.V05)
+        ENCODER_V05_NOCA = CborLd.newEncoder(Version.V05)
                 .loader(LOADER)
                 .compactArray(false)
                 .build();
 
-        DECODER = CborLd.createDecoder(CborLdVersion.V1, CborLdVersion.V06, CborLdVersion.V05)
+        DECODER = CborLd.newDecoder(Version.V1, Version.V06, Version.V05)
                 .loader(LOADER)
                 .dictionary(UtopiaBarcode.DICTIONARY)
                 .dictionary(UtopiaBarcodeExtended.DICTIONARY)
-                .dictionary(CborLdVersion.V06, UtopiaBarcode.DICTIONARY)
+                .dictionary(Version.V06, UtopiaBarcode.DICTIONARY)
                 .build();
 
-        DECODER_V05_NOCA = CborLd.createDecoder(CborLdVersion.V05)
+        DECODER_V05_NOCA = CborLd.newDecoder(Version.V05)
                 .loader(LOADER)
                 .compactArray(false)
                 .build();
 
-        DECODER_DEBUG = CborLd.createDecoder(CborLdVersion.V1, CborLdVersion.V06, CborLdVersion.V05)
+        DECODER_DEBUG = CborLd.newDecoder(Version.V1, Version.V06, Version.V05)
                 .loader(LOADER)
                 .dictionary(UtopiaBarcode.DICTIONARY)
                 .dictionary(UtopiaBarcodeExtended.DICTIONARY)
-                .dictionary(CborLdVersion.V06, UtopiaBarcode.DICTIONARY)
+                .dictionary(Version.V06, UtopiaBarcode.DICTIONARY)
                 .debug();
     }
 
-    public CborLdTestRunnerJunit(CborLdTestCase testCase) {
+    public JunitRunner(TestCase testCase) {
         this.testCase = testCase;
     }
 
@@ -141,50 +163,45 @@ class CborLdTestRunnerJunit {
         assertNotNull(testCase.input);
 
         try {
-            if (testCase.type.contains(CborLdTest.VOCAB + "EncoderTest")) {
+            if (testCase.type.contains(TestSuite.VOCAB + "EncoderTest")) {
 
                 assumeFalse("t0025".equals(testCase.id.getFragment()));
                 assumeFalse("t0026".equals(testCase.id.getFragment()));
 
-                Document document = LOADER.loadDocument(testCase.input, new DocumentLoaderOptions());
+                var document = LOADER.loadDocument(testCase.input, DocumentLoader.defaultOptions());
 
-                JsonObject object = document.getJsonContent().orElseThrow(IllegalStateException::new).asJsonObject();
+                var encoder = getEncoder(testCase.config, testCase.compactArrays);
 
-                Encoder encoder = getEncoder(testCase.config, testCase.compactArrays);
-
-                byte[] bytes = encoder.encode(object, JakartaAdapter.instance());
+                var encoded = encoder.encode(document.content());
 
                 if (testCase.type.stream().noneMatch(o -> o.endsWith("PositiveEvaluationTest"))) {
                     fail("Expected error code [" + testCase.result + "].");
                     return;
                 }
 
-                assertNotNull(bytes);
+                assertNotNull(encoded);
 
-                Document expected = LOADER.loadDocument(testCase.result, new DocumentLoaderOptions());
+                var expected = getResource(testCase.result.toString().substring(TestSuite.BASE.length()));
 
                 assertNotNull(expected);
-                assertEquals(CborLdDocument.MEDIA_TYPE, expected.getContentType());
 
-                final byte[] expectedBytes = ((CborLdDocument) expected).getByteArray();
-
-                final boolean match = equalCborLdHeader(expectedBytes, bytes) && CborComparison.equals(expectedBytes, bytes);
+                final boolean match = equalCborLdHeader(expected, encoded)
+                        && CborComparison.equals(expected, encoded);
 
                 if (!match) {
-                    write(testCase, bytes, ((CborLdDocument) expected).getByteArray());
+                    write(testCase, encoded, expected);
                 }
 
                 assertTrue(match, "The expected result does not match.");
 
-            } else if (testCase.type.contains(CborLdTest.VOCAB + "DecoderTest")) {
+            } else if (testCase.type.contains(TestSuite.VOCAB + "DecoderTest")) {
 
-                Document document = LOADER.loadDocument(testCase.input, new DocumentLoaderOptions());
+                var input = getResource(testCase.input.toString().substring(TestSuite.BASE.length()));
+                assertNotNull(input);
 
-                assertNotNull(document);
+                final var decoder = getDecoder(testCase.config, testCase.compactArrays);
 
-                final Decoder decoder = getDecoder(testCase.config, testCase.compactArrays);
-
-                final Object result = decoder.decode(((CborLdDocument) document).getByteArray());
+                final var result = decoder.decode(input);
 
                 if (testCase.type.stream().noneMatch(o -> o.endsWith("PositiveEvaluationTest"))) {
                     fail("Expected error code [" + testCase.result + "].");
@@ -193,29 +210,28 @@ class CborLdTestRunnerJunit {
 
                 assertNotNull(result);
 
-                final JsonStructure expected = LOADER.loadDocument(testCase.result, new DocumentLoaderOptions()).getJsonContent().orElse(null);
-
+                final var expected = LOADER.loadDocument(testCase.result, DocumentLoader.defaultOptions());
                 assertNotNull(expected);
 
-                var json = new JakartaMaterializer().node(result, NativeAdapter.instance());
-
-                final boolean match = JsonLdComparison.equals(expected, json);
+                var match = Comparison.equals(
+                        expected.content().node(),
+                        expected.content().adapter(),
+                        result,
+                        NativeAdapter.instance());
 
                 if (!match) {
-                    write(testCase, json, expected);
+                    write(testCase, result, expected.content());
                 }
 
                 assertTrue(match, "The expected result does not match.");
 
-            } else if (testCase.type.contains(CborLdTest.VOCAB + "DebugEncoderTest")) {
+            } else if (testCase.type.contains(TestSuite.VOCAB + "DebugEncoderTest")) {
 
-                var document = LOADER.loadDocument(testCase.input, new DocumentLoaderOptions());
-
-                var object = document.getJsonContent().orElseThrow(IllegalStateException::new).asJsonObject();
+                var document = LOADER.loadDocument(testCase.input, DocumentLoader.defaultOptions());
 
                 var debug = getDebugEncoder(testCase.config);
 
-                debug.encode(object, JakartaAdapter.instance());
+                debug.encode(document.content());
 
                 if (testCase.type.stream().noneMatch(o -> o.endsWith("PositiveEvaluationTest"))) {
                     fail("Expected error code [" + testCase.result + "].");
@@ -224,30 +240,29 @@ class CborLdTestRunnerJunit {
 
                 var dump = debug.dump();
 
-                var expected = LOADER.loadDocument(testCase.result, new DocumentLoaderOptions()).getJsonContent().orElse(null);
-
+                var expected = LOADER.loadDocument(testCase.result, DocumentLoader.defaultOptions());
                 assertNotNull(expected);
 
                 // TODO use Jcs v2.0 with adapters
-                var result = new JakartaMaterializer().node(dump, NativeAdapter.instance());
-
-                var match = JsonLdComparison.equals(expected, result);
+                var match = Comparison.equals(
+                        expected.content().node(),
+                        expected.content().adapter(),
+                        dump,
+                        NativeAdapter.instance());
 
                 if (!match) {
-                    write(testCase, result, expected);
+                    write(testCase, dump, expected.content());
                 }
-
                 assertTrue(match, "The expected result does not match.");
 
-            } else if (testCase.type.contains(CborLdTest.VOCAB + "DebugDecoderTest")) {
+            } else if (testCase.type.contains(TestSuite.VOCAB + "DebugDecoderTest")) {
 
-                var document = LOADER.loadDocument(testCase.input, new DocumentLoaderOptions());
-
-                assertNotNull(document);
+                var input = getResource(testCase.input.toString().substring(TestSuite.BASE.length()));
+                assertNotNull(input);
 
                 var debug = DECODER_DEBUG;
 
-                debug.decode(((CborLdDocument) document).getByteArray());
+                debug.decode(input);
 
                 if (testCase.type.stream().noneMatch(o -> o.endsWith("PositiveEvaluationTest"))) {
                     fail("Expected error code [" + testCase.result + "].");
@@ -256,19 +271,19 @@ class CborLdTestRunnerJunit {
 
                 var dump = debug.dump();
 
-                var expected = LOADER.loadDocument(testCase.result, new DocumentLoaderOptions()).getJsonContent().orElse(null);
-
+                var expected = LOADER.loadDocument(testCase.result, DocumentLoader.defaultOptions());
                 assertNotNull(expected);
 
                 // TODO use Jcs v2.0 with adapters
-                var result = new JakartaMaterializer().node(dump, NativeAdapter.instance());
-
-                var match = JsonLdComparison.equals(expected, result);
+                var match = Comparison.equals(
+                        expected.content().node(),
+                        expected.content().adapter(),
+                        dump,
+                        NativeAdapter.instance());
 
                 if (!match) {
-                    write(testCase, result, expected);
+                    write(testCase, dump, expected.content());
                 }
-
                 assertTrue(match, "The expected result does not match.");
 
             } else {
@@ -276,19 +291,13 @@ class CborLdTestRunnerJunit {
                 return;
             }
 
-        } catch (TreeIOException | CborException e) {
-            fail(e);
-
-        } catch (ContextError e) {
-            assertException(e.getCode().name(), e);
-
         } catch (EncoderException e) {
             assertException(e.code().name(), e);
 
         } catch (DecoderException e) {
             assertException(e.code().name(), e);
 
-        } catch (JsonLdError e) {
+        } catch (JsonLdException | CborException | IOException | TreeIOException e) {
             fail(e);
         }
     }
@@ -313,7 +322,7 @@ class CborLdTestRunnerJunit {
         return testCase.type.stream().anyMatch(o -> o.endsWith("NegativeEvaluationTest"));
     }
 
-    public static void write(final CborLdTestCase testCase, final JsonValue result, final JsonStructure expected) {
+    public static void write(final TestCase testCase, final Object result, final TreeIO expected) throws TreeIOException {
         final StringWriter stringWriter = new StringWriter();
 
         try (final PrintWriter writer = new PrintWriter(stringWriter)) {
@@ -322,12 +331,12 @@ class CborLdTestRunnerJunit {
             final JsonWriterFactory writerFactory = Json.createWriterFactory(Collections.singletonMap(JsonGenerator.PRETTY_PRINTING, true));
 
             if (expected != null) {
-                write(writer, writerFactory, "Expected", expected);
+                write(writer, writerFactory, "Expected", new JakartaMaterializer().node(expected));
                 writer.println();
             }
 
             if (result != null) {
-                write(writer, writerFactory, "Actual", result);
+                write(writer, writerFactory, "Actual", new JakartaMaterializer().node(result, NativeAdapter.instance()));
                 writer.println();
             }
         }
@@ -335,7 +344,7 @@ class CborLdTestRunnerJunit {
         System.out.println(stringWriter.toString());
     }
 
-    public static void write(final CborLdTestCase testCase, final byte[] result, final byte[] expected) {
+    public static void write(final TestCase testCase, final byte[] result, final byte[] expected) {
         final StringWriter stringWriter = new StringWriter();
         try (final PrintWriter writer = new PrintWriter(stringWriter)) {
             writer.println("Test " + testCase.id.getFragment() + ": " + testCase.name);
@@ -357,18 +366,13 @@ class CborLdTestRunnerJunit {
             writer.println("Actual");
             writer.print("header = " + Hex.toString(result, 3));
             writer.println(", hex = " + Multibase.BASE_16_UPPER.encode(result).substring(1));
-            List<DataItem> decodedResult = CborDecoder.decode(result);
-            assertNotNull(decodedResult);
 
-            if (decodedResult != null) {
-                cborWriter.write(decodedResult);
-                writer.println();
-            }
+            final var decodedResult = CborDecoder.decode(result);
 
-        } catch (IOException e) {
-            fail(e);
+            cborWriter.write(decodedResult);
+            writer.println();
 
-        } catch (CborException e) {
+        } catch (IOException | CborException e) {
             fail(e);
         }
 
@@ -425,18 +429,18 @@ class CborLdTestRunnerJunit {
 
     static final DebugEncoder getDebugEncoder(String name) {
         if ("v1utopia".equals(name)) {
-            return CborLd.createEncoder()
+            return CborLd.newEncoder()
                     .loader(LOADER)
                     .dictionary(UtopiaBarcode.DICTIONARY)
                     .debug();
         }
         if ("v1utopiaext".equals(name)) {
-            return CborLd.createEncoder()
+            return CborLd.newEncoder()
                     .loader(LOADER)
                     .dictionary(UtopiaBarcodeExtended.DICTIONARY)
                     .debug();
         }
-        return CborLd.createEncoder()
+        return CborLd.newEncoder()
                 .loader(LOADER)
                 .debug();
     }
@@ -446,5 +450,11 @@ class CborLdTestRunnerJunit {
             return DECODER_V05_NOCA;
         }
         return DECODER;
+    }
+
+    static final byte[] getResource(String name) throws IOException {
+        try (var is = CborLd.class.getResourceAsStream(name)) {
+            return is.readAllBytes();
+        }
     }
 }

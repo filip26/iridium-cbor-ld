@@ -1,7 +1,5 @@
 package com.apicatalog.cborld.encoder.value;
 
-import java.util.Collection;
-
 import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.multibase.MultibaseDecoder;
 
@@ -15,8 +13,8 @@ public class MultibaseValueEncoder implements ValueEncoder {
     static final MultibaseDecoder MULTIBASE = MultibaseDecoder.getInstance();
 
     @Override
-    public DataItem encode(Mapping mapping, String value, String term, Collection<String> types) {
-        if (types.contains(TYPE)) {
+    public DataItem encode(Mapping mapping, String value, String term, String type) {
+        if (TYPE.equals(type)) {
 
             final String encoded = value;
 

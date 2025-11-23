@@ -2,7 +2,6 @@ package com.apicatalog.cborld.debug;
 
 import java.net.URI;
 
-import com.apicatalog.cborld.context.ContextError;
 import com.apicatalog.cborld.encoder.DefaultEncoder;
 import com.apicatalog.cborld.encoder.Encoder;
 import com.apicatalog.cborld.encoder.EncoderConfig;
@@ -11,6 +10,7 @@ import com.apicatalog.cborld.mapping.EncoderMappingProvider;
 import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.tree.io.TreeAdapter;
+import com.apicatalog.tree.io.TreeIO;
 
 /**
  * A debug-oriented implementation of the CBOR-LD encoder.
@@ -64,9 +64,13 @@ public class DebugEncoder extends Debug {
             dictionary = config.dictionary();
             encoded = debug.encode(object, adapter);
 
-        } catch (ContextError | EncoderException e) {
+        } catch (EncoderException e) {
             this.error = e;
         }
+    }
+    
+    public void encode(TreeIO node) {
+        encode(node.node(), node.adapter());
     }
 
     /**
@@ -81,7 +85,7 @@ public class DebugEncoder extends Debug {
             Debug debug) implements EncoderMappingProvider {
 
         @Override
-        public Mapping getEncoderMapping(Object document, TreeAdapter adapter, Encoder encoder) throws ContextError {
+        public Mapping getEncoderMapping(Object document, TreeAdapter adapter, Encoder encoder) throws EncoderException {
             debug.mapping = provider.getEncoderMapping(document, adapter, encoder);
             return debug.mapping;
         }

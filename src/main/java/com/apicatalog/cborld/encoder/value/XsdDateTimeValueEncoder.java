@@ -1,7 +1,6 @@
 package com.apicatalog.cborld.encoder.value;
 
 import java.time.Instant;
-import java.util.Collection;
 
 import com.apicatalog.cborld.mapping.Mapping;
 
@@ -13,8 +12,8 @@ public class XsdDateTimeValueEncoder implements ValueEncoder {
     public static final String DATE_TIME = "http://www.w3.org/2001/XMLSchema#dateTime";
 
     @Override
-    public DataItem encode(Mapping mapping, String value, String term, Collection<String> types) {
-        if (types.contains(DATE_TIME)) {
+    public DataItem encode(Mapping mapping, String value, String term, String type) {
+        if (DATE_TIME.equals(type)) {
 
             final Instant instant = Instant.parse(value);
 

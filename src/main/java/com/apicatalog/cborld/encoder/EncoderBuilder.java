@@ -3,20 +3,16 @@ package com.apicatalog.cborld.encoder;
 import java.net.URI;
 import java.util.Collection;
 
-import com.apicatalog.cborld.CborLdVersion;
+import com.apicatalog.cborld.CborLd.Version;
 import com.apicatalog.cborld.config.ConfigV1;
 import com.apicatalog.cborld.config.LegacyConfigV05;
 import com.apicatalog.cborld.config.LegacyConfigV06;
 import com.apicatalog.cborld.debug.DebugEncoder;
 import com.apicatalog.cborld.encoder.value.ValueEncoder;
-import com.apicatalog.cborld.loader.StaticContextLoader;
 import com.apicatalog.cborld.mapping.EncoderMappingProvider;
 import com.apicatalog.cborld.registry.DocumentDictionary;
-import com.apicatalog.jsonld.JsonLdOptions;
-import com.apicatalog.jsonld.http.DefaultHttpClient;
-import com.apicatalog.jsonld.http.media.MediaType;
+import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.loader.DocumentLoader;
-import com.apicatalog.jsonld.loader.HttpLoader;
 
 /**
  * Builder for creating and configuring {@link Encoder} instances.
@@ -39,20 +35,20 @@ import com.apicatalog.jsonld.loader.HttpLoader;
  * configuration state to encoder instances.
  * </p>
  */
-public class EncoderBuilder implements EncoderConfig {
+public final class EncoderBuilder implements EncoderConfig {
 
-    protected EncoderMappingProvider provider;
+    private EncoderMappingProvider provider;
 
-    protected DocumentDictionary dictionary;
+    private DocumentDictionary dictionary;
 
-    protected Collection<ValueEncoder> valueEncoders;
+    private Collection<ValueEncoder> valueEncoders;
 
-    protected CborLdVersion version;
+    private Version version;
 
-    protected DocumentLoader loader;
-    protected boolean bundledContexts;
-    protected boolean compactArrays;
-    protected URI base;
+    private DocumentLoader loader;
+    private boolean bundledContexts;
+    private boolean compactArrays;
+    private URI base;
 
     /**
      * Constructs a new {@code EncoderBuilder} initialized with the given
@@ -60,7 +56,7 @@ public class EncoderBuilder implements EncoderConfig {
      *
      * @param config the base encoder configuration to initialize from
      */
-    protected EncoderBuilder(EncoderConfig config) {
+    EncoderBuilder(EncoderConfig config) {
         this.provider = config.encoderMapping();
         this.compactArrays = config.isCompactArrays();
         this.valueEncoders = config.valueEncoders();
@@ -69,26 +65,6 @@ public class EncoderBuilder implements EncoderConfig {
         this.base = null;
         this.loader = null;
         this.bundledContexts = true;
-    }
-
-    /**
-     * Creates a new {@code EncoderBuilder} from an existing {@link EncoderConfig}.
-     *
-     * @param config the configuration to use
-     * @return a new {@code EncoderBuilder} instance
-     */
-    public static EncoderBuilder of(EncoderConfig config) {
-        return new EncoderBuilder(config);
-    }
-
-    /**
-     * Creates a new {@code EncoderBuilder} for the given CBOR-LD version.
-     *
-     * @param version the CBOR-LD version
-     * @return a new {@code EncoderBuilder} instance
-     */
-    public static EncoderBuilder of(CborLdVersion version) {
-        return new EncoderBuilder(config(version));
     }
 
     /**
@@ -105,7 +81,7 @@ public class EncoderBuilder implements EncoderConfig {
 
     /**
      * Set {@link DocumentLoader} used to fetch referenced JSON-LD contexts. If not
-     * set then default document loader provided by {@link JsonLdOptions} is used.
+     * set then default document loader provided by {@link Options} is used.
      * 
      * @param loader a document loader to set
      * @return {@link EncoderBuilder} instance
@@ -156,7 +132,7 @@ public class EncoderBuilder implements EncoderConfig {
      * @param version the version to use
      * @return this builder instance
      */
-    public EncoderBuilder version(CborLdVersion version) {
+    public EncoderBuilder version(Version version) {
         this.version = version;
         return this;
     }
@@ -169,12 +145,12 @@ public class EncoderBuilder implements EncoderConfig {
      */
     public Encoder build() {
         if (loader == null) {
-            loader = new HttpLoader(DefaultHttpClient.defaultInstance());
-            ((HttpLoader) loader).fallbackContentType(MediaType.JSON);
+//            loader = new HttpLoader(DefaultHttpClient.defaultInstance());
+//            ((HttpLoader) loader).fallbackContentType(MediaType.JSON);
         }
 
         if (bundledContexts) {
-            loader = new StaticContextLoader(loader);
+//            loader = new StaticContextLoader(loader);
         }
         return new DefaultEncoder(this, provider, loader, base);
     }
@@ -187,12 +163,12 @@ public class EncoderBuilder implements EncoderConfig {
      */
     public DebugEncoder debug() {
         if (loader == null) {
-            loader = new HttpLoader(DefaultHttpClient.defaultInstance());
-            ((HttpLoader) loader).fallbackContentType(MediaType.JSON);
+//            loader = new HttpLoader(DefaultHttpClient.defaultInstance());
+//            ((HttpLoader) loader).fallbackContentType(MediaType.JSON);
         }
 
         if (bundledContexts) {
-            loader = new StaticContextLoader(loader);
+//            loader = new StaticContextLoader(loader);
         }
         return new DebugEncoder(this, loader, base);
     }
@@ -203,7 +179,7 @@ public class EncoderBuilder implements EncoderConfig {
      * @param version the CBOR-LD version
      * @return the encoder configuration
      */
-    protected static final EncoderConfig config(CborLdVersion version) {
+    static final EncoderConfig config(Version version) {
         switch (version) {
         case V06:
             return LegacyConfigV06.INSTANCE;
@@ -239,7 +215,7 @@ public class EncoderBuilder implements EncoderConfig {
     }
 
     @Override
-    public CborLdVersion version() {
+    public Version version() {
         return version;
     }
 }

@@ -4,14 +4,14 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.apicatalog.cborld.CborLdVersion;
+import com.apicatalog.cborld.CborLd.Version;
 import com.apicatalog.cborld.decoder.value.ValueDecoder;
 import com.apicatalog.cborld.mapping.DecoderMappingProvider;
 import com.apicatalog.cborld.registry.DocumentDictionary;
 
 class DecoderConfigBuilder implements DecoderConfig {
 
-    CborLdVersion version;
+    Version version;
     boolean compactArrays;
     Map<Integer, DocumentDictionary> registry;
     Collection<ValueDecoder> valueDecoders;
@@ -25,7 +25,7 @@ class DecoderConfigBuilder implements DecoderConfig {
         DecoderConfigBuilder builder = new DecoderConfigBuilder();
         builder.version = config.version();
         builder.compactArrays = config.isCompactArrays();
-        if (config.version() != CborLdVersion.V05) {
+        if (config.version() != Version.V05) {
             builder.registry = new HashMap<Integer, DocumentDictionary>(config.registry());
         }
         builder.valueDecoders = config.valueDecoders();
@@ -34,7 +34,7 @@ class DecoderConfigBuilder implements DecoderConfig {
     }
 
     @Override
-    public CborLdVersion version() {
+    public Version version() {
         return version;
     }
 

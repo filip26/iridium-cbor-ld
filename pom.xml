@@ -55,17 +55,15 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <tree.version>0.11.0</tree.version>
-        <jakarta.json.version>2.0.1</jakarta.json.version>
-
-        <copper-multibase>4.1.0</copper-multibase>
-
         <argLine>-Dfile.encoding=UTF-8</argLine>
+
+        <titanium.version>2.0.0-M2</titanium.version>
+        <tree.version>0.11.0</tree.version>
+        <copper-multibase>4.1.0</copper-multibase>
 
         <!-- test resources -->
         <junit.version>6.0.1</junit.version>
         <jakarta.json.version>2.0.1</jakarta.json.version>
-        <titanium.version>1.7.0</titanium.version>
         
     </properties>
 
@@ -84,21 +82,8 @@
 
         <dependency>
             <groupId>com.apicatalog</groupId>
-            <artifactId>tree-io-jakarta</artifactId>
-            <version>${tree.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.apicatalog</groupId>
             <artifactId>tree-io-cbor</artifactId>
-            <version>${tree.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>jakarta.json</groupId>
-            <artifactId>jakarta.json-api</artifactId>
-            <version>${jakarta.json.version}</version>
-            <scope>provided</scope>
+            <version>0.12.0</version>
         </dependency>
 
         <dependency>
@@ -112,6 +97,13 @@
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
             <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.apicatalog</groupId>
+            <artifactId>tree-io-jakarta</artifactId>
+            <version>${tree.version}</version>
             <scope>test</scope>
         </dependency>
 

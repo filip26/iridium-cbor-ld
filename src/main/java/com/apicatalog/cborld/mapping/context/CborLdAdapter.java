@@ -1,4 +1,4 @@
-package com.apicatalog.cborld.context.mapping;
+package com.apicatalog.cborld.mapping.context;
 
 import java.math.BigInteger;
 import java.util.Collection;
@@ -13,14 +13,14 @@ import co.nstant.in.cbor.model.MajorType;
 import co.nstant.in.cbor.model.UnicodeString;
 import co.nstant.in.cbor.model.UnsignedInteger;
 
-class CborMapping extends CborAdapter {
+class CborLdAdapter extends CborAdapter {
 
     final Function<DataItem, String> decodeTerm;
     final Function<String, DataItem> encodeTerm;
 
     final BiFunction<DataItem, String, DataItem> decodeValue;
 
-    CborMapping(
+    CborLdAdapter(
             Function<DataItem, String> decodeTerm,
             Function<String, DataItem> encodeTerm,
             BiFunction<DataItem, String, DataItem> decodeValue) {
@@ -40,6 +40,14 @@ class CborMapping extends CborAdapter {
             return get(term, key, node);
         }
         return super.property(property, node);
+    }
+    
+    @Override
+    public String stringValue(Object node) {
+        if (node instanceof UnsignedInteger data) {
+            return decodeTerm.apply(data);
+        }
+        return super.stringValue(node);
     }
 
     @Override

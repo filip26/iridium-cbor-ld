@@ -2,7 +2,6 @@ package com.apicatalog.cborld.decoder.value;
 
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
-import java.util.Collection;
 import java.util.UUID;
 
 import com.apicatalog.cborld.decoder.DecoderException;
@@ -17,7 +16,7 @@ import co.nstant.in.cbor.model.UnsignedInteger;
 public class UuidValueDecoder implements ValueDecoder {
 
     @Override
-    public String decode(Mapping mapping, DataItem value, String term, Collection<String> types) throws DecoderException {
+    public String decode(Mapping mapping, DataItem value, String term, String types) throws DecoderException {
         return (value instanceof Array array && array.getDataItems().size() == 2
                 && array.getDataItems().get(0) instanceof UnsignedInteger code
                 && code.getValue().equals(BigInteger.valueOf(3))

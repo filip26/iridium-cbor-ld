@@ -1,7 +1,5 @@
 package com.apicatalog.cborld.decoder.value;
 
-import java.util.Collection;
-
 import com.apicatalog.cborld.decoder.DecoderException;
 import com.apicatalog.cborld.encoder.value.DidKeyValueEncoder;
 import com.apicatalog.cborld.mapping.Mapping;
@@ -15,7 +13,7 @@ import co.nstant.in.cbor.model.UnsignedInteger;
 public class DidKeyValueDecoder implements ValueDecoder {
 
     @Override
-    public String decode(Mapping mapping, DataItem value, String term, Collection<String> types) throws DecoderException {
+    public String decode(Mapping mapping, DataItem value, String term, String type) throws DecoderException {
 
         if (value instanceof Array array) {
 

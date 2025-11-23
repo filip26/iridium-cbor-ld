@@ -3,13 +3,12 @@ package com.apicatalog.cborld.debug;
 import java.net.URI;
 import java.util.Map;
 
-import com.apicatalog.cborld.CborLdVersion;
-import com.apicatalog.cborld.context.ContextError;
+import com.apicatalog.cborld.CborLd.Version;
 import com.apicatalog.cborld.decoder.Decoder;
 import com.apicatalog.cborld.decoder.DecoderBuilder;
 import com.apicatalog.cborld.decoder.DecoderConfig;
 import com.apicatalog.cborld.decoder.DecoderException;
-import com.apicatalog.cborld.decoder.DecoderException.Code;
+import com.apicatalog.cborld.decoder.DecoderException.DecoderCode;
 import com.apicatalog.cborld.mapping.DecoderMappingProvider;
 import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.cborld.registry.DocumentDictionary;
@@ -35,17 +34,17 @@ import co.nstant.in.cbor.model.DataItem;
 public class DebugDecoder extends Debug {
 
     /** A map of supported CBOR-LD versions and their decoding configurations. */
-    final Map<CborLdVersion, DecoderConfig> versions;
+    final Map<Version, DecoderConfig> versions;
 
     /**
      * Constructs a new {@code DebugDecoder} instance.
      *
-     * @param versions the set of supported {@link CborLdVersion}s and their
+     * @param versions the set of supported {@link Version}s and their
      *                 corresponding configurations
      * @param loader   the document loader used to resolve external contexts
      * @param base     the base URI to resolve relative IRIs
      */
-    public DebugDecoder(Map<CborLdVersion, DecoderConfig> versions, DocumentLoader loader, URI base) {
+    public DebugDecoder(Map<Version, DecoderConfig> versions, DocumentLoader loader, URI base) {
         super(loader, base);
         this.versions = versions;
     }
@@ -65,10 +64,10 @@ public class DebugDecoder extends Debug {
             var config = versions.get(version);
 
             if (config == null) {
-                throw new DecoderException(Code.Unsupported, "The decoder is not configured to support version " + version + " but " + versions.keySet() + ".");
+                throw new DecoderException(DecoderCode.Unsupported, "The decoder is not configured to support version " + version + " but " + versions.keySet() + ".");
             }
 
-            var debug = DecoderBuilder.newInstance(
+            var debug = DecoderBuilder.newDecoder(
                     config,
                     new DebugMapping(config.decoderMapping(), this),
                     loader,
@@ -76,7 +75,7 @@ public class DebugDecoder extends Debug {
 
             decoded = debug.decode(encoded);
 
-        } catch (ContextError | DecoderException e) {
+        } catch (DecoderException e) {
             this.error = e;
         }
     }
@@ -90,7 +89,7 @@ public class DebugDecoder extends Debug {
             Debug debug) implements DecoderMappingProvider {
 
         @Override
-        public Mapping getDecoderMapping(DataItem document, DocumentDictionary dictionary, Decoder decoder) throws DecoderException, ContextError {
+        public Mapping getDecoderMapping(DataItem document, DocumentDictionary dictionary, Decoder decoder) throws DecoderException {
             debug.dictionary = dictionary;
             debug.mapping = provider.getDecoderMapping(document, dictionary, decoder);
             return debug.mapping;

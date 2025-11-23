@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.Collection;
 
 import com.apicatalog.cborld.mapping.Mapping;
 
@@ -16,8 +15,8 @@ public class XsdDateValueEncoder implements ValueEncoder {
     public static final String DATE = "http://www.w3.org/2001/XMLSchema#date";
 
     @Override
-    public DataItem encode(Mapping mapping, String value, String term, Collection<String> types) {
-        if (types.contains(DATE)) {
+    public DataItem encode(Mapping mapping, String value, String term, String type) {
+        if (DATE.equals(type)) {
 
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             LocalDate date = LocalDate.parse(value, formatter);

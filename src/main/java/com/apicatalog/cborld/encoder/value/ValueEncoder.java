@@ -1,7 +1,5 @@
 package com.apicatalog.cborld.encoder.value;
 
-import java.util.Collection;
-
 import com.apicatalog.cborld.encoder.EncoderException;
 import com.apicatalog.cborld.mapping.Mapping;
 
@@ -26,10 +24,10 @@ public interface ValueEncoder {
      * @param value   the value to encode, never <code>null</code>
      * @param term    the JSON-LD term (property) / RDF predicate associated with
      *                the value
-     * @param types   the set of RDF types associated with the term
+     * @param type    JSON-LD type associated with the term
      * @return a CBOR {@link DataItem} representing the encoded value
      * @throws EncoderException if encoding fails due to invalid structure,
      *                          unsupported type, or configuration issues
      */
-    DataItem encode(Mapping mapping, String value, String term, Collection<String> types) throws EncoderException;
+    DataItem encode(Mapping mapping, String value, String term, String types) throws EncoderException;
 }

@@ -4,11 +4,11 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Map.Entry;
 
-import com.apicatalog.cborld.encoder.EncoderException.Code;
+import com.apicatalog.cborld.encoder.EncoderException.EncoderCode;
 import com.apicatalog.jsonld.lang.Keywords;
-import com.apicatalog.jsonld.uri.UriUtils;
-import com.apicatalog.jsonld.uri.UriValidationPolicy;
 import com.apicatalog.tree.io.TreeAdapter;
+import com.apicatalog.web.uri.UriUtils;
+import com.apicatalog.web.uri.UriValidationPolicy;
 
 class EncoderContext {
 
@@ -63,7 +63,7 @@ class EncoderContext {
         }
 
         throw new EncoderException(
-                Code.NonCompressible,
+                EncoderCode.NonCompressible,
                 """
                         Non-compressible document. Only JSON-LD documents containing referenced contexts can be compressed. \
                         Referenced contexts serve as a shared dictionary, which is not possible with inline contexts.
