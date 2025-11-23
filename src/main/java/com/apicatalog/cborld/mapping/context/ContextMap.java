@@ -125,7 +125,7 @@ public class ContextMap {
         @Override
         public void onType(String key, String id) {
             if (typeMapper != null && Keywords.TYPE.equals(id)) {
-                typeMapper.typeKeyName(key);
+                typeMapper.typeKey(key);
             }
             stack.peek().put(key, id);
         }

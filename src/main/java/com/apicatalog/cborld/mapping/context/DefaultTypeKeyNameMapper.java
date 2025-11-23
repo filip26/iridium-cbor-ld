@@ -1,13 +1,13 @@
 package com.apicatalog.cborld.mapping.context;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
 
 import com.apicatalog.cborld.mapping.TypeKeyNameMapper;
+import com.apicatalog.jsonld.lang.Keywords;
 
 class DefaultTypeKeyNameMapper implements TypeKeyNameMapper {
 
@@ -24,7 +24,7 @@ class DefaultTypeKeyNameMapper implements TypeKeyNameMapper {
     }
 
     @Override
-    public void typeKeyName(String key) {
+    public void typeKey(String key) {
 
         if (typeKeys.peek().isEmpty()) {
             typeKeys.pop();
@@ -41,6 +41,7 @@ class DefaultTypeKeyNameMapper implements TypeKeyNameMapper {
 
     @Override
     public boolean isTypeKey(String term) {
-        return !typeKeys.isEmpty() && typeKeys.peek().contains(term);
+        return Keywords.TYPE.equals(term)
+                || (!typeKeys.isEmpty() && typeKeys.peek().contains(term));
     }
 }

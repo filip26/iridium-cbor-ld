@@ -4,7 +4,7 @@ public interface TypeKeyNameMapper  {
 
     void beginMap(String key);
 
-    void typeKeyName(String type);
+    void typeKey(String key);
 
     void endMap();
 

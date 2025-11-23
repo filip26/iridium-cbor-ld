@@ -19,12 +19,12 @@ import co.nstant.in.cbor.model.UnsignedInteger;
 
 class DecoderContextMapping implements Mapping {
 
-    final DocumentDictionary dictionary;
-    final CodeTermMap termMap;
-    final TypeKeyNameMapper typeKeyNameMap;
-    final Collection<ValueDecoder> valueDecoders;
+    private final DocumentDictionary dictionary;
+    private final CodeTermMap termMap;
+    private final TypeKeyNameMapper typeKeyNameMap;
+    private final Collection<ValueDecoder> valueDecoders;
 
-    TypeMap typeMap;
+    private TypeMap typeMap;
 
     DecoderContextMapping(DocumentDictionary dictionary, Collection<ValueDecoder> valueDecoders) {
         this.dictionary = dictionary;
@@ -36,23 +36,24 @@ class DecoderContextMapping implements Mapping {
 
     final DataItem decodeValue(final DataItem value, final String property) {
 
-        for (final var decoder : valueDecoders) {
-            try {
+        try {
+
+            for (final var decoder : valueDecoders) {
                 final var decoded = decoder.decode(
                         this,
                         value,
                         property,
-                        Keywords.TYPE.equals(property) || typeKeyNameMap.isTypeKey(property)
+                        typeKeyNameMap.isTypeKey(property)
                                 ? Keywords.TYPE
                                 : null);
 
                 if (decoded != null) {
                     return new UnicodeString(decoded);
                 }
-
-            } catch (DecoderException e) {
-                /* ignored */
             }
+
+        } catch (DecoderException e) {
+            /* ignored */
         }
 
         return value;
@@ -65,6 +66,7 @@ class DecoderContextMapping implements Mapping {
         if (encodedTerm != null) {
             return new UnsignedInteger(encodedTerm);
         }
+
         return new UnicodeString(term);
     }
 
@@ -74,16 +76,11 @@ class DecoderContextMapping implements Mapping {
             throw new IllegalArgumentException("The data parameter must not be null.");
         }
 
-        switch (data.getMajorType()) {
-        case UNICODE_STRING:
-            return ((UnicodeString) data).getString();
-
-        case UNSIGNED_INTEGER:
-            return decodeTerm(((UnsignedInteger) data).getValue());
-
-        default:
-            return data.toString();
-        }
+        return switch (data.getMajorType()) {
+        case UNICODE_STRING -> ((UnicodeString) data).getString();
+        case UNSIGNED_INTEGER -> decodeTerm(((UnsignedInteger) data).getValue());
+        default -> data.toString();
+        };
     }
 
     final String decodeTerm(final BigInteger term) {
