@@ -1,6 +1,7 @@
 package com.apicatalog.cborld.decoder.value;
 
 import com.apicatalog.cborld.decoder.DecoderException;
+import com.apicatalog.cborld.decoder.DecoderException.DecoderError;
 import com.apicatalog.cborld.encoder.value.DidKeyValueEncoder;
 import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.multibase.Multibase;
@@ -19,23 +20,25 @@ public class DidKeyValueDecoder implements ValueDecoder {
 
             var items = array.getDataItems();
 
-            if (items.size() < 2 || items.size() > 3) {
-                return null;
-            }
+            if (items.size() >= 2
+                    && items.size() <= 3
+                    && items.get(0) instanceof UnsignedInteger code
+                    && DidKeyValueEncoder.CODE == code.getValue().longValueExact()) {
 
-            if (items.get(0) instanceof UnsignedInteger code
-                    && DidKeyValueEncoder.CODE == code.getValue().longValueExact()
-                    && items.get(1) instanceof ByteString part1) {
+                if (items.get(1) instanceof ByteString part1) {
 
-                var key = decode(part1);
+                    var key = decode(part1);
 
-                if (items.size() == 2) {
-                    return DidKeyValueEncoder.PREFIX + key;
+                    if (items.size() == 2) {
+                        return DidKeyValueEncoder.PREFIX + key;
+                    }
+
+                    if (items.get(2) instanceof ByteString part2) {
+                        return DidKeyValueEncoder.PREFIX + key + "#" + decode(part2);
+                    }
                 }
 
-                if (items.get(2) instanceof ByteString part2) {
-                    return DidKeyValueEncoder.PREFIX + key + "#" + decode(part2);
-                }
+                throw new DecoderException(DecoderError.INVALID_VALUE, "Invalid did:key value=" + value);
             }
         }
         return null;

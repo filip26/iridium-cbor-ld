@@ -5,7 +5,7 @@ import java.net.URI;
 import java.util.ArrayList;
 
 import com.apicatalog.cborld.CborLd.Version;
-import com.apicatalog.cborld.decoder.DecoderException.DecoderCode;
+import com.apicatalog.cborld.decoder.DecoderException.DecoderError;
 import com.apicatalog.cborld.hex.Hex;
 import com.apicatalog.cborld.mapping.DecoderMappingProvider;
 import com.apicatalog.jsonld.loader.DocumentLoader;
@@ -46,7 +46,7 @@ class DecoderV1 extends AbstractDecoder {
             return list;
 
         } catch (final CborException e) {
-            throw new DecoderException(DecoderCode.INVALID_DOCUMENT, e);
+            throw new DecoderException(DecoderError.INVALID_DOCUMENT, e);
         }
     }
 
@@ -64,7 +64,7 @@ class DecoderV1 extends AbstractDecoder {
                 var dictionary = config.registry().get(code);
 
                 if (code > 0 && dictionary == null) {
-                    throw new DecoderException(DecoderCode.UNKNOWN_DICTIONARY,
+                    throw new DecoderException(DecoderError.UNKNOWN_DICTIONARY,
                             "Unknown CBOR-LD v1.0 document dictionary code = "
                                     + code
                                     + ", hex = "
@@ -73,9 +73,9 @@ class DecoderV1 extends AbstractDecoder {
 
                 return decode(dictionary, it.next());
             }
-            throw new DecoderException(DecoderCode.INVALID_DOCUMENT, "The document is not CBOR-LD v1.0 document. Registry Entry ID is not an unsigned integer but " + entryId + ".");
+            throw new DecoderException(DecoderError.INVALID_DOCUMENT, "The document is not CBOR-LD v1.0 document. Registry Entry ID is not an unsigned integer but " + entryId + ".");
         }
-        throw new DecoderException(DecoderCode.INVALID_DOCUMENT, "The document is not CBOR-LD v1.0 document. Must start with array of two items, but is " + dataItem + ".");
+        throw new DecoderException(DecoderError.INVALID_DOCUMENT, "The document is not CBOR-LD v1.0 document. Must start with array of two items, but is " + dataItem + ".");
     }
 
 }

@@ -13,7 +13,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import com.apicatalog.cborld.CborLd.Version;
-import com.apicatalog.cborld.decoder.DecoderException.DecoderCode;
+import com.apicatalog.cborld.decoder.DecoderException.DecoderError;
 import com.apicatalog.cborld.decoder.value.ValueDecoder;
 import com.apicatalog.cborld.mapping.DecoderMappingProvider;
 import com.apicatalog.cborld.mapping.Mapping;
@@ -58,7 +58,7 @@ abstract class AbstractDecoder implements Decoder {
         final Version version = Decoder.assertCborLd(encoded);
 
         if (version != config.version()) {
-            throw new DecoderException(DecoderCode.UNSUPPORTED, "The decoder does support " + version + " but " + config.version() + " .");
+            throw new DecoderException(DecoderError.UNSUPPORTED, "The decoder does support " + version + " but " + config.version() + " .");
 
         }
         return decode(version, encoded);
@@ -288,7 +288,7 @@ abstract class AbstractDecoder implements Decoder {
             return list;
 
         } catch (final CborException e) {
-            throw new DecoderException(DecoderCode.INVALID_DOCUMENT, e);
+            throw new DecoderException(DecoderError.INVALID_DOCUMENT, e);
         }
     }
 

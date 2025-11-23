@@ -4,7 +4,7 @@ import java.time.Instant;
 import java.time.format.DateTimeParseException;
 
 import com.apicatalog.cborld.encoder.EncoderException;
-import com.apicatalog.cborld.encoder.EncoderException.EncoderCode;
+import com.apicatalog.cborld.encoder.EncoderException.EncoderError;
 import com.apicatalog.cborld.mapping.Mapping;
 
 import co.nstant.in.cbor.model.DataItem;
@@ -23,7 +23,7 @@ public class XsdDateTimeValueEncoder implements ValueEncoder {
                 return new UnsignedInteger(instant.getEpochSecond());
 
             } catch (DateTimeParseException e) {
-                throw new EncoderException(EncoderCode.INVALID_VALUE, e);
+                throw new EncoderException(EncoderError.INVALID_VALUE, e);
             }
         }
         return null;

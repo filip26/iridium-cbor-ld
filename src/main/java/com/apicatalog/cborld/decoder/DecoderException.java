@@ -4,7 +4,7 @@ package com.apicatalog.cborld.decoder;
  * Exception thrown when an error occurs during CBOR-LD decoding.
  *
  * <p>
- * A {@code DecoderException} includes a specific {@link DecoderCode} to indicate the
+ * A {@code DecoderException} includes a specific {@link DecoderError} to indicate the
  * category or nature of the decoding failure.
  * </p>
  */
@@ -15,7 +15,7 @@ public class DecoderException extends Exception {
     /**
      * Enumeration of known error categories that may occur during decoding.
      */
-    public enum DecoderCode {
+    public enum DecoderError {
         /** An unexpected internal error occurred. */
         INTERNAL,
         /** The input CBOR-LD document is invalid or malformed. */
@@ -30,7 +30,7 @@ public class DecoderException extends Exception {
         INVALID_VALUE,
     }
 
-    private final DecoderCode code;
+    private final DecoderError code;
 
     /**
      * Constructs a new {@code DecoderException} with the specified error code and
@@ -39,7 +39,7 @@ public class DecoderException extends Exception {
      * @param code    the error category
      * @param message a detailed error message
      */
-    public DecoderException(DecoderCode code, String message) {
+    public DecoderException(DecoderError code, String message) {
         super(message);
         this.code = code;
     }
@@ -51,17 +51,17 @@ public class DecoderException extends Exception {
      * @param code  the error category
      * @param cause the underlying cause of the exception
      */
-    public DecoderException(DecoderCode code, Throwable cause) {
+    public DecoderException(DecoderError code, Throwable cause) {
         super(cause);
         this.code = code;
     }
 
     /**
-     * Returns the {@link DecoderCode} associated with this exception.
+     * Returns the {@link DecoderError} associated with this exception.
      *
      * @return the error code
      */
-    public DecoderCode code() {
+    public DecoderError code() {
         return code;
     }
 }

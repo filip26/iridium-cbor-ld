@@ -4,7 +4,7 @@ import java.time.DateTimeException;
 import java.time.Instant;
 
 import com.apicatalog.cborld.decoder.DecoderException;
-import com.apicatalog.cborld.decoder.DecoderException.DecoderCode;
+import com.apicatalog.cborld.decoder.DecoderException.DecoderError;
 import com.apicatalog.cborld.mapping.Mapping;
 
 import co.nstant.in.cbor.model.DataItem;
@@ -22,7 +22,7 @@ public class XsdDateTimeValueDecoder implements ValueDecoder {
                             ? Instant.ofEpochSecond(epochSeconds.getValue().longValueExact()).toString()
                             : null;
         } catch (DateTimeException e) {
-            throw new DecoderException(DecoderCode.INVALID_VALUE, e);
+            throw new DecoderException(DecoderError.INVALID_VALUE, e);
         }
     }
 }

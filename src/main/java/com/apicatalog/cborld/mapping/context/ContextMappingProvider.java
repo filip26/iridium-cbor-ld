@@ -2,11 +2,11 @@ package com.apicatalog.cborld.mapping.context;
 
 import com.apicatalog.cborld.decoder.Decoder;
 import com.apicatalog.cborld.decoder.DecoderException;
-import com.apicatalog.cborld.decoder.DecoderException.DecoderCode;
+import com.apicatalog.cborld.decoder.DecoderException.DecoderError;
 import com.apicatalog.cborld.dictionary.CodeTermMap;
 import com.apicatalog.cborld.encoder.Encoder;
 import com.apicatalog.cborld.encoder.EncoderException;
-import com.apicatalog.cborld.encoder.EncoderException.EncoderCode;
+import com.apicatalog.cborld.encoder.EncoderException.EncoderError;
 import com.apicatalog.cborld.mapping.DecoderMappingProvider;
 import com.apicatalog.cborld.mapping.EncoderMappingProvider;
 import com.apicatalog.cborld.mapping.Mapping;
@@ -35,10 +35,10 @@ public class ContextMappingProvider implements EncoderMappingProvider, DecoderMa
 
         } catch (JsonLdException e) {
             if (ErrorCode.INLINE_CONTEXT_IS_NOT_ALLOWED == e.code()) {
-                throw new EncoderException(EncoderCode.NON_COMPRESSIBLE, e);
+                throw new EncoderException(EncoderError.NON_COMPRESSIBLE, e);
             }
 
-            throw new EncoderException(EncoderCode.INVALID_CONTEXT, e);
+            throw new EncoderException(EncoderError.INVALID_CONTEXT, e);
         }
     }
 
@@ -64,7 +64,7 @@ public class ContextMappingProvider implements EncoderMappingProvider, DecoderMa
             return mapping;
 
         } catch (JsonLdException e) {
-            throw new DecoderException(DecoderCode.INVALID_CONTEXT, e);
+            throw new DecoderException(DecoderError.INVALID_CONTEXT, e);
         }
     }
 }

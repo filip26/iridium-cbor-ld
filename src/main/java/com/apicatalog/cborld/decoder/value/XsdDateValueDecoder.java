@@ -7,7 +7,7 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
 import com.apicatalog.cborld.decoder.DecoderException;
-import com.apicatalog.cborld.decoder.DecoderException.DecoderCode;
+import com.apicatalog.cborld.decoder.DecoderException.DecoderError;
 import com.apicatalog.cborld.mapping.Mapping;
 
 import co.nstant.in.cbor.model.DataItem;
@@ -29,7 +29,7 @@ public class XsdDateValueDecoder implements ValueDecoder {
                                             ZoneOffset.UTC))
                             : null;
         } catch (DateTimeException e) {
-            throw new DecoderException(DecoderCode.INVALID_VALUE, e);
+            throw new DecoderException(DecoderError.INVALID_VALUE, e);
         }
     }
 }

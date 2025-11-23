@@ -7,7 +7,7 @@ import java.util.Map;
 
 import com.apicatalog.cborld.CborLd;
 import com.apicatalog.cborld.CborLd.Version;
-import com.apicatalog.cborld.decoder.DecoderException.DecoderCode;
+import com.apicatalog.cborld.decoder.DecoderException.DecoderError;
 import com.apicatalog.cborld.hex.Hex;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 
@@ -116,12 +116,12 @@ public interface Decoder {
         }
 
         if (encoded.length < 4) {
-            throw new DecoderException(DecoderCode.INVALID_DOCUMENT,
+            throw new DecoderException(DecoderError.INVALID_DOCUMENT,
                     "The encoded document must be at least 4 bytes but is [" + encoded.length + "].");
         }
 
         if (encoded[0] != CborLd.LEADING_BYTE) {
-            throw new DecoderException(DecoderCode.INVALID_DOCUMENT, "The document is not CBOR-LD document. Must start with "
+            throw new DecoderException(DecoderError.INVALID_DOCUMENT, "The document is not CBOR-LD document. Must start with "
                     + Hex.toString(CborLd.LEADING_BYTE)
                     + ", but is "
                     + Hex.toString(encoded[0])
@@ -131,7 +131,7 @@ public interface Decoder {
         final Version version = Version.of(encoded, 1); // skip leading byte
 
         if (version == null) {
-            throw new DecoderException(DecoderCode.INVALID_DOCUMENT, "The document is not CBOR-LD document. A tag must start with: "
+            throw new DecoderException(DecoderError.INVALID_DOCUMENT, "The document is not CBOR-LD document. A tag must start with: "
                     + "v1.0 = "
                     + Hex.toString(Version.V1.bytes())
                     + ", or v0.6 = "
