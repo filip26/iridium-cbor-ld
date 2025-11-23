@@ -64,7 +64,7 @@ public class DebugDecoder extends Debug {
             var config = versions.get(version);
 
             if (config == null) {
-                throw new DecoderException(DecoderCode.Unsupported, "The decoder is not configured to support version " + version + " but " + versions.keySet() + ".");
+                throw new DecoderException(DecoderCode.UNSUPPORTED, "The decoder is not configured to support version " + version + " but " + versions.keySet() + ".");
             }
 
             var debug = DecoderBuilder.newDecoder(

@@ -17,7 +17,7 @@
       ],
       "name": "empty document",
       "input": "decoder/0001-in.cborld",
-      "expectErrorCode": "InvalidDocument"
+      "expectErrorCode": "INVALID_DOCUMENT"
     },
     {
       "@id": "#t0002",
@@ -27,7 +27,7 @@
       ],
       "name": "too short document, less than 4 bytes",
       "input": "decoder/0002-in.cborld",
-      "expectErrorCode": "InvalidDocument"
+      "expectErrorCode": "INVALID_DOCUMENT"
     },
     {
       "@id": "#t0003",
@@ -37,7 +37,7 @@
       ],
       "name": "not CBOR-LD document",
       "input": "decoder/0003-in.cborld",
-      "expectErrorCode": "InvalidDocument"
+      "expectErrorCode": "INVALID_DOCUMENT"
     },
     {
       "@id": "#t0004",
@@ -47,7 +47,7 @@
       ],
       "name": "0.5: unknown dictionary",
       "input": "decoder/0.5/0004-in.cborld",
-      "expectErrorCode": "Unsupported"
+      "expectErrorCode": "UNSUPPORTED"
     },
     {
       "@id": "#t0005",

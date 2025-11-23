@@ -35,10 +35,10 @@ public class ContextMappingProvider implements EncoderMappingProvider, DecoderMa
 
         } catch (JsonLdException e) {
             if (ErrorCode.INLINE_CONTEXT_IS_NOT_ALLOWED == e.code()) {
-                throw new EncoderException(EncoderCode.NonCompressible, e);
+                throw new EncoderException(EncoderCode.NON_COMPRESSIBLE, e);
             }
 
-            throw new EncoderException(EncoderCode.InvalidContext, e);
+            throw new EncoderException(EncoderCode.INVALID_CONTEXT, e);
         }
     }
 
@@ -64,7 +64,7 @@ public class ContextMappingProvider implements EncoderMappingProvider, DecoderMa
             return mapping;
 
         } catch (JsonLdException e) {
-            throw new DecoderException(DecoderCode.InvalidContext, e);
+            throw new DecoderException(DecoderCode.INVALID_CONTEXT, e);
         }
     }
 }

@@ -63,7 +63,7 @@ class EncoderContext {
         }
 
         throw new EncoderException(
-                EncoderCode.NonCompressible,
+                EncoderCode.NON_COMPRESSIBLE,
                 """
                         Non-compressible document. Only JSON-LD documents containing referenced contexts can be compressed. \
                         Referenced contexts serve as a shared dictionary, which is not possible with inline contexts.

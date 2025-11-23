@@ -10,7 +10,7 @@ public class IdValueEncoder implements ValueEncoder {
 
     @Override
     public DataItem encode(Mapping mapping, String value, String term, String type) {
-        if (Keywords.ID.equals(type)
+        if ((Keywords.ID.equals(type) || Keywords.ID.equals(term))
                 && mapping.dictionary() != null
                 && mapping.dictionary().uris() != null) {
 

@@ -10,7 +10,7 @@ public class TypeValueEncoder implements ValueEncoder {
 
     @Override
     public DataItem encode(Mapping mapping, String value, String term, String type) {
-        if (Keywords.TYPE.equals(type)) {
+        if (Keywords.TYPE.equals(type) || Keywords.TYPE.equals(term)) {
             final Integer code = mapping.termMap().getCode(value);
 
             if (code != null) {

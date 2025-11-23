@@ -17,15 +17,17 @@ public class DecoderException extends Exception {
      */
     public enum DecoderCode {
         /** An unexpected internal error occurred. */
-        Internal,
+        INTERNAL,
         /** The input CBOR-LD document is invalid or malformed. */
-        InvalidDocument,
+        INVALID_DOCUMENT,
         /** JSON-LD context to expand the input document is invalid. */
-        InvalidContext,
+        INVALID_CONTEXT,
         /** The dictionary code in the document is not recognized or registered. */
-        UnknownDictionary,
+        UNKNOWN_DICTIONARY,
         /** The document uses features or structures not supported by the decoder. */
-        Unsupported,
+        UNSUPPORTED, 
+        
+        INVALID_VALUE,
     }
 
     private final DecoderCode code;

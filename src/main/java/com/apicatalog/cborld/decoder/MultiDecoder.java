@@ -30,7 +30,7 @@ class MultiDecoder implements Decoder {
         final Decoder decoder = decoders.get(version);
 
         if (decoder == null) {
-            throw new DecoderException(DecoderCode.Unsupported, "The decoder is not configured to support version " + version + " but " + decoders.keySet() +  ".");
+            throw new DecoderException(DecoderCode.UNSUPPORTED, "The decoder is not configured to support version " + version + " but " + decoders.keySet() +  ".");
         }
 
         return decoder.decode(version, encoded);

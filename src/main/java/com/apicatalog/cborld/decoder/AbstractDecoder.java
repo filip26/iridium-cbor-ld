@@ -58,7 +58,7 @@ abstract class AbstractDecoder implements Decoder {
         final Version version = Decoder.assertCborLd(encoded);
 
         if (version != config.version()) {
-            throw new DecoderException(DecoderCode.Unsupported, "The decoder does support " + version + " but " + config.version() + " .");
+            throw new DecoderException(DecoderCode.UNSUPPORTED, "The decoder does support " + version + " but " + config.version() + " .");
 
         }
         return decode(version, encoded);
@@ -288,7 +288,7 @@ abstract class AbstractDecoder implements Decoder {
             return list;
 
         } catch (final CborException e) {
-            throw new DecoderException(DecoderCode.InvalidDocument, e);
+            throw new DecoderException(DecoderCode.INVALID_DOCUMENT, e);
         }
     }
 

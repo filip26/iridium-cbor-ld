@@ -18,22 +18,24 @@ public class EncoderException extends Exception {
      */
     public enum EncoderCode {
         /** An unexpected internal error occurred. */
-        Internal,
+        INTERNAL,
 
         /** The input JSON-LD document is invalid. */
-        InvalidDocument,
+        INVALID_DOCUMENT,
 
         /** JSON-LD context to expand the input document is invalid. */
-        InvalidContext,
+        INVALID_CONTEXT,
 
         /**
          * The document cannot be compressed, e.g., it contains inline contexts which
          * are not suitable for dictionary-based compression.
          */
-        NonCompressible,
+        NON_COMPRESSIBLE,
 
         /** The document uses features or structures not supported by the encoder. */
-        Unsupported,
+        UNSUPPORTED, 
+        
+        INVALID_VALUE,
     }
 
     private final EncoderCode code;

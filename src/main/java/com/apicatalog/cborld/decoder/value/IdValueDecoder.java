@@ -11,7 +11,7 @@ public class IdValueDecoder implements ValueDecoder {
 
     @Override
     public String decode(Mapping mapping, DataItem value, String term, String type) throws DecoderException {
-        if (Keywords.ID.equals(type)
+        if ((Keywords.ID.equals(type) || Keywords.ID.equals(term))
                 && mapping != null
                 && value instanceof UnsignedInteger uint) {
 

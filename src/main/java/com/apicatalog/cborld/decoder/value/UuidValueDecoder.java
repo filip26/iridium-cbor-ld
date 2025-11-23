@@ -19,16 +19,17 @@ public class UuidValueDecoder implements ValueDecoder {
     public String decode(Mapping mapping, DataItem value, String term, String types) throws DecoderException {
         return (value instanceof Array array && array.getDataItems().size() == 2
                 && array.getDataItems().get(0) instanceof UnsignedInteger code
-                && code.getValue().equals(BigInteger.valueOf(3))
+                && code.getValue().equals(BigInteger.valueOf(UuidValueEncoder.CODE))
                 && array.getDataItems().get(1) instanceof ByteString uuid)
                         ? UuidValueEncoder.PREFIX + of(uuid.getBytes()).toString()
                         : null;
     }
 
     public static UUID of(byte[] bytes) {
-        ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
-        long high = byteBuffer.getLong();
-        long low = byteBuffer.getLong();
-        return new UUID(high, low);
+        final var byteBuffer = ByteBuffer.wrap(bytes);
+
+        return new UUID(
+                byteBuffer.getLong(),
+                byteBuffer.getLong());
     }
 }
