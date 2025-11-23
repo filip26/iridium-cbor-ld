@@ -24,15 +24,21 @@ public class UuidValueDecoder implements ValueDecoder {
                 && code.getValue().equals(BigInteger.valueOf(UuidValueEncoder.CODE))) {
 
             if (array.getDataItems().get(1) instanceof ByteString uuid) {
-                return UuidValueEncoder.PREFIX + of(uuid.getBytes()).toString();
+
+                final var bytes = uuid.getBytes();
+
+                if (bytes.length == 16) {
+                    return UuidValueEncoder.PREFIX + of(bytes).toString();
+                }
             }
 
-            throw new DecoderException(DecoderError.INVALID_VALUE, "Invalid uuid value=" + value);
+            throw new DecoderException(DecoderError.INVALID_VALUE, "Invalid urn:uuid value=" + value);
         }
         return null;
     }
 
     public static UUID of(byte[] bytes) {
+
         final var byteBuffer = ByteBuffer.wrap(bytes);
 
         return new UUID(
