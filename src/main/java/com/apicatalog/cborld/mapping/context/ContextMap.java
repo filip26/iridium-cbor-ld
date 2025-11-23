@@ -144,9 +144,7 @@ public class ContextMap {
 
         @Override
         public String getType(String term) {
-
-            final var type = typeMap.get(term);
-            if (type instanceof String string) {
+            if (typeMap.get(term) instanceof String string) {
                 return string;
             }
             return null;
@@ -154,9 +152,12 @@ public class ContextMap {
 
         @Override
         public TypeMap getMapping(String term) {
-            var type = typeMap.get(term);
-            if (type instanceof Map map) {
-                return new TypeMapImpl((Map<String, Object>) map);
+            if (typeMap.get(term) instanceof Map map) {
+
+                @SuppressWarnings("unchecked")
+                final var typedMap = (Map<String, Object>) map;
+
+                return new TypeMapImpl(typedMap);
             }
             return null;
         }

@@ -103,7 +103,7 @@ abstract class AbstractDecoder implements Decoder {
         }
     }
 
-    protected final Map<String, ?> decodeMap(final co.nstant.in.cbor.model.Map map, final TypeMap def, final Mapping mapping) throws DecoderException {
+    protected final Map<String, Object> decodeMap(final co.nstant.in.cbor.model.Map map, final TypeMap def, final Mapping mapping) throws DecoderException {
 
         Objects.requireNonNull(map);
 
@@ -171,7 +171,7 @@ abstract class AbstractDecoder implements Decoder {
         return result != null ? result : key.toString();
     }
 
-    protected final Collection<?> decodeArray(final Collection<DataItem> items, final String key, final TypeMap def, final Mapping mapping) throws DecoderException {
+    protected final Collection<Object> decodeArray(final Collection<DataItem> items, final String key, final TypeMap def, final Mapping mapping) throws DecoderException {
 
         Objects.requireNonNull(items);
 

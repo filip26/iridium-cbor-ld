@@ -164,12 +164,12 @@ public final class DecoderBuilder {
     public Decoder build() {
 
         if (loader == null) {
-//            loader = new HttpLoader(DefaultHttpClient.defaultInstance());
+//TODO            loader = new HttpLoader(DefaultHttpClient.defaultInstance());
 //            ((HttpLoader) loader).fallbackContentType(MediaType.JSON);
         }
 
         if (bundledContexts) {
-//            loader = new StaticContextLoader(loader);
+//FIXME            loader = new StaticContextLoader(loader);
         }
 
         // only one?

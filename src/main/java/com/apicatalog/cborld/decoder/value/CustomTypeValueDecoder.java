@@ -18,21 +18,17 @@ public class CustomTypeValueDecoder implements ValueDecoder {
 
             var typeMap = mapping.dictionary().types();
 
-//            for (final String type : types) {
+            var dictionary = typeMap.get(type);
 
-                var dictionary = typeMap.get(type);
+            if (dictionary == null) {
+                return null;
+            }
 
-                if (dictionary == null) {
-//                    continue;
-                    return null;
-                }
-                
-                var decoded = dictionary.getValue(uint.getValue().intValueExact());
-                
-                if (decoded != null) {
-                    return decoded;
-                }
-//            }
+            var decoded = dictionary.getValue(uint.getValue().intValueExact());
+
+            if (decoded != null) {
+                return decoded;
+            }
         }
         return null;
     }

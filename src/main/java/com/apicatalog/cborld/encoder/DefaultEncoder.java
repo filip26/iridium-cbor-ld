@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URI;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 
 import com.apicatalog.cborld.CborLd;
@@ -53,19 +54,11 @@ public class DefaultEncoder implements Encoder {
      */
     public final byte[] encode(Object document, TreeAdapter adapter) throws EncoderException {
 
-        if (document == null) {
-            throw new IllegalArgumentException("The 'document' parameter must not be null.");
-        }
-
         try {
 
-//            final Collection<String> contexts = EncoderContext.get(document, adapter);
-//
-//            if (contexts.isEmpty()) { // is not JSON-LD document
-//                throw new EncoderException(Code.InvalidDocument, "Not a valid JSON-LD document in a compacted form. @context declaration is missing");
-//            }
-
-            return compress(document, adapter);
+            return compress(
+                    Objects.requireNonNull(document, "The 'document' parameter must not be null."),
+                    Objects.requireNonNull(adapter, "The 'adapter' parameter must not be null."));
 
             // non compressible context
         } catch (IllegalArgumentException e) {
