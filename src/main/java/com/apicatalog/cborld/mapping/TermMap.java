@@ -1,4 +1,4 @@
-package com.apicatalog.cborld.dictionary;
+package com.apicatalog.cborld.mapping;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -14,9 +14,9 @@ import java.util.stream.Collectors;
  * and code to string.
  * </p>
  */
-public interface Dictionary extends Iterable<Map.Entry<String, Integer>> {
+public interface TermMap extends Iterable<Map.Entry<String, Integer>> {
 
-    public Dictionary EMPTY = new BiDirectionalDictionary(Map.of(), Map.of());
+    public TermMap EMPTY = new BiDirectionalDictionary(Map.of(), Map.of());
 
     /**
      * Returns the integer code associated with the given string value.
@@ -45,7 +45,7 @@ public interface Dictionary extends Iterable<Map.Entry<String, Integer>> {
     }
 
     /**
-     * Creates a new {@code Builder} from an existing {@link Dictionary}.
+     * Creates a new {@code Builder} from an existing {@link TermMap}.
      *
      * <p>
      * If the given dictionary is an instance of {@link BiDirectionalDictionary},
@@ -55,7 +55,7 @@ public interface Dictionary extends Iterable<Map.Entry<String, Integer>> {
      * @param dictionary the dictionary to copy from
      * @return a new builder instance
      */
-    public static Builder newBuilder(Dictionary dictionary) {
+    public static Builder newBuilder(TermMap dictionary) {
         if (dictionary instanceof BiDirectionalDictionary) {
             return new Builder((BiDirectionalDictionary) dictionary);
         }
@@ -63,7 +63,7 @@ public interface Dictionary extends Iterable<Map.Entry<String, Integer>> {
     }
 
     /**
-     * A builder for constructing immutable {@link Dictionary} instances.
+     * A builder for constructing immutable {@link TermMap} instances.
      *
      * <p>
      * Supports fluent creation of bidirectional mappings between string values
@@ -95,12 +95,12 @@ public interface Dictionary extends Iterable<Map.Entry<String, Integer>> {
         }
 
         /**
-         * Merges entries from the given {@link Dictionary} into this builder.
+         * Merges entries from the given {@link TermMap} into this builder.
          *
          * @param dictionary the dictionary to merge
          * @return this builder instance
          */
-        public Builder merge(Dictionary dictionary) {
+        public Builder merge(TermMap dictionary) {
             dictionary.forEach(entry -> set(entry.getKey(), entry.getValue()));
             return this;
         }
@@ -132,12 +132,12 @@ public interface Dictionary extends Iterable<Map.Entry<String, Integer>> {
         }
 
         /**
-         * Builds and returns an immutable {@link Dictionary} instance containing the
+         * Builds and returns an immutable {@link TermMap} instance containing the
          * configured mappings.
          *
-         * @return a new {@link Dictionary} instance
+         * @return a new {@link TermMap} instance
          */
-        public Dictionary build() {
+        public TermMap build() {
             if (reverse.isEmpty()) {
                 return EMPTY;
             }

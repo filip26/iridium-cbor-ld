@@ -9,9 +9,9 @@ import java.util.List;
 
 import com.apicatalog.cborld.decoder.DecoderException;
 import com.apicatalog.cborld.decoder.value.ValueDecoder;
-import com.apicatalog.cborld.dictionary.TermMap;
-import com.apicatalog.cborld.dictionary.Dictionary;
+import com.apicatalog.cborld.mapping.TermMap;
 import com.apicatalog.cborld.mapping.Mapping;
+import com.apicatalog.cborld.mapping.TermMapImpl;
 import com.apicatalog.cborld.mapping.TypeMap;
 import com.apicatalog.cborld.registry.DocumentDictionary;
 import com.apicatalog.jsonld.lang.Keywords;
@@ -23,7 +23,7 @@ import co.nstant.in.cbor.model.UnsignedInteger;
 class DecoderContextMapping implements Mapping {
 
     private final DocumentDictionary dictionary;
-    private final TermMap termMap;
+    private final TermMapImpl termMap;
     private final TypeKeyNameMapper typeKeyNameMap;
     private final Collection<ValueDecoder> valueDecoders;
 
@@ -32,7 +32,7 @@ class DecoderContextMapping implements Mapping {
     DecoderContextMapping(DocumentDictionary dictionary, Collection<ValueDecoder> valueDecoders) {
         this.dictionary = dictionary;
         this.valueDecoders = valueDecoders;
-        this.termMap = TermMap.newMap();
+        this.termMap = TermMapImpl.newMap();
         this.typeKeyNameMap = new DefaultTypeKeyNameMapper();
         this.typeMap = null;
     }
@@ -99,7 +99,7 @@ class DecoderContextMapping implements Mapping {
     }
 
     @Override
-    public Dictionary termMap() {
+    public TermMap termMap() {
         return termMap;
     }
 

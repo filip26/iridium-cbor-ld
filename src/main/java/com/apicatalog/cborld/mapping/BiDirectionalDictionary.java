@@ -1,12 +1,14 @@
-package com.apicatalog.cborld.dictionary;
+package com.apicatalog.cborld.mapping;
 
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+//TODO use builder
+@Deprecated
 record BiDirectionalDictionary(
         Map<String, Integer> index,
-        Map<Integer, String> reverse) implements Dictionary {
+        Map<Integer, String> reverse) implements TermMap {
 
     BiDirectionalDictionary {
         index = index != null ? Map.copyOf(index) : Map.of();

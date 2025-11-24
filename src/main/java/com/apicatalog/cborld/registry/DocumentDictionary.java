@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.apicatalog.cborld.dictionary.Dictionary;
+import com.apicatalog.cborld.mapping.TermMap;
 
 /**
  * Represents a CBOR-LD document dictionary used for semantic compression.
@@ -37,26 +37,26 @@ public interface DocumentDictionary {
     /**
      * Returns the dictionary of known context URIs.
      *
-     * @return a {@link Dictionary} of context URI mappings
+     * @return a {@link TermMap} of context URI mappings
      */
-    Dictionary contexts();
+    TermMap contexts();
 
     /**
      * Returns a map of value-to-type dictionaries.
      * <p>
      * Each entry associates a term (e.g., a property name) with a
-     * {@link Dictionary} of type aliases commonly used in the document.
+     * {@link TermMap} of type aliases commonly used in the document.
      *
      * @return a map of term strings to corresponding type dictionaries
      */
-    Map<String, Dictionary> types();
+    Map<String, TermMap> types();
 
     /**
      * Returns the dictionary of general-purpose URIs used throughout the document.
      *
-     * @return a {@link Dictionary} of URI mappings
+     * @return a {@link TermMap} of URI mappings
      */
-    Dictionary uris();
+    TermMap uris();
 
     /**
      * Creates a new empty {@code Builder} with the given dictionary code.
@@ -67,9 +67,9 @@ public interface DocumentDictionary {
     public static Builder newBuilder(int code) {
         return new Builder(
                 code,
-                Dictionary.newBuilder(),
+                TermMap.newBuilder(),
                 new HashMap<>(),
-                Dictionary.newBuilder());
+                TermMap.newBuilder());
     }
 
     /**
@@ -82,18 +82,18 @@ public interface DocumentDictionary {
         return new Builder(
                 dictionary.code(),
                 dictionary.contexts() != null
-                        ? Dictionary.newBuilder(dictionary.contexts())
-                        : Dictionary.newBuilder(),
+                        ? TermMap.newBuilder(dictionary.contexts())
+                        : TermMap.newBuilder(),
                 dictionary.types()
                         .entrySet()
                         .stream()
-                        .map(e -> new AbstractMap.SimpleEntry<>(e.getKey(), Dictionary.newBuilder(e.getValue())))
+                        .map(e -> new AbstractMap.SimpleEntry<>(e.getKey(), TermMap.newBuilder(e.getValue())))
                         .collect(Collectors.toUnmodifiableMap(
                                 Map.Entry::getKey,
                                 Map.Entry::getValue)),
                 dictionary.uris() != null
-                        ? Dictionary.newBuilder(dictionary.uris())
-                        : Dictionary.newBuilder());
+                        ? TermMap.newBuilder(dictionary.uris())
+                        : TermMap.newBuilder());
     }
 
     /**
@@ -116,15 +116,15 @@ public interface DocumentDictionary {
     public static class Builder {
 
         private final int code;
-        private final Dictionary.Builder contexts;
-        private final Map<String, Dictionary.Builder> types;
-        private final Dictionary.Builder uris;
+        private final TermMap.Builder contexts;
+        private final Map<String, TermMap.Builder> types;
+        private final TermMap.Builder uris;
 
         private Builder(
                 int code,
-                Dictionary.Builder contexts,
-                Map<String, Dictionary.Builder> types,
-                Dictionary.Builder uris) {
+                TermMap.Builder contexts,
+                Map<String, TermMap.Builder> types,
+                TermMap.Builder uris) {
             this.code = code;
             this.contexts = contexts;
             this.types = types;
@@ -168,7 +168,7 @@ public interface DocumentDictionary {
          * @param dictionary the context dictionary to merge
          * @return this builder instance
          */
-        public Builder context(Dictionary dictionary) {
+        public Builder context(TermMap dictionary) {
             contexts.merge(dictionary);
             return this;
         }
@@ -184,7 +184,7 @@ public interface DocumentDictionary {
         public Builder type(String name, int code, String value) {
             var dictionary = types.get(name);
             if (dictionary == null) {
-                dictionary = Dictionary.newBuilder();
+                dictionary = TermMap.newBuilder();
                 types.put(name, dictionary);
             }
             dictionary.set(code, value);
@@ -198,7 +198,7 @@ public interface DocumentDictionary {
          * @param builder the dictionary builder to assign
          * @return this builder instance
          */
-        public Builder type(String name, Dictionary.Builder builder) {
+        public Builder type(String name, TermMap.Builder builder) {
             types.put(name, builder);
             return this;
         }
@@ -221,7 +221,7 @@ public interface DocumentDictionary {
          * @param dictionary the URI dictionary to merge
          * @return this builder instance
          */
-        public Builder uri(Dictionary dictionary) {
+        public Builder uri(TermMap dictionary) {
             uris.merge(dictionary);
             return this;
         }
@@ -231,14 +231,14 @@ public interface DocumentDictionary {
          */
         private record DictionaryImpl(
                 int code,
-                Dictionary contexts,
-                Map<String, Dictionary> types,
-                Dictionary uris) implements DocumentDictionary {
+                TermMap contexts,
+                Map<String, TermMap> types,
+                TermMap uris) implements DocumentDictionary {
 
             DictionaryImpl {
-                contexts = contexts != null ? contexts : Dictionary.EMPTY; 
+                contexts = contexts != null ? contexts : TermMap.EMPTY; 
                 types = types != null ? Map.copyOf(types) : Map.of();
-                uris = uris != null ? uris : Dictionary.EMPTY;
+                uris = uris != null ? uris : TermMap.EMPTY;
             }
         }
     }

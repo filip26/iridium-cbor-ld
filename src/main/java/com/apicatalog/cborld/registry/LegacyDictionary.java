@@ -1,6 +1,6 @@
 package com.apicatalog.cborld.registry;
 
-import com.apicatalog.cborld.dictionary.Dictionary;
+import com.apicatalog.cborld.mapping.TermMap;
 
 /**
  * Used with format version v0.5 and v0.6. Replaced with registry by v1.0.
@@ -12,7 +12,7 @@ public class LegacyDictionary {
     /**
      * A registry of well-know term values.
      */
-    public static final Dictionary CONTEXTS = Dictionary.newBuilder()
+    public static final TermMap CONTEXTS = TermMap.newBuilder()
             // 0x00 - 0x0F Reserved for future use.
             .set(0x10, "https://www.w3.org/ns/activitystreams")
             .set(0x11, "https://www.w3.org/2018/credentials/v1")

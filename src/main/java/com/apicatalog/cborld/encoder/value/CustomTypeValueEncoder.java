@@ -1,7 +1,7 @@
 package com.apicatalog.cborld.encoder.value;
 
-import com.apicatalog.cborld.dictionary.Dictionary;
 import com.apicatalog.cborld.encoder.EncoderException;
+import com.apicatalog.cborld.mapping.TermMap;
 import com.apicatalog.cborld.mapping.Mapping;
 
 import co.nstant.in.cbor.model.DataItem;
@@ -18,7 +18,7 @@ public class CustomTypeValueEncoder implements ValueEncoder {
 
             var typeMap = mapping.dictionary().types();
 
-            final Dictionary dictionary = typeMap.get(type);
+            final TermMap dictionary = typeMap.get(type);
 
             if (dictionary == null) {
                 return null;

@@ -1,4 +1,4 @@
-package com.apicatalog.cborld.dictionary;
+package com.apicatalog.cborld.mapping;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -7,14 +7,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-public class TermMap implements Dictionary {
+public class TermMapImpl implements TermMap {
 
     final Map<String, Integer> terms;
     final Map<Integer, String> codes;
 
     int lastCode;
 
-    protected TermMap(
+    protected TermMapImpl(
             int lastCode,
             Map<String, Integer> terms,
             Map<Integer, String> codes) {
@@ -23,26 +23,26 @@ public class TermMap implements Dictionary {
         this.codes = codes;
     }
 
-    public static TermMap newMap() {
+    public static TermMapImpl newMap() {
         return newMap(
-                KeywordDictionary.TERM_TO_CODE,
-                KeywordDictionary.CUSTOM_OFFSET);
+                KeywordMap.TERM_TO_CODE,
+                KeywordMap.CUSTOM_OFFSET);
     }
 
-    public static TermMap newMap(Map<String, Integer> terms, int lastCode) {
+    public static TermMapImpl newMap(Map<String, Integer> terms, int lastCode) {
 
         var codes = terms
                 .entrySet()
                 .stream()
                 .collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
 
-        return new TermMap(
+        return new TermMapImpl(
                 lastCode,
                 new LinkedHashMap<>(terms),
                 codes);
     }
 
-    public TermMap add(Collection<String> terms) {
+    public TermMapImpl add(Collection<String> terms) {
         terms
                 .stream()
                 .sorted()
@@ -51,7 +51,7 @@ public class TermMap implements Dictionary {
         return this;
     }
 
-    public TermMap add(String key) {
+    public TermMapImpl add(String key) {
         if (!terms.containsKey(key)) {
             codes.put(lastCode, key);
             terms.put(key, lastCode);
