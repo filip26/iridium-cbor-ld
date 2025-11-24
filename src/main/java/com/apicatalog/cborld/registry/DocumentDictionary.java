@@ -78,21 +78,21 @@ public interface DocumentDictionary {
      * @param dictionary the dictionary to copy
      * @return a new builder instance pre-filled with existing mappings
      */
-    public static Builder copyOf(DocumentDictionary dictionary) {
+    public static Builder newBuilder(DocumentDictionary dictionary) {
         return new Builder(
                 dictionary.code(),
                 dictionary.contexts() != null
-                        ? Dictionary.copyOf(dictionary.contexts())
+                        ? Dictionary.newBuilder(dictionary.contexts())
                         : Dictionary.newBuilder(),
                 dictionary.types()
                         .entrySet()
                         .stream()
-                        .map(e -> new AbstractMap.SimpleEntry<>(e.getKey(), Dictionary.copyOf(e.getValue())))
+                        .map(e -> new AbstractMap.SimpleEntry<>(e.getKey(), Dictionary.newBuilder(e.getValue())))
                         .collect(Collectors.toUnmodifiableMap(
                                 Map.Entry::getKey,
                                 Map.Entry::getValue)),
                 dictionary.uris() != null
-                        ? Dictionary.copyOf(dictionary.uris())
+                        ? Dictionary.newBuilder(dictionary.uris())
                         : Dictionary.newBuilder());
     }
 
@@ -124,7 +124,7 @@ public interface DocumentDictionary {
                 int code,
                 Dictionary.Builder contexts,
                 Map<String, Dictionary.Builder> types,
-                final Dictionary.Builder uris) {
+                Dictionary.Builder uris) {
             this.code = code;
             this.contexts = contexts;
             this.types = types;
@@ -236,7 +236,9 @@ public interface DocumentDictionary {
                 Dictionary uris) implements DocumentDictionary {
 
             DictionaryImpl {
+                contexts = contexts != null ? contexts : Dictionary.EMPTY; 
                 types = types != null ? Map.copyOf(types) : Map.of();
+                uris = uris != null ? uris : Dictionary.EMPTY;
             }
         }
     }

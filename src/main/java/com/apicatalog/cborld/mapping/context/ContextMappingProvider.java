@@ -6,7 +6,7 @@ import java.util.LinkedHashSet;
 import com.apicatalog.cborld.decoder.Decoder;
 import com.apicatalog.cborld.decoder.DecoderException;
 import com.apicatalog.cborld.decoder.DecoderException.DecoderError;
-import com.apicatalog.cborld.dictionary.CodeTermMap;
+import com.apicatalog.cborld.dictionary.TermMap;
 import com.apicatalog.cborld.encoder.Encoder;
 import com.apicatalog.cborld.encoder.EncoderException;
 import com.apicatalog.cborld.encoder.EncoderException.EncoderError;
@@ -36,9 +36,13 @@ public class ContextMappingProvider implements EncoderMappingProvider, DecoderMa
                     appliedContextKeys::add,
                     null);
 
+            final var termMap = TermMap.newMap();
+
+            appliedContextKeys.forEach(termMap::add);
+
             return new EncoderContextMapping(
                     encoder.config().dictionary(),
-                    CodeTermMap.of(appliedContextKeys),
+                    termMap,
                     typeMap);
 
         } catch (JsonLdException e) {

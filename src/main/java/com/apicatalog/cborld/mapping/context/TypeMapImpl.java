@@ -8,7 +8,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import com.apicatalog.cborld.mapping.TypeKeyNameMapper;
 import com.apicatalog.cborld.mapping.TypeMap;
 import com.apicatalog.jsonld.JsonLdException;
 import com.apicatalog.jsonld.Options;

@@ -16,6 +16,8 @@ import java.util.stream.Collectors;
  */
 public interface Dictionary extends Iterable<Map.Entry<String, Integer>> {
 
+    public Dictionary EMPTY = new BiDirectionalDictionary(Map.of(), Map.of());
+
     /**
      * Returns the integer code associated with the given string value.
      *
@@ -53,7 +55,7 @@ public interface Dictionary extends Iterable<Map.Entry<String, Integer>> {
      * @param dictionary the dictionary to copy from
      * @return a new builder instance
      */
-    public static Builder copyOf(Dictionary dictionary) {
+    public static Builder newBuilder(Dictionary dictionary) {
         if (dictionary instanceof BiDirectionalDictionary) {
             return new Builder((BiDirectionalDictionary) dictionary);
         }
@@ -136,6 +138,10 @@ public interface Dictionary extends Iterable<Map.Entry<String, Integer>> {
          * @return a new {@link Dictionary} instance
          */
         public Dictionary build() {
+            if (reverse.isEmpty()) {
+                return EMPTY;
+            }
+
             return new BiDirectionalDictionary(
                     reverse.entrySet()
                             .stream()
