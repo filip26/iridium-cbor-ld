@@ -1,5 +1,8 @@
 package com.apicatalog.cborld.mapping.context;
 
+import java.util.Collection;
+import java.util.LinkedHashSet;
+
 import com.apicatalog.cborld.decoder.Decoder;
 import com.apicatalog.cborld.decoder.DecoderException;
 import com.apicatalog.cborld.decoder.DecoderException.DecoderError;
@@ -23,14 +26,18 @@ public class ContextMappingProvider implements EncoderMappingProvider, DecoderMa
     public Mapping getEncoderMapping(Object document, TreeAdapter adapter, Encoder encoder) throws EncoderException {
         try {
 
-            final ContextMap context = ContextMap.newMap(document,
+            final var appliedContextKeys = new LinkedHashSet<Collection<String>>();
+            
+            final var context = ContextMap.newEncoderContext(
+                    document,
                     adapter,
                     encoder.base(),
-                    encoder.loader());
+                    encoder.loader(),
+                    appliedContextKeys::add);
 
             return new EncoderContextMapping(
                     encoder.config().dictionary(),
-                    CodeTermMap.of(context.getContextKeySets()),
+                    CodeTermMap.of(appliedContextKeys),
                     context.getTypeMapping());
 
         } catch (JsonLdException e) {
@@ -45,14 +52,15 @@ public class ContextMappingProvider implements EncoderMappingProvider, DecoderMa
     @Override
     public Mapping getDecoderMapping(DataItem document, DocumentDictionary dictionary, Decoder decoder) throws DecoderException {
         try {
-            var mapping = new DecoderContextMapping(dictionary, decoder.config().valueDecoders());
+            final var mapping = new DecoderContextMapping(dictionary, decoder.config().valueDecoders());
 
-            var adapter = new CborLdAdapter(
+            final var adapter = new CborLdAdapter(
                     mapping::decodeTerm,
                     mapping::encodeTerm,
                     mapping::decodeValue);
 
-            var context = ContextMap.from(document,
+            final var context = ContextMap.newDecoderContext(
+                    document,
                     adapter,
                     decoder.base(),
                     decoder.loader(),

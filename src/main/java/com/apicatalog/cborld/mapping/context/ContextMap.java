@@ -5,7 +5,6 @@ import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Deque;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -24,14 +23,21 @@ import com.apicatalog.tree.io.TreeIO;
 public class ContextMap {
 
     private final TypeMap typeMapping;
-    private final Collection<Collection<String>> appliedContextKeys;
+//    private final Collection<Collection<String>> appliedContextKeys;
 
-    protected ContextMap(TypeMap typeMapping, Collection<Collection<String>> appliedContextKeys) {
+    protected ContextMap(TypeMap typeMapping
+//            , Collection<Collection<String>> appliedContextKeys
+    ) {
         this.typeMapping = typeMapping;
-        this.appliedContextKeys = appliedContextKeys;
+//        this.appliedContextKeys = appliedContextKeys;
     }
 
-    public static ContextMap newMap(Object node, TreeAdapter adapter, URI base, DocumentLoader loader) throws JsonLdException {
+    public static ContextMap newEncoderContext(
+            Object node,
+            TreeAdapter adapter,
+            URI base,
+            DocumentLoader loader,
+            Consumer<Collection<String>> appliedContexts) throws JsonLdException {
 
         final var options = Options.newOptions()
                 .ordered(false)
@@ -39,20 +45,19 @@ public class ContextMap {
                 .useInlineContexts(false)
                 .base(base);
 
-        final var appliedContextKeys = new LinkedHashSet<Collection<String>>();
         final var keyTypeMapper = new TypeMapperImpl();
 
         Expander.expand(
                 new TreeIO(node, adapter),
                 options,
                 ExecutionEvents.of(options)
-                        .contextKeyCollector(appliedContextKeys::add)
+                        .contextKeyCollector(appliedContexts)
                         .keyTypeMapper(keyTypeMapper));
 
-        return new ContextMap(keyTypeMapper.typeMap(), appliedContextKeys);
+        return new ContextMap(keyTypeMapper.typeMap());
     }
 
-    public static ContextMap from(
+    public static ContextMap newDecoderContext(
             Object node,
             TreeAdapter adapter,
             URI base,
@@ -65,17 +70,16 @@ public class ContextMap {
                 .loader(loader)
                 .base(base);
 
-        final var appliedContextKeys = new LinkedHashSet<Collection<String>>();
         final var keyTypeMapper = new TypeMapperImpl(typeMapper);
 
         Expander.expand(
                 new TreeIO(node, adapter),
                 options,
                 ExecutionEvents.of(options)
-                        .contextKeyCollector(appliedContexts.andThen(appliedContextKeys::add))
+                        .contextKeyCollector(appliedContexts)
                         .keyTypeMapper(keyTypeMapper));
 
-        return new ContextMap(keyTypeMapper.typeMap(), appliedContextKeys);
+        return new ContextMap(keyTypeMapper.typeMap());
 
     }
 
@@ -83,22 +87,18 @@ public class ContextMap {
         return typeMapping;
     }
 
-    public Collection<Collection<String>> getContextKeySets() {
-        return appliedContextKeys;
-    }
+    static class TypeMapperImpl implements TypeMapper {
 
-    private static class TypeMapperImpl implements TypeMapper {
+        private final Deque<Map<String, Object>> stack;
+        private TypeKeyNameMapper typeMapper;
 
-        final Deque<Map<String, Object>> stack;
-        TypeKeyNameMapper typeMapper;
-
-        public TypeMapperImpl() {
+        TypeMapperImpl() {
             this.stack = new ArrayDeque<>();
             this.stack.push(new LinkedHashMap<String, Object>());
             this.typeMapper = null;
         }
 
-        public TypeMapperImpl(TypeKeyNameMapper typeMapper) {
+        TypeMapperImpl(TypeKeyNameMapper typeMapper) {
             this.stack = new ArrayDeque<>();
             this.stack.push(new LinkedHashMap<String, Object>());
             this.typeMapper = typeMapper;
@@ -130,14 +130,14 @@ public class ContextMap {
             stack.peek().put(key, id);
         }
 
-        public TypeMap typeMap() {
+        TypeMap typeMap() {
             return new TypeMapImpl(stack.peek());
         }
     }
 
     private static class TypeMapImpl implements TypeMap {
 
-        final Map<String, Object> typeMap;
+        private final Map<String, Object> typeMap;
 
         TypeMapImpl(final Map<String, Object> typeMap) {
             this.typeMap = typeMap;
