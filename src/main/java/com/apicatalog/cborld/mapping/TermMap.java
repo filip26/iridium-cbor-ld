@@ -1,5 +1,6 @@
 package com.apicatalog.cborld.mapping;
 
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -16,7 +17,7 @@ import java.util.stream.Collectors;
  */
 public interface TermMap extends Iterable<Map.Entry<String, Integer>> {
 
-    public TermMap EMPTY = new BiDirectionalDictionary(Map.of(), Map.of());
+    public TermMap EMPTY = new ImmutableTermMap(Map.of(), Map.of());
 
     /**
      * Returns the integer code associated with the given string value.
@@ -41,25 +42,29 @@ public interface TermMap extends Iterable<Map.Entry<String, Integer>> {
      * @return a new builder instance
      */
     public static Builder newBuilder() {
-        return new Builder();
+        return new Builder(new LinkedHashMap<>());
     }
 
     /**
      * Creates a new {@code Builder} from an existing {@link TermMap}.
      *
      * <p>
-     * If the given dictionary is an instance of {@link BiDirectionalDictionary},
-     * its internal structure is preserved. Otherwise, entries are merged.
+     * If the given dictionary is an instance of {@link ImmutableTermMap}, its
+     * internal structure is preserved. Otherwise, entries are merged.
      * </p>
      *
      * @param dictionary the dictionary to copy from
      * @return a new builder instance
      */
     public static Builder newBuilder(TermMap dictionary) {
-        if (dictionary instanceof BiDirectionalDictionary) {
-            return new Builder((BiDirectionalDictionary) dictionary);
+        if (dictionary instanceof ImmutableTermMap map) {
+            return newBuilder(map.index);
         }
-        return new Builder().merge(dictionary);
+        return new Builder(new LinkedHashMap<>()).merge(dictionary);
+    }
+
+    public static Builder newBuilder(Map<String, Integer> terms) {
+        return new Builder(new LinkedHashMap<>(terms));
     }
 
     /**
@@ -75,23 +80,17 @@ public interface TermMap extends Iterable<Map.Entry<String, Integer>> {
         /**
          * Internal map from code to value (reverse direction).
          */
-        private final Map<Integer, String> reverse;
+        private final Map<String, Integer> terms;
 
-        /**
-         * Creates a new, empty {@code DictionaryBuilder}.
-         */
-        private Builder() {
-            this.reverse = new LinkedHashMap<>();
-        }
 
         /**
          * Creates a new {@code DictionaryBuilder} initialized from an existing
-         * {@link BiDirectionalDictionary}.
+         * dictionary.
          *
-         * @param dictionary the source dictionary
+         * @param terms the source dictionary
          */
-        private Builder(BiDirectionalDictionary dictionary) {
-            this.reverse = new LinkedHashMap<>(dictionary.reverse());
+        private Builder(Map<String, Integer> terms) {
+            this.terms = terms;
         }
 
         /**
@@ -114,7 +113,7 @@ public interface TermMap extends Iterable<Map.Entry<String, Integer>> {
          * @return this builder instance
          */
         public Builder set(Integer code, String value) {
-            reverse.put(code, value);
+            terms.put(value, code);
             return this;
         }
 
@@ -122,12 +121,12 @@ public interface TermMap extends Iterable<Map.Entry<String, Integer>> {
          * Adds or updates an entry mapping the given string value to the specified
          * code.
          *
-         * @param value the string value
-         * @param code  the corresponding integer code
+         * @param term the term name
+         * @param code the corresponding integer code
          * @return this builder instance
          */
-        public Builder set(String value, Integer code) {
-            reverse.put(code, value);
+        public Builder set(String term, Integer code) {
+            terms.put(term, code);
             return this;
         }
 
@@ -138,15 +137,43 @@ public interface TermMap extends Iterable<Map.Entry<String, Integer>> {
          * @return a new {@link TermMap} instance
          */
         public TermMap build() {
-            if (reverse.isEmpty()) {
+            if (terms.isEmpty()) {
                 return EMPTY;
             }
 
-            return new BiDirectionalDictionary(
-                    reverse.entrySet()
+            return new ImmutableTermMap(
+                    Map.copyOf(terms),
+                    terms.entrySet()
                             .stream()
-                            .collect(Collectors.toUnmodifiableMap(Entry::getValue, Entry::getKey)),
-                    Map.copyOf(reverse));
+                            .collect(Collectors.toUnmodifiableMap(Entry::getValue, Entry::getKey)));
+        }
+    }
+
+    static class ImmutableTermMap implements TermMap {
+
+        private final Map<String, Integer> index;
+        private final Map<Integer, String> reverse;
+
+        private ImmutableTermMap(
+                Map<String, Integer> index,
+                Map<Integer, String> reverse) {
+            this.index = index != null ? Map.copyOf(index) : Map.of();
+            this.reverse = reverse != null ? Map.copyOf(reverse) : Map.of();
+        }
+
+        @Override
+        public Integer getCode(String value) {
+            return index.get(value);
+        }
+
+        @Override
+        public String getValue(Integer code) {
+            return reverse.get(code);
+        }
+
+        @Override
+        public Iterator<Entry<String, Integer>> iterator() {
+            return index.entrySet().iterator();
         }
     }
 }

@@ -6,7 +6,7 @@ import com.apicatalog.cborld.encoder.DefaultEncoder;
 import com.apicatalog.cborld.encoder.Encoder;
 import com.apicatalog.cborld.encoder.EncoderConfig;
 import com.apicatalog.cborld.encoder.EncoderException;
-import com.apicatalog.cborld.mapping.EncoderMappingProvider;
+import com.apicatalog.cborld.encoder.EncoderMappingProvider;
 import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.tree.io.TreeAdapter;

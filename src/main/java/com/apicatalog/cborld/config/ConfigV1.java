@@ -8,6 +8,7 @@ import java.util.Map;
 
 import com.apicatalog.cborld.CborLd.Version;
 import com.apicatalog.cborld.decoder.DecoderConfig;
+import com.apicatalog.cborld.decoder.DecoderMappingProvider;
 import com.apicatalog.cborld.decoder.value.ContextValueDecoder;
 import com.apicatalog.cborld.decoder.value.CustomTypeValueDecoder;
 import com.apicatalog.cborld.decoder.value.DidKeyValueDecoder;
@@ -20,6 +21,7 @@ import com.apicatalog.cborld.decoder.value.VocabValueDecoder;
 import com.apicatalog.cborld.decoder.value.XsdDateTimeValueDecoder;
 import com.apicatalog.cborld.decoder.value.XsdDateValueDecoder;
 import com.apicatalog.cborld.encoder.EncoderConfig;
+import com.apicatalog.cborld.encoder.EncoderMappingProvider;
 import com.apicatalog.cborld.encoder.value.ContextValueEncoder;
 import com.apicatalog.cborld.encoder.value.CustomTypeValueEncoder;
 import com.apicatalog.cborld.encoder.value.DidKeyValueEncoder;
@@ -31,8 +33,6 @@ import com.apicatalog.cborld.encoder.value.ValueEncoder;
 import com.apicatalog.cborld.encoder.value.VocabValueEncoder;
 import com.apicatalog.cborld.encoder.value.XsdDateTimeValueEncoder;
 import com.apicatalog.cborld.encoder.value.XsdDateValueEncoder;
-import com.apicatalog.cborld.mapping.DecoderMappingProvider;
-import com.apicatalog.cborld.mapping.EncoderMappingProvider;
 import com.apicatalog.cborld.mapping.context.ContextMappingProvider;
 import com.apicatalog.cborld.registry.DefaultDocumentDictionary;
 import com.apicatalog.cborld.registry.DocumentDictionary;
@@ -92,7 +92,8 @@ public class ConfigV1 implements EncoderConfig, DecoderConfig {
 
     static final Map<Integer, DocumentDictionary> REGISTRY;
 
-    static final DocumentDictionary DICTIONARY = new DefaultDocumentDictionary(1); 
+    static final DocumentDictionary DICTIONARY = new DefaultDocumentDictionary(1);
+//FIXME    static final DocumentDictionary DICTIONARY = DocumentDictionary.newBuilder(1).build();
     
     static {
         REGISTRY = new HashMap<>();

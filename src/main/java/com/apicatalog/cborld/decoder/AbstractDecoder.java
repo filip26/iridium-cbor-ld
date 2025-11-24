@@ -15,7 +15,6 @@ import java.util.Set;
 import com.apicatalog.cborld.CborLd.Version;
 import com.apicatalog.cborld.decoder.DecoderException.DecoderError;
 import com.apicatalog.cborld.decoder.value.ValueDecoder;
-import com.apicatalog.cborld.mapping.DecoderMappingProvider;
 import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.cborld.mapping.TypeMap;
 import com.apicatalog.cborld.registry.DocumentDictionary;

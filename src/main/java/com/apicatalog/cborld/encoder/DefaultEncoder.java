@@ -10,7 +10,6 @@ import java.util.Optional;
 
 import com.apicatalog.cborld.CborLd;
 import com.apicatalog.cborld.encoder.EncoderException.EncoderError;
-import com.apicatalog.cborld.mapping.EncoderMappingProvider;
 import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.cborld.mapping.TypeMap;
 import com.apicatalog.jsonld.JsonLdException;

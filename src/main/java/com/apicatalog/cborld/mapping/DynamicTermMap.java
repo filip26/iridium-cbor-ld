@@ -7,42 +7,43 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-public class TermMapImpl implements TermMap {
+
+public class DynamicTermMap implements TermMap {
 
     final Map<String, Integer> terms;
     final Map<Integer, String> codes;
 
-    int lastCode;
+    int nextCode;
 
-    protected TermMapImpl(
+    protected DynamicTermMap(
             int lastCode,
             Map<String, Integer> terms,
             Map<Integer, String> codes) {
-        this.lastCode = lastCode;
+        this.nextCode = lastCode;
         this.terms = terms;
         this.codes = codes;
     }
 
-    public static TermMapImpl newMap() {
+    public static DynamicTermMap newMap() {
         return newMap(
                 KeywordMap.TERM_TO_CODE,
                 KeywordMap.CUSTOM_OFFSET);
     }
 
-    public static TermMapImpl newMap(Map<String, Integer> terms, int lastCode) {
+    public static DynamicTermMap newMap(Map<String, Integer> terms, int nextCode) {
 
         var codes = terms
                 .entrySet()
                 .stream()
                 .collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
 
-        return new TermMapImpl(
-                lastCode,
+        return new DynamicTermMap(
+                nextCode,
                 new LinkedHashMap<>(terms),
                 codes);
     }
 
-    public TermMapImpl add(Collection<String> terms) {
+    public DynamicTermMap add(Collection<String> terms) {
         terms
                 .stream()
                 .sorted()
@@ -51,11 +52,11 @@ public class TermMapImpl implements TermMap {
         return this;
     }
 
-    public TermMapImpl add(String key) {
+    public DynamicTermMap add(String key) {
         if (!terms.containsKey(key)) {
-            codes.put(lastCode, key);
-            terms.put(key, lastCode);
-            lastCode += 2;
+            codes.put(nextCode, key);
+            terms.put(key, nextCode);
+            nextCode += 2;
         }
         return this;
     }

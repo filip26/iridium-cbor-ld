@@ -5,7 +5,6 @@ import java.net.URI;
 import com.apicatalog.cborld.CborLd.Version;
 import com.apicatalog.cborld.decoder.DecoderException.DecoderError;
 import com.apicatalog.cborld.hex.Hex;
-import com.apicatalog.cborld.mapping.DecoderMappingProvider;
 import com.apicatalog.cborld.registry.DocumentDictionary;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 
