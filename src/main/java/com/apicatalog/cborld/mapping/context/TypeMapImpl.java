@@ -20,44 +20,35 @@ import com.apicatalog.jsonld.processor.Expander;
 import com.apicatalog.tree.io.TreeAdapter;
 import com.apicatalog.tree.io.TreeIO;
 
-public class ContextMap {
+class TypeMapImpl implements TypeMap {
 
-    private final TypeMap typeMapping;
-//    private final Collection<Collection<String>> appliedContextKeys;
+    private final Map<String, Object> typeMap;
 
-    protected ContextMap(TypeMap typeMapping
-//            , Collection<Collection<String>> appliedContextKeys
-    ) {
-        this.typeMapping = typeMapping;
-//        this.appliedContextKeys = appliedContextKeys;
+    private TypeMapImpl(final Map<String, Object> typeMap) {
+        this.typeMap = typeMap;
     }
 
-    public static ContextMap newEncoderContext(
-            Object node,
-            TreeAdapter adapter,
-            URI base,
-            DocumentLoader loader,
-            Consumer<Collection<String>> appliedContexts) throws JsonLdException {
-
-        final var options = Options.newOptions()
-                .ordered(false)
-                .loader(loader)
-                .useInlineContexts(false)
-                .base(base);
-
-        final var keyTypeMapper = new TypeMapperImpl();
-
-        Expander.expand(
-                new TreeIO(node, adapter),
-                options,
-                ExecutionEvents.of(options)
-                        .contextKeyCollector(appliedContexts)
-                        .keyTypeMapper(keyTypeMapper));
-
-        return new ContextMap(keyTypeMapper.typeMap());
+    @Override
+    public String getType(String term) {
+        if (typeMap.get(term) instanceof String string) {
+            return string;
+        }
+        return null;
     }
 
-    public static ContextMap newDecoderContext(
+    @Override
+    public TypeMap getMapping(String term) {
+        if (typeMap.get(term) instanceof Map map) {
+
+            @SuppressWarnings("unchecked")
+            final var typedMap = (Map<String, Object>) map;
+
+            return new TypeMapImpl(typedMap);
+        }
+        return null;
+    }
+
+    public static TypeMap newTypeMap(
             Object node,
             TreeAdapter adapter,
             URI base,
@@ -68,7 +59,8 @@ public class ContextMap {
         final var options = Options.newOptions()
                 .ordered(false)
                 .loader(loader)
-                .base(base);
+                .base(base)
+                .useInlineContexts(false);
 
         final var keyTypeMapper = new TypeMapperImpl(typeMapper);
 
@@ -79,12 +71,7 @@ public class ContextMap {
                         .contextKeyCollector(appliedContexts)
                         .keyTypeMapper(keyTypeMapper));
 
-        return new ContextMap(keyTypeMapper.typeMap());
-
-    }
-
-    public TypeMap getTypeMapping() {
-        return typeMapping;
+        return keyTypeMapper.typeMap();
     }
 
     static class TypeMapperImpl implements TypeMapper {
@@ -132,35 +119,6 @@ public class ContextMap {
 
         TypeMap typeMap() {
             return new TypeMapImpl(stack.peek());
-        }
-    }
-
-    private static class TypeMapImpl implements TypeMap {
-
-        private final Map<String, Object> typeMap;
-
-        TypeMapImpl(final Map<String, Object> typeMap) {
-            this.typeMap = typeMap;
-        }
-
-        @Override
-        public String getType(String term) {
-            if (typeMap.get(term) instanceof String string) {
-                return string;
-            }
-            return null;
-        }
-
-        @Override
-        public TypeMap getMapping(String term) {
-            if (typeMap.get(term) instanceof Map map) {
-
-                @SuppressWarnings("unchecked")
-                final var typedMap = (Map<String, Object>) map;
-
-                return new TypeMapImpl(typedMap);
-            }
-            return null;
         }
     }
 }

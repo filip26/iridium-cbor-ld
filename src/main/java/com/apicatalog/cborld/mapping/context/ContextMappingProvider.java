@@ -27,18 +27,19 @@ public class ContextMappingProvider implements EncoderMappingProvider, DecoderMa
         try {
 
             final var appliedContextKeys = new LinkedHashSet<Collection<String>>();
-            
-            final var context = ContextMap.newEncoderContext(
+
+            final var typeMap = TypeMapImpl.newTypeMap(
                     document,
                     adapter,
                     encoder.base(),
                     encoder.loader(),
-                    appliedContextKeys::add);
+                    appliedContextKeys::add,
+                    null);
 
             return new EncoderContextMapping(
                     encoder.config().dictionary(),
                     CodeTermMap.of(appliedContextKeys),
-                    context.getTypeMapping());
+                    typeMap);
 
         } catch (JsonLdException e) {
             if (ErrorCode.INLINE_CONTEXT_IS_NOT_ALLOWED == e.code()) {
@@ -59,7 +60,7 @@ public class ContextMappingProvider implements EncoderMappingProvider, DecoderMa
                     mapping::encodeTerm,
                     mapping::decodeValue);
 
-            final var context = ContextMap.newDecoderContext(
+            final var typeMap = TypeMapImpl.newTypeMap(
                     document,
                     adapter,
                     decoder.base(),
@@ -67,7 +68,7 @@ public class ContextMappingProvider implements EncoderMappingProvider, DecoderMa
                     mapping::add,
                     mapping.typeKeyNameMap());
 
-            mapping.typeMap(context.getTypeMapping());
+            mapping.typeMap(typeMap);
 
             return mapping;
 
