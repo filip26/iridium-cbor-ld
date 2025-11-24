@@ -16,23 +16,6 @@ import com.apicatalog.cborld.registry.DocumentDictionary;
  */
 public interface Mapping {
 
-    static Mapping EMPTY = new Mapping() {
-        @Override
-        public TypeMap typeMap() {
-            return null;
-        }
-
-        @Override
-        public TermMap termMap() {
-            return null;
-        }
-
-        @Override
-        public DocumentDictionary dictionary() {
-            return null;
-        }
-    };
-
     /**
      * Returns the static {@link DocumentDictionary} used as a predefined reference
      * for compression or decompression.

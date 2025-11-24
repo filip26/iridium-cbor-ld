@@ -17,8 +17,6 @@ import java.util.stream.Collectors;
  */
 public interface TermMap extends Iterable<Map.Entry<String, Integer>> {
 
-    public TermMap EMPTY = new ImmutableTermMap(Map.of(), Map.of());
-
     /**
      * Returns the integer code associated with the given string value.
      *
@@ -65,6 +63,10 @@ public interface TermMap extends Iterable<Map.Entry<String, Integer>> {
 
     public static Builder newBuilder(Map<String, Integer> terms) {
         return new Builder(new LinkedHashMap<>(terms));
+    }
+    
+    public static TermMap empty() {
+        return ImmutableTermMap.EMPTY;
     }
 
     /**
@@ -138,7 +140,7 @@ public interface TermMap extends Iterable<Map.Entry<String, Integer>> {
          */
         public TermMap build() {
             if (terms.isEmpty()) {
-                return EMPTY;
+                return empty();
             }
 
             return new ImmutableTermMap(
@@ -151,6 +153,8 @@ public interface TermMap extends Iterable<Map.Entry<String, Integer>> {
 
     static class ImmutableTermMap implements TermMap {
 
+        private static final TermMap EMPTY = new ImmutableTermMap(Map.of(), Map.of());
+        
         private final Map<String, Integer> index;
         private final Map<Integer, String> reverse;
 

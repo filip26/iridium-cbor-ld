@@ -78,7 +78,6 @@ class TestCase {
             var config = adapter.property("https://github.com/filip26/iridium-cbor-ld/tests/vocab#config", options);
             if (config != null) {
                 config = adapter.singleElement(config);
-
                 testCase.config = adapter.stringValue(adapter.property(Keywords.VALUE, config));
             }
         }

@@ -34,7 +34,6 @@ import com.apicatalog.cborld.encoder.value.VocabValueEncoder;
 import com.apicatalog.cborld.encoder.value.XsdDateTimeValueEncoder;
 import com.apicatalog.cborld.encoder.value.XsdDateValueEncoder;
 import com.apicatalog.cborld.mapping.context.ContextMappingProvider;
-import com.apicatalog.cborld.registry.DefaultDocumentDictionary;
 import com.apicatalog.cborld.registry.DocumentDictionary;
 
 public class ConfigV1 implements EncoderConfig, DecoderConfig {
@@ -46,9 +45,9 @@ public class ConfigV1 implements EncoderConfig, DecoderConfig {
     static final Collection<ValueEncoder> VALUE_ENCODERS;
 
     static {
-        
+
         Collection<ValueEncoder> valueEncoders = new ArrayList<>();
-        
+
         // property driven
         valueEncoders.add(new ContextValueEncoder());
 
@@ -64,7 +63,7 @@ public class ConfigV1 implements EncoderConfig, DecoderConfig {
         // value driven
         valueEncoders.add(new UuidValueEncoder());
         valueEncoders.add(new DidKeyValueEncoder());
-        
+
         VALUE_ENCODERS = Collections.unmodifiableCollection(valueEncoders);
     }
 
@@ -92,15 +91,14 @@ public class ConfigV1 implements EncoderConfig, DecoderConfig {
 
     static final Map<Integer, DocumentDictionary> REGISTRY;
 
-    static final DocumentDictionary DICTIONARY = new DefaultDocumentDictionary(1);
-//FIXME    static final DocumentDictionary DICTIONARY = DocumentDictionary.newBuilder(1).build();
-    
+    static final DocumentDictionary DICTIONARY = DocumentDictionary.newBuilder(1).build();
+
     static {
         REGISTRY = new HashMap<>();
         REGISTRY.put(DICTIONARY.code(), DICTIONARY);
     }
-        
-     @Override
+
+    @Override
     public Collection<ValueEncoder> valueEncoders() {
         return VALUE_ENCODERS;
     }
@@ -134,7 +132,7 @@ public class ConfigV1 implements EncoderConfig, DecoderConfig {
     public Version version() {
         return Version.V1;
     }
-    
+
     @Override
     public boolean isCompactArrays() {
         return COMPACT_ARRAYS;

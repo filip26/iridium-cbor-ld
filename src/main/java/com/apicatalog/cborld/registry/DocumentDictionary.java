@@ -1,6 +1,5 @@
 package com.apicatalog.cborld.registry;
 
-import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -44,8 +43,8 @@ public interface DocumentDictionary {
     /**
      * Returns a map of value-to-type dictionaries.
      * <p>
-     * Each entry associates a term (e.g., a property name) with a
-     * {@link TermMap} of type aliases commonly used in the document.
+     * Each entry associates a term (e.g., a property name) with a {@link TermMap}
+     * of type aliases commonly used in the document.
      *
      * @return a map of term strings to corresponding type dictionaries
      */
@@ -87,7 +86,7 @@ public interface DocumentDictionary {
                 dictionary.types()
                         .entrySet()
                         .stream()
-                        .map(e -> new AbstractMap.SimpleEntry<>(e.getKey(), TermMap.newBuilder(e.getValue())))
+                        .map(e -> Map.entry(e.getKey(), TermMap.newBuilder(e.getValue())))
                         .collect(Collectors.toUnmodifiableMap(
                                 Map.Entry::getKey,
                                 Map.Entry::getValue)),
@@ -151,14 +150,14 @@ public interface DocumentDictionary {
         }
 
         /**
-         * Adds a context URI mapping to the dictionary.
+         * Adds a context term mapping to the dictionary.
          *
-         * @param value the context URI
-         * @param code  the integer code to associate
+         * @param term the context term
+         * @param code the integer code to associate
          * @return this builder instance
          */
-        public Builder context(String value, int code) {
-            contexts.set(code, value);
+        public Builder context(String term, int code) {
+            contexts.set(code, term);
             return this;
         }
 
@@ -206,12 +205,12 @@ public interface DocumentDictionary {
         /**
          * Adds a URI mapping to the dictionary.
          *
-         * @param value the URI to map
-         * @param code  the integer code to assign
+         * @param uri  the URI to map
+         * @param code the integer code to assign
          * @return this builder instance
          */
-        public Builder uri(String value, int code) {
-            uris.set(code, value);
+        public Builder uri(String uri, int code) {
+            uris.set(code, uri);
             return this;
         }
 
@@ -236,9 +235,9 @@ public interface DocumentDictionary {
                 TermMap uris) implements DocumentDictionary {
 
             DictionaryImpl {
-                contexts = contexts != null ? contexts : TermMap.EMPTY; 
+                contexts = contexts != null ? contexts : TermMap.empty();
                 types = types != null ? Map.copyOf(types) : Map.of();
-                uris = uris != null ? uris : TermMap.EMPTY;
+                uris = uris != null ? uris : TermMap.empty();
             }
         }
     }

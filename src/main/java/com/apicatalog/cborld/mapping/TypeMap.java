@@ -26,4 +26,5 @@ public interface TypeMap {
      * @return the corresponding {@code TypeMap}, or {@code null} if not present
      */
     TypeMap getMapping(String term);
+
 }
