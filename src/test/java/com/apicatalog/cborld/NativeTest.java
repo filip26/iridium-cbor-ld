@@ -31,16 +31,16 @@ public class NativeTest {
                     Document.of(new TreeIO(Map.of(
                             "@context", Map.of(
                                     "name", "http://xmlns.com/foaf/0.1/name",
-                                    "homepage", Map.of(
-                                            "@id", "http://xmlns.com/foaf/0.1/homepage",
+                                    "project", Map.of(
+                                            "@id", "http://xmlns.com/foaf/0.1/project",
                                             "@type", "@id"),
-                                    "Person", "https://schema.org/Person")),
+                                    "Person", "http://xmlns.com/foaf/0.1/Person")),
                             NativeAdapter.instance())))
             .build();
 
-    static DocumentDictionary dictionary = DocumentDictionary.newBuilder(1234)
+    static DocumentDictionary dictionary = DocumentDictionary.newBuilder(123)
             .context("https://apicatalog/example-context.jsonld", 1)
-            .uri("https://github.com/filip26", 1)
+            .uri("did:key:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK", 1)
             .build();
 
     @Test
@@ -55,7 +55,7 @@ public class NativeTest {
                 "@context", "https://apicatalog/example-context.jsonld",
                 "@type", "Person",
                 "name", "Filip Kolařík",
-                "homepage", "https://github.com/filip26");
+                "project", "did:key:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK");
 
         var cborld = encoder.encode(jsonld);
 

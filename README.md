@@ -28,24 +28,24 @@ The JSON-LD document to encode:
 
 ```json
 {
-  "@context": "https://apicatalog/example-context.jsonld",
+  "@context": "https://apicatalog/ex-context.jsonld",
   "@type": "Person",
   "name": "Filip Kolařík",
-  "homepage": "https://github.com/filip26"
+  "project": "did:key:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK"
 }
 ```
 
-Shared context: `https://apicatalog/example-context.jsonld`
+Shared context: `https://apicatalog/ex-context.jsonld`
 
 ```json
 {
   "@context": {
     "name": "http://xmlns.com/foaf/0.1/name",
-    "homepage": {
-      "@id": "http://xmlns.com/foaf/0.1/homepage",
+    "project": {
+      "@id": "http://xmlns.com/foaf/0.1/project",
       "@type": "@id"
     },
-    "Person": "https://schema.org/Person"
+    "Person": "http://xmlns.com/foaf/0.1/Person"
   }
 }
 ```
@@ -53,16 +53,16 @@ Shared context: `https://apicatalog/example-context.jsonld`
 Dictionary:
 
 ```javascript
-DocumentDictionary.newBuilder(1234)
-            .context("https://apicatalog/example-context.jsonld", 1)
-            .uri("https://github.com/filip26", 1)
+DocumentDictionary.newBuilder(123)
+            .context("https://apicatalog/ex-context.jsonld", 1)
+            .uri("did:key:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK", 1)
             .build();
 ```
 
-Encoded CBOR-LD:
+Encoded self-contained CBOR-LD:
 
 ```javascript
-[[1234, { 0: 1, 2: 100, 102: 1, 104: Filip Kolařík }]]
+[[123, { 0: 1, 2: 100, 102: Filip Kolařík, 104: 1 }]]
 ```
 
 ## Usage
