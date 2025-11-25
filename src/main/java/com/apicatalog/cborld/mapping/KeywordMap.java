@@ -1,11 +1,11 @@
-package com.apicatalog.cborld.dictionary;
+package com.apicatalog.cborld.mapping;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-class KeywordDictionary implements Dictionary {
+public class KeywordMap implements TermMap {
 
     public static final byte CONTEXT_CODE = 0;
 
@@ -58,7 +58,7 @@ class KeywordDictionary implements Dictionary {
 
     @Override
     public String getValue(Integer code) {
-        return CODE_TO_TERM[code / 2 ];
+        return CODE_TO_TERM[code / 2];
     }
 
     @Override

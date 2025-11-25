@@ -1,14 +1,17 @@
 package com.apicatalog.cborld.mapping.context;
 
+import java.util.Collection;
+import java.util.LinkedHashSet;
+
 import com.apicatalog.cborld.decoder.Decoder;
 import com.apicatalog.cborld.decoder.DecoderException;
-import com.apicatalog.cborld.decoder.DecoderException.DecoderCode;
-import com.apicatalog.cborld.dictionary.CodeTermMap;
+import com.apicatalog.cborld.decoder.DecoderMappingProvider;
+import com.apicatalog.cborld.decoder.DecoderException.DecoderError;
 import com.apicatalog.cborld.encoder.Encoder;
 import com.apicatalog.cborld.encoder.EncoderException;
-import com.apicatalog.cborld.encoder.EncoderException.EncoderCode;
-import com.apicatalog.cborld.mapping.DecoderMappingProvider;
-import com.apicatalog.cborld.mapping.EncoderMappingProvider;
+import com.apicatalog.cborld.encoder.EncoderMappingProvider;
+import com.apicatalog.cborld.encoder.EncoderException.EncoderError;
+import com.apicatalog.cborld.mapping.DynamicTermMap;
 import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.cborld.registry.DocumentDictionary;
 import com.apicatalog.jsonld.JsonLdException;
@@ -23,48 +26,58 @@ public class ContextMappingProvider implements EncoderMappingProvider, DecoderMa
     public Mapping getEncoderMapping(Object document, TreeAdapter adapter, Encoder encoder) throws EncoderException {
         try {
 
-            final ContextMap context = ContextMap.newMap(document,
+            final var appliedContextKeys = new LinkedHashSet<Collection<String>>();
+
+            final var typeMap = TypeMapImpl.newTypeMap(
+                    document,
                     adapter,
                     encoder.base(),
-                    encoder.loader());
+                    encoder.loader(),
+                    appliedContextKeys::add,
+                    null);
+
+            final var termMap = DynamicTermMap.newMap();
+
+            appliedContextKeys.forEach(termMap::add);
 
             return new EncoderContextMapping(
                     encoder.config().dictionary(),
-                    CodeTermMap.of(context.getContextKeySets()),
-                    context.getTypeMapping());
+                    termMap,
+                    typeMap);
 
         } catch (JsonLdException e) {
             if (ErrorCode.INLINE_CONTEXT_IS_NOT_ALLOWED == e.code()) {
-                throw new EncoderException(EncoderCode.NonCompressible, e);
+                throw new EncoderException(EncoderError.NON_COMPRESSIBLE, e);
             }
 
-            throw new EncoderException(EncoderCode.InvalidContext, e);
+            throw new EncoderException(EncoderError.INVALID_CONTEXT, e);
         }
     }
 
     @Override
     public Mapping getDecoderMapping(DataItem document, DocumentDictionary dictionary, Decoder decoder) throws DecoderException {
         try {
-            var mapping = new DecoderContextMapping(dictionary, decoder.config().valueDecoders());
+            final var mapping = new DecoderContextMapping(dictionary, decoder.config().valueDecoders());
 
-            var adapter = new CborLdAdapter(
+            final var adapter = new CborLdAdapter(
                     mapping::decodeTerm,
                     mapping::encodeTerm,
                     mapping::decodeValue);
 
-            var context = ContextMap.from(document,
+            final var typeMap = TypeMapImpl.newTypeMap(
+                    document,
                     adapter,
                     decoder.base(),
                     decoder.loader(),
                     mapping::add,
                     mapping.typeKeyNameMap());
 
-            mapping.typeMap(context.getTypeMapping());
+            mapping.typeMap(typeMap);
 
             return mapping;
 
         } catch (JsonLdException e) {
-            throw new DecoderException(DecoderCode.InvalidContext, e);
+            throw new DecoderException(DecoderError.INVALID_CONTEXT, e);
         }
     }
 }

@@ -15,10 +15,10 @@ import co.nstant.in.cbor.model.UnsignedInteger;
 
 class CborLdAdapter extends CborAdapter {
 
-    final Function<DataItem, String> decodeTerm;
-    final Function<String, DataItem> encodeTerm;
+    private final Function<DataItem, String> decodeTerm;
+    private final Function<String, DataItem> encodeTerm;
 
-    final BiFunction<DataItem, String, DataItem> decodeValue;
+    private final BiFunction<DataItem, String, DataItem> decodeValue;
 
     CborLdAdapter(
             Function<DataItem, String> decodeTerm,

@@ -9,7 +9,6 @@ import com.apicatalog.cborld.config.LegacyConfigV05;
 import com.apicatalog.cborld.config.LegacyConfigV06;
 import com.apicatalog.cborld.debug.DebugEncoder;
 import com.apicatalog.cborld.encoder.value.ValueEncoder;
-import com.apicatalog.cborld.mapping.EncoderMappingProvider;
 import com.apicatalog.cborld.registry.DocumentDictionary;
 import com.apicatalog.jsonld.Options;
 import com.apicatalog.jsonld.loader.DocumentLoader;

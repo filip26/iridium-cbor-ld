@@ -1,8 +1,7 @@
-package com.apicatalog.cborld.mapping;
+package com.apicatalog.cborld.decoder;
 
 
-import com.apicatalog.cborld.decoder.Decoder;
-import com.apicatalog.cborld.decoder.DecoderException;
+import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.cborld.registry.DocumentDictionary;
 
 import co.nstant.in.cbor.model.DataItem;

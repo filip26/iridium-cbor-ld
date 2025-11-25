@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import com.apicatalog.cborld.CborLd.Version;
-import com.apicatalog.cborld.dictionary.Dictionary;
+import com.apicatalog.cborld.mapping.TermMap;
 import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.cborld.registry.DocumentDictionary;
 import com.apicatalog.jsonld.loader.DocumentLoader;
@@ -25,7 +25,7 @@ import com.apicatalog.jsonld.loader.DocumentLoader;
  * <ul>
  * <li>CBOR-LD version used</li>
  * <li>Associated {@link DocumentDictionary}</li>
- * <li>Dynamic term mappings via {@link Dictionary}</li>
+ * <li>Dynamic term mappings via {@link TermMap}</li>
  * <li>Encoded and decoded byte/JSON representations</li>
  * <li>Errors thrown during processing (if any)</li>
  * </ul>
@@ -92,9 +92,9 @@ public class Debug {
     /**
      * Returns the term dictionary (dynamic mapping).
      *
-     * @return the {@link Dictionary} used for terms, or {@code null}
+     * @return the {@link TermMap} used for terms, or {@code null}
      */
-    public Dictionary terms() {
+    public TermMap terms() {
         return mapping != null ? mapping.termMap() : null;
     }
 
@@ -182,7 +182,7 @@ public class Debug {
         return result;
     }
 
-    static final Map<String, ?> dump(Dictionary dictionary) {
+    static final Map<String, ?> dump(TermMap dictionary) {
         var result = new LinkedHashMap<String, Object>();
 
         toStream(dictionary.iterator())

@@ -8,8 +8,8 @@ import com.apicatalog.cborld.decoder.Decoder;
 import com.apicatalog.cborld.decoder.DecoderBuilder;
 import com.apicatalog.cborld.decoder.DecoderConfig;
 import com.apicatalog.cborld.decoder.DecoderException;
-import com.apicatalog.cborld.decoder.DecoderException.DecoderCode;
-import com.apicatalog.cborld.mapping.DecoderMappingProvider;
+import com.apicatalog.cborld.decoder.DecoderMappingProvider;
+import com.apicatalog.cborld.decoder.DecoderException.DecoderError;
 import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.cborld.registry.DocumentDictionary;
 import com.apicatalog.jsonld.loader.DocumentLoader;
@@ -64,7 +64,7 @@ public class DebugDecoder extends Debug {
             var config = versions.get(version);
 
             if (config == null) {
-                throw new DecoderException(DecoderCode.Unsupported, "The decoder is not configured to support version " + version + " but " + versions.keySet() + ".");
+                throw new DecoderException(DecoderError.UNSUPPORTED, "The decoder is not configured to support version " + version + " but " + versions.keySet() + ".");
             }
 
             var debug = DecoderBuilder.newDecoder(

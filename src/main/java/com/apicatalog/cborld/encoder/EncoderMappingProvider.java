@@ -1,7 +1,6 @@
-package com.apicatalog.cborld.mapping;
+package com.apicatalog.cborld.encoder;
 
-import com.apicatalog.cborld.encoder.Encoder;
-import com.apicatalog.cborld.encoder.EncoderException;
+import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.tree.io.TreeAdapter;
 
 @FunctionalInterface

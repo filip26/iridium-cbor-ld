@@ -1,11 +1,10 @@
 package com.apicatalog.cborld.registry;
 
-import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.apicatalog.cborld.dictionary.Dictionary;
+import com.apicatalog.cborld.mapping.TermMap;
 
 /**
  * Represents a CBOR-LD document dictionary used for semantic compression.
@@ -37,26 +36,26 @@ public interface DocumentDictionary {
     /**
      * Returns the dictionary of known context URIs.
      *
-     * @return a {@link Dictionary} of context URI mappings
+     * @return a {@link TermMap} of context URI mappings
      */
-    Dictionary contexts();
+    TermMap contexts();
 
     /**
      * Returns a map of value-to-type dictionaries.
      * <p>
-     * Each entry associates a term (e.g., a property name) with a
-     * {@link Dictionary} of type aliases commonly used in the document.
+     * Each entry associates a term (e.g., a property name) with a {@link TermMap}
+     * of type aliases commonly used in the document.
      *
      * @return a map of term strings to corresponding type dictionaries
      */
-    Map<String, Dictionary> types();
+    Map<String, TermMap> types();
 
     /**
      * Returns the dictionary of general-purpose URIs used throughout the document.
      *
-     * @return a {@link Dictionary} of URI mappings
+     * @return a {@link TermMap} of URI mappings
      */
-    Dictionary uris();
+    TermMap uris();
 
     /**
      * Creates a new empty {@code Builder} with the given dictionary code.
@@ -67,9 +66,9 @@ public interface DocumentDictionary {
     public static Builder newBuilder(int code) {
         return new Builder(
                 code,
-                Dictionary.newBuilder(),
+                TermMap.newBuilder(),
                 new HashMap<>(),
-                Dictionary.newBuilder());
+                TermMap.newBuilder());
     }
 
     /**
@@ -78,22 +77,22 @@ public interface DocumentDictionary {
      * @param dictionary the dictionary to copy
      * @return a new builder instance pre-filled with existing mappings
      */
-    public static Builder copyOf(DocumentDictionary dictionary) {
+    public static Builder newBuilder(DocumentDictionary dictionary) {
         return new Builder(
                 dictionary.code(),
                 dictionary.contexts() != null
-                        ? Dictionary.copyOf(dictionary.contexts())
-                        : Dictionary.newBuilder(),
+                        ? TermMap.newBuilder(dictionary.contexts())
+                        : TermMap.newBuilder(),
                 dictionary.types()
                         .entrySet()
                         .stream()
-                        .map(e -> new AbstractMap.SimpleEntry<>(e.getKey(), Dictionary.copyOf(e.getValue())))
+                        .map(e -> Map.entry(e.getKey(), TermMap.newBuilder(e.getValue())))
                         .collect(Collectors.toUnmodifiableMap(
                                 Map.Entry::getKey,
                                 Map.Entry::getValue)),
                 dictionary.uris() != null
-                        ? Dictionary.copyOf(dictionary.uris())
-                        : Dictionary.newBuilder());
+                        ? TermMap.newBuilder(dictionary.uris())
+                        : TermMap.newBuilder());
     }
 
     /**
@@ -116,15 +115,15 @@ public interface DocumentDictionary {
     public static class Builder {
 
         private final int code;
-        private final Dictionary.Builder contexts;
-        private final Map<String, Dictionary.Builder> types;
-        private final Dictionary.Builder uris;
+        private final TermMap.Builder contexts;
+        private final Map<String, TermMap.Builder> types;
+        private final TermMap.Builder uris;
 
         private Builder(
                 int code,
-                Dictionary.Builder contexts,
-                Map<String, Dictionary.Builder> types,
-                final Dictionary.Builder uris) {
+                TermMap.Builder contexts,
+                Map<String, TermMap.Builder> types,
+                TermMap.Builder uris) {
             this.code = code;
             this.contexts = contexts;
             this.types = types;
@@ -151,14 +150,14 @@ public interface DocumentDictionary {
         }
 
         /**
-         * Adds a context URI mapping to the dictionary.
+         * Adds a context term mapping to the dictionary.
          *
-         * @param value the context URI
-         * @param code  the integer code to associate
+         * @param term the context term
+         * @param code the integer code to associate
          * @return this builder instance
          */
-        public Builder context(String value, int code) {
-            contexts.set(code, value);
+        public Builder context(String term, int code) {
+            contexts.set(code, term);
             return this;
         }
 
@@ -168,7 +167,7 @@ public interface DocumentDictionary {
          * @param dictionary the context dictionary to merge
          * @return this builder instance
          */
-        public Builder context(Dictionary dictionary) {
+        public Builder context(TermMap dictionary) {
             contexts.merge(dictionary);
             return this;
         }
@@ -184,7 +183,7 @@ public interface DocumentDictionary {
         public Builder type(String name, int code, String value) {
             var dictionary = types.get(name);
             if (dictionary == null) {
-                dictionary = Dictionary.newBuilder();
+                dictionary = TermMap.newBuilder();
                 types.put(name, dictionary);
             }
             dictionary.set(code, value);
@@ -198,7 +197,7 @@ public interface DocumentDictionary {
          * @param builder the dictionary builder to assign
          * @return this builder instance
          */
-        public Builder type(String name, Dictionary.Builder builder) {
+        public Builder type(String name, TermMap.Builder builder) {
             types.put(name, builder);
             return this;
         }
@@ -206,12 +205,12 @@ public interface DocumentDictionary {
         /**
          * Adds a URI mapping to the dictionary.
          *
-         * @param value the URI to map
-         * @param code  the integer code to assign
+         * @param uri  the URI to map
+         * @param code the integer code to assign
          * @return this builder instance
          */
-        public Builder uri(String value, int code) {
-            uris.set(code, value);
+        public Builder uri(String uri, int code) {
+            uris.set(code, uri);
             return this;
         }
 
@@ -221,7 +220,7 @@ public interface DocumentDictionary {
          * @param dictionary the URI dictionary to merge
          * @return this builder instance
          */
-        public Builder uri(Dictionary dictionary) {
+        public Builder uri(TermMap dictionary) {
             uris.merge(dictionary);
             return this;
         }
@@ -231,12 +230,14 @@ public interface DocumentDictionary {
          */
         private record DictionaryImpl(
                 int code,
-                Dictionary contexts,
-                Map<String, Dictionary> types,
-                Dictionary uris) implements DocumentDictionary {
+                TermMap contexts,
+                Map<String, TermMap> types,
+                TermMap uris) implements DocumentDictionary {
 
             DictionaryImpl {
+                contexts = contexts != null ? contexts : TermMap.empty();
                 types = types != null ? Map.copyOf(types) : Map.of();
+                uris = uris != null ? uris : TermMap.empty();
             }
         }
     }

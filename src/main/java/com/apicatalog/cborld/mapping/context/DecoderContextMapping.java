@@ -1,14 +1,17 @@
 package com.apicatalog.cborld.mapping.context;
 
 import java.math.BigInteger;
+import java.util.ArrayDeque;
 import java.util.Collection;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.List;
 
 import com.apicatalog.cborld.decoder.DecoderException;
 import com.apicatalog.cborld.decoder.value.ValueDecoder;
-import com.apicatalog.cborld.dictionary.CodeTermMap;
-import com.apicatalog.cborld.dictionary.Dictionary;
+import com.apicatalog.cborld.mapping.DynamicTermMap;
 import com.apicatalog.cborld.mapping.Mapping;
-import com.apicatalog.cborld.mapping.TypeKeyNameMapper;
+import com.apicatalog.cborld.mapping.TermMap;
 import com.apicatalog.cborld.mapping.TypeMap;
 import com.apicatalog.cborld.registry.DocumentDictionary;
 import com.apicatalog.jsonld.lang.Keywords;
@@ -19,40 +22,41 @@ import co.nstant.in.cbor.model.UnsignedInteger;
 
 class DecoderContextMapping implements Mapping {
 
-    final DocumentDictionary dictionary;
-    final CodeTermMap termMap;
-    final TypeKeyNameMapper typeKeyNameMap;
-    final Collection<ValueDecoder> valueDecoders;
+    private final DocumentDictionary dictionary;
+    private final DynamicTermMap termMap;
+    private final TypeKeyNameMapper typeKeyNameMap;
+    private final Collection<ValueDecoder> valueDecoders;
 
-    TypeMap typeMap;
+    private TypeMap typeMap;
 
     DecoderContextMapping(DocumentDictionary dictionary, Collection<ValueDecoder> valueDecoders) {
         this.dictionary = dictionary;
         this.valueDecoders = valueDecoders;
-        this.termMap = CodeTermMap.create();
+        this.termMap = DynamicTermMap.newMap();
         this.typeKeyNameMap = new DefaultTypeKeyNameMapper();
         this.typeMap = null;
     }
 
     final DataItem decodeValue(final DataItem value, final String property) {
 
-        for (final var decoder : valueDecoders) {
-            try {
+        try {
+
+            for (final var decoder : valueDecoders) {
                 final var decoded = decoder.decode(
                         this,
                         value,
                         property,
-                        Keywords.TYPE.equals(property) || typeKeyNameMap.isTypeKey(property)
+                        typeKeyNameMap.isTypeKey(property)
                                 ? Keywords.TYPE
                                 : null);
 
                 if (decoded != null) {
                     return new UnicodeString(decoded);
                 }
-
-            } catch (DecoderException e) {
-                /* ignored */
             }
+
+        } catch (DecoderException e) {
+            /* ignored */
         }
 
         return value;
@@ -65,6 +69,7 @@ class DecoderContextMapping implements Mapping {
         if (encodedTerm != null) {
             return new UnsignedInteger(encodedTerm);
         }
+
         return new UnicodeString(term);
     }
 
@@ -74,16 +79,11 @@ class DecoderContextMapping implements Mapping {
             throw new IllegalArgumentException("The data parameter must not be null.");
         }
 
-        switch (data.getMajorType()) {
-        case UNICODE_STRING:
-            return ((UnicodeString) data).getString();
-
-        case UNSIGNED_INTEGER:
-            return decodeTerm(((UnsignedInteger) data).getValue());
-
-        default:
-            return data.toString();
-        }
+        return switch (data.getMajorType()) {
+        case UNICODE_STRING -> ((UnicodeString) data).getString();
+        case UNSIGNED_INTEGER -> decodeTerm(((UnsignedInteger) data).getValue());
+        default -> data.toString();
+        };
     }
 
     final String decodeTerm(final BigInteger term) {
@@ -99,7 +99,7 @@ class DecoderContextMapping implements Mapping {
     }
 
     @Override
-    public Dictionary termMap() {
+    public TermMap termMap() {
         return termMap;
     }
 
@@ -123,5 +123,51 @@ class DecoderContextMapping implements Mapping {
     @Override
     public DocumentDictionary dictionary() {
         return dictionary;
+    }
+    
+    private static class DefaultTypeKeyNameMapper implements TypeKeyNameMapper {
+
+        final Deque<Collection<String>> typeKeys;
+
+        public DefaultTypeKeyNameMapper() {
+            this.typeKeys = new ArrayDeque<>(10);
+            typeKeys.push(List.of());
+        }
+
+        @Override
+        public void beginMap(String key) {
+            typeKeys.push(List.of());
+        }
+
+        @Override
+        public void typeKey(String key) {
+
+            if (typeKeys.peek().isEmpty()) {
+                typeKeys.pop();
+                typeKeys.push(List.of(key));
+                return;
+            }
+
+            if (typeKeys.peek().size() == 1) {
+                final var set = new HashSet<String>();
+                set.add(typeKeys.pop().iterator().next());
+                set.add(key);
+                typeKeys.push(set);
+                return;
+            }
+
+            typeKeys.peek().add(key);
+        }
+
+        @Override
+        public void endMap() {
+            typeKeys.pop();
+        }
+
+        @Override
+        public boolean isTypeKey(String term) {
+            return Keywords.TYPE.equals(term)
+                    || (!typeKeys.isEmpty() && typeKeys.peek().contains(term));
+        }
     }
 }

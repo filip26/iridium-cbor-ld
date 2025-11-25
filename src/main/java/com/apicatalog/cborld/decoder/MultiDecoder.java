@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import com.apicatalog.cborld.CborLd.Version;
-import com.apicatalog.cborld.decoder.DecoderException.DecoderCode;
+import com.apicatalog.cborld.decoder.DecoderException.DecoderError;
 import com.apicatalog.jsonld.loader.DocumentLoader;
 
 class MultiDecoder implements Decoder {
@@ -30,7 +30,7 @@ class MultiDecoder implements Decoder {
         final Decoder decoder = decoders.get(version);
 
         if (decoder == null) {
-            throw new DecoderException(DecoderCode.Unsupported, "The decoder is not configured to support version " + version + " but " + decoders.keySet() +  ".");
+            throw new DecoderException(DecoderError.UNSUPPORTED, "The decoder is not configured to support version " + version + " but " + decoders.keySet() +  ".");
         }
 
         return decoder.decode(version, encoded);

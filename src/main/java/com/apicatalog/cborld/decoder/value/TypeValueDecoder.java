@@ -11,7 +11,7 @@ public class TypeValueDecoder implements ValueDecoder {
 
     @Override
     public String decode(Mapping mapping, DataItem value, String term, String type) throws DecoderException {
-        return (Keywords.TYPE.equals(type)
+        return ((Keywords.TYPE.equals(type) || Keywords.TYPE.equals(term))
                 && mapping != null
                 && mapping.termMap() != null
                 && value instanceof UnsignedInteger uint)

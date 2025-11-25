@@ -318,7 +318,7 @@
       ],
       "name": "non compress-able document",
       "input": "encoder/0.5/0061-in.jsonld",
-      "expectErrorCode": "NonCompressible",
+      "expectErrorCode": "NON_COMPRESSIBLE",
       "option": {
         "config": "v05"
       }

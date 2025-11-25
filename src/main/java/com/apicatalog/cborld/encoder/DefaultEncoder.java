@@ -9,8 +9,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import com.apicatalog.cborld.CborLd;
-import com.apicatalog.cborld.encoder.EncoderException.EncoderCode;
-import com.apicatalog.cborld.mapping.EncoderMappingProvider;
+import com.apicatalog.cborld.encoder.EncoderException.EncoderError;
 import com.apicatalog.cborld.mapping.Mapping;
 import com.apicatalog.cborld.mapping.TypeMap;
 import com.apicatalog.jsonld.JsonLdException;
@@ -66,7 +65,7 @@ public class DefaultEncoder implements Encoder {
         }
 
         throw new EncoderException(
-                EncoderCode.NonCompressible,
+                EncoderError.NON_COMPRESSIBLE,
                 """
                         Non-compressible document. Only JSON-LD documents containing referenced contexts can be compressed. \
                         Referenced contexts serve as a shared dictionary, which is not possible with inline contexts.
@@ -116,7 +115,7 @@ public class DefaultEncoder implements Encoder {
                 break;
 
             default:
-                throw new EncoderException(EncoderCode.Unsupported, "Unsupported CBOR-LD version " + config.version() + ".");
+                throw new EncoderException(EncoderError.UNSUPPORTED, "Unsupported CBOR-LD version " + config.version() + ".");
             }
 
             // if no compression
@@ -145,10 +144,10 @@ public class DefaultEncoder implements Encoder {
             return baos.toByteArray();
 
         } catch (CborException e) {
-            throw new EncoderException(EncoderCode.InvalidDocument, e);
+            throw new EncoderException(EncoderError.INVALID_DOCUMENT, e);
 
         } catch (JsonLdException e) {
-            throw new EncoderException(EncoderCode.Internal, e);
+            throw new EncoderException(EncoderError.INTERNAL, e);
         }
     }
 

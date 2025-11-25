@@ -18,11 +18,11 @@ public class UuidValueEncoder implements ValueEncoder {
     @Override
     public DataItem encode(Mapping mapping, String value, String term, String type) {
 
-        if (value.toLowerCase().startsWith(PREFIX)) {
+        if (value != null && value.toLowerCase().startsWith(PREFIX)) {
 
-            String rest = value.substring(PREFIX.length());
+            final var rest = value.substring(PREFIX.length());
 
-            Array result = new Array();
+            final var result = new Array();
 
             result.add(new UnsignedInteger(CODE));
             result.add(new ByteString(toBytes(UUID.fromString(rest))));
@@ -32,10 +32,10 @@ public class UuidValueEncoder implements ValueEncoder {
         return null;
     }
 
-    public static byte[] toBytes(UUID uuid) {
-        ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
-        bb.putLong(uuid.getMostSignificantBits());
-        bb.putLong(uuid.getLeastSignificantBits());
-        return bb.array();
+    public static byte[] toBytes(final UUID uuid) {
+        return ByteBuffer.wrap(new byte[16])
+                .putLong(uuid.getMostSignificantBits())
+                .putLong(uuid.getLeastSignificantBits())
+                .array();
     }
 }

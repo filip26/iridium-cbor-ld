@@ -1,8 +1,10 @@
 package com.apicatalog.cborld.decoder.value;
 
+import java.time.DateTimeException;
 import java.time.Instant;
 
 import com.apicatalog.cborld.decoder.DecoderException;
+import com.apicatalog.cborld.decoder.DecoderException.DecoderError;
 import com.apicatalog.cborld.mapping.Mapping;
 
 import co.nstant.in.cbor.model.DataItem;
@@ -14,9 +16,13 @@ public class XsdDateTimeValueDecoder implements ValueDecoder {
 
     @Override
     public String decode(Mapping mapping, DataItem value, String term, String type) throws DecoderException {
-        return (DATE_TIME_TYPE.equals(type)
-                && value instanceof UnsignedInteger epochSeconds)
-                        ? Instant.ofEpochSecond(epochSeconds.getValue().longValueExact()).toString()
-                        : null;
+        try {
+            return (DATE_TIME_TYPE.equals(type)
+                    && value instanceof UnsignedInteger epochSeconds)
+                            ? Instant.ofEpochSecond(epochSeconds.getValue().longValueExact()).toString()
+                            : null;
+        } catch (DateTimeException e) {
+            throw new DecoderException(DecoderError.INVALID_VALUE, e);
+        }
     }
 }

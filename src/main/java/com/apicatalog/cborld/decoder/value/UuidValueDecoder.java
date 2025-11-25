@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 import java.util.UUID;
 
 import com.apicatalog.cborld.decoder.DecoderException;
+import com.apicatalog.cborld.decoder.DecoderException.DecoderError;
 import com.apicatalog.cborld.encoder.value.UuidValueEncoder;
 import com.apicatalog.cborld.mapping.Mapping;
 
@@ -16,19 +17,32 @@ import co.nstant.in.cbor.model.UnsignedInteger;
 public class UuidValueDecoder implements ValueDecoder {
 
     @Override
-    public String decode(Mapping mapping, DataItem value, String term, String types) throws DecoderException {
-        return (value instanceof Array array && array.getDataItems().size() == 2
+    public String decode(Mapping mapping, DataItem value, String term, String type) throws DecoderException {
+        if (value instanceof Array array
+                && array.getDataItems().size() == 2
                 && array.getDataItems().get(0) instanceof UnsignedInteger code
-                && code.getValue().equals(BigInteger.valueOf(3))
-                && array.getDataItems().get(1) instanceof ByteString uuid)
-                        ? UuidValueEncoder.PREFIX + of(uuid.getBytes()).toString()
-                        : null;
+                && code.getValue().equals(BigInteger.valueOf(UuidValueEncoder.CODE))) {
+
+            if (array.getDataItems().get(1) instanceof ByteString uuid) {
+
+                final var bytes = uuid.getBytes();
+
+                if (bytes.length == 16) {
+                    return UuidValueEncoder.PREFIX + of(bytes).toString();
+                }
+            }
+
+            throw new DecoderException(DecoderError.INVALID_VALUE, "Invalid urn:uuid value=" + value);
+        }
+        return null;
     }
 
     public static UUID of(byte[] bytes) {
-        ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
-        long high = byteBuffer.getLong();
-        long low = byteBuffer.getLong();
-        return new UUID(high, low);
+
+        final var byteBuffer = ByteBuffer.wrap(bytes);
+
+        return new UUID(
+                byteBuffer.getLong(),
+                byteBuffer.getLong());
     }
 }
