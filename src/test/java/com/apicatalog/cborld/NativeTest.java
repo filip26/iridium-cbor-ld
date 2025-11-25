@@ -30,29 +30,33 @@ class NativeTest {
 
     static DocumentLoader loader = StaticLoader.newBuilder()
             .document(
-                    "https://apicatalog/example-context.jsonld",
+                    "urn:example:context",
                     Document.of(new TreeIO(Map.of(
                             "@context", Map.of(
                                     "name", "http://xmlns.com/foaf/0.1/name",
                                     "project", Map.of(
                                             "@id", "http://xmlns.com/foaf/0.1/project",
                                             "@type", "@id"),
-                                    "Person", "http://xmlns.com/foaf/0.1/Person")),
+                                    "Person", "http://xmlns.com/foaf/0.1/Person",
+                                    "modified", Map.of(
+                                            "@id", "https://schema.org/dateModified",
+                                            "@type", "http://www.w3.org/2001/XMLSchema#dateTime"))),
                             NativeAdapter.instance())))
             .build();
 
     static DocumentDictionary dictionary = DocumentDictionary.newBuilder(123)
-            .context("https://apicatalog/example-context.jsonld", 1)
+            .context("urn:example:context", 1)
             .uri("did:key:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK", 1)
             .build();
 
     static Map<String, Object> jsonld = Map.of(
-            "@context", "https://apicatalog/example-context.jsonld",
+            "@context", "urn:example:context",
             "@type", "Person",
             "name", "Filip Kolařík",
-            "project", "did:key:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK");
+            "project", "did:key:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK",
+            "modified", "2025-11-25T01:02:03Z");
 
-    static String cborld = "FD9CB1D82187BA4000102186418666F46696C6970204B6F6C61C599C3AD6B186801";
+    static String cborld = "FD9CB1D82187BA5000102186418661A6925000B18686F46696C6970204B6F6C61C599C3AD6B186A01";
 
     @Test
     void testMapEncode() throws EncoderException, CborException, IOException {
@@ -71,7 +75,7 @@ class NativeTest {
         if (!match) {
             var writer = new StringWriter();
             writer.write("Expected:\n");
-            
+
             CborWriter cborWriter = new CborWriter(writer);
             cborWriter.write(CborDecoder.decode(Multibase.BASE_16_UPPER.decode(cborld)));
             writer.flush();
