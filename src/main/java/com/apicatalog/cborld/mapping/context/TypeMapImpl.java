@@ -37,7 +37,7 @@ class TypeMapImpl implements TypeMap {
 
     @Override
     public TypeMap getMapping(String term) {
-        if (typeMap.get(term) instanceof Map map) {
+        if (typeMap.get(term) instanceof Map<?, ?> map) {
 
             @SuppressWarnings("unchecked")
             final var typedMap = (Map<String, Object>) map;

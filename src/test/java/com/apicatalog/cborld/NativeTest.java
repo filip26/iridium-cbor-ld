@@ -26,7 +26,7 @@ import com.apicatalog.tree.io.java.NativeAdapter;
 import co.nstant.in.cbor.CborDecoder;
 import co.nstant.in.cbor.CborException;
 
-public class NativeTest {
+class NativeTest {
 
     static DocumentLoader loader = StaticLoader.newBuilder()
             .document(
@@ -55,7 +55,7 @@ public class NativeTest {
     static String cborld = "FD9CB1D82187BA4000102186418666F46696C6970204B6F6C61C599C3AD6B186801";
 
     @Test
-    void testMapEncode() throws EncoderException, DecoderException, CborException, IOException {
+    void testMapEncode() throws EncoderException, CborException, IOException {
 
         var encoder = CborLd.newEncoder()
                 .loader(loader)
@@ -85,7 +85,7 @@ public class NativeTest {
     }
 
     @Test
-    void testMapDecode() throws EncoderException, DecoderException, CborException, IOException {
+    void testMapDecode() throws DecoderException {
 
         var decoder = Decoder.newBuilder(Version.V1)
                 .loader(loader)

@@ -11,8 +11,8 @@ public class KeywordMap implements TermMap {
 
     public static final byte CUSTOM_OFFSET = 0x64; // 100 decimal
 
-    public static final Map<String, Integer> TERM_TO_CODE = new HashMap<>();
-    public static final String[] CODE_TO_TERM = new String[27];
+    protected static final Map<String, Integer> TERM_TO_CODE = new HashMap<>();
+    protected static final String[] CODE_TO_TERM = new String[27];
 
     static {
         add("@context", (int) CONTEXT_CODE);
@@ -58,7 +58,7 @@ public class KeywordMap implements TermMap {
 
     @Override
     public String getValue(Integer code) {
-        return CODE_TO_TERM[code / 2 ];
+        return CODE_TO_TERM[code / 2];
     }
 
     @Override
