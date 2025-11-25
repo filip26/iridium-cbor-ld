@@ -32,7 +32,7 @@ The JSON-LD document to encode:
   "@type": "Person",
   "name": "Filip Kolařík",
   "project": "did:key:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK",
-  "modified", "2025-11-25T01:02:03Z"
+  "modified": "2025-11-25T01:02:03Z"
 }
 ```
 
