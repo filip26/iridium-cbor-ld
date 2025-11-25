@@ -62,7 +62,11 @@ DocumentDictionary.newBuilder(123)
 Encoded self-contained CBOR-LD:
 
 ```javascript
+// with dictionary
 [[123, { 0: 1, 2: 100, 102: Filip Kolařík, 104: 1 }]]
+
+// without dictionary, using only referenced context as dictionary
+[[1, { 0: https://apicatalog/example-context.jsonld, 2: 100, 102: Filip Kolařík, 104: [1025, [0xED,0x01,0x2E,0x6F, ... 34 bytes]] }]]
 ```
 
 ## Usage

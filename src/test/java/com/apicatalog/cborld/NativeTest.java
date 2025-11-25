@@ -48,7 +48,7 @@ public class NativeTest {
 
         var encoder = CborLd.newEncoder()
                 .loader(loader)
-                .dictionary(dictionary)
+//                .dictionary(dictionary)
                 .build();
 
         Map<String, Object> jsonld = Map.of(
