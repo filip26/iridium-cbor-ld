@@ -31,7 +31,8 @@ The JSON-LD document to encode:
   "@context": "https://example/context",
   "@type": "Person",
   "name": "Filip Kolařík",
-  "project": "did:key:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK"
+  "project": "did:key:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK",
+  "modified", "2025-11-25T01:02:03Z"
 }
 ```
 
@@ -45,12 +46,16 @@ Shared context: `https://example/context`
       "@id": "http://xmlns.com/foaf/0.1/project",
       "@type": "@id"
     },
+    "modified": {
+      "@id": "https://schema.org/dateModified",
+      "@type": "http://www.w3.org/2001/XMLSchema#dateTime"
+    },
     "Person": "http://xmlns.com/foaf/0.1/Person"
   }
 }
 ```
 
-Dictionary:
+Shared dictionary:
 
 ```javascript
 DocumentDictionary.newBuilder(123)
@@ -63,10 +68,10 @@ Encoded self-contained CBOR-LD:
 
 ```javascript
 // with dictionary
-[[123, { 0: 1, 2: 100, 102: Filip Kolařík, 104: 1 }]]
+[[123, { 0: 1, 2: 100, 102: 1764032523, 104: Filip Kolařík, 106: 1 }]]
 
 // without dictionary, using only referenced context as dictionary
-[[1, { 0: https://example/context, 2: 100, 102: Filip Kolařík, 104: [1025, [0xED,0x01,0x2E, ... 34 bytes]] }]]
+[[1, { 0: https://example/context, 2: 100, 102: 1764032523, 104: Filip Kolařík, 106: [1025, [0xED,0x01, ... 34 bytes]] }]]
 ```
 
 ## Usage
