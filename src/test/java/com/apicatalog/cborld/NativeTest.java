@@ -30,7 +30,7 @@ class NativeTest {
 
     static DocumentLoader loader = StaticLoader.newBuilder()
             .document(
-                    "https://apicatalog/example-context.jsonld",
+                    "urn:example:context",
                     Document.of(new TreeIO(Map.of(
                             "@context", Map.of(
                                     "name", "http://xmlns.com/foaf/0.1/name",
@@ -45,12 +45,12 @@ class NativeTest {
             .build();
 
     static DocumentDictionary dictionary = DocumentDictionary.newBuilder(123)
-            .context("https://apicatalog/example-context.jsonld", 1)
+            .context("urn:example:context", 1)
             .uri("did:key:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK", 1)
             .build();
 
     static Map<String, Object> jsonld = Map.of(
-            "@context", "https://apicatalog/example-context.jsonld",
+            "@context", "urn:example:context",
             "@type", "Person",
             "name", "Filip Kolařík",
             "project", "did:key:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK",
