@@ -28,14 +28,14 @@ The JSON-LD document to encode:
 
 ```json
 {
-  "@context": "https://apicatalog/ex-context",
+  "@context": "https://example/context",
   "@type": "Person",
   "name": "Filip Kolařík",
   "project": "did:key:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK"
 }
 ```
 
-Shared context: `https://apicatalog/ex-context`
+Shared context: `https://example/context`
 
 ```json
 {
@@ -54,7 +54,7 @@ Dictionary:
 
 ```javascript
 DocumentDictionary.newBuilder(123)
-            .context("https://apicatalog/ex-context", 1)
+            .context("https://example/context", 1)
             .uri("did:key:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK", 1)
             .build();
 ```
@@ -66,7 +66,7 @@ Encoded self-contained CBOR-LD:
 [[123, { 0: 1, 2: 100, 102: Filip Kolařík, 104: 1 }]]
 
 // without dictionary, using only referenced context as dictionary
-[[1, { 0: https://apicatalog/ex-context, 2: 100, 102: Filip Kolařík, 104: [1025, [0xED,0x01,0x2E, ... 34 bytes]] }]]
+[[1, { 0: https://example/context, 2: 100, 102: Filip Kolařík, 104: [1025, [0xED,0x01,0x2E, ... 34 bytes]] }]]
 ```
 
 ## Usage
