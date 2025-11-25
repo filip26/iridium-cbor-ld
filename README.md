@@ -22,6 +22,49 @@ Iridium CBOR-LD provides a full implementation of the [CBOR-LD 1.0 specification
 - 🧱 Support for custom document dictionaries and builders
 - 📦 Integration with [Verifiable Credential Barcodes](https://w3c-ccg.github.io/vc-barcodes/)
 
+## Example
+
+The JSON-LD document to encode:
+
+```json
+{
+  "@context": "https://apicatalog/example-context.jsonld",
+  "@type": "Person",
+  "name": "Filip Kolařík",
+  "homepage": "https://github.com/filip26"
+}
+```
+
+Shared context: `https://apicatalog/example-context.jsonld`
+
+```json
+{
+  "@context": {
+    "name": "http://xmlns.com/foaf/0.1/name",
+    "homepage": {
+      "@id": "http://xmlns.com/foaf/0.1/homepage",
+      "@type": "@id"
+    },
+    "Person": "https://schema.org/Person"
+  }
+}
+```
+
+Dictionary:
+
+```javascript
+DocumentDictionary.newBuilder(1234)
+            .context("https://apicatalog/example-context.jsonld", 1)
+            .uri("https://github.com/filip26", 1)
+            .build();
+```
+
+Encoded CBOR-LD:
+
+```javascript
+[[1234, { 0: 1, 2: 100, 102: 1, 104: Filip Kolařík }]]
+```
+
 ## Usage
 
 ### Encoding

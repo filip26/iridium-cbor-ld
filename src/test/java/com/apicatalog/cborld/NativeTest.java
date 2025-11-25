@@ -31,17 +31,18 @@ public class NativeTest {
                     Document.of(new TreeIO(Map.of(
                             "@context", Map.of(
                                     "name", "http://xmlns.com/foaf/0.1/name",
-                                    "homepage", "http://xmlns.com/foaf/0.1/homepage",
-                                    "Person", "https://schema.org/Person"
-                                    )),
+                                    "homepage", Map.of(
+                                            "@id", "http://xmlns.com/foaf/0.1/homepage",
+                                            "@type", "@id"),
+                                    "Person", "https://schema.org/Person")),
                             NativeAdapter.instance())))
             .build();
 
     static DocumentDictionary dictionary = DocumentDictionary.newBuilder(1234)
             .context("https://apicatalog/example-context.jsonld", 1)
-            .uri("https://github.com/filip26", 10)
+            .uri("https://github.com/filip26", 1)
             .build();
-    
+
     @Test
     void testMapEncode() throws EncoderException, DecoderException, CborException, IOException {
 
@@ -61,7 +62,7 @@ public class NativeTest {
         assertNotNull(cborld);
 
         var writer = new StringWriter();
-        
+
         CborWriter cborWriter = new CborWriter(writer);
 
         final var decodedResult = CborDecoder.decode(cborld);
@@ -69,7 +70,7 @@ public class NativeTest {
         cborWriter.write(decodedResult);
 
         System.out.println(writer.toString());
-        
+
         var x = Decoder.newBuilder(Version.V1)
                 .loader(loader)
                 .dictionary(dictionary)
