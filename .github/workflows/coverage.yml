@@ -20,9 +20,9 @@ jobs:
         java-version: 17
         distribution: 'temurin' 
     - name: Build with Maven
-      run: mvn -B package jacoco:report --file pom.xml
+      run: mvn -B package jacoco:report
     - name: Run codacy-coverage-reporter
-      uses: codacy/codacy-coverage-reporter-action@master
+      uses: codacy/codacy-coverage-reporter-action@v1.3.0
       with:
         project-token: ${{secrets.CODACY_PROJECT_TOKEN}}
         coverage-reports: ./target/site/jacoco/jacoco.xml
