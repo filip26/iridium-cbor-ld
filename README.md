@@ -46,7 +46,7 @@ Encoded CBOR-LD:
 [[1, { 0: https://example/context, 2: 100, 102: 1764032523, 104: Filip Kolařík, 106: [1025, [0xED,0x01, ... 34 bytes]] }]]
 ```
 
-👉 See the [test case](https://github.com/filip26/iridium-cbor-ld/blob/ceb0a9c3d83980682b1fc974973c417be366d3eb/src/test/java/com/apicatalog/cborld/NativeTest.java#L29) for context, dictionary, and other details.
+👉 See the [test case](https://github.com/filip26/iridium-cbor-ld/blob/main/src/test/java/com/apicatalog/cborld/NativeTest.java#L31) for context, dictionary, and other details.
 
 ## Usage
 
