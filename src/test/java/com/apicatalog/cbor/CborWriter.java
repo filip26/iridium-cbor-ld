@@ -38,17 +38,17 @@ public class CborWriter {
 
     public void write(DataItem value) throws IOException {
 
-        switch (value.getMajorType()) {
-        case ARRAY:
-            write(((Array) value).getDataItems());
+        switch (value) {
+        case Array array:
+            write(array.getDataItems());
             break;
 
-        case MAP:
-            write((Map) value);
+        case Map map:
+            write(map);
             break;
 
-        case BYTE_STRING:
-            write((ByteString) value);
+        case ByteString string:
+            write(string);
             break;
 
         default:

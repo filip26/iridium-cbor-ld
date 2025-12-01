@@ -177,7 +177,7 @@ public interface DocumentDictionary {
          *
          * @param name  the term or property name
          * @param code  the code to assign
-         * @param value the type IRI to associate
+         * @param value the type URI to associate
          * @return this builder instance
          */
         public Builder type(String name, int code, String value) {

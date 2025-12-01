@@ -42,7 +42,7 @@ public class DebugDecoder extends Debug {
      * @param versions the set of supported {@link Version}s and their
      *                 corresponding configurations
      * @param loader   the document loader used to resolve external contexts
-     * @param base     the base URI to resolve relative IRIs
+     * @param base     the base URI to resolve relative URIs
      */
     public DebugDecoder(Map<Version, DecoderConfig> versions, DocumentLoader loader, URI base) {
         super(loader, base);

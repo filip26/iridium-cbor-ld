@@ -104,7 +104,7 @@ public final class EncoderBuilder implements EncoderConfig {
     }
 
     /**
-     * Sets the base URI used for resolving relative IRIs.
+     * Sets the base URI used for resolving relative URI.
      *
      * @param base the base URI
      * @return this builder instance

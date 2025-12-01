@@ -45,7 +45,7 @@ public interface Encoder {
     }
 
     /**
-     * Returns the base URI used for relative IRI resolution during encoding.
+     * Returns the base URI used for relative URI resolution during encoding.
      *
      * @return the base URI, or {@code null} if not set
      */

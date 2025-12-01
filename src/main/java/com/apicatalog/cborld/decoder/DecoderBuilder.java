@@ -88,7 +88,7 @@ public final class DecoderBuilder {
     }
 
     /**
-     * If set, then is used as the input document's base IRI.
+     * If set, then is used as the input document's base URI.
      *
      * @param base a document base
      * @return {@link DecoderBuilder} instance
