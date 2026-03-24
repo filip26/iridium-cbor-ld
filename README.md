@@ -14,9 +14,11 @@ Iridium CBOR-LD provides a full implementation of the [CBOR-LD 1.0 specification
 [![javadoc](https://javadoc.io/badge2/com.apicatalog/iridium-cbor-ld/javadoc.svg)](https://javadoc.io/doc/com.apicatalog/iridium-cbor-ld)
 [![Maven Central](https://img.shields.io/maven-central/v/com.apicatalog/iridium-cbor-ld.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:com.apicatalog%20AND%20a:iridium-cbor-ld)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![No AI](https://raw.githubusercontent.com/nuxy/no-ai-badge/master/badge.svg)](https://github.com/nuxy/no-ai-badge) 
 
 ## ✨ Features
 
+- 🧠 No vibe coding. No generated code. Just deliberate engineering.
 - 🔄 Semantic compression and decompression
 - ⚙️ Configurable API for flexible integration
 - 🧱 Support for custom document dictionaries and builders
